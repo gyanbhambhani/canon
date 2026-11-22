@@ -1,0 +1,22 @@
+{
+  "ok": false,
+  "canonical": true,
+  "diagnostics": [
+    {
+      "code": "E102",
+      "severity": "error",
+      "message": "fn add declares effects it never uses: net (effect lists are exact)",
+      "line": 1,
+      "col": 4,
+      "fix": {
+        "kind": "patch",
+        "diff": "--- a/tests/conformance/d_e102_extra.cn\n+++ b/tests/conformance/d_e102_extra.cn\n@@ -1,5 +1,3 @@\n-fn add(a: Int, b: Int) -> Int\n-  effects: net\n-{\n+fn add(a: Int, b: Int) -> Int {\n   return a + b\n }\n"
+      },
+      "data": {
+        "unused": [
+          "net"
+        ]
+      }
+    }
+  ]
+}

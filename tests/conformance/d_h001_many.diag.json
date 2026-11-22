@@ -1,0 +1,39 @@
+{
+  "ok": false,
+  "canonical": true,
+  "diagnostics": [
+    {
+      "code": "H001",
+      "severity": "error",
+      "message": "hole ?first in fn f: needs a value of type unknown (v0 infers only returns and call arguments)",
+      "line": 2,
+      "col": 11,
+      "data": {
+        "expected": null,
+        "candidates": []
+      }
+    },
+    {
+      "code": "H001",
+      "severity": "error",
+      "message": "hole ?second in fn f: needs a value of type unknown (v0 infers only returns and call arguments)",
+      "line": 2,
+      "col": 20,
+      "data": {
+        "expected": null,
+        "candidates": []
+      }
+    },
+    {
+      "code": "H001",
+      "severity": "error",
+      "message": "hole ? in fn f: needs a value of type Int",
+      "line": 3,
+      "col": 10,
+      "data": {
+        "expected": "Int",
+        "candidates": []
+      }
+    }
+  ]
+}

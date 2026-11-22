@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "canonical": false,
+  "diagnostics": [
+    {
+      "code": "P004",
+      "severity": "error",
+      "message": "an expression statement must be a function call; bind other values with let",
+      "line": 3,
+      "col": 3
+    }
+  ]
+}

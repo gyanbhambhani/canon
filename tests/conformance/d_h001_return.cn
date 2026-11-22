@@ -1,0 +1,11 @@
+fn total(xs: List[Int]) -> Int {
+  return sum(xs)
+}
+
+fn biggest(xs: List[Int]) -> Int {
+  return max(xs)
+}
+
+fn score(xs: List[Int]) -> Int {
+  return ?best
+}

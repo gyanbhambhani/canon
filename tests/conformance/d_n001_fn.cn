@@ -1,0 +1,3 @@
+fn getUser(id: Int) -> Int {
+  return id
+}

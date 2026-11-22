@@ -1,0 +1,8 @@
+use std.math
+use std.list
+use std.math
+use std.io
+
+fn f() -> Int {
+  return 1
+}

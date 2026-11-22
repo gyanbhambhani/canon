@@ -1,0 +1,8 @@
+fn f(n: Int) -> Int
+  ensures: result > 0
+  requires: n > 0
+  effects: io
+{
+  print("x")
+  return n
+}

@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "canonical": false,
+  "diagnostics": [
+    {
+      "code": "P001",
+      "severity": "error",
+      "message": "expected '}', found end of file",
+      "line": 3,
+      "col": 1
+    }
+  ]
+}

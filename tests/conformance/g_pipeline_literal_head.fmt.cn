@@ -1,0 +1,6 @@
+fn f(n: Int) -> List[Int] {
+  return range(0, n)
+    |> map(|k| k * k)
+    |> filter(|k| k > 2)
+    |> reverse()
+}

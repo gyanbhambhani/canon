@@ -1,0 +1,3 @@
+fn f(a: Bool, b: Bool) -> Bool {
+  return (a == true) and (b == false) or (true != a) or (b != false)
+}

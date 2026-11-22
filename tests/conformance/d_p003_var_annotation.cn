@@ -1,0 +1,4 @@
+fn f() -> Int {
+  var x: Int = 1
+  return x
+}

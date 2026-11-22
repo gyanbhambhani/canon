@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "canonical": false,
+  "diagnostics": [
+    {
+      "code": "P001",
+      "severity": "error",
+      "message": "expected field name after '.', found '('",
+      "line": 2,
+      "col": 12
+    }
+  ]
+}

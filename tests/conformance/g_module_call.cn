@@ -1,0 +1,5 @@
+use std.json
+
+fn f(s: String) -> String {
+  return json.stringify(s)
+}

@@ -1,0 +1,4 @@
+fn f(a: Int) -> Int {
+  a
+  return a
+}

@@ -1,0 +1,3 @@
+fn f(t: (Int, Int)) -> Int {
+  return t.0 + t.1
+}

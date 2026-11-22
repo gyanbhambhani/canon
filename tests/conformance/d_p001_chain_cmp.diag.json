@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "canonical": false,
+  "diagnostics": [
+    {
+      "code": "P001",
+      "severity": "error",
+      "message": "expected end of comparison (comparisons do not chain; use 'and'), found '<'",
+      "line": 2,
+      "col": 16
+    }
+  ]
+}

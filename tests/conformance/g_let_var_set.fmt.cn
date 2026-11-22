@@ -1,0 +1,6 @@
+fn f() -> Int {
+  let a = 1
+  var b = a
+  set b = b + 2
+  return b
+}

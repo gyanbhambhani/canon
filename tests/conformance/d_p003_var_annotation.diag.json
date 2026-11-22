@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "canonical": false,
+  "diagnostics": [
+    {
+      "code": "P003",
+      "severity": "error",
+      "message": "local bindings never carry type annotations; types live on signatures",
+      "line": 2,
+      "col": 8
+    }
+  ]
+}

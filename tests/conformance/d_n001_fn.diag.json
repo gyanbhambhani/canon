@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "canonical": true,
+  "diagnostics": [
+    {
+      "code": "N001",
+      "severity": "error",
+      "message": "function 'getUser' must be snake_case",
+      "line": 1,
+      "col": 4
+    }
+  ]
+}

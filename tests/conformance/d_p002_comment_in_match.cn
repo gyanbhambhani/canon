@@ -1,0 +1,6 @@
+fn f(n: Int) -> Int {
+  return match n {
+    # no
+    _ => 1,
+  }
+}

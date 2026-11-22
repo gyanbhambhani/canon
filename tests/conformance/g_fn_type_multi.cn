@@ -1,0 +1,3 @@
+fn apply(f: fn(Int, Int) -> Int, a: Int) -> Int {
+  return f(a, a)
+}

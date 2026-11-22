@@ -1,0 +1,8 @@
+fn f(a: Int) -> Int {
+  let x = match a {
+    _ => match a {
+      _ => 1,
+    },
+  }
+  return x
+}

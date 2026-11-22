@@ -1,0 +1,7 @@
+type T {
+  fieldName: Int,
+}
+
+type S =
+  | Good
+  | Bad_one

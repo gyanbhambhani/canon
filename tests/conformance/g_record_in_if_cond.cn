@@ -1,0 +1,6 @@
+fn f(p: Point) -> Bool {
+  if p == origin() {
+    return true
+  }
+  return false
+}

@@ -1,0 +1,3 @@
+fn badName() -> Unit {
+  print("hi")
+}

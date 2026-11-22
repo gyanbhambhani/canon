@@ -1,0 +1,6 @@
+fn f(n: Int) -> List[Int] {
+  return range(0, n)
+    |> map(|x| x)
+    |> filter(|x| x > 1)
+    |> reverse()
+}

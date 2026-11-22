@@ -1,0 +1,20 @@
+{
+  "ok": false,
+  "canonical": true,
+  "diagnostics": [
+    {
+      "code": "N001",
+      "severity": "error",
+      "message": "parameter 'myArg' must be snake_case",
+      "line": 1,
+      "col": 4
+    },
+    {
+      "code": "N001",
+      "severity": "error",
+      "message": "binding 'tmpVal' must be snake_case",
+      "line": 2,
+      "col": 3
+    }
+  ]
+}

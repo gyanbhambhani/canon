@@ -15,11 +15,11 @@ Set up the monorepo exactly as in Architecture, with CI running from the first c
 
 Port the lexer, parser, normalizer, printer and checker (naming, effects, holes) from reference/canon.py.
 
-- [ ] The conformance corpus holds every reference example plus at least 60 new cases covering each grammar rule and each diagnostic code
-- [ ] fmt output is byte-identical to the oracle on every conformance file
-- [ ] Diagnostic codes, lines and columns match the oracle on every conformance file
-- [ ] Ported fuzzers (random whitespace plus the noisy printer) collapse 5,000 variants to their canonical texts with zero failures
-- [ ] fmt is idempotent on every fuzzed variant
+- [x] The conformance corpus holds every reference example plus at least 60 new cases covering each grammar rule and each diagnostic code
+- [x] fmt output is byte-identical to the oracle on every conformance file
+- [x] Diagnostic codes, lines and columns match the oracle on every conformance file
+- [x] Ported fuzzers (random whitespace plus the noisy printer) collapse 5,000 variants to their canonical texts with zero failures
+- [x] fmt is idempotent on every fuzzed variant
 
 ## M2: Type checker
 
@@ -84,3 +84,17 @@ Only after M7, and only when the owner provides model access.
 - [ ] research/benchmark/: 40 tasks run 10 times each in Canon and in TypeScript, reporting distinct programs per task, first-pass check rate and fix rounds
 - [ ] One chart per study, embedded in the docs Design notes page
 
+
+## Progress log
+
+### M0 (done)
+- pnpm monorepo: packages/compiler, runtime, cli (bundled by esbuild into dist/index.js), apps/web (Next 16, Tailwind 4).
+- Packages export a `source` condition (src/*.ts) that vitest and tsc use; builds resolve to dist.
+- `pnpm oracle` copies reference/examples into tests/conformance as ref_*.cn and regenerates .diag.json/.fmt.cn by running python3 reference/canon.py with repo-relative paths.
+- CI runs the oracle self-test, checks the conformance expectations are current, then build, lint, typecheck, test, web build.
+
+### M1 (done)
+- Front end ported to packages/compiler/src (lexer, parser, normalize, printer, check, difflib, py helpers). `checkFront` is the oracle's `check`; `fmt` is the oracle's `fmt`.
+- The conformance test compares the whole JSON (messages and patches too), not just code/line/col. 124 new cases: g_* grammar, m_* messy inputs, d_* diagnostics.
+- Tricky: Python's repr(float), splitlines, repr(str), universal newlines and difflib all had to be reproduced exactly; pycompat.test.ts checks them against python3.
+- Next session: M2's type checker should be a separate pass (`checkTypes`) layered on checkFront; keep checkFront oracle-exact.

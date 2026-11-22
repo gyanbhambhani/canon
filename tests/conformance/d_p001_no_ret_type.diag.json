@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "canonical": false,
+  "diagnostics": [
+    {
+      "code": "P001",
+      "severity": "error",
+      "message": "expected '->' and a return type (return types are required), found '{'",
+      "line": 1,
+      "col": 8
+    }
+  ]
+}

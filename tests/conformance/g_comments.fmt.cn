@@ -1,0 +1,9 @@
+# top comment
+fn f() -> Int {
+  # inside
+  let a = 1
+  # before return
+  return a
+}
+
+# trailing comment

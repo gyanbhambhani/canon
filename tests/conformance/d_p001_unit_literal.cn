@@ -1,0 +1,6 @@
+fn f(p: String) -> Result[Unit, Error]
+  effects: fs
+{
+  try write_file(p, "x")
+  return Ok(())
+}

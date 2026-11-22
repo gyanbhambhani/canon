@@ -1,0 +1,5 @@
+type P {
+  x: Int,
+  # no
+  y: Int,
+}

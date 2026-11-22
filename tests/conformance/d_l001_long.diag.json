@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "canonical": true,
+  "diagnostics": [
+    {
+      "code": "L001",
+      "severity": "error",
+      "message": "line is 115 characters (limit 100); bind a subexpression with let",
+      "line": 2,
+      "col": 101
+    }
+  ]
+}

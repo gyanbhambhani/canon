@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "canonical": false,
+  "diagnostics": [
+    {
+      "code": "S001",
+      "severity": "error",
+      "message": "match is only allowed as a whole statement value (let, set, return); bind it with let first",
+      "line": 2,
+      "col": 15
+    }
+  ]
+}

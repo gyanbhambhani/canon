@@ -1,0 +1,22 @@
+{
+  "ok": false,
+  "canonical": true,
+  "diagnostics": [
+    {
+      "code": "E101",
+      "severity": "error",
+      "message": "fn run uses effects it does not declare: io (via log)",
+      "line": 7,
+      "col": 4,
+      "fix": {
+        "kind": "patch",
+        "diff": "--- a/tests/conformance/d_e101_propagate.cn\n+++ b/tests/conformance/d_e101_propagate.cn\n@@ -4,6 +4,8 @@\n   print(m)\n }\n \n-fn run() -> Unit {\n+fn run() -> Unit\n+  effects: io\n+{\n   log(\"hi\")\n }\n"
+      },
+      "data": {
+        "missing": [
+          "io"
+        ]
+      }
+    }
+  ]
+}

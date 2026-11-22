@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "canonical": false,
+  "diagnostics": [
+    {
+      "code": "P001",
+      "severity": "error",
+      "message": "unexpected character '@'",
+      "line": 2,
+      "col": 12
+    }
+  ]
+}

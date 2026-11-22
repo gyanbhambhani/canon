@@ -1,0 +1,4 @@
+fn f() -> Int {
+  let s = 'hi'
+  return 1
+}

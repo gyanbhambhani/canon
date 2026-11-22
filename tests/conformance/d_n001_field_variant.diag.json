@@ -1,0 +1,20 @@
+{
+  "ok": false,
+  "canonical": true,
+  "diagnostics": [
+    {
+      "code": "N001",
+      "severity": "error",
+      "message": "field 'fieldName' must be snake_case",
+      "line": 1,
+      "col": 1
+    },
+    {
+      "code": "N001",
+      "severity": "error",
+      "message": "variant 'Bad_one' must be PascalCase",
+      "line": 5,
+      "col": 1
+    }
+  ]
+}

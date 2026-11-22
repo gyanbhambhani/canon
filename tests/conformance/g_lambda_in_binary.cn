@@ -1,0 +1,3 @@
+fn f(xs: List[Int]) -> Bool {
+  return len(filter(xs, |x| x > 1 or x < -1)) > 0
+}

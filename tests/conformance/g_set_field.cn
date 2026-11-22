@@ -1,0 +1,5 @@
+fn f(p: Point) -> Point {
+  var q = p
+  set q.x = 3
+  return q
+}

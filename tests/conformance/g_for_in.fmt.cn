@@ -1,0 +1,7 @@
+fn f(xs: List[Int]) -> Int {
+  var t = 0
+  for x in xs {
+    set t = t + x
+  }
+  return t
+}

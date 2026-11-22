@@ -1,0 +1,5 @@
+fn add(a: Int, b: Int) -> Int
+  effects: net
+{
+  return mystery(a, b)
+}

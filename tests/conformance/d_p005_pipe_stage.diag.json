@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "canonical": false,
+  "diagnostics": [
+    {
+      "code": "P005",
+      "severity": "error",
+      "message": "each pipeline stage must be a call, like '|> f()'",
+      "line": 2,
+      "col": 12
+    }
+  ]
+}

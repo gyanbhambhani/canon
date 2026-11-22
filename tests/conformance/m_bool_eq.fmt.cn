@@ -1,0 +1,3 @@
+fn f(a: Bool, b: Bool) -> Bool {
+  return a and not b or not a or b
+}

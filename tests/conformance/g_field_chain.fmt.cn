@@ -1,0 +1,3 @@
+fn f(o: Order) -> String {
+  return o.customer.name
+}

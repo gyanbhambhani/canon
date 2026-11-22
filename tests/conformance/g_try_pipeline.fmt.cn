@@ -1,0 +1,6 @@
+fn f(p: String) -> Result[Int, Error]
+  effects: fs
+{
+  let n = try (p |> read_file() |> trim_result() |> parse_result())
+  return Ok(n)
+}

@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "canonical": false,
+  "diagnostics": [
+    {
+      "code": "P001",
+      "severity": "error",
+      "message": "expected 'use', 'type', 'fn', or 'test' at top level, found 'let'",
+      "line": 1,
+      "col": 1
+    }
+  ]
+}

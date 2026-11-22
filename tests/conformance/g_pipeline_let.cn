@@ -1,0 +1,7 @@
+fn f(xs: List[Int]) -> Int {
+  let s = xs
+    |> filter(|x| x > 1)
+    |> map(|x| x + 1)
+    |> sum()
+  return s
+}

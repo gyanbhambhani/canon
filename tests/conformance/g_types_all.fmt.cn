@@ -1,0 +1,3 @@
+fn f(a: List[Int], b: Map[String, Float], c: (Int, Bool), d: fn(Int) -> String, e: Option[Unit]) -> Result[Int, Error] {
+  return Ok(1)
+}

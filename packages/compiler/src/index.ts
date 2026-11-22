@@ -1,1 +1,11 @@
 export const VERSION = "0.1.0";
+export * from "./diagnostics.js";
+export * from "./lexer.js";
+export type * from "./ast.js";
+export { walkExprs, walkStmts } from "./ast.js";
+export { parse, Parser } from "./parser.js";
+export { normalize } from "./normalize.js";
+export { Printer, chainEligible, unrollChain, PIPELINE_MIN_STAGES, MAX_LINE } from "./printer.js";
+export * from "./check.js";
+export { unifiedDiff } from "./difflib.js";
+export { pyFloatRepr, pyRepr, pySplitlines, readSource } from "./py.js";

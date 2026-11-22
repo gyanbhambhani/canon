@@ -1,0 +1,4 @@
+type P { x: Int y: Int }
+fn f() -> List[Int] {
+  return [1, 2, 3,]
+}

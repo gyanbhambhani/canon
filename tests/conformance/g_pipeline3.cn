@@ -1,0 +1,6 @@
+fn f(xs: List[Int]) -> List[Int] {
+  return xs
+    |> filter(|x| x > 0)
+    |> map(|x| x * 2)
+    |> take(3)
+}

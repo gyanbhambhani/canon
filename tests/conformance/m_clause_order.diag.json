@@ -1,0 +1,17 @@
+{
+  "ok": false,
+  "canonical": false,
+  "diagnostics": [
+    {
+      "code": "C001",
+      "severity": "error",
+      "message": "source is not in canonical form; apply the patch (Canon accepts exactly one text per program)",
+      "line": 2,
+      "col": 1,
+      "fix": {
+        "kind": "patch",
+        "diff": "--- a/tests/conformance/m_clause_order.cn\n+++ b/tests/conformance/m_clause_order.cn\n@@ -1,7 +1,7 @@\n fn f(n: Int) -> Int\n+  effects: io\n+  requires: n > 0\n   ensures: result > 0\n-  requires: n > 0\n-  effects: io\n {\n   print(\"x\")\n   return n\n"
+      }
+    }
+  ]
+}

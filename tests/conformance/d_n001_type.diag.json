@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "canonical": false,
+  "diagnostics": [
+    {
+      "code": "P001",
+      "severity": "error",
+      "message": "expected type name, found 'my_type'",
+      "line": 1,
+      "col": 6
+    }
+  ]
+}

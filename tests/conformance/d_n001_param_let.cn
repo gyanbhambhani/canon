@@ -1,0 +1,4 @@
+fn f(myArg: Int) -> Int {
+  let tmpVal = myArg
+  return tmpVal
+}

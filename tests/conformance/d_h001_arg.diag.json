@@ -1,0 +1,19 @@
+{
+  "ok": false,
+  "canonical": true,
+  "diagnostics": [
+    {
+      "code": "H001",
+      "severity": "error",
+      "message": "hole ? in fn f: needs a value of type Float",
+      "line": 6,
+      "col": 16,
+      "data": {
+        "expected": "Float",
+        "candidates": [
+          "scale(x: Float, by: Float) -> Float"
+        ]
+      }
+    }
+  ]
+}

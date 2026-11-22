@@ -1,0 +1,4 @@
+fn f(n: Int) -> Int {
+  let r = match n { 0 => 1, _ => (n * 2) }
+  return r
+}

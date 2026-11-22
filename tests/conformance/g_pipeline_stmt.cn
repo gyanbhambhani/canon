@@ -1,0 +1,9 @@
+fn f(xs: List[Int]) -> Unit
+  effects: io
+{
+  xs
+    |> map(|x| x + 1)
+    |> sum()
+    |> to_string()
+    |> print()
+}

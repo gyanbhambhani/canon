@@ -8,12 +8,21 @@ importers:
 
   .:
     devDependencies:
+      '@canon/compiler':
+        specifier: workspace:*
+        version: link:packages/compiler
+      '@canon/runtime':
+        specifier: workspace:*
+        version: link:packages/runtime
       '@eslint/js':
         specifier: ^9.39.0
         version: 9.39.5
       '@types/node':
         specifier: ^22.10.0
         version: 22.20.5
+      canon-lang:
+        specifier: workspace:*
+        version: link:packages/cli
       eslint:
         specifier: ^9.39.0
         version: 9.39.5(jiti@2.7.0)

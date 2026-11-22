@@ -1,0 +1,20 @@
+{
+  "ok": false,
+  "canonical": true,
+  "diagnostics": [
+    {
+      "code": "H001",
+      "severity": "error",
+      "message": "hole ?best in fn score: needs a value of type Int",
+      "line": 10,
+      "col": 10,
+      "data": {
+        "expected": "Int",
+        "candidates": [
+          "total(xs: List[Int]) -> Int",
+          "biggest(xs: List[Int]) -> Int"
+        ]
+      }
+    }
+  ]
+}

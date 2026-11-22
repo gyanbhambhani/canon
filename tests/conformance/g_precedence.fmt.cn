@@ -1,0 +1,3 @@
+fn f(a: Int, b: Int, c: Int) -> Bool {
+  return a + b * c > a * (b + c) or not a == b and c % 2 == 0
+}

@@ -1,0 +1,6 @@
+fn f(x: Float) -> Int {
+  return match x {
+    -1.5 => 1,
+    _ => 0,
+  }
+}

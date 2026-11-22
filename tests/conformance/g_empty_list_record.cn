@@ -1,0 +1,4 @@
+fn f() -> List[Int] {
+  let e = Empty {}
+  return []
+}

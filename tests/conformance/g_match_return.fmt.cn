@@ -1,0 +1,6 @@
+fn f(o: Option[Int]) -> Int {
+  return match o {
+    Some(v) => v,
+    None => 0,
+  }
+}

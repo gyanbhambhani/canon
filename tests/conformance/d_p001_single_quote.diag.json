@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "canonical": false,
+  "diagnostics": [
+    {
+      "code": "P001",
+      "severity": "error",
+      "message": "single-quoted strings do not exist in Canon; use double quotes",
+      "line": 2,
+      "col": 11
+    }
+  ]
+}

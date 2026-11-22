@@ -1,0 +1,25 @@
+{
+  "ok": false,
+  "canonical": true,
+  "diagnostics": [
+    {
+      "code": "E101",
+      "severity": "error",
+      "message": "fn f uses effects it does not declare: io (via print), net (via http_get), rand (via random), time (via now)",
+      "line": 1,
+      "col": 4,
+      "fix": {
+        "kind": "patch",
+        "diff": "--- a/tests/conformance/d_e101_multi.cn\n+++ b/tests/conformance/d_e101_multi.cn\n@@ -1,4 +1,6 @@\n-fn f() -> Unit {\n+fn f() -> Unit\n+  effects: io, net, rand, time\n+{\n   print(to_string(now()))\n   let r = random()\n   let x = http_get(\"u\")\n"
+      },
+      "data": {
+        "missing": [
+          "io",
+          "net",
+          "rand",
+          "time"
+        ]
+      }
+    }
+  ]
+}

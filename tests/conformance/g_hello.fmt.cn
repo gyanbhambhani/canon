@@ -1,0 +1,5 @@
+fn main() -> Unit
+  effects: io
+{
+  print("hello, canon")
+}

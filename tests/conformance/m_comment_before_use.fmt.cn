@@ -1,0 +1,6 @@
+use std.list
+
+# header
+fn f() -> Int {
+  return 1
+}

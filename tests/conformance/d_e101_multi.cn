@@ -1,0 +1,5 @@
+fn f() -> Unit {
+  print(to_string(now()))
+  let r = random()
+  let x = http_get("u")
+}

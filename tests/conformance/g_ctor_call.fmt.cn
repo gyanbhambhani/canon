@@ -1,0 +1,3 @@
+fn f() -> Option[Int] {
+  return Some(3)
+}

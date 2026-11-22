@@ -1,0 +1,6 @@
+fn f(p: String) -> Result[Int, Error]
+  effects: fs
+{
+  let t = try read_file(p)
+  return Ok(str_len(t))
+}

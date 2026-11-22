@@ -1,0 +1,7 @@
+fn scale(x: Float, by: Float) -> Float {
+  return x * by
+}
+
+fn f() -> Float {
+  return scale(?, 2.0)
+}

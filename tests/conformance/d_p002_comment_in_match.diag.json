@@ -1,0 +1,13 @@
+{
+  "ok": false,
+  "canonical": false,
+  "diagnostics": [
+    {
+      "code": "P002",
+      "severity": "error",
+      "message": "comments must sit on their own line between statements",
+      "line": 3,
+      "col": 5
+    }
+  ]
+}

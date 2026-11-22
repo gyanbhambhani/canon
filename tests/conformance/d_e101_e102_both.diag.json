@@ -1,0 +1,38 @@
+{
+  "ok": false,
+  "canonical": true,
+  "diagnostics": [
+    {
+      "code": "E101",
+      "severity": "error",
+      "message": "fn f uses effects it does not declare: io (via print)",
+      "line": 1,
+      "col": 4,
+      "fix": {
+        "kind": "patch",
+        "diff": "--- a/tests/conformance/d_e101_e102_both.cn\n+++ b/tests/conformance/d_e101_e102_both.cn\n@@ -1,5 +1,5 @@\n fn f() -> Unit\n-  effects: fs\n+  effects: io\n {\n   print(\"x\")\n }\n"
+      },
+      "data": {
+        "missing": [
+          "io"
+        ]
+      }
+    },
+    {
+      "code": "E102",
+      "severity": "error",
+      "message": "fn f declares effects it never uses: fs (effect lists are exact)",
+      "line": 1,
+      "col": 4,
+      "fix": {
+        "kind": "patch",
+        "diff": "--- a/tests/conformance/d_e101_e102_both.cn\n+++ b/tests/conformance/d_e101_e102_both.cn\n@@ -1,5 +1,5 @@\n fn f() -> Unit\n-  effects: fs\n+  effects: io\n {\n   print(\"x\")\n }\n"
+      },
+      "data": {
+        "unused": [
+          "fs"
+        ]
+      }
+    }
+  ]
+}

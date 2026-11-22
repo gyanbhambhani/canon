@@ -1,0 +1,4 @@
+fn f() -> Int {
+  return # nope
+  1
+}

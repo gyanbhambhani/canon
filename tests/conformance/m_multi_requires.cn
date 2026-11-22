@@ -1,0 +1,6 @@
+fn f(a: Int, b: Int) -> Int
+  requires: a > 0
+  requires: b > 0
+{
+  return a + b
+}

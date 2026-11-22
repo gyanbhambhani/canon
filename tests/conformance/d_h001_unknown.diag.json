@@ -1,0 +1,17 @@
+{
+  "ok": false,
+  "canonical": true,
+  "diagnostics": [
+    {
+      "code": "H001",
+      "severity": "error",
+      "message": "hole ?thing in fn f: needs a value of type unknown (v0 infers only returns and call arguments)",
+      "line": 2,
+      "col": 11,
+      "data": {
+        "expected": null,
+        "candidates": []
+      }
+    }
+  ]
+}
