@@ -2,6 +2,11 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — M7: release
+- `canon-lang` is published from packages/cli as one esbuild bundle plus README and LICENSE (32 kB packed). It was verified by installing the packed tarball into an empty directory and running `npx canon run hello.cn`.
+- The repository already existed with an MIT LICENSE ("Copyright (c) 2026 Gyan"), so the build kept it and based its history on that initial commit.
+- The web type-check generates lib/generated/site.json first (`pnpm run stats`), because that file is gitignored build output. CI failed on a clean checkout without it.
+
 ## 2026-11-22 — M6: website choices
 - The whole site is a static export (`output: "export"`): no server is needed, the playground included. The compiler runs on the page; programs run in a Web Worker that is terminated after 2 seconds.
 - The playground keeps its source in the URL hash as base64url UTF-8 (`/play#code=...`). Apply uses `applyPatch` (compiler), which reads a diff with the source lines in hand, because difflib-format patches for a file with no final newline glue two lines together (the system `patch` tool rejects those).

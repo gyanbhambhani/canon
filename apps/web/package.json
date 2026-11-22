@@ -7,7 +7,7 @@
     "dev": "pnpm run stats && next dev",
     "build": "pnpm --dir ../.. build && pnpm run stats && next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "pnpm run stats && tsc --noEmit",
     "stats": "tsx --conditions=source ../../scripts/stats.ts --write"
   },
   "dependencies": {

@@ -71,10 +71,10 @@ Build / and /play as described in the Landing page section.
 
 ## M7: Release readiness
 
-- [ ] README.md with the one-line pitch, a code sample, quickstart and links
-- [ ] LICENSE (MIT), CONTRIBUTING.md, and version 0.1.0 in every package
-- [ ] DEPLOY.md lists, in order: create the GitHub repo, push, set NEXT_PUBLIC_GITHUB_URL, import apps/web into Vercel, publish canon-lang to npm
-- [ ] CI is green on the final commit
+- [x] README.md with the one-line pitch, a code sample, quickstart and links
+- [x] LICENSE (MIT), CONTRIBUTING.md, and version 0.1.0 in every package
+- [x] DEPLOY.md lists, in order: create the GitHub repo, push, set NEXT_PUBLIC_GITHUB_URL, import apps/web into Vercel, publish canon-lang to npm
+- [x] CI is green on the final commit
 
 ## M8 (stretch): Evidence
 
@@ -123,3 +123,8 @@ Only after M7, and only when the owner provides model access.
 - The landing page is app/(home)/page.tsx and the playground is app/(home)/play (components/playground.tsx with CodeMirror 6, lib/run-worker.ts). Numbers and variants come from lib/generated/site.json, written by `scripts/stats.ts --write` in the web build script.
 - e2e/smoke.spec.ts (Playwright) serves apps/web/out with scripts/serve-static.mjs (gzip). CI installs Chromium and runs `pnpm e2e` after the web build.
 - Tricky: the worker must receive the program by postMessage (an early bug). Turbopack bundles `new Worker(new URL(...), { type: "module" })` fine.
+
+### M7 (done)
+- README.md, CONTRIBUTING.md, DEPLOY.md, and LICENSE (MIT, from the original repository); tests/release.test.ts checks them and the 0.1.0 versions.
+- The remaining steps need the owner: Vercel import with root apps/web plus NEXT_PUBLIC_GITHUB_URL, and `npm publish` of canon-lang (see DEPLOY.md). M8 needs model access.
+- Next session: M8 only, if the owner provides model access. Otherwise maintenance.
