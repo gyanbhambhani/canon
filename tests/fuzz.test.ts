@@ -7,7 +7,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { checkFront, fmt, lex, normalize, parse, Printer, readSource, type Tok } from "@canon/compiler";
+import { astNoise, checkFront, fmt, readSource, rng, whitespaceFuzz } from "@canon/compiler";
 
 const dir = join(__dirname, "conformance");
 // canonical sources: every corpus program the oracle accepts as canonical
@@ -16,45 +16,6 @@ const canonical = readdirSync(dir)
   .filter((f) => JSON.parse(readFileSync(join(dir, f), "utf8")).canonical)
   .map((f) => ({ name: f, src: readSource(readFileSync(join(dir, f.replace(/\.diag\.json$/, ".cn")), "utf8")) }))
   .filter((c) => c.src.length > 0);
-
-/** mulberry32: small seeded PRNG */
-export function rng(seed: number) {
-  let a = seed >>> 0;
-  const random = () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-  return {
-    random,
-    int: (lo: number, hi: number) => lo + Math.floor(random() * (hi - lo + 1)),
-    choice: <T>(xs: T[]) => xs[Math.floor(random() * xs.length)],
-  };
-}
-
-type Rng = ReturnType<typeof rng>;
-
-function whitespaceFuzz(src: string, r: Rng): string {
-  const toks: Tok[] = lex(src);
-  const out: string[] = [];
-  for (let i = 0; i < toks.length - 1; i++) {
-    const t = toks[i];
-    const nxt = toks[i + 1];
-    out.push(t.text);
-    if (t.kind === "comment") out.push("\n".repeat(r.int(1, 3)));
-    else if (nxt.kind === "op" && nxt.text === "(") {
-      if (nxt.line === t.line) out.push(r.choice(["", " ", "  ", "\t"]));
-      else out.push(r.choice(["\n", "\n\n", " \n    "]));
-    } else out.push(r.choice([" ", "  ", "\n", "\t", " \n    ", "\n\n"]));
-  }
-  return out.join("");
-}
-
-function astNoise(src: string, r: Rng): string {
-  return new Printer(r).program(normalize(parse(src)));
-}
 
 const TOTAL = 5000;
 

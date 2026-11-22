@@ -14,19 +14,21 @@
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json && pnpm -r typecheck",
     "oracle": "tsx scripts/oracle.ts",
-    "stats": "tsx scripts/stats.ts"
+    "stats": "tsx --conditions=source scripts/stats.ts",
+    "e2e": "playwright test"
   },
   "devDependencies": {
+    "@canon/compiler": "workspace:*",
+    "@canon/runtime": "workspace:*",
     "@eslint/js": "^9.39.0",
+    "@playwright/test": "^1.65.1",
     "@types/node": "^22.10.0",
+    "canon-lang": "workspace:*",
     "eslint": "^9.39.0",
     "tsx": "^4.20.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.0",
-    "vitest": "^4.0.0",
-    "@canon/compiler": "workspace:*",
-    "@canon/runtime": "workspace:*",
-    "canon-lang": "workspace:*"
+    "vitest": "^4.0.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

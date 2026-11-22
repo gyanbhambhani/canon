@@ -63,11 +63,11 @@ Build the docs at /docs with the page tree in the Docs site section.
 
 Build / and /play as described in the Landing page section.
 
-- [ ] The playground formats, checks and runs hello.cn entirely in the browser, with execution in a Web Worker and a 2-second time limit
-- [ ] Diagnostics with a patch show an Apply button that rewrites the editor contents
-- [ ] The landing page's numbers come from scripts/stats.ts at build time
-- [ ] The GitHub button reads NEXT_PUBLIC_GITHUB_URL and is hidden when it is unset
-- [ ] A Playwright smoke test loads /, /docs and /play and runs one program
+- [x] The playground formats, checks and runs hello.cn entirely in the browser, with execution in a Web Worker and a 2-second time limit
+- [x] Diagnostics with a patch show an Apply button that rewrites the editor contents
+- [x] The landing page's numbers come from scripts/stats.ts at build time
+- [x] The GitHub button reads NEXT_PUBLIC_GITHUB_URL and is hidden when it is unset
+- [x] A Playwright smoke test loads /, /docs and /play and runs one program
 
 ## M7: Release readiness
 
@@ -118,3 +118,8 @@ Only after M7, and only when the owner provides model access.
 ### M5 (done)
 - Fumadocs (macro style, `fumadocs-mdx/macro` in lib/source.ts) with the `@fumadocs/base-ui` UI package, static search, and a custom Shiki grammar (lib/canon-grammar.ts). The 17 pages are in apps/web/content/docs; apps/web/test/docs.test.ts checks them.
 - A docs subagent wrote the page content; its findings led to checker and CLI fixes (DECISIONS.md, "M5: fixes").
+
+### M6 (done)
+- The landing page is app/(home)/page.tsx and the playground is app/(home)/play (components/playground.tsx with CodeMirror 6, lib/run-worker.ts). Numbers and variants come from lib/generated/site.json, written by `scripts/stats.ts --write` in the web build script.
+- e2e/smoke.spec.ts (Playwright) serves apps/web/out with scripts/serve-static.mjs (gzip). CI installs Chromium and runs `pnpm e2e` after the web build.
+- Tricky: the worker must receive the program by postMessage (an early bug). Turbopack bundles `new Worker(new URL(...), { type: "module" })` fine.

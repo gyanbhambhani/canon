@@ -47,3 +47,8 @@ jobs:
 
       - name: Web build
         run: pnpm --filter web build
+
+      - name: Playwright smoke test
+        run: |
+          pnpm exec playwright install --with-deps chromium
+          pnpm e2e
