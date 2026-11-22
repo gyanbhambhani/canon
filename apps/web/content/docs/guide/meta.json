@@ -1,0 +1,14 @@
+{
+  "title": "Language guide",
+  "pages": [
+    "files-and-syntax",
+    "types-and-declarations",
+    "functions-effects-contracts",
+    "statements-and-mutation",
+    "expressions-and-precedence",
+    "pattern-matching",
+    "errors-result-try",
+    "pipelines",
+    "holes"
+  ]
+}

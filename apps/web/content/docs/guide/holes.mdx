@@ -1,0 +1,99 @@
+---
+title: Holes
+description: Write ? or ?name where you are unsure, and the compiler answers with the type the hole needs and the functions in scope that return it.
+---
+
+A hole is a question to the compiler. Instead of guessing an expression, write `?` or a named hole such as `?best`. `canon check` reports every hole as H001, with the type the hole needs and the functions in scope that return that type.
+
+```canon
+# expect: H001
+fn total(xs: List[Int]) -> Int {
+  return sum(xs)
+}
+
+fn biggest(xs: List[Int]) -> Int {
+  return fold(xs, 0, |acc, x| max(acc, x))
+}
+
+fn score(xs: List[Int]) -> Int {
+  return ?best
+}
+```
+
+`canon check --json` answers:
+
+```json
+{
+  "code": "H001",
+  "severity": "error",
+  "message": "hole ?best in fn score: needs a value of type Int",
+  "line": 11,
+  "col": 10,
+  "data": {
+    "expected": "Int",
+    "candidates": [
+      "total(xs: List[Int]) -> Int",
+      "biggest(xs: List[Int]) -> Int"
+    ]
+  }
+}
+```
+
+In text mode, the candidates follow the message:
+
+```text
+example.cn:11:10: error H001: hole ?best in fn score: needs a value of type Int
+  candidates:
+    total(xs: List[Int]) -> Int
+    biggest(xs: List[Int]) -> Int
+```
+
+## Where holes can go
+
+Holes are allowed anywhere an expression is: a return value, a call argument, a `let` binding, a lambda body, a match arm. The type checker infers what each hole needs from its surroundings, including how a `let`-bound hole is used later.
+
+```canon
+# expect: H001
+type Order {
+  id: Int,
+  amount: Float,
+}
+
+fn total(orders: List[Order]) -> Float {
+  return sum_float(map(orders, |o| o.amount))
+}
+
+fn largest(orders: List[Order]) -> Float {
+  return fold(orders, 0.0, |acc, o| ?pick)
+}
+
+fn report(orders: List[Order]) -> String {
+  let t = ?
+  let n = len(orders)
+  return concat(to_string(n), " orders, ", to_string(t + 1.0))
+}
+```
+
+Both holes need a Float: `?pick` because it is the body of the `fold` lambda, and `?` because `t + 1.0` adds it to a Float.
+
+```text
+example.cn:12:37: error H001: hole ?pick in fn largest: needs a value of type Float
+  candidates:
+    total(orders: List[Order]) -> Float
+example.cn:16:11: error H001: hole ? in fn report: needs a value of type Float
+  candidates:
+    total(orders: List[Order]) -> Float
+    largest(orders: List[Order]) -> Float
+```
+
+When nothing constrains a hole, for example the argument of the generic `to_string`, the expected type is `unknown` and `data.expected` is `null`.
+
+## How candidates are chosen
+
+A candidate is a function declared in the file whose return type is exactly the type the hole needs. The function that contains the hole is left out, and so are standard library functions. Candidates are suggestions; the agent still chooses the arguments.
+
+## Holes in the agent loop
+
+The agent loop treats diagnostics three ways: apply a patch mechanically, answer a hole, or rewrite code for parse and naming errors. Holes are the middle case. An agent that is unsure of an expression writes a hole, checks, and fills it with one of the candidates or with an expression of the reported type. Patches can create holes too: the [T004](/docs/diagnostics#t004) patch adds each missing match arm with `?` as its value.
+
+A hole is an error, so a file with holes does not run. Fill every hole, then check again.

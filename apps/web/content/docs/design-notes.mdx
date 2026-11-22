@@ -1,0 +1,87 @@
+---
+title: Design notes
+description: Why Canon exists and how it decides feature questions. The thesis, the seven design laws, the Wasp lesson, related work, open questions and the roadmap.
+---
+
+## Thesis
+
+Canon is a compiled language whose main user is an AI coding agent, and its one job is to make every intent map to as close to one valid program as possible.
+
+The randomness in AI-written code comes from sampling, and no language can remove that. What a language controls is how many legal programs exist for the same intent. JavaScript allows dozens of ways to write a button, so two agent runs drift apart and reviewers chase style instead of logic. Canon removes that freedom on purpose: one way to loop, one way to branch, one way to handle errors, one textual form per program.
+
+Three bets follow from that goal:
+
+1. **Shrink the program space.** Fewer legal programs per intent means agent runs converge, diffs stay small, and caches hit.
+2. **Make the compiler a collaborator.** Errors come back as machine-applicable patches, so the write, compile, fix loop closes in one or two turns.
+3. **Fit in one context window.** The full language reference stays under 4,000 tokens, so any agent can load all of it, the same way a good skill file primes an agent better than raw text.
+
+Humans remain readers and reviewers. Canon should read like clean Python or TypeScript to a person who has never seen it.
+
+**The native dialect.** Canon does not ask a model to learn anything new. Every model already has a dialect it writes most reliably inside the languages it knows: the forms it has seen millions of times and assigns high probability to. Canon's syntax borrows those familiar forms and then removes every alternative. The stretch milestone M8 makes this measurable: score equivalent spellings of each construct with an open-weights model's token probabilities and adopt the form the model finds most natural.
+
+## Design laws
+
+Seven laws decide every feature question. A proposed feature that breaks one is rejected, however convenient.
+
+1. **One text per program.** The formatter is part of the grammar. A file the formatter would change is a compile error, and the error carries the patch. Two programs with the same meaning are identical byte for byte.
+2. **One construct per job.** One loop keyword, one conditional statement, one error mechanism, one way to call a function. Where two spellings could both make sense, a fixed rule picks one, like the [pipeline rule](/docs/guide/pipelines).
+3. **Everything local.** A line can be understood from its function header and the lines above it. No implicit imports, no global mutable state, no methods resolved at a distance, no operator overloading.
+4. **Effects are exact.** A function lists exactly the effects it uses, no more and no fewer. Pure is the default, and leaving out the clause means pure.
+5. **Boundaries are typed, interiors are inferred.** Every signature spells out its parameter and return types. Local bindings never carry annotations, so there is one way to write them.
+6. **The grammar is small enough to constrain decoding.** Braces delimit blocks and no rule depends on indentation, so a decoding engine can mask invalid tokens and the agent never emits a syntax error.
+7. **The reference fits in 4,000 tokens.** Any feature that pushes the language reference past that budget must replace something already in it.
+
+The implementation follows the same instinct where the spec leaves a choice open: it picks the option with fewer ways to write a program. That is why there is no unit literal, why `+` does not join strings, and why `try` is not allowed inside a lambda.
+
+## The Wasp lesson
+
+*This section is a summary of another project's public account, not a result Canon has measured.*
+
+[Wasp](https://wasp.sh) is a declarative language for building full-stack web apps: a short configuration file describes routes, pages, authentication and data operations, and the compiler produces the React and Node.js code underneath. Its makers have built tools that generate whole Wasp apps from a prompt, and they report that a small, constrained specification is easier for a language model to produce correctly than the equivalent sprawling framework code. There is less to write, fewer places to make a mistake, and fewer valid ways to say the same thing.
+
+The lesson Canon draws is about the shape of the surface, not about web apps. When the language a model writes in is small and admits few spellings for each intent, generation has less room to wander, so separate runs tend to converge and mistakes are easier to detect. Wasp gets there by narrowing the domain; Canon tries to get there inside a general-purpose language, by keeping the grammar small and making the formatter part of it. Whether that transfers is exactly what the M8 benchmark is meant to test.
+
+## Landscape
+
+Others are building languages for agents, but none treats one-text-per-program as the core law, and that is Canon's opening.
+
+| Project | Its main bet | Where Canon differs |
+|---|---|---|
+| MoonBit | A flat language plus a sampler that enforces syntax and catches type errors while the model generates (Feb 2024 post) | MoonBit fixes code during sampling; Canon makes the space of valid programs small to begin with, and the two ideas combine |
+| ll-lang | Compact functional syntax, 15 keywords, coded diagnostics, an MCP server, transpiles to F#, TypeScript, Python, Java, C# | ll-lang optimizes for fewer tokens; Canon optimizes for fewer legal programs and returns patches rather than only error codes |
+| Armin Ronacher's essay | Design principles: explicit types and effects, braces, results over exceptions, greppable code, local reasoning | Canon adopts most of these and adds canonical form, typed holes and exact effects |
+
+Sources: "MoonBit: Exploring the design of an AI-Native Language Toolchain" (MoonBit blog, Feb 18, 2024); "Why We Built ll-lang" (Roman Melnikov, DEV Community); "A Language For Agents" (Armin Ronacher, Feb 9, 2026).
+
+## Open questions
+
+- **Trailing commas.** Ronacher argues against trailing-comma conventions and multi-line constructs for diff stability. Canon puts one record field or match arm per line with a trailing comma, which keeps diffs to one line per change. This needs measuring, not arguing.
+- **Is the pipeline threshold right?** Three stages is a judgment call. The benchmark should test two, three and four.
+- **Concurrency.** Options are structured spawn blocks behind a `par` effect, or actors in the Erlang style. Either must keep runs replayable. v0 has no concurrency.
+- **Generics depth.** v0 has type parameters but no interfaces. Adding interfaces risks the many-ways problem returning through clever abstractions.
+- **Escape hatch.** Some code will need foreign calls into C or Rust libraries. That boundary should be explicit and carry its own effect.
+
+## Roadmap
+
+The v0 build runs from M0 to M7: the scaffold, the front end ported from the Python reference, the type checker, JavaScript code generation and the runtime, the CLI, these docs, the landing page and browser playground, and release readiness. M8 is a stretch milestone for evidence (see below).
+
+After that, the next artifacts are:
+
+1. **Strict grammar.** The canonical grammar in a form constrained-decoding engines accept, so models cannot emit non-canonical text at all. The v0 parser is lenient by design.
+2. **Native backend.** Compile through C, then LLVM, and benchmark against Rust and Go. WebAssembly is a second target for sandboxed execution of agent-written code.
+3. **Corpus pipeline.** Have models translate tested open-source functions into Canon, and keep only translations that pass the original tests. Canonical form deduplicates the corpus for free.
+
+Further out:
+
+- **Memory model.** Mutable value semantics in the style of Hylo: every value behaves as its own copy, values move on last use, and large values copy only when written while shared. No lifetime annotations and, for most programs, no garbage collector.
+- **Content-addressed compilation.** Identify each function by a hash of its canonical text, so an unchanged function is never recompiled or retested.
+- **Modules, a package manager, and an editor language server.** v0 is one file plus the standard library.
+
+## M8 results
+
+Pending. M8 runs only after M7, and only when model access is available. It has two studies:
+
+- **Likelihood.** Score equivalent spellings of 10 to 15 constructs with a small open-weights model, and report which form wins and by how much.
+- **Benchmark.** Run 40 tasks 10 times each in Canon and in TypeScript, and report distinct programs per task, first-pass check rate and fix rounds.
+
+If Canon does not cut the number of distinct programs per task sharply, the core bet is wrong. Charts for both studies will appear here once they exist.

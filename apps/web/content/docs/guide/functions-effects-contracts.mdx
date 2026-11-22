@@ -1,0 +1,165 @@
+---
+title: Functions, effects and contracts
+description: Typed signatures, exact effect lists, requires and ensures contracts, the fixed clause order, and the main entry point.
+---
+
+## Signatures
+
+Every function spells out its parameter types and its return type. Locals inside the body are inferred, so the signature is the only place types are written.
+
+```canon
+fn clamp(n: Int, lo: Int, hi: Int) -> Int {
+  return min(max(n, lo), hi)
+}
+
+test "clamp" {
+  assert(clamp(15, 0, 10) == 10)
+}
+```
+
+A missing return type is a parse error (P001). A function whose return type is not `Unit` must return on every path (T005). A `Unit` function may fall off the end, or use a bare `return`.
+
+Generic functions name their type parameters in square brackets:
+
+```canon
+fn first_or[T](xs: List[T], fallback: T) -> T {
+  let found = match first(xs) {
+    Some(x) => x,
+    None => fallback,
+  }
+  return found
+}
+
+test "first_or" {
+  assert(first_or([], 7) == 7)
+  assert(first_or(["a"], "b") == "a")
+}
+```
+
+There is no overloading: a user function may not reuse a name from the standard library (T001), and each name means one function.
+
+## Clauses
+
+Three optional clauses sit between the signature and the body, each on its own line, always in this order: `effects`, `requires`, `ensures`. When a function has any clause, its opening brace moves to its own line.
+
+```canon
+fn withdraw(balance: Int, amount: Int) -> Int
+  requires: amount > 0 and amount <= balance
+  ensures: result >= 0
+{
+  return balance - amount
+}
+
+test "withdraw" {
+  assert(withdraw(10, 3) == 7)
+}
+```
+
+The formatter puts clauses in that order, sorts effect names, and merges two `requires` (or two `ensures`) lines into one joined with `and`.
+
+## Effects
+
+Pure is the default: leaving out the `effects` clause means the function performs no effects. There are five effects:
+
+| Effect | Built-ins that use it |
+|---|---|
+| `fs` | `read_file`, `write_file` |
+| `io` | `print`, `read_line` |
+| `net` | `http_get`, `http_post` |
+| `rand` | `random`, `random_int` |
+| `time` | `now`, `sleep` |
+
+A function lists exactly the effects it uses, no more and no fewer, in alphabetical order. Effects propagate through user functions: calling a function that declares `io` uses `io`.
+
+```canon
+fn log_all(lines: List[String]) -> Unit
+  effects: io
+{
+  for line in lines {
+    print(line)
+  }
+}
+
+fn stamp(lines: List[String]) -> Int
+  effects: io, time
+{
+  log_all(lines)
+  return now()
+}
+```
+
+The checker enforces the list both ways, and both errors carry a patch that rewrites the clause:
+
+- **E101**: the function uses an effect it does not declare.
+- **E102**: the function declares an effect it never uses.
+- **E100**: the clause names something that is not one of the five effects.
+
+```canon
+# expect: E101
+fn greet(name: String) -> Unit {
+  print(name)
+}
+```
+
+```canon
+# expect: E102
+fn add(a: Int, b: Int) -> Int
+  effects: net
+{
+  return a + b
+}
+```
+
+A lambda's calls count toward the enclosing function, so `map(names, |n| print(n))` needs `io`.
+
+Test blocks are not functions and carry no effects clause; they may call effectful built-ins directly. Under `canon test`, time and randomness are deterministic (see [CLI](/docs/cli)).
+
+## Contracts
+
+`requires` is a Bool expression over the parameters, checked on entry. `ensures` is a Bool expression checked on every return, where `result` names the returned value. A failure stops the program with a trap that names the function: R001 for `requires`, R002 for `ensures`.
+
+```canon
+fn halve(n: Int) -> Int
+  requires: n % 2 == 0
+{
+  return n / 2
+}
+
+fn main() -> Unit
+  effects: io
+{
+  print(to_string(halve(3)))
+}
+```
+
+Running it prints the trap as one JSON line and exits with status 1:
+
+```json
+{"code":"R001","message":"requires failed in fn halve","line":2,"col":13,"stack":[{"fn":"halve","line":2,"col":13},{"fn":"main","line":10,"col":19}]}
+```
+
+`canon run --no-contracts` skips both checks; the same program then prints `1`.
+
+## The entry point
+
+`canon run file.cn` calls `fn main() -> Unit`, which may declare any effects. A `main` may instead return a `Result`; an `Err` prints `error: ` and its message on stderr and exits with status 1.
+
+```canon
+fn parse_port(s: String) -> Result[Int, Error] {
+  let n = unwrap_or(parse_int(s), -1)
+  if n < 1 or n > 65535 {
+    return Err(Error { message: concat("bad port: ", s) })
+  }
+  return Ok(n)
+}
+
+fn main() -> Result[Int, Error]
+  effects: io
+{
+  let port = try parse_port("80x")
+  print(to_string(port))
+  return Ok(port)
+}
+```
+
+This program prints `error: bad port: 80x` and exits 1.

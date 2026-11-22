@@ -1,0 +1,138 @@
+---
+title: Types and declarations
+description: The built-in types, record and sum type declarations, type parameters, and the built-in Option, Result and Error types.
+---
+
+## Built-in types
+
+| Type | Values |
+|---|---|
+| `Int` | Whole numbers in the 53-bit safe range; any result outside it traps (R003) |
+| `Float` | 64-bit floating point |
+| `Bool` | `true`, `false` |
+| `String` | Immutable Unicode text |
+| `Unit` | The result of a function with nothing to return |
+| `List[T]` | Immutable ordered lists: `[1, 2, 3]` |
+| `Map[K, V]` | Maps with insertion order; keys are Int, Float or String |
+| `Option[T]` | `Some(value: T)` or `None` |
+| `Result[T, E]` | `Ok(value: T)` or `Err(error: E)` |
+| `(A, B)` | Tuples, read with `t.0`, `t.1` |
+| `fn(A) -> B` | Functions and lambdas |
+
+`Error` is the built-in record `Error { message: String }`, the usual error type in a `Result`.
+
+User types may not redefine any built-in type name, and there is no `Json`, `Any` or `null` in v0.
+
+## Records
+
+A record type lists its fields, one per line, each with a trailing comma. Build a record with a literal that names every field; read a field with `.`.
+
+```canon
+type Item {
+  sku: String,
+  qty: Int,
+  price: Float,
+}
+
+fn line_total(item: Item) -> Float {
+  return to_float(item.qty) * item.price
+}
+
+test "line total" {
+  let item = Item { sku: "a-1", qty: 3, price: 2.5 }
+  assert(line_total(item) == 7.5)
+}
+```
+
+A literal that leaves out a field, or gives one twice, is T001. Reading or writing a field the type does not have is T008.
+
+## Sum types
+
+A sum type lists its variants, one per line, each starting with `|`. A variant can carry named fields or none.
+
+```canon
+type Step =
+  | Call(tool: String, input: String)
+  | Answer(text: String)
+  | Fail(reason: String)
+
+type Light =
+  | Red
+  | Amber
+  | Green
+
+fn describe(step: Step) -> String {
+  return match step {
+    Call(tool, _) => concat("calling ", tool),
+    Answer(text) => text,
+    Fail(reason) => concat("failed: ", reason),
+  }
+}
+
+test "describe a call" {
+  assert(describe(Call("search", "canon")) == "calling search")
+}
+```
+
+Variants are built with call syntax (`Call("search", "canon")`, `Red`) and taken apart with [pattern matching](/docs/guide/pattern-matching).
+
+## Type parameters
+
+Types and functions can take type parameters in square brackets. There are no interfaces or trait bounds in v0; the only constrained parameter is the standard library's key type, which must be Int, Float or String.
+
+```canon
+type Pair[A, B] {
+  left: A,
+  right: B,
+}
+
+fn swap[A, B](p: Pair[A, B]) -> Pair[B, A] {
+  return Pair { left: p.right, right: p.left }
+}
+
+test "swap" {
+  let p = swap(Pair { left: 1, right: "one" })
+  assert(p.left == "one")
+}
+```
+
+## Tuples
+
+Tuples group values without naming them. Read a slot with `t.0`, `t.1`, and so on; a slot the tuple does not have is T008.
+
+```canon
+fn min_max(xs: List[Int]) -> (Int, Int) {
+  let lo = fold(xs, 0, |acc, x| min(acc, x))
+  let hi = fold(xs, 0, |acc, x| max(acc, x))
+  return (lo, hi)
+}
+
+test "min and max" {
+  let bounds = min_max([3, -2, 9])
+  assert(bounds == (-2, 9))
+  assert(bounds.1 == 9)
+}
+```
+
+## Function types
+
+A function type is written `fn(A, B) -> C`. Named functions and lambdas are both values of function types, and a local or parameter of function type can be called by name.
+
+```canon
+fn twice(f: fn(Int) -> Int, x: Int) -> Int {
+  return f(f(x))
+}
+
+fn double(n: Int) -> Int {
+  return n * 2
+}
+
+test "twice" {
+  assert(twice(double, 3) == 12)
+  assert(twice(|n| n + 1, 3) == 5)
+}
+```
+
+## Equality and values
+
+`==` and `!=` compare any two values of the same type by structure, so two records with equal fields are equal. Functions cannot be compared (T001). Every value is immutable: passing a list or record to a function can never change the caller's copy.

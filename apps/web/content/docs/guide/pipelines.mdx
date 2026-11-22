@@ -1,0 +1,137 @@
+---
+title: Pipelines and the pipeline rule
+description: What x |> f(y) means, and the fixed rule that decides whether a chain of calls is written as a pipeline or as nested calls.
+---
+
+## What a pipeline means
+
+`x |> f(y)` means `f(x, y)`: the value on the left becomes the first argument of the call on the right. A stage must be a call, even when it takes no other arguments, so write `|> sum()`, not `|> sum` (P005).
+
+```canon
+# expect: P005
+fn f(xs: List[Int]) -> Int {
+  return xs |> sum
+}
+```
+
+## The pipeline rule
+
+Most languages let you choose between `f(g(h(x)))` and `x |> h() |> g() |> f()`. Canon does not. The choice is made by counting the chained calls:
+
+- **Three or more** chained calls are a pipeline, with one stage per line.
+- **Fewer than three** are nested calls.
+- A call whose first argument is a scalar literal (a number, string or Bool), such as `range(0, n)`, can start a pipeline but never becomes a stage.
+
+The formatter applies the rule, so writing the other form is a C001 error whose patch rewrites it.
+
+```canon
+fn top(xs: List[Int], k: Int) -> List[Int] {
+  return xs
+    |> filter(|x| x > 0)
+    |> sort_desc_by(|x| x)
+    |> take(k)
+}
+
+fn shout(words: List[String]) -> String {
+  return join(map(words, |w| concat(w, "!")), " ")
+}
+
+test "both forms" {
+  assert(top([3, -1, 7, 5], 2) == [7, 5])
+  assert(shout(["hi", "yo"]) == "hi! yo!")
+}
+```
+
+`top` chains three calls, so it is a pipeline. `shout` chains two, so it is nested. Each has exactly one legal spelling.
+
+## Before and after
+
+Three nested calls become a pipeline:
+
+```canon
+# expect: C001
+fn top(xs: List[Int], k: Int) -> List[Int] {
+  return take(sort_desc_by(filter(xs, |x| x > 0), |x| x), k)
+}
+```
+
+```diff
+-  return take(sort_desc_by(filter(xs, |x| x > 0), |x| x), k)
++  return xs
++    |> filter(|x| x > 0)
++    |> sort_desc_by(|x| x)
++    |> take(k)
+```
+
+A two-stage pipeline becomes nested calls:
+
+```canon
+# expect: C001
+fn shout(words: List[String]) -> String {
+  return words |> map(|w| concat(w, "!")) |> join(" ")
+}
+```
+
+```diff
+-  return words |> map(|w| concat(w, "!")) |> join(" ")
++  return join(map(words, |w| concat(w, "!")), " ")
+```
+
+## Literal-first calls
+
+The literal rule exists because the first version of the pipeline rule turned `range(0, attempts)` into `0 |> range(attempts)`: deterministic, but unreadable. Now `range(0, n)` is never a stage, but it can be the head of a pipeline:
+
+```canon
+fn even_squares(n: Int) -> Int {
+  return range(0, n)
+    |> filter(|x| x % 2 == 0)
+    |> map(|x| x * x)
+    |> sum()
+}
+
+fn squares(n: Int) -> List[Int] {
+  return map(range(0, n), |x| x * x)
+}
+
+test "literal-first calls" {
+  assert(even_squares(5) == 20)
+  assert(squares(3) == [0, 1, 4])
+}
+```
+
+`squares` counts one stage (`map`); `range(0, n)` is its head, not a stage.
+
+## What counts as a stage
+
+The formatter walks down the first arguments: `f(g(h(x, a), b), c)` has stages `h`, `g` and `f`, and head `x`. The head can be any expression that is not itself a stage: a name, a list literal, a lambda, a field, or a literal-first call. The count includes every call in the chain, so `print(to_string(len(xs)))` is three stages and must be written as a pipeline:
+
+```canon
+fn main() -> Unit
+  effects: io
+{
+  let xs = [1, 2, 3]
+  xs
+    |> len()
+    |> to_string()
+    |> print()
+  print(to_string(len(xs) * 2))
+}
+```
+
+In the second statement the chain is broken by `*`, so `print(to_string(...))` is only two stages and stays nested. Binding with `let` is another way to keep calls short.
+
+## Pipelines inside expressions
+
+The one-stage-per-line layout applies to a pipeline that is the whole value of a statement (`let`, `set`, `return`, or a call statement). A pipeline inside a larger expression, such as a function argument, is printed on one line:
+
+```canon
+fn label(xs: List[Int]) -> String {
+  return concat("total: ", xs |> map(|x| x * 2) |> sum() |> to_string())
+}
+```
+
+If that line passes 100 characters (L001), bind the pipeline with `let` first.
+
+## Why three
+
+Three stages is a judgment call: long enough that a pipeline reads better than nesting, short enough that simple calls stay simple. It is listed as an open question in the [Design notes](/docs/design-notes), to be settled by measurement.

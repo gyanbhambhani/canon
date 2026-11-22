@@ -84,7 +84,14 @@ export function checkNames(prog: A.Program): Diagnostic[] {
 }
 
 /** Effect lists are exact. Patches are relative to the original source. */
-export function checkEffects(prog: A.Program, src: string, path: string, tables: EffectTables = ORACLE_TABLES): Diagnostic[] {
+export function checkEffects(
+  prog: A.Program,
+  src: string,
+  path: string,
+  tables: EffectTables = ORACLE_TABLES,
+  /** Full checker: a function used as a value (map(xs, print)) lends its effects too. */
+  countValues = false,
+): Diagnostic[] {
   const diags: Diagnostic[] = [];
   const user = new Map<string, Set<string>>();
   for (const it of prog.items) if (it.k === "Fn") user.set(it.name, new Set(it.effects));
@@ -92,6 +99,16 @@ export function checkEffects(prog: A.Program, src: string, path: string, tables:
     if (it.k !== "Fn") return;
     const used = new Map<string, string>();
     let allKnown = true;
+    if (countValues) {
+      const all = [...walkExprs(it.body)];
+      const callees = new Set(all.filter((e) => e.k === "Call").map((e) => e.callee));
+      for (const e of all) {
+        if (e.k !== "Name" || callees.has(e) || e.path.length !== 1) continue;
+        const n: string = e.path[0];
+        const effs = Object.hasOwn(tables.effects, n) ? tables.effects[n] : user.get(n) ?? [];
+        for (const ef of effs) if (!used.has(ef)) used.set(ef, `${n} as a value`);
+      }
+    }
     for (const e of walkExprs(it.body)) {
       if (e.k !== "Call" || e.callee.k !== "Name") continue;
       if (e.callee.path.length !== 1) {
@@ -255,37 +272,6 @@ function specTables(): EffectTables {
   return fullTables;
 }
 
-/**
- * Effects of functions used as values (`map(names, print)`): the enclosing function must
- * declare them too, or a value could smuggle an effect past the signature.
- */
-function valueEffects(prog: A.Program, src: string, path: string, tables: EffectTables): Diagnostic[] {
-  const diags: Diagnostic[] = [];
-  const user = new Map<string, string[]>();
-  for (const it of prog.items) if (it.k === "Fn") user.set(it.name, it.effects);
-  prog.items.forEach((it, idx) => {
-    if (it.k !== "Fn") return;
-    const callees = new Set<unknown>();
-    const all = [...walkExprs(it.body)];
-    for (const e of all) if (e.k === "Call") callees.add(e.callee);
-    const missing = new Map<string, string>();
-    for (const e of all) {
-      if (e.k !== "Name" || callees.has(e) || e.path.length !== 1) continue;
-      const effs = tables.effects[e.path[0]] ?? user.get(e.path[0]) ?? [];
-      for (const ef of effs) if (!it.effects.includes(ef) && !missing.has(ef)) missing.set(ef, e.path[0]);
-    }
-    if (missing.size) {
-      const names = [...missing.keys()].sort(cmpStr);
-      const fixed = [...prog.items];
-      fixed[idx] = { ...it, effects: [...new Set([...it.effects, ...names])].sort(cmpStr) };
-      diags.push(diag("E101",
-        `fn ${it.name} uses effects it does not declare: ${names.map((m) => `${m} (via ${missing.get(m)} as a value)`).join(", ")}`,
-        it.line, it.col, { fix: makePatch(src, programText({ k: "Program", items: fixed }), path), data: { missing: names } }));
-    }
-  });
-  return diags;
-}
-
 export function analyze(src: string, path = "main.cn"): Analysis {
   let parsed: Parsed;
   try {
@@ -298,7 +284,7 @@ export function analyze(src: string, path = "main.cn"): Analysis {
   }
   const { prog, canonical } = parsed;
   const tables = specTables();
-  const effectDiags = checkEffects(prog, src, path, tables);
+  const effectDiags = checkEffects(prog, src, path, tables, true);
   const typed = checkTypes(prog);
   for (const [d, fixed] of typed.fixes) d.fix = makePatch(src, programText(fixed), path);
   const typeDiags = typed.diagnostics.filter((d) => d.code !== "H001");
@@ -308,7 +294,6 @@ export function analyze(src: string, path = "main.cn"): Analysis {
     ...checkNames(prog),
     ...typeDiags.filter((d) => d.code === "M001"),
     ...effectDiags,
-    ...(effectDiags.some((d) => d.code === "E101") ? [] : valueEffects(prog, src, path, tables)),
     ...typeDiags.filter((d) => d.code !== "M001"),
     ...holes,
   ];

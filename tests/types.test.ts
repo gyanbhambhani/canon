@@ -139,3 +139,10 @@ describe("robustness", () => {
     }
   });
 });
+
+describe("method-style calls", () => {
+  it("say there are no methods", () => {
+    const d = check(read("fail", "t002_method_call.cn"), "main.cn").diagnostics[0];
+    expect(d.message).toContain("Canon has no methods; call len(xs, ...) instead");
+  });
+});

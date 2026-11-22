@@ -1,0 +1,137 @@
+---
+title: Errors with Result and try
+description: Canon has one error mechanism, Result, and one way to propagate it, try. Option covers values that may be missing.
+---
+
+Canon has no exceptions and no null. A value that may be missing is an `Option`, and an operation that may fail returns a `Result`. Both are ordinary sum types:
+
+```text
+type Option[T] = Some(value: T) | None
+type Result[T, E] = Ok(value: T) | Err(error: E)
+type Error { message: String }
+```
+
+`Error` is the built-in error record. A `Result` may use any error type, but the standard library's fallible functions (`read_file`, `write_file`, `http_get`, `http_post`) all return `Result[..., Error]`.
+
+## Returning errors
+
+Build an error with `Err(...)` and a success with `Ok(...)`.
+
+```canon name=parse
+fn parse_age(s: String) -> Result[Int, Error] {
+  let n = match parse_int(s) {
+    Some(v) => v,
+    None => -1,
+  }
+  if n < 0 {
+    return Err(Error { message: concat("not an age: ", s) })
+  }
+  return Ok(n)
+}
+```
+
+## Propagating errors with try
+
+`try e` requires a `Result`. `Ok(v)` becomes `v`; `Err(x)` makes the enclosing function return `Err(x)` at once.
+
+```canon include=parse
+fn total_age(a: String, b: String) -> Result[Int, Error] {
+  let x = try parse_age(a)
+  let y = try parse_age(b)
+  return Ok(x + y)
+}
+
+test "try returns the first error" {
+  assert(total_age("30", "12") == Ok(42))
+  assert(total_age("x", "y") == Err(Error { message: "not an age: x" }))
+}
+```
+
+`try` binds as tightly as unary minus, so `try f(x)` applies to the call. A `try` of a call can also stand alone as a statement, which discards the `Ok` value:
+
+```canon
+fn save(path: String, text: String) -> Result[String, Error]
+  effects: fs
+{
+  try write_file(path, text)
+  return Ok(path)
+}
+```
+
+## The try rules
+
+Every misuse of `try` is T007:
+
+- The enclosing function must return a `Result` with the same error type as the value being tried.
+- `try` needs a `Result`; it does not unwrap an `Option`. Use `match` or `unwrap_or` for those.
+- `try` is not allowed inside a lambda, because a lambda body is one expression and an early return would leave the lambda, not the function. Bind the Result with `let` first.
+- `try` is not allowed in a test block, because tests return nothing.
+
+```canon
+# expect: T007
+fn read_count(p: String) -> Int
+  effects: fs
+{
+  let text = try read_file(p)
+  return str_len(text)
+}
+```
+
+```canon
+# expect: T007
+fn g() -> Result[Int, String] {
+  return Ok(1)
+}
+
+fn f() -> Result[Int, Error] {
+  let x = try g()
+  return Ok(x)
+}
+```
+
+## Handling errors with match
+
+To handle an error rather than pass it on, match on the Result:
+
+```canon include=parse
+fn describe(r: Result[Int, Error]) -> String {
+  return match r {
+    Ok(n) => concat("age ", to_string(n)),
+    Err(e) => concat("error: ", e.message),
+  }
+}
+
+test "describe" {
+  assert(describe(parse_age("7")) == "age 7")
+  assert(describe(parse_age("x")) == "error: not an age: x")
+}
+```
+
+## Options
+
+`Option` has no `try`. Take it apart with `match`, or supply a fallback with `unwrap_or`:
+
+```canon
+fn port_or_default(s: String) -> Int {
+  return unwrap_or(parse_int(s), 8080)
+}
+
+test "options" {
+  assert(port_or_default("80") == 80)
+  assert(port_or_default("eighty") == 8080)
+  assert(first([1, 2]) == Some(1))
+  assert(last([]) == None)
+}
+```
+
+## Results without a value
+
+Canon has no unit literal, so `Ok(())` does not parse (P001). A `Result[Unit, E]` comes from a call that returns one, such as `write_file`. In your own functions, prefer returning something meaningful, like the path written or the number of bytes, as `save` does above.
+
+## Errors from main
+
+If `main` returns a `Result`, an `Err` prints `error: ` and its message on stderr, and `canon run` exits with status 1. The `examples/result_try.cn` program shows the whole pattern.
+
+## Traps are not errors
+
+Bugs the program cannot handle, such as a failed `assert`, division by zero or integer overflow, are runtime traps (R001 to R006). They stop the program with a JSON report; they cannot be caught. See [Diagnostics](/docs/diagnostics#runtime-traps).

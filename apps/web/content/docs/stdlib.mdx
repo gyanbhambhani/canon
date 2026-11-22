@@ -1,0 +1,799 @@
+---
+title: Standard library
+description: Every built-in function with its signature, its effect, a one-line description and an example.
+---
+
+The standard library is always in scope; there is nothing to import. Built-ins follow the same rules as user code: no overloading, no methods, and generics only through type parameters. A type parameter named `K` is a key and must be Int, Float or String (T001 otherwise). Every function is pure unless its effect is listed.
+
+Each pure example below is a test block, so `canon test` runs it.
+
+## Lists
+
+### len
+
+```text
+len[T](xs: List[T]) -> Int
+```
+
+Pure. The number of items in a list.
+
+```canon
+test "len" {
+  assert(len([1, 2, 3]) == 3)
+  assert(len([]) == 0)
+}
+```
+
+### map
+
+```text
+map[A, B](xs: List[A], f: fn(A) -> B) -> List[B]
+```
+
+Pure. Applies `f` to every item. A lambda with n parameters unpacks n-tuples, so `map(pairs, |k, v| ...)` works.
+
+```canon
+test "map" {
+  assert(map([1, 2, 3], |x| x * 10) == [10, 20, 30])
+  assert(map([("a", 1), ("b", 2)], |k, v| v) == [1, 2])
+}
+```
+
+### filter
+
+```text
+filter[A](xs: List[A], f: fn(A) -> Bool) -> List[A]
+```
+
+Pure. Keeps the items for which `f` returns true, in order.
+
+```canon
+test "filter" {
+  assert(filter([1, 2, 3, 4], |x| x % 2 == 0) == [2, 4])
+}
+```
+
+### fold
+
+```text
+fold[A, B](xs: List[A], init: B, f: fn(B, A) -> B) -> B
+```
+
+Pure. Combines the items left to right, starting from `init`.
+
+```canon
+test "fold" {
+  assert(fold([1, 2, 3], 0, |acc, x| acc + x) == 6)
+  assert(fold(["a", "b"], "", |acc, s| concat(acc, s)) == "ab")
+}
+```
+
+### sum
+
+```text
+sum(xs: List[Int]) -> Int
+```
+
+Pure. The sum of a list of Ints; 0 for an empty list. Traps with R003 on overflow.
+
+```canon
+test "sum" {
+  assert(sum([1, 2, 3]) == 6)
+}
+```
+
+### sum_float
+
+```text
+sum_float(xs: List[Float]) -> Float
+```
+
+Pure. The sum of a list of Floats; 0.0 for an empty list.
+
+```canon
+test "sum_float" {
+  assert(sum_float([1.5, 2.5]) == 4.0)
+}
+```
+
+### sort_by
+
+```text
+sort_by[A, K](xs: List[A], key: fn(A) -> K) -> List[A]
+```
+
+Pure. Sorts ascending by the key. The sort is stable: items with equal keys keep their order.
+
+```canon
+test "sort_by" {
+  assert(sort_by(["bb", "a", "cc"], |s| str_len(s)) == ["a", "bb", "cc"])
+}
+```
+
+### sort_desc_by
+
+```text
+sort_desc_by[A, K](xs: List[A], key: fn(A) -> K) -> List[A]
+```
+
+Pure. Sorts descending by the key, also stable.
+
+```canon
+test "sort_desc_by" {
+  assert(sort_desc_by([3, 1, 2], |x| x) == [3, 2, 1])
+}
+```
+
+### group_by
+
+```text
+group_by[A, K](xs: List[A], key: fn(A) -> K) -> List[(K, List[A])]
+```
+
+Pure. Groups items by key. Groups appear in the order their key was first seen, and items keep their order within a group.
+
+```canon
+test "group_by" {
+  let groups = group_by([1, 2, 3, 4, 5], |x| x % 2)
+  assert(groups == [(1, [1, 3, 5]), (0, [2, 4])])
+}
+```
+
+### take
+
+```text
+take[A](xs: List[A], n: Int) -> List[A]
+```
+
+Pure. The first `n` items, or all of them if there are fewer. A negative `n` counts as 0.
+
+```canon
+test "take" {
+  assert(take([1, 2, 3], 2) == [1, 2])
+  assert(take([1, 2], 5) == [1, 2])
+}
+```
+
+### drop
+
+```text
+drop[A](xs: List[A], n: Int) -> List[A]
+```
+
+Pure. Everything after the first `n` items. A negative `n` counts as 0.
+
+```canon
+test "drop" {
+  assert(drop([1, 2, 3], 2) == [3])
+}
+```
+
+### first
+
+```text
+first[A](xs: List[A]) -> Option[A]
+```
+
+Pure. The first item, or `None` for an empty list.
+
+```canon
+test "first" {
+  assert(first([7, 8]) == Some(7))
+  assert(first([]) == None)
+}
+```
+
+### last
+
+```text
+last[A](xs: List[A]) -> Option[A]
+```
+
+Pure. The last item, or `None` for an empty list.
+
+```canon
+test "last" {
+  assert(last([7, 8]) == Some(8))
+}
+```
+
+### append
+
+```text
+append[A](xs: List[A], x: A) -> List[A]
+```
+
+Pure. A new list with `x` added at the end. The original list is unchanged.
+
+```canon
+test "append" {
+  let xs = [1, 2]
+  let ys = append(xs, 3)
+  assert(ys == [1, 2, 3])
+  assert(xs == [1, 2])
+}
+```
+
+### contains
+
+```text
+contains[A](xs: List[A], x: A) -> Bool
+```
+
+Pure. Whether any item equals `x`, compared by structure.
+
+```canon
+test "contains" {
+  assert(contains(["a", "b"], "b"))
+  assert(not contains([1, 2], 3))
+}
+```
+
+### reverse
+
+```text
+reverse[A](xs: List[A]) -> List[A]
+```
+
+Pure. The items in reverse order.
+
+```canon
+test "reverse" {
+  assert(reverse([1, 2, 3]) == [3, 2, 1])
+}
+```
+
+### zip
+
+```text
+zip[A, B](xs: List[A], ys: List[B]) -> List[(A, B)]
+```
+
+Pure. Pairs items by position, stopping at the shorter list.
+
+```canon
+test "zip" {
+  assert(zip([1, 2, 3], ["a", "b"]) == [(1, "a"), (2, "b")])
+}
+```
+
+### enumerate
+
+```text
+enumerate[A](xs: List[A]) -> List[(Int, A)]
+```
+
+Pure. Pairs each item with its index, starting at 0.
+
+```canon
+test "enumerate" {
+  assert(enumerate(["a", "b"]) == [(0, "a"), (1, "b")])
+}
+```
+
+### range
+
+```text
+range(start: Int, end: Int) -> List[Int]
+```
+
+Pure. The Ints from `start` up to, but not including, `end`. Empty when `end <= start`.
+
+```canon
+test "range" {
+  assert(range(0, 4) == [0, 1, 2, 3])
+  assert(range(3, 3) == [])
+}
+```
+
+## Numbers
+
+### min
+
+```text
+min(a: Int, b: Int) -> Int
+```
+
+Pure. The smaller of two Ints.
+
+```canon
+test "min" {
+  assert(min(3, -1) == -1)
+}
+```
+
+### max
+
+```text
+max(a: Int, b: Int) -> Int
+```
+
+Pure. The larger of two Ints.
+
+```canon
+test "max" {
+  assert(max(3, -1) == 3)
+}
+```
+
+### abs
+
+```text
+abs(n: Int) -> Int
+```
+
+Pure. The absolute value.
+
+```canon
+test "abs" {
+  assert(abs(-5) == 5)
+}
+```
+
+### pow
+
+```text
+pow(base: Int, exp: Int) -> Int
+```
+
+Pure. `base` raised to `exp`. Traps with R003 on overflow. A negative exponent truncates toward zero, like Int division, and `pow(0, -1)` traps with R004.
+
+```canon
+test "pow" {
+  assert(pow(2, 10) == 1024)
+  assert(pow(2, -1) == 0)
+}
+```
+
+### to_float
+
+```text
+to_float(n: Int) -> Float
+```
+
+Pure. Converts an Int to a Float. This is the fix the T009 patch applies when Int and Float are mixed.
+
+```canon
+test "to_float" {
+  assert(to_float(3) / 2.0 == 1.5)
+}
+```
+
+### to_int
+
+```text
+to_int(x: Float) -> Int
+```
+
+Pure. Converts a Float to an Int, truncating toward zero. NaN, infinity or a value outside the 53-bit range traps with R003.
+
+```canon
+test "to_int" {
+  assert(to_int(2.7) == 2)
+  assert(to_int(-2.7) == -2)
+}
+```
+
+## Strings
+
+### to_string
+
+```text
+to_string[T](x: T) -> String
+```
+
+Pure. Renders any value. A String renders bare at top level and quoted inside a container. Floats render like Python's `repr` (`1.0`, `0.30000000000000004`, `1e-05`). Other formats: `[1, 2]`, `(1, "a")`, `{"a": 1}` for a Map, `Point { x: 1 }`, `Some(3)`, `None`, `()` for Unit, and `<fn>` for a function.
+
+```canon
+type Point {
+  x: Int,
+}
+
+test "to_string" {
+  assert(to_string(42) == "42")
+  assert(to_string(1.0) == "1.0")
+  assert(to_string("hi") == "hi")
+  assert(to_string(["a"]) == "[\"a\"]")
+  assert(to_string(Some(3)) == "Some(3)")
+  assert(to_string(Point { x: 1 }) == "Point { x: 1 }")
+}
+```
+
+Inside generic code, where the type is not known statically, a whole-number Float renders like an Int; this is a known limit of v0.
+
+### parse_int
+
+```text
+parse_int(s: String) -> Option[Int]
+```
+
+Pure. Parses a whole decimal Int. Returns `None` for anything else, including surrounding spaces, a decimal point, or a value outside the 53-bit range.
+
+```canon
+test "parse_int" {
+  assert(parse_int("42") == Some(42))
+  assert(parse_int("-12") == Some(-12))
+  assert(parse_int("1.5") == None)
+  assert(parse_int(" 1") == None)
+}
+```
+
+### parse_float
+
+```text
+parse_float(s: String) -> Option[Float]
+```
+
+Pure. Parses a Float. Whole numbers are accepted.
+
+```canon
+test "parse_float" {
+  assert(parse_float("2.5") == Some(2.5))
+  assert(parse_float("3") == Some(3.0))
+  assert(parse_float("x") == None)
+}
+```
+
+### concat
+
+```text
+concat(parts: String, ...) -> String
+```
+
+Pure. Joins one or more strings. It is the only variadic built-in, and the only way to join strings (`+` is numeric only). Because it is variadic it cannot be passed as a value; wrap it in a lambda.
+
+```canon
+test "concat" {
+  assert(concat("a", "b", "c") == "abc")
+}
+```
+
+### join
+
+```text
+join(parts: List[String], sep: String) -> String
+```
+
+Pure. Joins a list of strings with a separator.
+
+```canon
+test "join" {
+  assert(join(["a", "b", "c"], ", ") == "a, b, c")
+}
+```
+
+### split
+
+```text
+split(s: String, sep: String) -> List[String]
+```
+
+Pure. Splits on every occurrence of `sep`, keeping empty pieces. `split(s, "")` splits into code points.
+
+```canon
+test "split" {
+  assert(split("a,b,,c", ",") == ["a", "b", "", "c"])
+  assert(split("hey", "") == ["h", "e", "y"])
+}
+```
+
+### trim
+
+```text
+trim(s: String) -> String
+```
+
+Pure. Removes leading and trailing whitespace.
+
+```canon
+test "trim" {
+  assert(trim("  hi \n") == "hi")
+}
+```
+
+### str_len
+
+```text
+str_len(s: String) -> Int
+```
+
+Pure. The length in Unicode code points.
+
+```canon
+test "str_len" {
+  assert(str_len("héllo") == 5)
+}
+```
+
+## Options
+
+### unwrap_or
+
+```text
+unwrap_or[T](o: Option[T], fallback: T) -> T
+```
+
+Pure. The value inside `Some`, or `fallback` for `None`.
+
+```canon
+test "unwrap_or" {
+  assert(unwrap_or(parse_int("7"), 0) == 7)
+  assert(unwrap_or(parse_int("x"), 0) == 0)
+}
+```
+
+## Maps
+
+Maps are immutable values that keep insertion order. Keys are Int, Float or String. `for x in` does not walk a Map; walk `keys(m)` or `values(m)`.
+
+### map_from
+
+```text
+map_from[K, V](pairs: List[(K, V)]) -> Map[K, V]
+```
+
+Pure. Builds a map from key-value pairs.
+
+```canon
+test "map_from" {
+  let m = map_from([("a", 1), ("b", 2)])
+  assert(map_get(m, "b") == Some(2))
+}
+```
+
+### map_get
+
+```text
+map_get[K, V](m: Map[K, V], k: K) -> Option[V]
+```
+
+Pure. The value for a key, or `None`.
+
+```canon
+test "map_get" {
+  let m = map_from([(1, "one")])
+  assert(map_get(m, 1) == Some("one"))
+  assert(map_get(m, 2) == None)
+}
+```
+
+### map_set
+
+```text
+map_set[K, V](m: Map[K, V], k: K, v: V) -> Map[K, V]
+```
+
+Pure. A new map with `k` set to `v`. Setting an existing key keeps its position.
+
+```canon
+test "map_set" {
+  let m = map_from([("a", 1), ("b", 2)])
+  let m2 = map_set(m, "a", 9)
+  assert(map_get(m2, "a") == Some(9))
+  assert(keys(m2) == ["a", "b"])
+  assert(map_get(m, "a") == Some(1))
+}
+```
+
+### keys
+
+```text
+keys[K, V](m: Map[K, V]) -> List[K]
+```
+
+Pure. The keys, in insertion order.
+
+```canon
+test "keys" {
+  assert(keys(map_from([("x", 1), ("y", 2)])) == ["x", "y"])
+}
+```
+
+### values
+
+```text
+values[K, V](m: Map[K, V]) -> List[V]
+```
+
+Pure. The values, in insertion order.
+
+```canon
+test "values" {
+  assert(values(map_from([("x", 1), ("y", 2)])) == [1, 2])
+}
+```
+
+## Checks
+
+### assert
+
+```text
+assert(cond: Bool) -> Unit
+```
+
+Pure. Does nothing if `cond` is true; otherwise traps with R005. In a test block, a failed assert fails the test.
+
+```canon
+test "assert" {
+  assert(1 + 1 == 2)
+}
+```
+
+## Effects
+
+These functions need their effect in the calling function's `effects` clause. Test blocks may call them without one. Under `canon test`, `now()` starts at 0 and advances only through `sleep`, and `random` and `random_int` are seeded with 42, so tests are reproducible.
+
+### print
+
+```text
+print(s: String) -> Unit                                   effects: io
+```
+
+Writes `s` and a newline to standard output.
+
+```canon
+fn main() -> Unit
+  effects: io
+{
+  print("hello, canon")
+}
+```
+
+### read_line
+
+```text
+read_line() -> Option[String]                              effects: io
+```
+
+Reads one line from standard input, without its newline. `None` at end of input.
+
+```canon
+fn count_lines() -> Int
+  effects: io
+{
+  var count = 0
+  var line = read_line()
+  for line != None {
+    set count = count + 1
+    set line = read_line()
+  }
+  return count
+}
+```
+
+### read_file
+
+```text
+read_file(path: String) -> Result[String, Error]           effects: fs
+```
+
+Reads a whole file as text. A missing or unreadable file is an `Err`.
+
+```canon
+fn word_total(path: String) -> Result[Int, Error]
+  effects: fs
+{
+  let text = try read_file(path)
+  return Ok(len(split(text, " ")))
+}
+```
+
+### write_file
+
+```text
+write_file(path: String, text: String) -> Result[Unit, Error]   effects: fs
+```
+
+Writes text to a file, replacing its contents.
+
+```canon
+fn save(path: String, text: String) -> Result[String, Error]
+  effects: fs
+{
+  try write_file(path, text)
+  return Ok(path)
+}
+```
+
+### http_get
+
+```text
+http_get(url: String) -> Result[String, Error]             effects: net
+```
+
+Fetches a URL and returns the response body. A network failure or a status outside 200 to 299 is an `Err` whose message starts with the status, like `HTTP 404: ...`.
+
+```canon
+fn fetch_or_empty(url: String) -> String
+  effects: net
+{
+  let body = match http_get(url) {
+    Ok(text) => text,
+    Err(_) => "",
+  }
+  return body
+}
+```
+
+### http_post
+
+```text
+http_post(url: String, body: String) -> Result[String, Error]   effects: net
+```
+
+Posts `body` to a URL and returns the response body, with the same error rules as `http_get`.
+
+```canon
+fn submit(url: String, payload: String) -> Result[Int, Error]
+  effects: net
+{
+  let reply = try http_post(url, payload)
+  return Ok(str_len(reply))
+}
+```
+
+### now
+
+```text
+now() -> Int                                               effects: time
+```
+
+The current time in milliseconds since the Unix epoch. Under `canon test` it starts at 0.
+
+```canon
+test "the test clock starts at zero" {
+  assert(now() == 0)
+  sleep(250)
+  assert(now() == 250)
+}
+```
+
+### sleep
+
+```text
+sleep(ms: Int) -> Unit                                     effects: time
+```
+
+Pauses for `ms` milliseconds. Under `canon test` it only advances the clock.
+
+```canon
+fn elapsed(ms: Int) -> Int
+  effects: time
+{
+  let start = now()
+  sleep(ms)
+  return now() - start
+}
+```
+
+### random
+
+```text
+random() -> Float                                          effects: rand
+```
+
+A random Float in `[0, 1)`.
+
+```canon
+fn coin() -> Bool
+  effects: rand
+{
+  return random() < 0.5
+}
+```
+
+### random_int
+
+```text
+random_int(lo: Int, hi: Int) -> Int                        effects: rand
+```
+
+A random Int from `lo` up to, but not including, `hi`. `hi <= lo` traps with R005.
+
+```canon
+fn roll() -> Int
+  effects: rand
+{
+  return random_int(1, 7)
+}
+```

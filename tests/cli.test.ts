@@ -193,3 +193,16 @@ describe("usage", () => {
     expect(canon(["--version"])).toMatchObject({ code: 0, out: "canon 0.1.0\n" });
   });
 });
+
+describe("canon test, several files", () => {
+  it("keeps going past a file with diagnostics, and --json keeps printed output", () => {
+    const bad = tmp("bad.cn", "fn f() -> Int {\n  return \"x\"\n}\n");
+    const good = tmp("good.cn", 'test "prints" {\n  print("from a test")\n  assert(true)\n}\n');
+    const r = canon(["test", bad, good]);
+    expect(r.code).toBe(1);
+    expect(r.out).toContain("PASS prints");
+    expect(r.out).toContain("1 passed, 0 failed, 1 file with errors");
+    const j = JSON.parse(canon(["test", good, "--json"]).out);
+    expect(j).toMatchObject({ ok: true, passed: 1, failed: 0, stdout: "from a test\n" });
+  });
+});

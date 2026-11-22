@@ -4,25 +4,37 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "pnpm run stats && next dev",
+    "build": "pnpm --dir ../.. build && pnpm run stats && next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "stats": "tsx --conditions=source ../../scripts/stats.ts --write"
   },
   "dependencies": {
     "@canon/compiler": "workspace:*",
     "@canon/runtime": "workspace:*",
+    "@codemirror/language": "^6.13.1",
+    "@codemirror/state": "^6.7.6",
+    "@codemirror/view": "^6.43.15",
+    "@lezer/highlight": "^1.2.5",
+    "codemirror": "^6.0.2",
+    "fumadocs-core": "^16.19.7",
+    "fumadocs-mdx": "^15.6.4",
+    "fumadocs-ui": "npm:@fumadocs/base-ui@16.19.7",
+    "lucide-react": "^1.77.0",
     "next": "^16.4.6",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.0",
+    "@types/mdx": "^2.0.14",
     "@types/node": "^22.10.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "postcss": "^8.5.0",
     "tailwindcss": "^4.1.0",
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "tsx": "^4.20.0"
   }
 }

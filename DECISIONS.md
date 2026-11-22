@@ -2,6 +2,26 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — M6: website choices
+- The whole site is a static export (`output: "export"`): no server is needed, the playground included. The compiler runs on the page; programs run in a Web Worker that is terminated after 2 seconds.
+- The playground keeps its source in the URL hash as base64url UTF-8 (`/play#code=...`). Apply uses `applyPatch` (compiler), which reads a diff with the source lines in hand, because difflib-format patches for a file with no final newline glue two lines together (the system `patch` tool rejects those).
+- `scripts/stats.ts --write` produces `apps/web/lib/generated/site.json` (gitignored) at build time: the numbers, five readable scrambled variants of examples/orders.cn (each is verified to format back to the canonical text), and every file in examples/ for the Examples menu. "Fuzzed variants" is the TOTAL constant from tests/fuzz.test.ts.
+- Fonts are system stacks (no web font downloads), with one accent colour and light/dark themes following the OS through Fumadocs' theme provider. Landing-page code is highlighted by a small tokenizer, with no client JavaScript except the variant panel.
+- Measured with Lighthouse 12 against the gzip-serving static export: performance 90–94, accessibility 96, best practices 100 on `/`, `/play` and the docs.
+
+## 2026-11-22 — M5: docs choices
+- One source for the agent reference: `content/docs/for-agents.mdx` is the page, and `/llms.txt` serves its body without frontmatter. It is plain Markdown (no MDX components), so the raw text reads well. It is about 2,800 tokens (the limit is 4,000).
+- The docs test checks every ```canon block with the full checker. Fragments use ```text. A fence `name=x` can be prepended to a later fence `include=x` on the same page, so the reference's `restock_cost` sample can see `type Item`. The spec's bare `match` and pipeline samples are wrapped in small functions so they check.
+- Docs line numbers in diagnostic examples count the `# expect:` line, because the output is generated from the exact block text.
+- Shiki gets a small TextMate grammar for `canon` and uses the high-contrast GitHub themes for accessibility.
+- The "Wasp lesson" on the Design notes page is not explained in SPEC.md. It is written as a hedged summary of Wasp's public account and needs the owner's review.
+
+## 2026-11-22 — M5: fixes found while writing the docs
+- A function used as a value (`map(xs, print)`) now counts its effects as used in the full checker. Before, E101 and E102 contradicted each other (the E101 patch caused an E102). The front-end `checkFront` keeps the oracle's behaviour.
+- `xs.len()` reports "Canon has no methods; call len(xs, ...) instead" (still T002).
+- `canon test` with several files keeps going past a file with diagnostics and reports it in the summary; `--json` now includes the tests' printed output as `stdout`.
+- Left as is, and documented: test blocks are not effect-checked (tests may use any effect; time and rand are deterministic). `canon fmt` exits 0 when it reformats (it succeeded; `check` is the gate). A trailing comment on a code line is moved by fmt (C001), as in the oracle; P002 applies only inside record types and match.
+
 ## 2026-11-22 — M4: CLI output conventions
 - `check` prints `path:line:col: error CODE: message` followed by the indented patch; `--json` prints the oracle-shaped `{ ok, canonical, diagnostics }` (an array of `{ path, ... }` when given several files).
 - `fmt` prints canonical text; `--write` rewrites changed files silently; `--json` prints `{ path, changed, formatted }`. A parse error prints the diagnostic on stderr and exits 1.

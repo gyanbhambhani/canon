@@ -1,0 +1,703 @@
+---
+title: Diagnostics
+description: Every diagnostic code Canon reports, from parse errors to runtime traps, each with a triggering example and, where the fix is mechanical, the patch the compiler ships.
+---
+
+Every diagnostic is JSON with a stable code, a position, and, wherever the fix is mechanical, a unified-diff patch the agent applies without rewriting the file. Prose messages are for humans; the patch is for the agent.
+
+## The shape of a diagnostic
+
+`canon check --json FILE` prints `{ ok, canonical, diagnostics }`. A missing effect, exactly as the checker prints it for a file named `greet.cn`:
+
+```json
+{
+  "ok": false,
+  "canonical": true,
+  "diagnostics": [
+    {
+      "code": "E101",
+      "severity": "error",
+      "message": "fn greet uses effects it does not declare: io (via print)",
+      "line": 1,
+      "col": 4,
+      "fix": {
+        "kind": "patch",
+        "diff": "--- a/greet.cn\n+++ b/greet.cn\n@@ -1,3 +1,5 @@\n-fn greet(name: String) -> Unit {\n+fn greet(name: String) -> Unit\n+  effects: io\n+{\n   print(name)\n }\n"
+      },
+      "data": {
+        "missing": [
+          "io"
+        ]
+      }
+    }
+  ]
+}
+```
+
+| Field | Meaning |
+|---|---|
+| `code` | Stable code, listed below |
+| `severity` | Always `error` in v0 |
+| `message` | One line for humans |
+| `line`, `col` | 1-based position |
+| `fix` | Present when the fix is mechanical: `{ kind: "patch", diff }`, a unified diff against the original file |
+| `data` | Extra facts for some codes: `missing`, `unused`, `expected`, `candidates` |
+
+Patches are computed against the original file, so one patch fixes the reported problem and any formatting drift together. Apply `fix.diff` as is (for example with `patch -p1`), then check again.
+
+## How an agent should react
+
+| Kind | Codes | Action |
+|---|---|---|
+| Patch | C001, E101, E102, T004, T009 | Apply `fix.diff` mechanically |
+| Question | H001 | Fill the hole with a value of `data.expected`, often one of `data.candidates` |
+| Rewrite | P001 to P005, S001, L001, N001, E100, M001, the other T codes | Change the code; the message says what was expected |
+| Trap | R001 to R006 | A runtime failure: fix the logic, or the contract it broke |
+
+A parse error (P codes) or S001 stops the check at the first problem, because there is no tree to check further. Otherwise every problem in the file is reported in one pass.
+
+In the examples below, the `# expect:` line is part of the checked file, so it counts in the line numbers.
+
+## Parse errors
+
+### P001
+
+A token the parser did not expect, with a message naming what it expected. Common causes: a chained comparison, single quotes, a missing return type, a unit literal `()`, or a stray token at top level.
+
+```canon
+# expect: P001
+fn between(a: Int) -> Bool {
+  return 1 < a < 3
+}
+```
+
+```text
+example.cn:3:16: error P001: expected end of comparison (comparisons do not chain; use 'and'), found '<'
+```
+
+```canon
+# expect: P001
+fn greet() -> String {
+  return 'hi'
+}
+```
+
+```text
+example.cn:3:10: error P001: single-quoted strings do not exist in Canon; use double quotes
+```
+
+```canon
+# expect: P001
+fn answer() {
+  return 42
+}
+```
+
+```text
+example.cn:2:13: error P001: expected '->' and a return type (return types are required), found '{'
+```
+
+### P002
+
+A comment inside a match or a record type. Comments must sit on their own line between statements or items.
+
+```canon
+# expect: P002
+fn f(n: Int) -> Int {
+  return match n {
+    # zero is special
+    0 => 1,
+    _ => n,
+  }
+}
+```
+
+```text
+example.cn:4:5: error P002: comments must sit on their own line between statements
+```
+
+### P003
+
+A type annotation on a local binding. Types live on signatures only.
+
+```canon
+# expect: P003
+fn f() -> Int {
+  let x: Int = 1
+  return x
+}
+```
+
+```text
+example.cn:3:8: error P003: local bindings never carry type annotations; types live on signatures
+```
+
+### P004
+
+An expression statement that is not a call. Bind other values with `let`. A `(` at the start of a line also triggers it, because a call's `(` must be on the function name's line.
+
+```canon
+# expect: P004
+fn f(a: Int) -> Int {
+  a + 1
+  return a
+}
+```
+
+```text
+example.cn:3:3: error P004: an expression statement must be a function call; bind other values with let
+```
+
+### P005
+
+A pipeline stage that is not a call. Write `|> f()`, even when `f` takes no other arguments.
+
+```canon
+# expect: P005
+fn f(xs: List[Int]) -> Int {
+  return xs |> sum
+}
+```
+
+```text
+example.cn:3:13: error P005: each pipeline stage must be a call, like '|> f()'
+```
+
+## Form
+
+### C001
+
+The file is not in canonical form. The patch is the whole normalization: every rule on the [Canonical form](/docs/canonical-form) page, applied at once.
+
+```canon
+# expect: C001
+fn f()->Int{return 1}
+```
+
+```text
+example.cn:2:1: error C001: source is not in canonical form; apply the patch (Canon accepts exactly one text per program)
+```
+
+The patch:
+
+```diff
+--- a/example.cn
++++ b/example.cn
+@@ -1,2 +1,4 @@
+ # expect: C001
+-fn f()->Int{return 1}
++fn f() -> Int {
++  return 1
++}
+```
+
+### S001
+
+A `match` used inside a larger expression. `match` may only be the whole value of a `let`, `set` or `return`.
+
+```canon
+# expect: S001
+fn f(a: Int) -> Int {
+  let x = 1 + match a { _ => 1 }
+  return x
+}
+```
+
+```text
+example.cn:3:15: error S001: match is only allowed as a whole statement value (let, set, return); bind it with let first
+```
+
+### L001
+
+A line longer than 100 characters after formatting. There is no patch: bind a subexpression with `let`.
+
+```canon
+# expect: L001
+fn f() -> String {
+  return concat("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "cccccccccccccccccccccc")
+}
+```
+
+```text
+example.cn:3:101: error L001: line is 115 characters (limit 100); bind a subexpression with let
+```
+
+### N001
+
+A naming rule broken. Values, functions, parameters, fields and effects are `snake_case`; types and variants are `PascalCase`.
+
+```canon
+# expect: N001
+fn getUser(id: Int) -> Int {
+  return id
+}
+```
+
+```text
+example.cn:2:4: error N001: function 'getUser' must be snake_case
+```
+
+## Effects
+
+### E100
+
+An effect name that is not one of `fs`, `io`, `net`, `rand`, `time`. It usually comes with E101 or E102, whose patch replaces the clause.
+
+```canon
+# expect: E100
+fn f() -> Unit
+  effects: disk
+{
+  print("x")
+}
+```
+
+```text
+example.cn:2:4: error E100: unknown effect 'disk'; the effects are fs, io, net, rand, time
+example.cn:2:4: error E101: fn f uses effects it does not declare: io (via print)
+example.cn:2:4: error E102: fn f declares effects it never uses: disk (effect lists are exact)
+```
+
+The patch:
+
+```diff
+--- a/example.cn
++++ b/example.cn
+@@ -1,6 +1,6 @@
+ # expect: E100
+ fn f() -> Unit
+-  effects: disk
++  effects: io
+ {
+   print("x")
+ }
+```
+
+### E101
+
+A function uses an effect it does not declare, directly or through a function it calls. The patch adds it.
+
+```canon
+# expect: E101
+fn greet(name: String) -> Unit {
+  print(name)
+}
+```
+
+```text
+example.cn:2:4: error E101: fn greet uses effects it does not declare: io (via print)
+```
+
+The patch:
+
+```diff
+--- a/example.cn
++++ b/example.cn
+@@ -1,4 +1,6 @@
+ # expect: E101
+-fn greet(name: String) -> Unit {
++fn greet(name: String) -> Unit
++  effects: io
++{
+   print(name)
+ }
+```
+
+### E102
+
+A function declares an effect it never uses. Effect lists are exact, so the patch removes it.
+
+```canon
+# expect: E102
+fn add(a: Int, b: Int) -> Int
+  effects: net
+{
+  return a + b
+}
+```
+
+```text
+example.cn:2:4: error E102: fn add declares effects it never uses: net (effect lists are exact)
+```
+
+The patch:
+
+```diff
+--- a/example.cn
++++ b/example.cn
+@@ -1,6 +1,4 @@
+ # expect: E102
+-fn add(a: Int, b: Int) -> Int
+-  effects: net
+-{
++fn add(a: Int, b: Int) -> Int {
+   return a + b
+ }
+```
+
+## Holes
+
+### H001
+
+A hole (`?` or `?name`). It is a question, not a mistake: the answer names the type the hole needs and the functions in the file that return it. See [Holes](/docs/guide/holes).
+
+```canon
+# expect: H001
+fn total(xs: List[Int]) -> Int {
+  return sum(xs)
+}
+
+fn biggest(xs: List[Int]) -> Int {
+  return fold(xs, 0, |acc, x| max(acc, x))
+}
+
+fn score(xs: List[Int]) -> Int {
+  return ?best
+}
+```
+
+```json
+{
+  "code": "H001",
+  "severity": "error",
+  "message": "hole ?best in fn score: needs a value of type Int",
+  "line": 11,
+  "col": 10,
+  "data": {
+    "expected": "Int",
+    "candidates": [
+      "total(xs: List[Int]) -> Int",
+      "biggest(xs: List[Int]) -> Int"
+    ]
+  }
+}
+```
+
+## Types
+
+### T001
+
+Type mismatch. This is also the code for other type-level rule breaks: a missing or duplicate record field, a duplicate declaration, redefining a built-in type or function name, an Int literal outside the 53-bit range, an unknown string escape, comparing functions, or a Map key that is not Int, Float or String.
+
+```canon
+# expect: T001
+fn f(a: String) -> String {
+  return a + "x"
+}
+```
+
+```text
+example.cn:3:10: error T001: operator + needs Int or Float operands, found String
+```
+
+### T002
+
+Unknown name: a variable, function, type or variant that does not exist. A call through a module path (`json.stringify(s)`, or a method-style `xs.len()`) is also T002, because module functions arrive in v1.
+
+```canon
+# expect: T002
+fn f() -> Int {
+  return missing + 1
+}
+```
+
+```text
+example.cn:3:10: error T002: unknown name missing
+```
+
+### T003
+
+Wrong number of arguments to a function or variant, or a lambda with the wrong number of parameters.
+
+```canon
+# expect: T003
+fn f() -> List[Int] {
+  return range(1)
+}
+```
+
+```text
+example.cn:3:10: error T003: range takes 2 arguments, got 1
+```
+
+### T004
+
+A match that does not cover every case. The patch adds the missing arms with holes as their values, so the patched file reports only H001.
+
+```canon
+# expect: T004
+type Shape =
+  | Circle(radius: Float)
+  | Rect(width: Float, height: Float)
+
+fn area(s: Shape) -> Float {
+  return match s {
+    Circle(r) => 3.14 * r * r,
+  }
+}
+```
+
+```text
+example.cn:7:10: error T004: match is not exhaustive; missing: Rect(_, _)
+```
+
+The patch:
+
+```diff
+--- a/example.cn
++++ b/example.cn
+@@ -6,5 +6,6 @@
+ fn area(s: Shape) -> Float {
+   return match s {
+     Circle(r) => 3.14 * r * r,
++    Rect(_, _) => ?,
+   }
+ }
+```
+
+### T005
+
+A function whose return type is not `Unit` can reach its end without a `return`.
+
+```canon
+# expect: T005
+fn f(n: Int) -> Int {
+  if n > 0 {
+    return 1
+  }
+}
+```
+
+```text
+example.cn:2:4: error T005: fn f returns Int but can reach its end without a return
+```
+
+### T006
+
+`set` on a name that is not a `var`: a `let` binding or a parameter.
+
+```canon
+# expect: T006
+fn f(n: Int) -> Int {
+  set n = 2
+  return n
+}
+```
+
+```text
+example.cn:3:3: error T006: set on n, which is not a var; declare it with var to mutate it
+```
+
+### T007
+
+`try` used where it cannot work: on a value that is not a Result, in a function that does not return a Result with the same error type, inside a lambda, or in a test block.
+
+```canon
+# expect: T007
+fn f(p: String) -> Int
+  effects: fs
+{
+  let t = try read_file(p)
+  return str_len(t)
+}
+```
+
+```text
+example.cn:5:11: error T007: try needs the enclosing fn f to return a Result
+```
+
+### T008
+
+A field or tuple slot the type does not have.
+
+```canon
+# expect: T008
+type P {
+  x: Int,
+}
+
+fn f(p: P) -> Int {
+  return p.y
+}
+```
+
+```text
+example.cn:7:10: error T008: type P has no field y
+```
+
+### T009
+
+Int and Float mixed in one operator. The patch wraps the Int side in `to_float`.
+
+```canon
+# expect: T009
+fn f(n: Int, x: Float) -> Float {
+  return n * x
+}
+```
+
+```text
+example.cn:3:10: error T009: operator * mixes Int and Float; convert the Int side with to_float
+```
+
+The patch:
+
+```diff
+--- a/example.cn
++++ b/example.cn
+@@ -1,4 +1,4 @@
+ # expect: T009
+ fn f(n: Int, x: Float) -> Float {
+-  return n * x
++  return to_float(n) * x
+ }
+```
+
+## Modules
+
+### M001
+
+A `use` line other than `use std.<name>`. In v0 a program is one file plus the standard library. (`use` lines always sort to the top, so the `# expect:` comment sits below.)
+
+```canon
+use agent.tools
+
+# expect: M001
+fn f() -> Int {
+  return 1
+}
+```
+
+```text
+example.cn:1:1: error M001: use agent.tools: modules arrive in v1; only std.<name> is available in v0
+```
+
+## Runtime traps
+
+A runtime error stops the program and prints one JSON object on stderr, with the code, message, line, col, and a Canon-level stack listing frames innermost first. `canon run` then exits with status 1. Each program below passes `canon check`; the JSON under it is what `canon run` prints.
+
+### R001
+
+A `requires` clause failed on entry. The message names the function.
+
+```canon
+fn halve(n: Int) -> Int
+  requires: n % 2 == 0
+{
+  return n / 2
+}
+
+fn main() -> Unit
+  effects: io
+{
+  print(to_string(halve(3)))
+}
+```
+
+```json
+{"code":"R001","message":"requires failed in fn halve","line":2,"col":13,"stack":[{"fn":"halve","line":2,"col":13},{"fn":"main","line":10,"col":19}]}
+```
+
+### R002
+
+An `ensures` clause failed on return.
+
+```canon
+fn discount(price: Float, pct: Float) -> Float
+  ensures: result >= 0.0
+{
+  return price - price * pct
+}
+
+fn main() -> Unit
+  effects: io
+{
+  print(to_string(discount(10.0, 1.5)))
+}
+```
+
+```json
+{"code":"R002","message":"ensures failed in fn discount","line":2,"col":12,"stack":[{"fn":"discount","line":2,"col":12},{"fn":"main","line":10,"col":19}]}
+```
+
+`canon run --no-contracts` skips both R001 and R002 checks.
+
+### R003
+
+Integer overflow: an Int result outside the 53-bit safe range. `to_int` of NaN or infinity also traps with R003.
+
+```canon
+fn main() -> Unit
+  effects: io
+{
+  let big = pow(2, 52)
+  print(to_string(big * 4))
+}
+```
+
+```json
+{"code":"R003","message":"integer overflow: the result is outside the 53-bit safe range","line":5,"col":19,"stack":[{"fn":"main","line":5,"col":19}]}
+```
+
+### R004
+
+Division or `%` by zero, for Int and Float alike.
+
+```canon
+fn average(xs: List[Int]) -> Int {
+  return sum(xs) / len(xs)
+}
+
+fn main() -> Unit
+  effects: io
+{
+  let avg = average([])
+  print(to_string(avg))
+}
+```
+
+```json
+{"code":"R004","message":"division by zero","line":2,"col":10,"stack":[{"fn":"average","line":2,"col":10},{"fn":"main","line":8,"col":13}]}
+```
+
+### R005
+
+An `assert` failed. In `canon test`, a failed assert fails that test and the runner moves on. `random_int` with `hi <= lo` also traps with R005.
+
+```canon
+fn main() -> Unit
+  effects: io
+{
+  let xs = [1, 2, 3]
+  assert(len(xs) == 4)
+  print("unreachable")
+}
+```
+
+```json
+{"code":"R005","message":"assert failed","line":5,"col":3,"stack":[{"fn":"main","line":5,"col":3}]}
+```
+
+### R006
+
+An effect denied by the host. `canon run --deny net,fs` makes those calls trap; the browser playground denies `fs` and `net`. This program, run with `--deny net`:
+
+```canon
+fn main() -> Unit
+  effects: io, net
+{
+  let body = match http_get("https://example.com") {
+    Ok(text) => text,
+    Err(e) => e.message,
+  }
+  print(body)
+}
+```
+
+```json
+{"code":"R006","message":"effect net denied by the host (http_get)","line":4,"col":20,"stack":[{"fn":"main","line":4,"col":20}]}
+```
+
+### R000
+
+Not part of the spec's list: the runtime reports a host stack overflow, such as runaway recursion, as R000 rather than crashing.

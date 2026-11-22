@@ -1,0 +1,164 @@
+---
+title: Pattern matching
+description: match as the value of let, set or return; the pattern forms; top-to-bottom arms; and exhaustiveness checking with a patch.
+---
+
+`match` picks a value by the shape of another value. It is the only way to take apart a sum type, an Option or a Result.
+
+```canon
+type Shape =
+  | Circle(radius: Float)
+  | Rect(width: Float, height: Float)
+
+fn area(s: Shape) -> Float {
+  return match s {
+    Circle(r) => 3.14 * r * r,
+    Rect(w, h) => w * h,
+  }
+}
+
+test "area" {
+  assert(area(Rect(2.0, 3.0)) == 6.0)
+}
+```
+
+## Where match may appear
+
+`match` is allowed only as the whole value of a `let`, a `set` or a `return`. Anywhere else (inside an argument, an operator, a lambda or another match) it is S001: bind it with `let` first.
+
+```canon
+fn bucket(n: Int) -> Int {
+  var size = 0
+  set size = match n {
+    0 => 0,
+    1 => 1,
+    _ => 2,
+  }
+  return size
+}
+```
+
+```canon
+# expect: S001
+fn f(a: Int) -> Int {
+  let x = 1 + match a { _ => 1 }
+  return x
+}
+```
+
+Each arm sits on its own line as `pattern => expression,` with a trailing comma. An arm's value is one expression. Comments are not allowed between arms (P002).
+
+## Patterns
+
+| Pattern | Matches |
+|---|---|
+| `_` | anything, binds nothing |
+| `name` | anything, binds it to `name` |
+| `0`, `-1`, `2.5`, `"a"`, `true` | a value equal to the literal |
+| `Some(x)`, `Circle(r)`, `None` | a variant, with a pattern for each field |
+| `(a, b)` | a tuple, with a pattern for each slot |
+
+Patterns nest, so `Ok(Some(n))` and `(true, 0.0)` are single patterns. Matching on a tuple of conditions replaces a chain of `if`s:
+
+```canon
+type Item {
+  sku: String,
+  qty: Int,
+  price: Float,
+}
+
+fn band(item: Item) -> String {
+  let band = match (item.qty > 0, item.price) {
+    (false, _) => "out",
+    (true, 0.0) => "free",
+    _ => "priced",
+  }
+  return band
+}
+
+test "band" {
+  assert(band(Item { sku: "a", qty: 0, price: 9.0 }) == "out")
+  assert(band(Item { sku: "b", qty: 2, price: 0.0 }) == "free")
+}
+```
+
+Literal patterns work on Int, Float, String and Bool:
+
+```canon
+fn sign_name(n: Int) -> String {
+  return match n {
+    -1 => "negative one",
+    0 => "zero",
+    _ => "other",
+  }
+}
+
+fn greeting(lang: String) -> String {
+  return match lang {
+    "fr" => "bonjour",
+    other => concat("hello (", other, ")"),
+  }
+}
+```
+
+A pattern whose type does not fit the subject is T001; a variant pattern with the wrong number of fields is T003.
+
+## Arms run top to bottom
+
+The first arm whose pattern matches wins. Put specific arms before general ones.
+
+```canon
+fn describe(o: Option[Int]) -> String {
+  return match o {
+    Some(0) => "zero",
+    Some(n) => to_string(n),
+    None => "nothing",
+  }
+}
+
+test "first matching arm wins" {
+  assert(describe(Some(0)) == "zero")
+  assert(describe(Some(5)) == "5")
+}
+```
+
+## Exhaustiveness
+
+A match must cover every case, or the checker reports T004. Bool matches need both `true` and `false`; Int, Float and String matches need a final `_` or name arm. The T004 patch adds the missing arms with holes as their values:
+
+```canon
+# expect: T004
+type Shape =
+  | Circle(radius: Float)
+  | Rect(width: Float, height: Float)
+
+fn area(s: Shape) -> Float {
+  return match s {
+    Circle(r) => 3.14 * r * r,
+  }
+}
+```
+
+```text
+shape.cn:6:10: error T004: match is not exhaustive; missing: Rect(_, _)
+```
+
+```diff
+--- a/shape.cn
++++ b/shape.cn
+@@ -5,5 +5,6 @@
+ fn area(s: Shape) -> Float {
+   return match s {
+     Circle(r) => 3.14 * r * r,
++    Rect(_, _) => ?,
+   }
+ }
+```
+
+After the patch, the only diagnostic left is the hole, which asks the right question:
+
+```text
+shape.cn:8:19: error H001: hole ? in fn area: needs a value of type Float
+```
+
+Exhaustiveness looks inside nested patterns too. Matching a `Result[Option[Int], Error]` with only `Ok(Some(n))` and `Err(_)` reports `missing: Ok(None)`.

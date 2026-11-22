@@ -1,0 +1,4 @@
+# expect: E101
+fn shout_all(xs: List[String]) -> Unit {
+  let done = map(xs, print)
+}

@@ -1,7 +1,13 @@
+import { createMDX } from "fumadocs-mdx/next";
+
+const withMDX = createMDX();
+
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const config = {
+  output: "export",
   reactStrictMode: true,
   transpilePackages: ["@canon/compiler", "@canon/runtime"],
+  images: { unoptimized: true },
 };
 
-export default nextConfig;
+export default withMDX(config);

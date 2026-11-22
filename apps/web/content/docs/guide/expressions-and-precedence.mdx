@@ -1,0 +1,119 @@
+---
+title: Expressions and precedence
+description: Operator precedence, arithmetic and comparison rules, calls, fields, tuple slots, lambdas, and evaluation order.
+---
+
+## Precedence
+
+Loosest first. Operators on the same level associate to the left, except comparisons, which never chain.
+
+| Level | Operators |
+|---|---|
+| 0 | `\|>` pipeline, lambdas `\|a, b\| expr` |
+| 1 | `or` |
+| 2 | `and` |
+| 3 | `not` |
+| 4 | `== != < <= > >=` (never chained) |
+| 5 | `+ -` |
+| 6 | `* / %` |
+| 7 | unary `-`, `try` |
+| 8 | calls `f(x)`, fields `a.b`, tuple slots `t.0` |
+
+Parentheses the precedence already implies are redundant, and the formatter removes them: `((a + 1)) > (2)` becomes `a + 1 > 2`. Because `not` binds looser than comparison, `not a > b` means `not (a > b)` and is written without the parentheses.
+
+```canon
+test "precedence" {
+  assert(1 + 2 * 3 == 7)
+  assert((1 + 2) * 3 == 9)
+  assert(not 1 > 2)
+  assert(false and 1 / 0 == 0 or true)
+}
+```
+
+The last line also shows that `and` and `or` short-circuit: `1 / 0` is never evaluated.
+
+## Comparisons do not chain
+
+`1 < a < 3` is a parse error (P001). Join two comparisons with `and`.
+
+```canon
+# expect: P001
+fn between(a: Int) -> Bool {
+  return 1 < a < 3
+}
+```
+
+```canon
+fn between(a: Int) -> Bool {
+  return 1 < a and a < 3
+}
+```
+
+## Arithmetic
+
+Int with Int gives Int, and Float with Float gives Float. Mixing them is T009, and its patch wraps the Int side in `to_float`. Int division truncates toward zero, and `%` takes the sign of the left side. Dividing by zero, or taking `%` of zero, traps with R004. An Int result outside the 53-bit safe range traps with R003.
+
+```canon
+test "integer arithmetic" {
+  assert(7 / 2 == 3)
+  assert(-7 / 2 == -3)
+  assert(-7 % 2 == -1)
+  assert(7.0 / 2.0 == 3.5)
+}
+```
+
+```canon
+# expect: T009
+fn scale(n: Int, x: Float) -> Float {
+  return n * x
+}
+```
+
+`+` is numeric only. Strings join with `concat`, the one variadic built-in: `concat("a", b, "c")`.
+
+## Comparison and equality
+
+`<`, `<=`, `>` and `>=` work on Int, Float and String (strings compare by code point). `==` and `!=` compare any two values of the same type by structure: lists, tuples, records and variants included. Comparing values of different types is T001, and so is comparing functions.
+
+The formatter collapses comparisons with a Bool literal: `x == true` becomes `x`, and `x == false` becomes `not x`. `not not x` becomes `x`.
+
+## Calls, fields and tuple slots
+
+Only named functions are called, and there are no methods. `len(xs)` is the only way to write a length; `xs.len()` is read as a call into a module named `xs` and rejected (T002). There is no indexing operator either: use `first`, `last`, `take`, `drop`, `enumerate` or `map_get`.
+
+Fields are read with `a.b`, and tuple slots with `t.0`, `t.1`. A call's `(` must sit on the same line as the function name.
+
+## Lambdas
+
+A lambda is `|params| expr`, and its body is one expression. Parameter types come from the expected type at the call site, so lambdas never carry annotations.
+
+```canon
+fn bump_all(xs: List[Int], k: Int) -> List[Int] {
+  return map(xs, |x| x + k)
+}
+
+test "lambdas" {
+  assert(bump_all([1, 2], 10) == [11, 12])
+  let add = |a, b| a + b
+  assert(add(2, 3) == 5)
+}
+```
+
+A lambda with n parameters that receives a single n-tuple unpacks it, which is how `map(pairs, |k, v| ...)` works. Lambdas capture values, never variables: a lambda that reads a `var` sees the value it had when the lambda was created.
+
+```canon
+test "tuple unpacking and capture" {
+  let pairs = [("a", 1), ("b", 2)]
+  assert(map(pairs, |name, n| n * 2) == [2, 4])
+  var k = 1
+  let add_k = |x| x + k
+  set k = 100
+  assert(add_k(1) == 2)
+}
+```
+
+`try` is not allowed inside a lambda (T007), because an early return from it would leave the lambda, not the function.
+
+## Evaluation order
+
+Evaluation is strict and left to right. Arguments are evaluated before the call. `match` is a statement-level form: it may only be the whole value of a `let`, `set` or `return`, never part of a larger expression (S001). See [Pattern matching](/docs/guide/pattern-matching).

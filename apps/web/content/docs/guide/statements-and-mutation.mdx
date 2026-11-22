@@ -1,0 +1,169 @@
+---
+title: Statements and mutation
+description: let, var and set; the one conditional statement; the one loop in two forms; explicit return; and expression statements.
+---
+
+Canon has seven kinds of statement: `let`, `var`, `set`, `return`, `if`, `for`, and a call on its own line.
+
+## let, var and set
+
+`let` binds an immutable name. `var` binds a mutable one, and `set` assigns to it. Every mutation therefore starts with the word `set`, so it is one search away.
+
+```canon
+fn total_qty(qtys: List[Int]) -> Int {
+  let start = 0
+  var total = start
+  for q in qtys {
+    set total = total + q
+  }
+  return total
+}
+
+test "total" {
+  assert(total_qty([1, 2, 3]) == 6)
+}
+```
+
+`set` on a `let` binding or on a parameter is T006:
+
+```canon
+# expect: T006
+fn f() -> Int {
+  let x = 1
+  set x = 2
+  return x
+}
+```
+
+Locals never carry type annotations; types live on signatures. `let x: Int = 1` is P003.
+
+```canon
+# expect: P003
+fn f() -> Int {
+  let x: Int = 1
+  return x
+}
+```
+
+A local may shadow an outer local with a new `let` in an inner block.
+
+## Updating records
+
+Values are immutable. `set p.field = v` on a `var` record rebinds `p` to an updated copy; any other name holding the old value still sees it. Nested fields work the same way: `set order.address.city = "Oslo"`.
+
+```canon
+type Point {
+  x: Int,
+  y: Int,
+}
+
+fn moved(p: Point) -> Point {
+  var q = p
+  set q.x = q.x + 10
+  return q
+}
+
+test "the caller's copy is unchanged" {
+  let a = Point { x: 1, y: 2 }
+  let b = moved(a)
+  assert(a.x == 1)
+  assert(b.x == 11)
+}
+```
+
+## if, else if, else
+
+`if` is the only conditional statement. The condition must be a Bool (T001 otherwise) and takes no parentheses. Write `else if`, never `else { if … }`: the formatter collapses the second form into the first.
+
+```canon
+fn fizzbuzz(n: Int) -> String {
+  if n % 15 == 0 {
+    return "FizzBuzz"
+  } else if n % 3 == 0 {
+    return "Fizz"
+  } else if n % 5 == 0 {
+    return "Buzz"
+  }
+  return to_string(n)
+}
+
+test "fizzbuzz" {
+  assert(fizzbuzz(9) == "Fizz")
+  assert(fizzbuzz(7) == "7")
+}
+```
+
+To choose between values rather than statements, use [match](/docs/guide/pattern-matching) as the value of a `let`.
+
+## for
+
+`for` is the only loop keyword, in two forms. `for x in xs { }` walks a List. `for cond { }` repeats while the condition is true. There is no `while`, `break` or `continue`; return from inside a loop to stop early.
+
+```canon
+fn index_of(xs: List[String], want: String) -> Int {
+  for pair in enumerate(xs) {
+    if pair.1 == want {
+      return pair.0
+    }
+  }
+  return -1
+}
+
+fn collatz_steps(start: Int) -> Int
+  requires: start > 0
+{
+  var n = start
+  var steps = 0
+  for n != 1 {
+    if n % 2 == 0 {
+      set n = n / 2
+    } else {
+      set n = 3 * n + 1
+    }
+    set steps = steps + 1
+  }
+  return steps
+}
+
+test "loops" {
+  assert(index_of(["a", "b"], "b") == 1)
+  assert(collatz_steps(6) == 8)
+}
+```
+
+`for x in` takes a List only. To walk a Map, walk `keys(m)` or `values(m)`.
+
+## return
+
+`return` is always explicit; the last expression of a body is not its value. A function whose return type is not `Unit` must return on every path, or the checker reports T005:
+
+```canon
+# expect: T005
+fn sign(n: Int) -> Int {
+  if n > 0 {
+    return 1
+  }
+}
+```
+
+## Expression statements
+
+A bare expression on its own line must be a call, such as `print(x)`, a pipeline ending in a call, or `try` of a call. Anything else is P004; bind other values with `let`.
+
+```canon
+fn save(path: String, text: String) -> Result[Int, Error]
+  effects: fs, io
+{
+  try write_file(path, text)
+  print("saved")
+  return Ok(str_len(text))
+}
+```
+
+```canon
+# expect: P004
+fn f(a: Int) -> Int {
+  a + 1
+  return a
+}
+```

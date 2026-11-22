@@ -172,29 +172,30 @@ function cmdRun(a: Args, io: CliIO): number {
 function cmdTest(a: Args, io: CliIO): number {
   let passed = 0;
   let failed = 0;
-  const all: unknown[] = [];
+  let broken = 0;
+  const tests: unknown[] = [];
+  let stdout = "";
   for (const path of a.files) {
     const js = compileFor(a, path, io);
-    if (js === null) return 1;
-    let captured = "";
-    const host: Host = testHost(nodeHost({ write: a.json ? (s) => (captured += s) : (s) => io.stdout(s) }));
-    const results = runTests(js, host);
-    for (const t of results) {
+    if (js === null) {
+      broken++;
+      continue;
+    }
+    const host: Host = testHost(nodeHost({ write: a.json ? (s) => (stdout += s) : (s) => io.stdout(s) }));
+    for (const t of runTests(js, host)) {
       if (t.passed) passed++;
       else failed++;
-      if (!a.json) {
-        io.stdout(t.passed ? `PASS ${t.name}\n` : `FAIL ${t.name}\n  ${trapText(t.trap!)}`);
-      }
+      if (!a.json) io.stdout(t.passed ? `PASS ${t.name}\n` : `FAIL ${t.name}\n  ${trapText(t.trap!)}`);
+      tests.push({ file: path, ...t });
     }
-    all.push(...results.map((t) => ({ file: path, ...t })));
-    if (a.json && captured) all.push({ file: path, stdout: captured });
   }
+  const ok = failed === 0 && broken === 0;
   if (a.json) {
-    io.stdout(JSON.stringify({ ok: failed === 0, passed, failed, tests: all.filter((t: any) => "name" in t) }, null, 2) + "\n");
+    io.stdout(JSON.stringify({ ok, passed, failed, files_with_errors: broken, tests, stdout }, null, 2) + "\n");
   } else {
-    io.stdout(`${passed} passed, ${failed} failed\n`);
+    io.stdout(`${passed} passed, ${failed} failed${broken ? `, ${broken} file${broken === 1 ? "" : "s"} with errors` : ""}\n`);
   }
-  return failed === 0 ? 0 : 1;
+  return ok ? 0 : 1;
 }
 
 export async function main(argv: string[], io: CliIO): Promise<number> {

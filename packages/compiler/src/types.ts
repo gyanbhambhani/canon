@@ -735,7 +735,11 @@ export function checkTypes(prog: A.Program): TypeResult {
       return callFn(e, inst.fields, inst.result, `variant ${c.name}`, expected);
     }
     if (callee.path.length > 1) {
-      err("T002", `unknown function ${callee.path.join(".")}: module functions arrive in v1`, callee);
+      const head = callee.path[0];
+      const fnName = callee.path[callee.path.length - 1];
+      err("T002", lookup(head)
+        ? `${callee.path.join(".")} is not a function: Canon has no methods; call ${fnName}(${head}, ...) instead`
+        : `unknown function ${callee.path.join(".")}: module functions arrive in v1`, callee);
       for (const a of e.args) expr(a, null);
       return expected ?? fresh();
     }

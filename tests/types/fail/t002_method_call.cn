@@ -1,0 +1,4 @@
+# expect: T002
+fn f(xs: List[Int]) -> Int {
+  return xs.len()
+}

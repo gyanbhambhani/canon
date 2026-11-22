@@ -54,10 +54,10 @@ Ship the canon command.
 
 Build the docs at /docs with the page tree in the Docs site section.
 
-- [ ] Every page in the Docs site section exists with real content drawn from this spec
-- [ ] A test extracts every Canon code block from the docs and runs check on it; examples marked as failing must fail with their stated code
-- [ ] /llms.txt serves the agent reference as plain text, and a test keeps it under 4,000 tokens (counted as characters divided by 3.5)
-- [ ] `pnpm --filter web build` passes
+- [x] Every page in the Docs site section exists with real content drawn from this spec
+- [x] A test extracts every Canon code block from the docs and runs check on it; examples marked as failing must fail with their stated code
+- [x] /llms.txt serves the agent reference as plain text, and a test keeps it under 4,000 tokens (counted as characters divided by 3.5)
+- [x] `pnpm --filter web build` passes
 
 ## M6: Landing page and playground
 
@@ -114,3 +114,7 @@ Only after M7, and only when the owner provides model access.
 ### M4 (done)
 - packages/cli/src/main.ts holds `main(argv, io)`; index.ts is the process entry. Tests spawn the built dist (`pnpm test` builds first; CI builds before `test:fast`).
 - Next (M5): docs with Fumadocs in apps/web. Write `llms.txt` from one source (the For agents page) and test it under 4,000 tokens. Every ```canon block must pass `check` or carry `# expect: CODE`.
+
+### M5 (done)
+- Fumadocs (macro style, `fumadocs-mdx/macro` in lib/source.ts) with the `@fumadocs/base-ui` UI package, static search, and a custom Shiki grammar (lib/canon-grammar.ts). The 17 pages are in apps/web/content/docs; apps/web/test/docs.test.ts checks them.
+- A docs subagent wrote the page content; its findings led to checker and CLI fixes (DECISIONS.md, "M5: fixes").

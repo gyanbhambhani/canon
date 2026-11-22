@@ -1,0 +1,157 @@
+---
+title: CLI reference
+description: Every canon command, flag and exit code, with the exact output formats in text and JSON mode.
+---
+
+The `canon` command ships in the npm package `canon-lang`. Until it is published, run it from a clone with `node packages/cli/dist/index.js` (see [Quickstart](/docs/quickstart)).
+
+```text
+canon 0.1.0: a programming language for AI agents
+
+usage:
+  canon check FILE...            check files; print diagnostics (with patches)
+  canon fmt FILE... [--write]    print the canonical form, or rewrite files in place
+  canon run FILE [--deny EFFECTS] [--no-contracts]
+                                 check, then run fn main()
+  canon test FILE...             run the test blocks (deterministic time and rand)
+
+options:
+  --json                         machine-readable output (every command)
+  --deny fs,net                  make calls to those effects trap with R006 (run)
+  --no-contracts                 skip requires/ensures checks (run)
+  --help, --version
+
+exit codes: 0 success, 1 diagnostics / failed tests / traps, 2 usage error
+```
+
+## Exit codes
+
+| Code | Meaning |
+|---|---|
+| 0 | Success: no diagnostics, all tests passed, or the program finished |
+| 1 | Diagnostics, failed tests, a runtime trap, or an `Err` returned from `main` |
+| 2 | Usage error: unknown command, unknown or misplaced flag, unknown effect in `--deny`, missing or unreadable file, or more than one file given to `run` |
+
+A usage error prints `canon: ` and the problem on stderr, followed by the usage text.
+
+## canon check
+
+```bash
+canon check FILE...
+canon check --json FILE...
+```
+
+Runs the full checker: canonical form, line length, naming, effects, modules, types and holes. Exits 1 if any file has a diagnostic.
+
+Text output prints one line per diagnostic as `path:line:col: severity CODE: message`, then the patch indented by two spaces when there is one, then a summary line per file:
+
+```text
+hi.cn:1:4: error E101: fn main uses effects it does not declare: io (via print)
+  --- a/hi.cn
+  +++ b/hi.cn
+  @@ -1,3 +1,5 @@
+  -fn main() -> Unit {
+  +fn main() -> Unit
+  +  effects: io
+  +{
+     print("hi")
+   }
+hi.cn: 1 problem
+```
+
+A clean file prints `hi.cn: ok`. For H001, the candidates follow the message, one per line under `candidates:`.
+
+`--json` prints `{ ok, canonical, diagnostics }` for one file, where `canonical` says whether the file is already in canonical form. Given several files, it prints an array with one such object per file, each with a `path` field added. The diagnostic fields are described on the [Diagnostics](/docs/diagnostics) page. The patch paths are `a/` and `b/` plus the path as given on the command line, so `patch -p1` applies them from the same directory.
+
+## canon fmt
+
+```bash
+canon fmt FILE...
+canon fmt --write FILE...
+canon fmt --json FILE...
+```
+
+Prints the canonical form of each file on stdout. With `--write`, rewrites each file whose text changes, silently, and prints nothing. `fmt` exits 0 even when a file was not canonical; use `check` to fail on that.
+
+`--json` prints `{ path, changed, formatted }` per file (an array for several files):
+
+```json
+{
+  "path": "m.cn",
+  "changed": true,
+  "formatted": "fn f() -> Int {\n  return 1\n}\n"
+}
+```
+
+`fmt` needs a file that parses. A parse error (P001 to P005) or S001 prints the diagnostic on stderr and exits 1; in JSON mode it is reported as `{ path, error }`. `fmt` does not check names, effects or types, so a file it formats can still fail `check`.
+
+## canon run
+
+```bash
+canon run FILE
+canon run FILE --deny net,fs
+canon run FILE --no-contracts
+canon run --json FILE
+```
+
+Checks the file, compiles it to JavaScript, and calls `fn main()`. `run` takes exactly one file.
+
+- A file with any diagnostic does not run: the diagnostics go to stderr and the exit status is 1.
+- A file with no `main` prints `error: no fn main() -> Unit in this file` and exits 1.
+- The program's `print` output goes to stdout.
+- A runtime trap prints one JSON line on stderr and exits 1:
+
+```json
+{"code":"R005","message":"assert failed","line":5,"col":3,"stack":[{"fn":"main","line":5,"col":3}]}
+```
+
+- If `main` returns a `Result` and it is an `Err`, `run` prints `error: ` and the error's message on stderr and exits 1.
+
+### --deny EFFECTS
+
+A comma-separated list of effects (`fs`, `io`, `net`, `rand`, `time`). Any call to a built-in with a denied effect traps with R006. `--deny net,fs` and `--deny=net,fs` are both accepted. An unknown effect name is a usage error (exit 2).
+
+### --no-contracts
+
+Skips every `requires` and `ensures` check, so R001 and R002 cannot occur.
+
+### --json
+
+Captures the program's stdout and prints one object when it ends:
+
+```json
+{
+  "ok": true,
+  "status": 0,
+  "stdout": "hello, canon\n"
+}
+```
+
+On a trap the object also has `trap` (the trap JSON); on an `Err` from `main` it has `error` (the message). If the file has diagnostics, it prints `{ ok: false, diagnostics }` instead.
+
+## canon test
+
+```bash
+canon test FILE...
+canon test --json FILE...
+```
+
+Checks each file, then runs every `test` block in it. Text output is one line per test, with the trap JSON indented under a failure, then a summary:
+
+```text
+PASS math works
+FAIL wrong
+  {"code":"R005","message":"assert failed","line":6,"col":3,"stack":[{"fn":"test \"wrong\"","line":6,"col":3}]}
+PASS clock
+2 passed, 1 failed
+```
+
+The exit status is 1 if any test failed. If a file has diagnostics, `test` prints them on stderr and exits 1 without running the tests.
+
+Tests run on the test host. The clock starts at 0 ms and advances only through `sleep`, and `random` and `random_int` are seeded with 42, so every run is reproducible. Everything else, including `print`, files and the network, goes to the real host.
+
+`--json` prints `{ ok, passed, failed, tests }`, where each test is `{ file, name, passed }` plus `trap` when it failed.
+
+## --help and --version
+
+`canon --help` (also `-h` or `help`) prints the usage text above and exits 0. `canon --version` (also `-v`) prints `canon 0.1.0` and exits 0.

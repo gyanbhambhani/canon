@@ -1,0 +1,414 @@
+---
+title: Canonical form
+description: Every rule the formatter applies, each with a before and an after example. A file the formatter would change is a compile error (C001) whose patch is the whole normalization.
+---
+
+Canon accepts exactly one text per program. The parser is deliberately loose: it accepts any whitespace, extra parentheses, optional commas, and pipelines or nested calls interchangeably, so every surface variant of a program produces the same tree. A normalizer then collapses the semantic no-ops agents tend to write, and the printer turns the tree into exactly one text. A file is accepted only if it equals the printed form of its own tree.
+
+So the set of legal files is the set of fixed points of `canon fmt`. A file that is not a fixed point fails with C001, and the diagnostic carries a patch, computed against the original file, that applies every rule below at once:
+
+```text
+messy.cn:1:1: error C001: source is not in canonical form; apply the patch (Canon accepts exactly one text per program)
+  --- a/messy.cn
+  +++ b/messy.cn
+  @@ -1 +1,3 @@
+  -fn f()->Int{return 1}
+  +fn f() -> Int {
+  +  return 1
+  +}
+```
+
+Run `canon fmt FILE` to print the canonical text, or `canon fmt --write FILE` to rewrite the file. Each "before" example below carries an `# expect: C001` line, and each "after" example passes `canon check`.
+
+## Whitespace, indentation and blank lines
+
+Two spaces per level. One space around binary operators, after commas and colons, and around `->`. One statement per line, no blank lines inside a block, and exactly one blank line between top-level items. An empty body is `{}`.
+
+Before:
+
+```canon
+# expect: C001
+fn add(a:Int,b:Int)->Int{return a+b}
+fn noop() -> Unit {
+}
+```
+
+After:
+
+```canon
+fn add(a: Int, b: Int) -> Int {
+  return a + b
+}
+
+fn noop() -> Unit {}
+```
+
+## Redundant parentheses
+
+Parentheses that the precedence already implies are removed; parentheses that change the meaning stay.
+
+Before:
+
+```canon
+# expect: C001
+fn f(a: Int) -> Bool {
+  return ((a + 1)) * 2 > (3)
+}
+```
+
+After:
+
+```canon
+fn f(a: Int) -> Bool {
+  return (a + 1) * 2 > 3
+}
+```
+
+## Commas
+
+Arguments, list items, tuple items and parameters are separated by commas, with no trailing comma. Fields of a record type and arms of a match each sit on their own line and always end with a comma, even where the input left the comma out.
+
+Before:
+
+```canon
+# expect: C001
+type Point { x: Int y: Int }
+
+fn f(a: Int,) -> List[Int] {
+  return [a, 2, 3,]
+}
+```
+
+After:
+
+```canon
+type Point {
+  x: Int,
+  y: Int,
+}
+
+fn f(a: Int) -> List[Int] {
+  return [a, 2, 3]
+}
+```
+
+## Layout of declarations
+
+A sum type puts each variant on its own line, starting with `|`. A function with clauses puts each clause on its own line, indented, and its opening brace on a line by itself.
+
+Before:
+
+```canon
+# expect: C001
+type Light = Red | Amber | Green
+
+fn wait(ms: Int) -> Unit effects: time { sleep(ms) }
+```
+
+After:
+
+```canon
+type Light =
+  | Red
+  | Amber
+  | Green
+
+fn wait(ms: Int) -> Unit
+  effects: time
+{
+  sleep(ms)
+}
+```
+
+## else if
+
+`else { if … }` with nothing else in the else block becomes `else if`.
+
+Before:
+
+```canon
+# expect: C001
+fn sign(n: Int) -> Int {
+  if n > 0 {
+    return 1
+  } else {
+    if n < 0 {
+      return -1
+    }
+  }
+  return 0
+}
+```
+
+After:
+
+```canon
+fn sign(n: Int) -> Int {
+  if n > 0 {
+    return 1
+  } else if n < 0 {
+    return -1
+  }
+  return 0
+}
+```
+
+## Comparisons with Bool literals
+
+`x == true` becomes `x`, and `x == false` becomes `not x`. Likewise `x != false` becomes `x`, and `x != true` becomes `not x`.
+
+Before:
+
+```canon
+# expect: C001
+fn f(done: Bool, ready: Bool) -> Bool {
+  return done == false and ready == true
+}
+```
+
+After:
+
+```canon
+fn f(done: Bool, ready: Bool) -> Bool {
+  return not done and ready
+}
+```
+
+## Double negation
+
+`not not x` becomes `x`.
+
+Before:
+
+```canon
+# expect: C001
+fn f(x: Bool) -> Bool {
+  return not not x
+}
+```
+
+After:
+
+```canon
+fn f(x: Bool) -> Bool {
+  return x
+}
+```
+
+## Number literals
+
+Integers lose leading zeros: `007` becomes `7`. Floats print in their shortest form, the way Python's `repr` does: `1.50` becomes `1.5`, and `1e3` becomes `1000.0`.
+
+Before:
+
+```canon
+# expect: C001
+fn f() -> Float {
+  return to_float(007) * 1.50 + 1e3
+}
+```
+
+After:
+
+```canon
+fn f() -> Float {
+  return to_float(7) * 1.5 + 1000.0
+}
+```
+
+## Import order and duplicates
+
+`use` lines move to the top of the file, sorted, with duplicates removed and no blank lines between them.
+
+Before:
+
+```canon
+# expect: C001
+use std.text
+use std.list
+use std.text
+
+fn f() -> Int {
+  return 1
+}
+```
+
+After:
+
+```canon
+use std.list
+use std.text
+
+fn f() -> Int {
+  return 1
+}
+```
+
+## Effect order
+
+Effect names are sorted alphabetically, and duplicates are removed.
+
+Before:
+
+```canon
+# expect: C001
+fn tick() -> Unit
+  effects: time, io, io
+{
+  print("tick")
+  sleep(1000)
+}
+```
+
+After:
+
+```canon
+fn tick() -> Unit
+  effects: io, time
+{
+  print("tick")
+  sleep(1000)
+}
+```
+
+## Clause order
+
+Clauses come in the fixed order `effects`, `requires`, `ensures`. Two `requires` lines merge into one joined with `and`, and so do two `ensures` lines.
+
+Before:
+
+```canon
+# expect: C001
+fn take_some(xs: List[Int], n: Int) -> List[Int]
+  ensures: len(result) <= n
+  requires: n >= 0
+  requires: n <= 100
+{
+  return take(xs, n)
+}
+```
+
+After:
+
+```canon
+fn take_some(xs: List[Int], n: Int) -> List[Int]
+  requires: n >= 0 and n <= 100
+  ensures: len(result) <= n
+{
+  return take(xs, n)
+}
+```
+
+## Pipeline versus nested call
+
+Three or more chained calls are a pipeline with one stage per line; fewer are nested calls. A call whose first argument is a scalar literal, like `range(0, n)`, never becomes a stage. See [Pipelines](/docs/guide/pipelines) for the full rule.
+
+Before:
+
+```canon
+# expect: C001
+fn top(xs: List[Int], k: Int) -> List[Int] {
+  return take(sort_desc_by(filter(xs, |x| x > 0), |x| x), k)
+}
+
+fn squares(n: Int) -> List[Int] {
+  return 0 |> range(n) |> map(|x| x * x)
+}
+```
+
+After:
+
+```canon
+fn top(xs: List[Int], k: Int) -> List[Int] {
+  return xs
+    |> filter(|x| x > 0)
+    |> sort_desc_by(|x| x)
+    |> take(k)
+}
+
+fn squares(n: Int) -> List[Int] {
+  return map(range(0, n), |x| x * x)
+}
+```
+
+## Comments
+
+A comment always takes a whole line. One written at the end of a line moves to its own line below it. A comment directly above a top-level item stays attached to it, with no blank line in between.
+
+Before:
+
+```canon
+# expect: C001
+# Doubles a number.
+
+fn double(n: Int) -> Int {
+  let m = n * 2 # cheap
+  return m
+}
+```
+
+After:
+
+```canon
+# Doubles a number.
+fn double(n: Int) -> Int {
+  let m = n * 2
+  # cheap
+  return m
+}
+```
+
+## The line rule for a call's parenthesis
+
+Line breaks are free everywhere except one place: a call's `(` must sit on the same line as the function name. Inside the parentheses, line breaks are free, and the formatter joins the arguments onto one line.
+
+Before:
+
+```canon
+# expect: C001
+fn f(a: Int) -> Int {
+  return max(a,
+    0)
+}
+```
+
+After:
+
+```canon
+fn f(a: Int) -> Int {
+  return max(a, 0)
+}
+```
+
+A `(` at the start of a line is not a call. It starts a new statement, so this is not a formatting problem but a different program, and the checker rejects it with P004 (a statement that is not a call):
+
+```canon
+# expect: P004
+fn f(a: Int) -> Int {
+  let b = max
+  (a, 0)
+  return b
+}
+```
+
+## Line length
+
+A canonical line is at most 100 characters. The formatter does not break long lines; it reports L001, and the fix is to bind a subexpression with `let`.
+
+Before:
+
+```canon
+# expect: L001
+fn f() -> String {
+  return concat("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "cccccccccccccccccccccc")
+}
+```
+
+After:
+
+```canon
+fn f() -> String {
+  let head = concat("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
+  return concat(head, "cccccccccccccccccccccc")
+}
+```

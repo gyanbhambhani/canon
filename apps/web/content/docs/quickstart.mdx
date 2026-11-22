@@ -1,0 +1,129 @@
+---
+title: Quickstart
+description: Clone the repository, build the toolchain, run hello.cn, then check, format and test your own file.
+---
+
+You need Node 20 or later and pnpm.
+
+## Build the toolchain
+
+```bash
+git clone https://github.com/gyanbhambhani/canon
+cd canon
+pnpm install
+pnpm build
+```
+
+The command-line tool is called `canon` and ships in the npm package `canon-lang`. Until that package is published, run it straight from the build output:
+
+```bash
+node packages/cli/dist/index.js run examples/hello.cn
+```
+
+It prints:
+
+```text
+hello, canon
+```
+
+Everywhere else in these docs, `canon` stands for `node packages/cli/dist/index.js`. A shell alias saves typing:
+
+```bash
+alias canon="node $PWD/packages/cli/dist/index.js"
+```
+
+## Run the examples
+
+The `examples/` folder holds five programs: `hello.cn`, `fizzbuzz.cn`, `word_count.cn`, `orders.cn` and `result_try.cn`. Each one passes `check`, and each one runs.
+
+```bash
+canon run examples/word_count.cn
+canon test examples/fizzbuzz.cn
+```
+
+## Check a file
+
+Save this as `hi.cn`. It forgets to declare that it prints:
+
+```canon
+# expect: E101
+fn main() -> Unit {
+  print("hi")
+}
+```
+
+(Here and throughout the docs, a `# expect: CODE` line marks an example that must fail with that code; the docs test checks it. It is not part of the file.)
+
+`canon check hi.cn` rejects it with a code, a position, and the patch that fixes it:
+
+```text
+hi.cn:1:4: error E101: fn main uses effects it does not declare: io (via print)
+  --- a/hi.cn
+  +++ b/hi.cn
+  @@ -1,3 +1,5 @@
+  -fn main() -> Unit {
+  +fn main() -> Unit
+  +  effects: io
+  +{
+     print("hi")
+   }
+hi.cn: 1 problem
+```
+
+The exit status is 1. Apply the patch (an agent uses `canon check --json` and applies `fix.diff` as is) and check again:
+
+```canon
+fn main() -> Unit
+  effects: io
+{
+  print("hi")
+}
+```
+
+```text
+hi.cn: ok
+```
+
+## Format a file
+
+Canon accepts exactly one text per program. Write this as `double.cn`:
+
+```canon
+# expect: C001
+fn double(n:Int)->Int{return (n*2)}
+
+test "double" {
+  assert(double(21) == 42)
+}
+```
+
+`canon check double.cn` reports C001 (not in canonical form) with a patch. `canon fmt double.cn` prints the canonical text, and `canon fmt --write double.cn` rewrites the file in place:
+
+```canon
+fn double(n: Int) -> Int {
+  return n * 2
+}
+
+test "double" {
+  assert(double(21) == 42)
+}
+```
+
+## Test a file
+
+`canon test` runs every `test` block in the file. Time and randomness are deterministic under test.
+
+```bash
+canon test double.cn
+```
+
+```text
+PASS double
+1 passed, 0 failed
+```
+
+## Next steps
+
+- Read the [language guide](/docs/guide/files-and-syntax), starting with files and syntax.
+- Give your agent the [For agents](/docs/for-agents) page, or fetch `/llms.txt`.
+- Look up any code in the [diagnostics reference](/docs/diagnostics) and every command in the [CLI reference](/docs/cli).

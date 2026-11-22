@@ -1,0 +1,116 @@
+---
+title: Files and syntax
+description: Source files, blocks, comments, strings, literals, naming rules, and the one line break that matters to the parser.
+---
+
+A Canon program is one `.cn` file plus the standard library. The file holds four kinds of top-level item: `use` lines, `type` declarations, `fn` declarations and `test` blocks, separated by one blank line.
+
+```canon
+type Point {
+  x: Int,
+  y: Int,
+}
+
+fn manhattan(p: Point) -> Int {
+  return abs(p.x) + abs(p.y)
+}
+
+test "manhattan distance" {
+  assert(manhattan(Point { x: 3, y: -4 }) == 7)
+}
+```
+
+## Blocks and lines
+
+Blocks use braces. Indentation is two spaces, and statements sit one per line. No rule in the grammar depends on indentation, so the formatter can always restore it, but the checker rejects a file whose indentation is not canonical (C001, with a patch).
+
+Lines are at most 100 characters (L001). When a line runs long, bind a subexpression with `let`.
+
+## The line rule for calls
+
+One line break matters to the parser: a call's `(` sits on the same line as the function name. A `(` that starts a new line starts a new statement instead. This is the rule Go and Swift use, and it stops a parenthesized line from gluing itself onto the line above as a call.
+
+```canon
+# expect: P004
+fn f(a: Int) -> Int {
+  let b = a
+  (a)
+  return b
+}
+```
+
+Here `(a)` is read as its own statement, and a statement that is not a call is P004.
+
+## Comments
+
+Comments start with `#` and take a whole line. A comment written at the end of a line is moved onto its own line by the formatter. Inside a `match` or a record type, comments are not allowed at all (P002). A comment directly above a top-level item stays attached to it, with no blank line between.
+
+```canon
+# Areas are in square meters.
+fn area(width: Int, height: Int) -> Int {
+  # no overflow check needed here: the runtime traps with R003
+  return width * height
+}
+```
+
+## Strings
+
+Strings use double quotes only; single quotes are a parse error (P001). The escapes are `\"`, `\\`, `\n` and `\t`; any other escape is T001.
+
+```canon
+test "escapes" {
+  let s = "say \"hi\"\n"
+  assert(str_len(s) == 9)
+}
+```
+
+## Literals
+
+| Kind | Examples |
+|---|---|
+| Int | `0`, `42`, `-7` (53-bit safe range) |
+| Float | `0.0`, `2.5`, `1e-05` |
+| Bool | `true`, `false` |
+| String | `"text"` |
+| List | `[1, 2, 3]`, `[]` |
+| Tuple | `(1, "a")` |
+| Record | `Point { x: 1, y: 2 }` |
+| Variant | `Some(3)`, `None`, `Ok(1)`, `Err(e)` |
+
+The formatter prints every number one way: `007` becomes `7`, `1.50` becomes `1.5`, and `1e3` becomes `1000.0`. Floats print like Python's `repr`. There is no unit literal: `()` does not parse.
+
+## Naming
+
+Values, functions, parameters, fields and effects are `snake_case`. Types and variants are `PascalCase`. A name that breaks the rule is N001.
+
+```canon
+# expect: N001
+fn getUser(id: Int) -> Int {
+  return id
+}
+```
+
+## Imports
+
+In v0 a program is one file plus the standard library. `use std.<name>` lines are accepted, and the formatter sorts them and removes duplicates. Any other `use` is M001 ("modules arrive in v1"). Calls through a module path, such as `json.stringify(s)`, are T002.
+
+```canon
+use std.list
+
+fn count(xs: List[Int]) -> Int {
+  return len(xs)
+}
+```
+
+```canon
+use agent.tools
+
+# expect: M001
+fn f() -> Int {
+  return 1
+}
+```
+
+## Keywords
+
+`fn type let var set if else match for in return use effects requires ensures true false test and or not try`. There is no `while`, `break`, `continue`, `class`, `null` or `import`.
