@@ -1,0 +1,9 @@
+fn f(a: Bool, b: Bool) -> String {
+  let s = match (a, b) {
+    (true, true) => "both",
+    (true, false) => "first",
+    (false, true) => "second",
+    (false, false) => "neither",
+  }
+  return s
+}

@@ -1,0 +1,7 @@
+fn name(n: Int) -> String {
+  return match n {
+    0 => "zero",
+    1 => "one",
+    _ => "many",
+  }
+}

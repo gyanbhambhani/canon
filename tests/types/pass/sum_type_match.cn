@@ -1,0 +1,12 @@
+type Shape =
+  | Circle(radius: Float)
+  | Rect(width: Float, height: Float)
+  | Dot
+
+fn area(s: Shape) -> Float {
+  return match s {
+    Circle(r) => 3.14 * r * r,
+    Rect(w, h) => w * h,
+    Dot => 0.0,
+  }
+}

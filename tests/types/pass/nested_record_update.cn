@@ -1,0 +1,14 @@
+type Inner {
+  n: Int,
+}
+
+type Outer {
+  inner: Inner,
+  label: String,
+}
+
+fn bump(o: Outer) -> Outer {
+  var r = o
+  set r.inner.n = r.inner.n + 1
+  return r
+}

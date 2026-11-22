@@ -1,0 +1,11 @@
+fn noop() -> Unit {}
+
+fn maybe(b: Bool) -> Unit
+  effects: io
+{
+  if b {
+    print("yes")
+    return
+  }
+  noop()
+}

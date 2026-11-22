@@ -9,3 +9,5 @@ export { Printer, chainEligible, unrollChain, PIPELINE_MIN_STAGES, MAX_LINE } fr
 export * from "./check.js";
 export { unifiedDiff } from "./difflib.js";
 export { pyFloatRepr, pyRepr, pySplitlines, readSource } from "./py.js";
+export * from "./types.js";
+export { PRELUDE } from "./prelude.js";

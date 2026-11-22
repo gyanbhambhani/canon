@@ -1,0 +1,6 @@
+fn echo() -> Unit
+  effects: io
+{
+  let line = read_line()
+  print(unwrap_or(line, ""))
+}

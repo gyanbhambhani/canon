@@ -1,0 +1,5 @@
+fn stamp() -> Unit
+  effects: io, time
+{
+  print(to_string(now()))
+}

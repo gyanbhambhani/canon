@@ -1,0 +1,5 @@
+# expect: T002
+fn f() -> Int {
+  let x = Nope(1)
+  return 1
+}

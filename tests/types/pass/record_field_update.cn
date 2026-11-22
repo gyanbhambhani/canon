@@ -1,0 +1,10 @@
+type Point {
+  x: Int,
+  y: Int,
+}
+
+fn shift(p: Point, dx: Int) -> Point {
+  var q = p
+  set q.x = q.x + dx
+  return q
+}

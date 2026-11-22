@@ -1,0 +1,11 @@
+fn twice(f: fn(Int) -> Int, x: Int) -> Int {
+  return f(f(x))
+}
+
+fn inc(n: Int) -> Int {
+  return n + 1
+}
+
+fn run() -> Int {
+  return twice(inc, 3) + twice(|n| n * 2, 1)
+}

@@ -1,0 +1,4 @@
+# expect: T009
+fn f(n: Int, x: Float) -> Bool {
+  return x > n
+}

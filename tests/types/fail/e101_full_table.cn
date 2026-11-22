@@ -1,0 +1,4 @@
+# expect: E101
+fn roll() -> Int {
+  return random_int(1, 6)
+}

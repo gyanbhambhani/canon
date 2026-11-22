@@ -1,0 +1,4 @@
+# expect: T001
+fn f() -> Int {
+  return "no"
+}

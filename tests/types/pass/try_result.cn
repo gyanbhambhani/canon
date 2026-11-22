@@ -1,0 +1,12 @@
+fn parse_two(a: String, b: String) -> Result[Int, Error] {
+  let x = try to_result(parse_int(a))
+  let y = try to_result(parse_int(b))
+  return Ok(x + y)
+}
+
+fn to_result(o: Option[Int]) -> Result[Int, Error] {
+  return match o {
+    Some(n) => Ok(n),
+    None => Err(Error { message: "not a number" }),
+  }
+}

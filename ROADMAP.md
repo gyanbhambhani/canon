@@ -25,11 +25,11 @@ Port the lexer, parser, normalizer, printer and checker (naming, effects, holes)
 
 Implement the type rules in Runtime semantics, including inference for locals and lambdas, exhaustive match, and holes everywhere.
 
-- [ ] At least 40 programs in tests/types/pass type-check
-- [ ] At least 30 programs in tests/types/fail fail with their expected code, covering T001 to T009 and M001
-- [ ] The T004 patch applies cleanly and the patched file then reports only H001 holes
-- [ ] The T009 patch applies cleanly and the patched file passes
-- [ ] H001 reports an expected type for holes in let bindings, arguments, returns and match arms
+- [x] At least 40 programs in tests/types/pass type-check
+- [x] At least 30 programs in tests/types/fail fail with their expected code, covering T001 to T009 and M001
+- [x] The T004 patch applies cleanly and the patched file then reports only H001 holes
+- [x] The T009 patch applies cleanly and the patched file passes
+- [x] H001 reports an expected type for holes in let bindings, arguments, returns and match arms
 
 ## M3: Code generation and runtime
 
@@ -98,3 +98,9 @@ Only after M7, and only when the owner provides model access.
 - The conformance test compares the whole JSON (messages and patches too), not just code/line/col. 124 new cases: g_* grammar, m_* messy inputs, d_* diagnostics.
 - Tricky: Python's repr(float), splitlines, repr(str), universal newlines and difflib all had to be reproduced exactly; pycompat.test.ts checks them against python3.
 - Next session: M2's type checker should be a separate pass (`checkTypes`) layered on checkFront; keep checkFront oracle-exact.
+
+### M2 (done)
+- packages/compiler/src/types.ts: unification with occurs check; `K` key variables; rigid type params inside generic fns; bidirectional lambdas (non-lambda args are checked first); Maranget witnesses for T004 (each missing arm is added with a `?` hole); T009 patch wraps the Int side in to_float.
+- Standard library signatures live in prelude.ts as Canon source parsed by the compiler; the full effect table derives from it.
+- `check()` = front end + M001 + exact effects (full stdlib) + types + typed H001. `checkFront()` stays oracle-exact. `analyze()` also returns the normalized program and TypeInfo (expr types, call kinds, lambda unpacking) for codegen.
+- Next: codegen must read `info.types` to tell Int from Float (`/` truncates, overflow checks, to_string prints 1.0).

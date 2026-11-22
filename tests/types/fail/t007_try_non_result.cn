@@ -1,0 +1,5 @@
+# expect: T007
+fn f() -> Result[Int, Error] {
+  let x = try 5
+  return Ok(x)
+}

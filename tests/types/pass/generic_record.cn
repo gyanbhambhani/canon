@@ -1,0 +1,11 @@
+type Box[T] {
+  value: T,
+}
+
+fn unbox[T](b: Box[T]) -> T {
+  return b.value
+}
+
+fn make() -> Int {
+  return unbox(Box { value: 3 })
+}

@@ -1,0 +1,7 @@
+fn scale(n: Int, by: Float) -> Float {
+  return to_float(n) * by
+}
+
+fn truncate(x: Float) -> Int {
+  return to_int(x) + 1
+}

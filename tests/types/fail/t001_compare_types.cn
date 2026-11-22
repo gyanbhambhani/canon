@@ -1,0 +1,4 @@
+# expect: T001
+fn f(a: Int, s: String) -> Bool {
+  return a == s
+}

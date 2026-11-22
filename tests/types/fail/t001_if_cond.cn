@@ -1,0 +1,7 @@
+# expect: T001
+fn f(n: Int) -> Int {
+  if n {
+    return 1
+  }
+  return 0
+}

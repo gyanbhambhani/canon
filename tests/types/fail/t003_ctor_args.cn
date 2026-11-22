@@ -1,0 +1,4 @@
+# expect: T003
+fn f() -> Option[Int] {
+  return Some(1, 2)
+}

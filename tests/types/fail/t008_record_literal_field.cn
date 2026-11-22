@@ -1,0 +1,8 @@
+# expect: T008
+type P {
+  x: Int,
+}
+
+fn f() -> P {
+  return P { x: 1, z: 2 }
+}

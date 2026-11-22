@@ -1,0 +1,7 @@
+# expect: T007
+fn f(p: String) -> Int
+  effects: fs
+{
+  let t = try read_file(p)
+  return 1
+}

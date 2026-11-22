@@ -1,0 +1,9 @@
+fn double(n: Int) -> Int {
+  return n * 2
+}
+
+test "double doubles" {
+  assert(double(2) == 4)
+  let xs = map([1, 2], |x| double(x))
+  assert(xs == [2, 4])
+}

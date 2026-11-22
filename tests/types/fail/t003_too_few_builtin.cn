@@ -1,0 +1,4 @@
+# expect: T003
+fn f() -> List[Int] {
+  return range(1)
+}

@@ -1,0 +1,10 @@
+# expect: T004
+type Shape =
+  | Circle(radius: Float)
+  | Rect(width: Float, height: Float)
+
+fn area(s: Shape) -> Float {
+  return match s {
+    Circle(r) => r * r,
+  }
+}

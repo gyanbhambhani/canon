@@ -1,0 +1,8 @@
+# expect: T001
+fn g(n: Int) -> Int {
+  return n
+}
+
+fn f() -> Int {
+  return g("x")
+}

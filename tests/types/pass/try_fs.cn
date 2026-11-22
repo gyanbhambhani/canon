@@ -1,0 +1,6 @@
+fn line_count(path: String) -> Result[Int, Error]
+  effects: fs
+{
+  let text = try read_file(path)
+  return Ok(len(split(text, "\n")))
+}

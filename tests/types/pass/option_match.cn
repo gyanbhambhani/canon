@@ -1,0 +1,7 @@
+fn describe(o: Option[Int]) -> String {
+  let s = match o {
+    Some(n) => to_string(n),
+    None => "nothing",
+  }
+  return s
+}

@@ -1,0 +1,4 @@
+fn add_all(xs: List[Int], k: Int) -> List[Int] {
+  let offset = k * 2
+  return map(xs, |x| x + offset)
+}

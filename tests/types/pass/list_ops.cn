@@ -1,0 +1,9 @@
+fn f(xs: List[Int]) -> List[(Int, Int)] {
+  let a = append(reverse(xs), 4)
+  let b = drop(take(a, 3), 1)
+  let c = zip(b, range(0, 10))
+  if contains(xs, 3) {
+    return c
+  }
+  return []
+}

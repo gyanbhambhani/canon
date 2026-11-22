@@ -1,0 +1,7 @@
+type P {
+  x: Int,
+}
+
+fn same(a: P, b: P, xs: List[Int]) -> Bool {
+  return a == b and xs == [1, 2] and Some(1) == Some(1)
+}

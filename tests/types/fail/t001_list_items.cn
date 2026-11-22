@@ -1,0 +1,4 @@
+# expect: T001
+fn f() -> List[Int] {
+  return [1, "two"]
+}

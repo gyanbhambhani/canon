@@ -1,0 +1,5 @@
+# expect: T006
+fn f(n: Int) -> Int {
+  set n = 2
+  return n
+}

@@ -1,0 +1,7 @@
+fn score(s: String) -> Int {
+  return match s {
+    "a" => 1,
+    "b" => 2,
+    other => str_len(other),
+  }
+}

@@ -1,0 +1,11 @@
+fn first_or[T](xs: List[T], fallback: T) -> T {
+  let found = match first(xs) {
+    Some(x) => x,
+    None => fallback,
+  }
+  return found
+}
+
+fn use_it() -> Int {
+  return first_or([1, 2], 0)
+}

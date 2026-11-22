@@ -1,0 +1,11 @@
+type Sale {
+  region: String,
+  amount: Int,
+}
+
+fn by_region(sales: List[Sale]) -> List[(String, Int)] {
+  return sales
+    |> group_by(|s| s.region)
+    |> map(|region, items| (region, sum(map(items, |i| i.amount))))
+    |> sort_desc_by(|p| p.1)
+}

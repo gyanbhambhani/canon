@@ -1,0 +1,6 @@
+use std.json
+
+# expect: T002
+fn f(s: String) -> String {
+  return json.stringify(s)
+}

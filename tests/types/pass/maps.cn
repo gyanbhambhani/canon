@@ -1,0 +1,5 @@
+fn lookup(pairs: List[(String, Int)], k: String) -> Int {
+  let m = map_from(pairs)
+  let m2 = map_set(m, "extra", 9)
+  return unwrap_or(map_get(m2, k), 0) + len(keys(m2)) + sum(values(m2))
+}

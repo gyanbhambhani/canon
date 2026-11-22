@@ -1,0 +1,4 @@
+# expect: T002
+fn f() -> Int {
+  return nowhere(1)
+}

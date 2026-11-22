@@ -1,0 +1,5 @@
+# expect: T001
+fn f(xs: List[(Bool, Int)]) -> Int {
+  let m = map_from(xs)
+  return len(keys(m))
+}

@@ -1,0 +1,6 @@
+fn f(xs: List[Int]) -> List[String] {
+  return xs
+    |> filter(|x| x % 2 == 0)
+    |> map(|x| x * 10)
+    |> map(|x| to_string(x))
+}

@@ -1,0 +1,6 @@
+fn save(path: String) -> Result[Int, Error]
+  effects: fs
+{
+  try write_file(path, "data")
+  return Ok(1)
+}

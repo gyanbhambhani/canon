@@ -1,0 +1,8 @@
+# expect: T007
+fn g(n: Int) -> Result[Int, Error] {
+  return Ok(n)
+}
+
+fn f(xs: List[Int]) -> Result[List[Int], Error] {
+  return Ok(map(xs, |x| try g(x)))
+}

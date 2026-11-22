@@ -1,0 +1,4 @@
+# expect: T008
+fn f(t: (Int, Int)) -> Int {
+  return t.2
+}

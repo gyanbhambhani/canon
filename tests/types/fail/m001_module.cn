@@ -1,0 +1,6 @@
+use agent.tools
+
+# expect: M001
+fn f() -> Int {
+  return 1
+}

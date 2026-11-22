@@ -1,0 +1,4 @@
+# expect: T002
+fn f(x: Widget) -> Int {
+  return 1
+}

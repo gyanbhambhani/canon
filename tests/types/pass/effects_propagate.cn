@@ -1,0 +1,11 @@
+fn log(m: String) -> Unit
+  effects: io
+{
+  print(m)
+}
+
+fn run() -> Unit
+  effects: io
+{
+  log("hi")
+}

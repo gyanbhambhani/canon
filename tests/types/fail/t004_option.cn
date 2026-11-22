@@ -1,0 +1,6 @@
+# expect: T004
+fn f(o: Option[Int]) -> Int {
+  return match o {
+    Some(n) => n,
+  }
+}

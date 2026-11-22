@@ -1,0 +1,5 @@
+fn f(s: String) -> Float {
+  let a = unwrap_or(parse_float(s), 0.0)
+  let b = unwrap_or(parse_int(s), 0)
+  return a + to_float(b)
+}

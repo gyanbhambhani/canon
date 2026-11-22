@@ -1,0 +1,7 @@
+fn f(r: Result[Option[Int], Error]) -> Int {
+  return match r {
+    Ok(Some(n)) => n,
+    Ok(None) => 0,
+    Err(_) => -1,
+  }
+}

@@ -1,0 +1,7 @@
+fn indexed(xs: List[String]) -> Int {
+  var total = 0
+  for pair in enumerate(xs) {
+    set total = total + pair.0
+  }
+  return total
+}

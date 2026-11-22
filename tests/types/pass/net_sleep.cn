@@ -1,0 +1,7 @@
+fn fetch(url: String) -> Result[String, Error]
+  effects: net, time
+{
+  sleep(10)
+  let body = try http_get(url)
+  return http_post(url, body)
+}

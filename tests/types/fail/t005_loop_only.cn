@@ -1,0 +1,6 @@
+# expect: T005
+fn f(xs: List[Int]) -> Int {
+  for x in xs {
+    return x
+  }
+}

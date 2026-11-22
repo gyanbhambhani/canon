@@ -1,0 +1,5 @@
+fn roll() -> Int
+  effects: rand
+{
+  return random_int(1, 7)
+}

@@ -1,0 +1,4 @@
+# expect: T002
+fn f() -> Int {
+  return missing + 1
+}

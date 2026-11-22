@@ -7,6 +7,7 @@ import { cmpStr, normalize } from "./normalize.js";
 import { parse } from "./parser.js";
 import { MAX_LINE, Printer } from "./printer.js";
 import { pyLen, pySplitlines } from "./py.js";
+import { builtinEffects, checkTypes, pureBuiltins, type TypeInfo } from "./types.js";
 
 export const SNAKE = /^[a-z_][a-z0-9_]*$/;
 export const PASCAL = /^[A-Z][A-Za-z0-9]*$/;
@@ -234,4 +235,91 @@ export function checkFront(src: string, path = "main.cn"): CheckResult {
 
 export function fmt(src: string): string {
   return parseCanonical(src).canonical;
+}
+
+// ---------------------------------------------------------------------------
+// The full checker: front end + modules + exact effects over the whole stdlib + types
+// ---------------------------------------------------------------------------
+
+
+export interface Analysis {
+  result: CheckResult;
+  /** The normalized program (null when it failed to parse). */
+  prog: A.Program | null;
+  info: TypeInfo | null;
+}
+
+let fullTables: EffectTables | null = null;
+function specTables(): EffectTables {
+  fullTables ??= { effects: builtinEffects(), pure: pureBuiltins() };
+  return fullTables;
+}
+
+/**
+ * Effects of functions used as values (`map(names, print)`): the enclosing function must
+ * declare them too, or a value could smuggle an effect past the signature.
+ */
+function valueEffects(prog: A.Program, src: string, path: string, tables: EffectTables): Diagnostic[] {
+  const diags: Diagnostic[] = [];
+  const user = new Map<string, string[]>();
+  for (const it of prog.items) if (it.k === "Fn") user.set(it.name, it.effects);
+  prog.items.forEach((it, idx) => {
+    if (it.k !== "Fn") return;
+    const callees = new Set<unknown>();
+    const all = [...walkExprs(it.body)];
+    for (const e of all) if (e.k === "Call") callees.add(e.callee);
+    const missing = new Map<string, string>();
+    for (const e of all) {
+      if (e.k !== "Name" || callees.has(e) || e.path.length !== 1) continue;
+      const effs = tables.effects[e.path[0]] ?? user.get(e.path[0]) ?? [];
+      for (const ef of effs) if (!it.effects.includes(ef) && !missing.has(ef)) missing.set(ef, e.path[0]);
+    }
+    if (missing.size) {
+      const names = [...missing.keys()].sort(cmpStr);
+      const fixed = [...prog.items];
+      fixed[idx] = { ...it, effects: [...new Set([...it.effects, ...names])].sort(cmpStr) };
+      diags.push(diag("E101",
+        `fn ${it.name} uses effects it does not declare: ${names.map((m) => `${m} (via ${missing.get(m)} as a value)`).join(", ")}`,
+        it.line, it.col, { fix: makePatch(src, programText({ k: "Program", items: fixed }), path), data: { missing: names } }));
+    }
+  });
+  return diags;
+}
+
+export function analyze(src: string, path = "main.cn"): Analysis {
+  let parsed: Parsed;
+  try {
+    parsed = parseCanonical(src);
+  } catch (e) {
+    if (e instanceof CanonError) {
+      return { result: { ok: false, canonical: false, diagnostics: [e.diag] }, prog: null, info: null };
+    }
+    throw e;
+  }
+  const { prog, canonical } = parsed;
+  const tables = specTables();
+  const effectDiags = checkEffects(prog, src, path, tables);
+  const typed = checkTypes(prog);
+  for (const [d, fixed] of typed.fixes) d.fix = makePatch(src, programText(fixed), path);
+  const typeDiags = typed.diagnostics.filter((d) => d.code !== "H001");
+  const holes = typed.diagnostics.filter((d) => d.code === "H001");
+  const diags = [
+    ...formDiagnostics(src, canonical, path),
+    ...checkNames(prog),
+    ...typeDiags.filter((d) => d.code === "M001"),
+    ...effectDiags,
+    ...(effectDiags.some((d) => d.code === "E101") ? [] : valueEffects(prog, src, path, tables)),
+    ...typeDiags.filter((d) => d.code !== "M001"),
+    ...holes,
+  ];
+  return {
+    result: { ok: !diags.some((d) => d.severity === "error"), canonical: canonical === src, diagnostics: diags },
+    prog,
+    info: typed.info,
+  };
+}
+
+/** `canon check`: the front end plus modules, exact effects over the full stdlib, and types. */
+export function check(src: string, path = "main.cn"): CheckResult {
+  return analyze(src, path).result;
 }

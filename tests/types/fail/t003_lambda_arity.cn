@@ -1,0 +1,4 @@
+# expect: T003
+fn f(xs: List[Int]) -> List[Int] {
+  return map(xs, |a, b| a)
+}

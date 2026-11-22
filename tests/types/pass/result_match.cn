@@ -1,0 +1,6 @@
+fn code(r: Result[Int, Error]) -> Int {
+  return match r {
+    Ok(v) => v,
+    Err(e) => str_len(e.message),
+  }
+}

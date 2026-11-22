@@ -1,0 +1,7 @@
+# expect: T001
+fn f(n: Int) -> Int {
+  return match n {
+    "a" => 1,
+    _ => 0,
+  }
+}

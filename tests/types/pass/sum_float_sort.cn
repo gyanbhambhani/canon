@@ -1,0 +1,4 @@
+fn f(xs: List[Float]) -> Float {
+  let sorted = sort_by(xs, |x| x)
+  return sum_float(sorted)
+}

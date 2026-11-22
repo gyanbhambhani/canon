@@ -1,0 +1,4 @@
+# expect: T001
+fn f(n: Int) -> Bool {
+  return n and true
+}
