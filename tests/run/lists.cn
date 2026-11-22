@@ -1,0 +1,57 @@
+fn main() -> Unit
+  effects: io
+{
+  let xs = range(1, 6)
+  print(to_string(xs))
+  xs
+    |> append(6)
+    |> to_string()
+    |> print()
+  xs
+    |> reverse()
+    |> to_string()
+    |> print()
+  xs
+    |> take(2)
+    |> to_string()
+    |> print()
+  xs
+    |> drop(3)
+    |> to_string()
+    |> print()
+  xs
+    |> first()
+    |> to_string()
+    |> print()
+  xs
+    |> drop(9)
+    |> last()
+    |> to_string()
+    |> print()
+  xs
+    |> contains(3)
+    |> to_string()
+    |> print()
+  xs
+    |> zip(["a", "b"])
+    |> to_string()
+    |> print()
+  ["x", "y"]
+    |> enumerate()
+    |> to_string()
+    |> print()
+  xs
+    |> fold(0, |acc, x| acc + x)
+    |> to_string()
+    |> print()
+  xs
+    |> sum()
+    |> to_string()
+    |> print()
+  xs
+    |> filter(|x| x % 2 == 1)
+    |> len()
+    |> to_string()
+    |> print()
+  print(to_string(xs))
+}

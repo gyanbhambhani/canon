@@ -1,0 +1,35 @@
+fn sign(n: Int) -> String {
+  return match n {
+    -1 => "minus one",
+    0 => "zero",
+    _ => "other",
+  }
+}
+
+fn both(a: Bool, b: Bool) -> String {
+  let s = match (a, b) {
+    (true, true) => "both",
+    (true, false) => "first",
+    (false, _) => "not first",
+  }
+  return s
+}
+
+fn greet(s: String) -> String {
+  return match s {
+    "hi" => "hello",
+    other => concat("? ", other),
+  }
+}
+
+fn main() -> Unit
+  effects: io
+{
+  print(sign(-1))
+  print(sign(0))
+  print(sign(5))
+  print(both(true, false))
+  print(both(false, true))
+  print(greet("hi"))
+  print(greet("yo"))
+}

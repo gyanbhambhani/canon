@@ -1,0 +1,41 @@
+type Order {
+  id: Int,
+  customer: String,
+  amount: Float,
+}
+
+# Highest-spending customers, best first.
+fn top_customers(orders: List[Order], n: Int) -> List[String]
+  requires: n > 0
+  ensures: len(result) <= n
+{
+  let ranked = orders
+    |> group_by(|o| o.customer)
+    |> map(|customer, os| (customer, sum_float(map(os, |o| o.amount))))
+    |> sort_desc_by(|pair| pair.1)
+    |> take(n)
+  return map(ranked, |pair| pair.0)
+}
+
+fn sample() -> List[Order] {
+  let a = Order { id: 1, customer: "ada", amount: 120.0 }
+  let b = Order { id: 2, customer: "bob", amount: 80.5 }
+  let c = Order { id: 3, customer: "ada", amount: 30.0 }
+  let d = Order { id: 4, customer: "cy", amount: 200.0 }
+  let e = Order { id: 5, customer: "bob", amount: 99.5 }
+  return [a, b, c, d, e]
+}
+
+fn main() -> Unit
+  effects: io
+{
+  let orders = sample()
+  for name in top_customers(orders, 2) {
+    print(name)
+  }
+  print(concat("total: ", orders |> map(|o| o.amount) |> sum_float() |> to_string()))
+}
+
+test "top customer is cy" {
+  assert(top_customers(sample(), 1) == ["cy"])
+}

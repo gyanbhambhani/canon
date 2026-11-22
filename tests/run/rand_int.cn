@@ -1,0 +1,8 @@
+fn main() -> Unit
+  effects: io, rand
+{
+  let r = random_int(1, 7)
+  print(to_string(r >= 1 and r < 7))
+  let f = random()
+  print(to_string(f >= 0.0 and f < 1.0))
+}

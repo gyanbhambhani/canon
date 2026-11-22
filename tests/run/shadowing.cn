@@ -1,0 +1,10 @@
+fn main() -> Unit
+  effects: io
+{
+  let x = 1
+  if x == 1 {
+    let x = 2
+    print(to_string(x))
+  }
+  print(to_string(x))
+}

@@ -1,0 +1,14 @@
+fn main() -> Unit
+  effects: io
+{
+  print(to_string(parse_int("42")))
+  print(to_string(parse_int("x")))
+  print(to_string(parse_float("2.5")))
+  print(to_string(parse_float("3")))
+  parse_int("nope")
+    |> unwrap_or(7)
+    |> to_string()
+    |> print()
+  print(to_string(parse_int(" 1")))
+  print(to_string(parse_int("-12")))
+}

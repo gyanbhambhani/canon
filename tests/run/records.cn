@@ -1,0 +1,21 @@
+type Point {
+  x: Int,
+  y: Int,
+}
+
+fn moved(p: Point) -> Point {
+  var q = p
+  set q.x = q.x + 10
+  return q
+}
+
+fn main() -> Unit
+  effects: io
+{
+  let a = Point { x: 1, y: 2 }
+  let b = moved(a)
+  print(to_string(a))
+  print(to_string(b))
+  print(to_string(a == b))
+  print(to_string(a == Point { x: 1, y: 2 }))
+}

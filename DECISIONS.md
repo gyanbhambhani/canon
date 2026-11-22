@@ -2,6 +2,19 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — M3: code generation and runtime choices
+- Output shape: `compileJs` emits the body of a function taking `$rt` and returning `{ main, tests, types, mainRet }`; `asModule` wraps it as an ES2022 module (`export default function load($rt)`). One artifact runs in Node, tests and a Web Worker without a module loader.
+- Values: Int and Float are JS numbers; the checker's types pick the operation (Int `+ - *` are overflow-checked, Int `/` truncates). Lists and tuples are arrays, records and variants are `{ $t, field... }` objects, Unit is `undefined`, Map is a JS `Map` (keys are Int, Float or String, so value keys work).
+- `to_string` gets a type descriptor at each call site so Float `1.0` prints as `1.0`. Formats: strings print bare at top level and quoted inside containers; `[1, 2]`, `(1, "a")`, `{"a": 1}`, `Point { x: 1 }`, `Some(3)`, `None`, `()` for Unit, `<fn>` for functions. Inside generic code (type unknown statically) a whole-number Float prints like an Int: a known limit of v0.
+- Floats print like Python's repr (`1e+16`, `1e-05`, `0.30000000000000004`).
+- Division or modulo by zero traps R004 for Float as well as Int (the spec does not distinguish).
+- `pow` with a negative exponent truncates toward zero, like Int division (0^-n is R004). `to_int` of NaN or infinity is R003. `parse_int` returns None for out-of-range values. `random_int` with `hi <= lo` traps R005. `take`/`drop` clamp negative counts to 0. `split(s, "")` splits into code points; `str_len` counts code points; string `<` compares by code point.
+- `try` is an exception (`$rt.Early`) caught by the enclosing function, which returns the Err. T007 already forbids `try` in lambdas, so the nearest catch is always the right function.
+- Lambdas capture values, never variables: a lambda that reads a `var` gets a snapshot of it when created.
+- The Canon stack trace lists frames innermost first: each frame is the function name and the position it was at (the call site for outer frames, the trap site for the innermost).
+- A JS stack overflow (runaway recursion) is reported as trap code R000. It is not in the spec's list, but a host crash is worse.
+- Hosts: `nodeHost` (real stdout, stdin, fs; net through a synchronous child-process fetch, because Canon is synchronous), `MemoryHost` (in-memory output, input and files), `browserHost` (MemoryHost denying fs and net), and `testHost(base)` (clock from 0 that advances only by `sleep`; mulberry32 seeded with 42; everything else delegates to the base host).
+
 ## 2026-11-22 — M2: type-checker gap fills
 Decision, each with its reason (each picks the option with fewer ways to write a program):
 - No unit literal. `Ok(())` is a parse error in the oracle, so the grammar cannot add one. A `Result[Unit, E]` comes from a call that returns one (`write_file`) or from a `Unit` function; the docs recommend returning a meaningful value instead.

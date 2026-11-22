@@ -1,0 +1,14 @@
+fn zero() -> Int {
+  return 0
+}
+
+fn main() -> Unit
+  effects: io
+{
+  print(to_string(false and 1 / zero() == 1))
+  print(to_string(true or 1 / zero() == 1))
+  print(to_string(not 1 < 2))
+  print(to_string("Z" < "a"))
+  print(to_string("é" > "z"))
+  print(to_string(2.5 >= 2.5))
+}

@@ -1,0 +1,36 @@
+type Tree =
+  | Leaf
+  | Node(left: Tree, value: Int, right: Tree)
+
+fn fact(n: Int) -> Int {
+  if n <= 1 {
+    return 1
+  }
+  return n * fact(n - 1)
+}
+
+fn fib(n: Int) -> Int {
+  if n < 2 {
+    return n
+  }
+  return fib(n - 1) + fib(n - 2)
+}
+
+fn total(t: Tree) -> Int {
+  return match t {
+    Leaf => 0,
+    Node(l, v, r) => total(l) + v + total(r),
+  }
+}
+
+fn main() -> Unit
+  effects: io
+{
+  print(to_string(fact(10)))
+  print(to_string(fib(15)))
+  let t = Node(Node(Leaf, 1, Leaf), 2, Node(Leaf, 3, Leaf))
+  t
+    |> total()
+    |> to_string()
+    |> print()
+}

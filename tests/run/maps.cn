@@ -1,0 +1,24 @@
+fn main() -> Unit
+  effects: io
+{
+  let m = map_from([("a", 1), ("b", 2)])
+  let m2 = map_set(m, "c", 3)
+  let m3 = map_set(m2, "a", 10)
+  m3
+    |> keys()
+    |> to_string()
+    |> print()
+  m3
+    |> values()
+    |> to_string()
+    |> print()
+  m3
+    |> map_get("b")
+    |> to_string()
+    |> print()
+  m
+    |> map_get("c")
+    |> to_string()
+    |> print()
+  print(to_string(m3))
+}

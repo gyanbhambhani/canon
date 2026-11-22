@@ -1,0 +1,14 @@
+fn main() -> Unit
+  effects: io
+{
+  var k = 1
+  let add = |x| x + k
+  set k = 100
+  print(to_string(add(1)))
+  let pairs = [("a", 1), ("b", 2)]
+  pairs
+    |> map(|name, n| concat(name, to_string(n * 2)))
+    |> to_string()
+    |> print()
+  print(to_string(k))
+}

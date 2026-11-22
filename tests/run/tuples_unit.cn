@@ -1,0 +1,14 @@
+fn swap(t: (Int, String)) -> (String, Int) {
+  return (t.1, t.0)
+}
+
+fn noop() -> Unit {}
+
+fn main() -> Unit
+  effects: io
+{
+  let s = swap((1, "one"))
+  print(to_string(s))
+  print(to_string(s.0 == "one"))
+  print(to_string(noop()))
+}

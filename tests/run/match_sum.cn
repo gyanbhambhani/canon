@@ -1,0 +1,33 @@
+type Shape =
+  | Circle(radius: Float)
+  | Rect(width: Float, height: Float)
+  | Dot
+
+fn area(s: Shape) -> Float {
+  return match s {
+    Circle(r) => 3.0 * r * r,
+    Rect(w, h) => w * h,
+    Dot => 0.0,
+  }
+}
+
+fn name(s: Shape) -> String {
+  return match s {
+    Circle(_) => "circle",
+    Rect(_, _) => "rect",
+    Dot => "dot",
+  }
+}
+
+fn main() -> Unit
+  effects: io
+{
+  for s in [Circle(1.0), Rect(2.0, 3.5), Dot] {
+    s
+      |> name()
+      |> concat(" ", to_string(area(s)))
+      |> print()
+  }
+  print(to_string(Rect(2.0, 3.5)))
+  print(to_string([Dot, Circle(0.5)]))
+}

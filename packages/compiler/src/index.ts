@@ -11,3 +11,4 @@ export { unifiedDiff } from "./difflib.js";
 export { pyFloatRepr, pyRepr, pySplitlines, readSource } from "./py.js";
 export * from "./types.js";
 export { PRELUDE } from "./prelude.js";
+export { generate, compileJs, asModule, typeToTD, type CompileResult } from "./codegen.js";

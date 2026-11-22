@@ -1,0 +1,23 @@
+# Count words and list them, most frequent first.
+fn word_counts(text: String) -> List[(String, Int)] {
+  return text
+    |> split(" ")
+    |> filter(|w| str_len(w) > 0)
+    |> group_by(|w| w)
+    |> map(|word, ws| (word, len(ws)))
+    |> sort_desc_by(|pair| pair.1)
+}
+
+fn main() -> Unit
+  effects: io
+{
+  let text = "the cat and the hat and the bat"
+  for pair in word_counts(text) {
+    print(concat(pair.0, ": ", to_string(pair.1)))
+  }
+}
+
+test "counts repeated words" {
+  let counts = word_counts("a b a")
+  assert(counts == [("a", 2), ("b", 1)])
+}

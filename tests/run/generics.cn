@@ -1,0 +1,34 @@
+type Box[T] {
+  value: T,
+}
+
+fn first_or[T](xs: List[T], fallback: T) -> T {
+  let found = match first(xs) {
+    Some(x) => x,
+    None => fallback,
+  }
+  return found
+}
+
+fn unbox[T](b: Box[T]) -> T {
+  return b.value
+}
+
+fn main() -> Unit
+  effects: io
+{
+  [2.5]
+    |> first_or(0.0)
+    |> to_string()
+    |> print()
+  []
+    |> first_or(1.0)
+    |> to_string()
+    |> print()
+  print(first_or(["x"], "y"))
+  Box { value: 7 }
+    |> unbox()
+    |> to_string()
+    |> print()
+  print(to_string(Box { value: 1.0 }))
+}

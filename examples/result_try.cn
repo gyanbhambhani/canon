@@ -1,0 +1,34 @@
+fn parse_age(s: String) -> Result[Int, Error] {
+  let n = match parse_int(s) {
+    Some(v) => v,
+    None => -1,
+  }
+  if n < 0 {
+    return Err(Error { message: concat("not an age: ", s) })
+  }
+  return Ok(n)
+}
+
+fn total_age(a: String, b: String) -> Result[Int, Error] {
+  let x = try parse_age(a)
+  let y = try parse_age(b)
+  return Ok(x + y)
+}
+
+fn describe(r: Result[Int, Error]) -> String {
+  return match r {
+    Ok(n) => concat("total ", to_string(n)),
+    Err(e) => concat("error: ", e.message),
+  }
+}
+
+fn main() -> Unit
+  effects: io
+{
+  print(describe(total_age("30", "12")))
+  print(describe(total_age("30", "x")))
+}
+
+test "try returns the first error" {
+  assert(total_age("x", "y") == Err(Error { message: "not an age: x" }))
+}

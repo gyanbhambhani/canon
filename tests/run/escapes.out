@@ -1,0 +1,4 @@
+tab	end
+quote "q"
+back\slash
+["a\"b", "c\nd"]

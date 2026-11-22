@@ -35,11 +35,11 @@ Implement the type rules in Runtime semantics, including inference for locals an
 
 Compile checked programs to JavaScript and implement the standard library, contracts, traps and effect hosts.
 
-- [ ] At least 25 programs in tests/run print their expected output, including hello, fizzbuzz, word count, orders ranking with a pipeline, Result with try, and a match over a sum type
-- [ ] Trap tests cover R001 to R006, each printing the JSON trap with the right code and line
-- [ ] `--deny net` makes http_get trap with R006
-- [ ] Under the test host, now() and random() give the same values on every run
-- [ ] Every standard library function in the table has at least one test
+- [x] At least 25 programs in tests/run print their expected output, including hello, fizzbuzz, word count, orders ranking with a pipeline, Result with try, and a match over a sum type
+- [x] Trap tests cover R001 to R006, each printing the JSON trap with the right code and line
+- [x] `--deny net` makes http_get trap with R006
+- [x] Under the test host, now() and random() give the same values on every run
+- [x] Every standard library function in the table has at least one test
 
 ## M4: CLI
 
@@ -104,3 +104,9 @@ Only after M7, and only when the owner provides model access.
 - Standard library signatures live in prelude.ts as Canon source parsed by the compiler; the full effect table derives from it.
 - `check()` = front end + M001 + exact effects (full stdlib) + types + typed H001. `checkFront()` stays oracle-exact. `analyze()` also returns the normalized program and TypeInfo (expr types, call kinds, lambda unpacking) for codegen.
 - Next: codegen must read `info.types` to tell Int from Float (`/` truncates, overflow checks, to_string prints 1.0).
+
+### M3 (done)
+- compiler/src/codegen.ts generates JS from the normalized program plus TypeInfo; runtime/src/exec.ts is `$rt` (stdlib, traps, stack, contracts); runtime/src/node.ts is the Node host, exported as `@canon/runtime/node` so browser bundles never import node APIs.
+- examples/ has hello, fizzbuzz, word_count, orders, result_try (each with test blocks); their expected output is tests/run/example_*.out. tests/run has 27 more programs; `.in` files feed read_line.
+- Tricky: the HTTP test needs its server in a separate process (the host's synchronous fetch blocks the event loop). Test sources must be canonical, effect-exact Canon, or `compileOrThrow` refuses them.
+- Next (M4): the CLI wraps check/fmt/run/test around compileJs plus runMain/runTests with nodeHost (and testHost for `canon test`).

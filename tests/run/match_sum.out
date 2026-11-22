@@ -1,0 +1,5 @@
+circle 3.0
+rect 7.0
+dot 0.0
+Rect(2.0, 3.5)
+[Dot, Circle(0.5)]

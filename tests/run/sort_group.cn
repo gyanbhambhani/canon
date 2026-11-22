@@ -1,0 +1,36 @@
+type Person {
+  name: String,
+  age: Int,
+}
+
+fn names(ps: List[Person]) -> String {
+  return join(map(ps, |p| p.name), ",")
+}
+
+fn main() -> Unit
+  effects: io
+{
+  let ann = Person { name: "ann", age: 30 }
+  let bob = Person { name: "bob", age: 25 }
+  let cy = Person { name: "cy", age: 30 }
+  let dee = Person { name: "dee", age: 25 }
+  let ps = [ann, bob, cy, dee]
+  ps
+    |> sort_by(|p| p.age)
+    |> names()
+    |> print()
+  ps
+    |> sort_desc_by(|p| p.age)
+    |> names()
+    |> print()
+  for group in group_by(ps, |p| p.age) {
+    group.0
+      |> to_string()
+      |> concat(": ", names(group.1))
+      |> print()
+  }
+  ["b", "a", "c"]
+    |> sort_by(|s| s)
+    |> to_string()
+    |> print()
+}

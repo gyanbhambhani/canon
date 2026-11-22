@@ -1,0 +1,23 @@
+fn roundtrip() -> Result[String, Error]
+  effects: fs
+{
+  try write_file("notes.txt", "saved text")
+  let back = try read_file("notes.txt")
+  return Ok(back)
+}
+
+fn main() -> Unit
+  effects: fs, io
+{
+  let r = roundtrip()
+  let text = match r {
+    Ok(t) => t,
+    Err(e) => e.message,
+  }
+  print(text)
+  let missing = match read_file("missing.txt") {
+    Ok(_) => "found",
+    Err(_) => "missing",
+  }
+  print(missing)
+}

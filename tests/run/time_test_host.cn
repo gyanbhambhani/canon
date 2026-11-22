@@ -1,0 +1,7 @@
+fn main() -> Unit
+  effects: io, time
+{
+  print(to_string(now()))
+  sleep(250)
+  print(to_string(now()))
+}

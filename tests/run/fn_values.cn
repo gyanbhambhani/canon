@@ -1,0 +1,28 @@
+fn double(n: Int) -> Int {
+  return n * 2
+}
+
+fn twice(f: fn(Int) -> Int, x: Int) -> Int {
+  return f(f(x))
+}
+
+fn main() -> Unit
+  effects: io
+{
+  [1, 2, 3]
+    |> map(double)
+    |> to_string()
+    |> print()
+  ["abc"]
+    |> map(str_len)
+    |> to_string()
+    |> print()
+  (|n| n + 1)
+    |> twice(3)
+    |> to_string()
+    |> print()
+  double
+    |> twice(3)
+    |> to_string()
+    |> print()
+}

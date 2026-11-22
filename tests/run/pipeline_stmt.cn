@@ -1,0 +1,14 @@
+fn main() -> Unit
+  effects: io
+{
+  range(0, 5)
+    |> map(|x| x * x)
+    |> to_string()
+    |> print()
+  range(0, 20)
+    |> map(|x| x * 3)
+    |> filter(|x| x % 2 == 0)
+    |> take(4)
+    |> to_string()
+    |> print()
+}

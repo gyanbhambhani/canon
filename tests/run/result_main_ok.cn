@@ -1,0 +1,21 @@
+fn half(n: Int) -> Result[Int, Error] {
+  if n % 2 == 1 {
+    return Err(Error { message: "odd" })
+  }
+  return Ok(n / 2)
+}
+
+fn quarter(n: Int) -> Result[Int, Error] {
+  let h = try half(n)
+  return half(h)
+}
+
+fn main() -> Result[Int, Error]
+  effects: io
+{
+  print(to_string(quarter(8)))
+  print(to_string(quarter(6)))
+  let q = try quarter(12)
+  print(to_string(q))
+  return Ok(q)
+}
