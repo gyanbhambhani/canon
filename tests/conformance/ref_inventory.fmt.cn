@@ -1,0 +1,85 @@
+use std.http
+
+type Item {
+  sku: String,
+  qty: Int,
+  price: Float,
+}
+
+type Option[T] =
+  | Some(value: T)
+  | None
+
+fn find_item(items: List[Item], sku: String) -> Option[Item] {
+  for item in items {
+    if item.sku == sku {
+      return Some(item)
+    }
+  }
+  return None
+}
+
+fn restock_cost(items: List[Item], target: Int) -> Float
+  requires: target >= 0
+  ensures: result >= 0.0
+{
+  var total = 0.0
+  for item in items {
+    if item.qty < target and not is_discontinued(item) {
+      set total = total + to_float(target - item.qty) * item.price
+    }
+  }
+  return total
+}
+
+fn is_discontinued(item: Item) -> Bool {
+  return item.qty == -1
+}
+
+fn sync(items: List[Item]) -> Result[Int, Error]
+  effects: io, net
+{
+  let body = encode(items)
+  let resp = try http_post("https://example.com/inventory", body)
+  print("synced \"inventory\"")
+  return Ok(resp.status)
+}
+
+fn price_band(item: Item) -> String {
+  let band = match (item.qty > 0, item.price) {
+    (false, _) => "out",
+    (true, 0.0) => "free",
+    _ => "priced",
+  }
+  return band
+}
+
+fn first_or[T](xs: List[T], fallback: T) -> T {
+  let found = match first(xs) {
+    Some(x) => x,
+    None => fallback,
+  }
+  return found
+}
+
+fn cheapest(items: List[Item], k: Int) -> List[String] {
+  return items
+    |> filter(|i| i.qty > 0 and i.price > 0.0)
+    |> sort_by(|i| i.price)
+    |> take(k)
+    |> map(|i| i.sku)
+}
+
+fn countdown(n: Int) -> Int {
+  var i = n
+  for i > 0 {
+    set i = i - 1
+  }
+  return i
+}
+
+test "missing sku is None" {
+  let items = [Item { sku: "a", qty: 1, price: 2.5 }]
+  assert(find_item(items, "b") == None)
+  assert(restock_cost(items, 3) == 5.0)
+}

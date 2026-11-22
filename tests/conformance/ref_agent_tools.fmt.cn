@@ -1,0 +1,54 @@
+use agent.tools
+use std.json
+
+type Tool {
+  name: String,
+  run: fn(Json) -> Result[Json, Error],
+}
+
+type Step =
+  | Call(tool: String, input: Json)
+  | Answer(text: String)
+  | Fail(reason: String)
+
+# One turn of an agent loop: pick a step, run it, report.
+fn run_step(tools: List[Tool], step: Step) -> Result[String, Error]
+  effects: io, time
+{
+  let started = now()
+  let out = match step {
+    Call(name, input) => run_named(tools, name, input),
+    Answer(text) => Ok(text),
+    Fail(reason) => Err(Error { message: reason }),
+  }
+  print(elapsed_label(started, now()))
+  return out
+}
+
+fn run_named(tools: List[Tool], name: String, input: Json) -> Result[String, Error] {
+  let matching = filter(tools, |t| t.name == name)
+  if len(matching) == 0 {
+    return Err(Error { message: "unknown tool" })
+  }
+  let result = try call_tool(first_tool(matching), input)
+  return Ok(json.stringify(result))
+}
+
+fn elapsed_label(start: Time, finish: Time) -> String {
+  let ms = to_millis(finish) - to_millis(start)
+  return concat("step took ", to_string(ms), "ms")
+}
+
+fn retry_delays(base: Int, attempts: Int) -> List[Int]
+  requires: base > 0 and attempts <= 8
+{
+  return range(0, attempts)
+    |> map(|k| base * pow(2, k))
+    |> filter(|d| d <= 30000)
+    |> map(|d| d + -1)
+}
+
+test "answers pass straight through" {
+  let r = run_step([], Answer("done"))
+  assert(r == Ok("done"))
+}

@@ -1,0 +1,60 @@
+use std.list
+use std.money
+
+type Order {
+  id: Int,
+  customer: CustomerId,
+  amount: Money,
+}
+
+type Shape =
+  | Circle(radius: Float)
+  | Rect(width: Float, height: Float)
+
+# Highest-spending customers, best first.
+fn top_customers(orders: List[Order], n: Int) -> List[CustomerId]
+  requires: n > 0
+  ensures: len(result) <= n
+{
+  let ranked = orders
+    |> group_by(|o| o.customer)
+    |> map(|id, os| (id, sum(os.amount)))
+    |> sort_desc_by(|pair| pair.1)
+    |> take(n)
+  return map(ranked, |pair| pair.0)
+}
+
+fn area(s: Shape) -> Float {
+  let a = match s {
+    Circle(r) => 3.14159 * r * r,
+    Rect(w, h) => w * h,
+  }
+  return a
+}
+
+fn report(orders: List[Order]) -> Unit
+  effects: io, time
+{
+  let stamp = now()
+  print(to_string(stamp))
+  for o in orders {
+    if o.amount > 1000.0 {
+      print("large order")
+    } else if o.amount > 100.0 {
+      print("medium order")
+    } else {
+      print("small order")
+    }
+  }
+}
+
+fn load(path: String) -> Result[List[Order], Error]
+  effects: fs
+{
+  let text = try read_file(path)
+  return parse_orders(text)
+}
+
+test "area of a unit square" {
+  assert(area(Rect(1.0, 1.0)) == 1.0)
+}

@@ -1,0 +1,29 @@
+{
+  "name": "canon-lang",
+  "version": "0.1.0",
+  "description": "Canon: a programming language for AI agents. One way to write every program.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "canon": "./dist/index.js"
+  },
+  "files": ["dist"],
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": {
+      "source": "./src/main.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --target=node20 --conditions=source --outfile=dist/index.js --banner:js=\"#!/usr/bin/env node\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@canon/compiler": "workspace:*",
+    "@canon/runtime": "workspace:*",
+    "esbuild": "^0.25.0"
+  }
+}
