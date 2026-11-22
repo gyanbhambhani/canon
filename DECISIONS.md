@@ -2,6 +2,14 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — M4: CLI output conventions
+- `check` prints `path:line:col: error CODE: message` followed by the indented patch; `--json` prints the oracle-shaped `{ ok, canonical, diagnostics }` (an array of `{ path, ... }` when given several files).
+- `fmt` prints canonical text; `--write` rewrites changed files silently; `--json` prints `{ path, changed, formatted }`. A parse error prints the diagnostic on stderr and exits 1.
+- `run` refuses to run a file with any diagnostic (exit 1, diagnostics on stderr). A trap prints one JSON line on stderr; an Err from main prints `error: <message>` on stderr. `--json` captures the program's stdout into `{ ok, status, stdout, trap?, error? }`.
+- `test` prints `PASS name` / `FAIL name` plus the trap JSON, then `N passed, M failed`, using the test host (clock at 0, rand seeded 42) over the Node host.
+- Usage errors exit 2: unknown command, unknown or misplaced flag, unknown effect in `--deny`, missing or unreadable file. `run` takes exactly one file.
+- The CLI is bundled by esbuild (from source, via the `source` export condition) into one `dist/index.js`, so the published `canon-lang` package has no workspace dependencies.
+
 ## 2026-11-22 — M3: code generation and runtime choices
 - Output shape: `compileJs` emits the body of a function taking `$rt` and returning `{ main, tests, types, mainRet }`; `asModule` wraps it as an ES2022 module (`export default function load($rt)`). One artifact runs in Node, tests and a Web Worker without a module loader.
 - Values: Int and Float are JS numbers; the checker's types pick the operation (Int `+ - *` are overflow-checked, Int `/` truncates). Lists and tuples are arrays, records and variants are `{ $t, field... }` objects, Unit is `undefined`, Map is a JS `Map` (keys are Int, Float or String, so value keys work).

@@ -45,10 +45,10 @@ Compile checked programs to JavaScript and implement the standard library, contr
 
 Ship the canon command.
 
-- [ ] `canon check`, `canon fmt [--write]`, `canon run [--deny ...] [--no-contracts]` and `canon test` work, each with `--json` output
-- [ ] Exit codes: 0 success, 1 diagnostics or failed tests or traps, 2 usage error
-- [ ] `node packages/cli/dist/index.js run examples/hello.cn` prints `hello, canon` from a clean clone after `pnpm build`
-- [ ] CLI integration tests cover every command and flag
+- [x] `canon check`, `canon fmt [--write]`, `canon run [--deny ...] [--no-contracts]` and `canon test` work, each with `--json` output
+- [x] Exit codes: 0 success, 1 diagnostics or failed tests or traps, 2 usage error
+- [x] `node packages/cli/dist/index.js run examples/hello.cn` prints `hello, canon` from a clean clone after `pnpm build`
+- [x] CLI integration tests cover every command and flag
 
 ## M5: Docs site
 
@@ -110,3 +110,7 @@ Only after M7, and only when the owner provides model access.
 - examples/ has hello, fizzbuzz, word_count, orders, result_try (each with test blocks); their expected output is tests/run/example_*.out. tests/run has 27 more programs; `.in` files feed read_line.
 - Tricky: the HTTP test needs its server in a separate process (the host's synchronous fetch blocks the event loop). Test sources must be canonical, effect-exact Canon, or `compileOrThrow` refuses them.
 - Next (M4): the CLI wraps check/fmt/run/test around compileJs plus runMain/runTests with nodeHost (and testHost for `canon test`).
+
+### M4 (done)
+- packages/cli/src/main.ts holds `main(argv, io)`; index.ts is the process entry. Tests spawn the built dist (`pnpm test` builds first; CI builds before `test:fast`).
+- Next (M5): docs with Fumadocs in apps/web. Write `llms.txt` from one source (the For agents page) and test it under 4,000 tokens. Every ```canon block must pass `check` or carry `# expect: CODE`.
