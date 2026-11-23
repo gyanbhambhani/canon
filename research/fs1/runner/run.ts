@@ -265,20 +265,37 @@ if (process.argv[1]?.endsWith("run.ts")) {
   const tasks = arg("tasks")!.split(",");
   const arms = (arg("arms") ?? ARMS.join(",")).split(",") as Arm[];
   const runs = Number(arg("runs", "1"));
+  const firstRun = Number(arg("first-run", "1"));
+  const concurrency = Number(arg("concurrency", "1"));
+  /** stop launching runs once this model's recorded dollars across --spent files reach the cap */
+  const cap = Number(arg("cap", "0"));
   const out = join(FS1, arg("out", "results/runs.jsonl")!);
+  const spentFiles = (arg("spent") ?? arg("out", "results/runs.jsonl")!).split(",").map((f) => join(FS1, f));
   mkdirSync(dirname(out), { recursive: true });
-  const done = new Set(existsSync(out) ? readFileSync(out, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l).key) : []);
-  for (let r = 1; r <= runs; r++) {
-    for (const t of tasks) {
-      for (const arm of arms) {
-        const key = `${t}|${arm}|${model.id}|${r}`;
-        if (done.has(key)) continue;
-        const rec = await runOne(model, t, arm, r);
-        appendFileSync(out, JSON.stringify(rec) + "\n");
-        console.log(`${rec.pass ? "PASS" : "FAIL"} ${key}: rounds ${rec.editRounds}, turns ${rec.turns}, ${rec.finished}, checks ${rec.checksOk ? "ok" : "failed"}` +
-          `${rec.mismatch ? ", MISMATCH" : ""}, tokens ${rec.usage.input + rec.usage.cacheRead + rec.usage.cacheWrite}/${rec.usage.output}` +
-          `${rec.dollars !== null ? `, $${rec.dollars.toFixed(3)}` : ""}, ${Math.round(rec.wallMs / 1000)}s${rec.error ? `, error: ${rec.error.slice(0, 200)}` : ""}`);
+  const read = (f: string): RunRecord[] =>
+    existsSync(f) ? readFileSync(f, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l) as RunRecord) : [];
+  const done = new Set(read(out).map((rec) => rec.key));
+  const spent = () => spentFiles.flatMap(read).filter((rec) => rec.model === model.id).reduce((a, rec) => a + (rec.dollars ?? 0), 0);
+  const jobs: { t: string; arm: Arm; r: number }[] = [];
+  for (let r = firstRun; r < firstRun + runs; r++) for (const t of tasks) for (const arm of arms) jobs.push({ t, arm, r });
+  let next = 0;
+  let stopped = false;
+  const worker = async () => {
+    while (next < jobs.length && !stopped) {
+      const { t, arm, r } = jobs[next++];
+      const key = `${t}|${arm}|${model.id}|${r}`;
+      if (done.has(key)) continue;
+      if (cap > 0 && spent() >= cap) {
+        stopped = true;
+        console.log(`STOP: ${model.id} reached the cap of $${cap}`);
+        break;
       }
+      const rec = await runOne(model, t, arm, r);
+      appendFileSync(out, JSON.stringify(rec) + "\n");
+      console.log(`${rec.pass ? "PASS" : "FAIL"} ${key}: rounds ${rec.editRounds}, turns ${rec.turns}, ${rec.finished}, checks ${rec.checksOk ? "ok" : "failed"}` +
+        `${rec.mismatch ? ", MISMATCH" : ""}, tokens ${rec.usage.input + rec.usage.cacheRead + rec.usage.cacheWrite}/${rec.usage.output}` +
+        `${rec.dollars !== null ? `, $${rec.dollars.toFixed(3)}` : ""}, ${Math.round(rec.wallMs / 1000)}s${rec.error ? `, error: ${rec.error.slice(0, 200)}` : ""}`);
     }
-  }
+  };
+  await Promise.all(Array.from({ length: concurrency }, worker));
 }

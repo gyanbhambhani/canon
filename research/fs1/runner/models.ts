@@ -91,19 +91,26 @@ export function claudeModel(model: string): Model {
   };
 }
 
-/** A GPT model. Prices from FS1_PRICE_GPT_IN / FS1_PRICE_GPT_OUT (USD per million), else unknown. */
+/**
+ * A GPT model, reasoning effort "medium" (as CanonBench runs it, matching Claude's effort). List
+ * prices for gpt-6.2-sol: $2 / $10 per million input / output tokens, cached input $0.10 (looked up
+ * 2026-11-22 by the CanonBench run, research/canonbench/runner/models.ts). FS1_PRICE_GPT_IN /
+ * FS1_PRICE_GPT_OUT override them.
+ */
 export function gptModel(model: string): Model {
   const client = new OpenAI({ maxRetries: 8, timeout: 900_000 });
+  const known = model === "gpt-6.2-sol" ? { input: 2, output: 10, cacheRead: 0.1, cacheWrite: 2 } : null;
   const pin = Number(process.env.FS1_PRICE_GPT_IN);
   const pout = Number(process.env.FS1_PRICE_GPT_OUT);
   return {
     id: model,
-    price: pin > 0 && pout > 0 ? { input: pin, output: pout, cacheRead: pin, cacheWrite: pin } : null,
+    price: pin > 0 && pout > 0 ? { input: pin, output: pout, cacheRead: pin, cacheWrite: pin } : known,
     async chat(system, turns) {
       const res = await client.chat.completions.create({
         model,
         messages: [{ role: "system", content: system }, ...turns],
         max_completion_tokens: 16000,
+        reasoning_effort: "medium",
       });
       const cached = (res.usage as { prompt_tokens_details?: { cached_tokens?: number } } | undefined)?.prompt_tokens_details?.cached_tokens ?? 0;
       return {
