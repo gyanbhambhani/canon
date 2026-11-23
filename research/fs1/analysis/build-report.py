@@ -56,8 +56,8 @@ incomplete, and there is no verdict on whether Canon is the better full-stack la
     exist, on 33 of the 60 tasks, and no task reached the pre-registered 3 runs.
 - **The pre-registered win rule cannot be evaluated.** It needs both frontier models. This report gives
   the measured effects with their 95% intervals and **no verdict**.
-- **Qwen2.5-Coder-7B (exploratory)** is not finished: {qline(q_pilot, 30)} in the pilot and
-  {qline(q_main, 180)} in the main run, because the shared local server kept crashing. Qwen2.5-Coder-32B was
+- **Qwen2.5-Coder-7B (exploratory)**: pilot complete ({qline(q_pilot, 30)}); main run unfinished
+  ({qline(q_main, 180)}), because the shared local server kept crashing. Qwen2.5-Coder-32B was
   dropped (its weights could not be downloaded) and nothing about it is analyzed.
 - **What the owner has to do to complete the run** is at the end of this report.
 
@@ -67,7 +67,7 @@ incomplete, and there is no verdict on whether Canon is the better full-stack la
 | --- | --- | --- | --- |
 | gpt-6.2-sol | {len(gpt_pilot)} runs, all passed | {len(gpt)} of 540 | stopped: OpenAI account out of credit |
 | claude-opus-5-5 | {len(opus_pilot)} runs, all passed | 0 of 360 (2 runs per task as pre-registered) | stopped: Anthropic account out of credit, in the pilot |
-| Qwen2.5-Coder-7B | {len(q_pilot)} real runs, {sum(1 for r in q_pilot if r['pass'])} passed | {len(q_main)} real runs of 180, {sum(1 for r in q_main if r['pass'])} passed | exploratory; local server crashes |
+| Qwen2.5-Coder-7B | {len(q_pilot)} real runs (complete), {sum(1 for r in q_pilot if r['pass'])} passed | {len(q_main)} real runs of 180, {sum(1 for r in q_main if r['pass'])} passed | exploratory; local server crashes |
 
 The 188 GPT records that were infrastructure failures (183 "no credits remaining", 3 timeouts, 1
 connection error, 1 terminated process) and the Qwen runs that hit a dead server are not results. They
@@ -146,14 +146,17 @@ success nor mismatch rate differs between arms (all 100% and 0%).
 On the pilot, Opus's Canon arm was the cheapest in dollars and rounds (first-round pass 87.5% against 75.0%
 and 50.0%), the opposite of GPT's first-round result, on 8 tasks; the intervals are very wide.
 
-## Qwen2.5-Coder-7B (exploratory, unfinished)
+## Qwen2.5-Coder-7B (exploratory)
 
-Real runs so far: pilot {qline(q_pilot, 30)}; main {qline(q_main, 180)}. The pre-registered rule makes Qwen
-exploratory (it passes under 10% in every arm in the pilot). With this few runs nothing can be said; the
-real runs so far all ended at the 5-round limit and failed at least one boundary probe.
-When the retry loop (`runner/local-until-done.sh`, on CanonBench's server, port 8091) finishes, refresh
-this section with `npx tsx --conditions=source analysis/analyze.ts --results 'results/main-qwen.jsonl'
---config analysis/config-partial.json --label "Qwen 7B"`.
+The pilot finished: {len(q_pilot)} real runs, {sum(1 for r in q_pilot if r['pass'])} passed (direct {sum(1 for r in q_pilot if r['pass'] and r['arm']=='direct')} of 10, openapi {sum(1 for r in q_pilot if r['pass'] and r['arm']=='openapi')} of 10, canon {sum(1 for r in q_pilot if r['pass'] and r['arm']=='canon')} of 10).
+**By the plan's rule Qwen would not be exploratory** (the rule needs under 10% in every arm, and openapi
+passed 20%); it is reported as exploratory because the main run is incomplete: {qline(q_main, 180)}. The shared local
+server stopped generating repeatedly and the three-hour limit ended the run with the rest not done. The runs
+cover the arms unevenly, so each arm's mean is over a different set of tasks and the Canon − openapi difference
+is paired only on tasks that both arms completed. With 13 to 15 runs per arm, **the intervals are too wide to
+conclude anything**; the runs that finished almost all ended at the 5-round limit and failed a boundary probe.
+
+{table('qwen-main')}
 
 ## Canon's expressiveness limits found by the task authors (tasks/BATCH-*-NOTES.md)
 
@@ -189,6 +192,7 @@ language limits in the list above.
 - Opus stopped on credit during the pilot; GPT stopped on credit during the main run; the win rule is
   undecidable (Amendments 1 and 3).
 - Qwen-7B runs on CanonBench's shared server (two servers crashed one); Qwen-32B was dropped (Amendments 1 and 2).
+- Qwen-7B is labelled exploratory although its pilot passed 10% to 20% per arm (the plan's rule needs under 10%), because its main run is incomplete (Amendment 4).
 - The agent protocol is text-based (`<read/>`, `<write>`, `<run>`), not native tool calling; every arm gets tsc
   and eslint on its frontend; Opus runs at effort medium without a temperature; GPT at reasoning effort medium.
 - GPT's runs per task: 3 were pre-registered; at most 2 exist.

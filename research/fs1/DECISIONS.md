@@ -2,6 +2,18 @@
 
 Judgment calls made while building the harness, newest first. Each entry: date, decision, reason.
 
+## 2026-11-23 — Qwen-7B final state
+Decision: the Qwen-7B pilot is complete (30 real runs; 4 passed: direct 1, openapi 2, canon 1) and
+its main run stopped at the three-hour limit with 42 of 180 real runs (2 passed); the shared server
+kept refusing to generate. Reported as exploratory anyway (Amendment 4), although the pilot did not
+meet the plan's under-10%-in-every-arm rule.
+Reason: the coordinator's instruction, and the incomplete main run. The report says plainly that the
+rule did not apply and that 13 to 15 runs per arm conclude nothing.
+
+Decision: the main-run loop for Qwen had not started when the chained pilot-then-main subshell
+exited; it was started again as a tracked job, at concurrency 2.
+Reason: found when its log file did not exist.
+
 ## 2026-11-23 — Amendment 3: GPT stopped on credit; partial analysis
 Decision: the coordinator's figure of about 345 GPT runs counted infrastructure failures; 161 are
 real. The 188 failures were moved, unedited, to results/dropped-gpt-infrastructure-failures.jsonl,

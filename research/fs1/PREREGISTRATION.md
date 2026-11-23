@@ -233,3 +233,10 @@ for Anthropic's. It changes no scoring. Its SHA-256 is now
 
 **To complete the run.** Add credit to both accounts and re-run the same commands (failed calls were
 not recorded, so recorded runs are skipped); see REPORT.md.
+
+## Amendment 4 (2026-11-23): Qwen-7B's exploratory label
+
+The completed Qwen-7B pilot (30 real runs) passed 10%, 20% and 10% (direct, openapi, canon), not under
+10% in every arm, so the plan's rule for calling Qwen exploratory does not strictly apply. Qwen-7B is
+**reported as exploratory anyway**: the owner's coordinator said to, and its main run is incomplete
+(the shared local server kept stopping; the three-hour limit ended it). It is outside the win rule.
