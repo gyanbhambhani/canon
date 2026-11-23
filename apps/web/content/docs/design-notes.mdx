@@ -99,6 +99,28 @@ Weak or split: words versus symbols for `and`, `or` and `not` leans slightly tow
 
 These numbers are inputs to the design, not verdicts. `set` exists so that every mutation is searchable, and `concat` follows "one construct per job"; the study puts a price on those choices. Switching the condition loop to `while` looks like the cheapest win. Any change would go through the language reference, the docs and the implementation together.
 
-### Benchmark
+### Benchmark: do agents converge on Canon?
 
-In progress: 40 tasks, each run 10 times in Canon and in TypeScript with Claude Opus 5.5 and GPT-6.2 Sol, measuring distinct programs per task, first-pass check rate, fix rounds and test pass rate. If Canon does not cut the number of distinct programs per task sharply, the core bet is wrong. Its chart will appear here.
+50 tasks (40 basic, 10 with records, sum types and `Result` errors), each run 10 times in Canon and in TypeScript with Claude Opus 5.5 and GPT-6.2 Sol: 2,000 runs. Each run writes the program, gets checker feedback (Canon's JSON patches or `tsc --strict` errors), fixes it for up to three rounds, then faces hidden tests. The decision rules were [committed before the run](https://github.com/gyanbhambhani/canon/blob/main/research/benchmark/PREREGISTRATION.md) and applied mechanically; the full report and raw runs are in `research/benchmark/`.
+
+| | Part of the claim | Result | Verdict |
+| --- | --- | --- | --- |
+| C1 | Agents understand Canon from its reference alone | 100% correct in Canon and in TypeScript, both models | Supported |
+| C2 | They code it right, hard tasks included | 100% overall and on the hard tier | Supported |
+| C3 | One way to write it: at most half as many distinct programs per task | Canon 4.30 vs TypeScript 4.10 (Claude), 4.20 vs 3.68 (GPT-6.2 Sol) | **Not supported** |
+| C4 | At least as fast for an agent to reach working code | 1.04 vs 1.00 turns (Claude), 1.07 vs 1.00 (GPT-6.2 Sol) | Supported |
+| C5 | Programs run faster | v0 compiles to JavaScript, so not tested | Not tested |
+
+![Distinct programs per task, Canon versus TypeScript](/research/benchmark.svg)
+
+So, honestly: agents learn Canon from a 2,800-token reference and write it correctly on the first or second try, but on this benchmark **Canon did not make their programs converge** more than TypeScript does once TypeScript is normalized by Prettier. The core bet, as measured here, does not hold yet.
+
+What went right: every Canon first draft that failed (5 to 7 percent of runs) failed only on canonical form or line length, never on types, and every one passed after a single round of applying the compiler's patch. Where a task fits Canon's constructs directly it converges strongly: `sum_evens` was the same program in 10 of 10 Claude runs, and `factorial` with GPT-6.2 Sol was 1 program against TypeScript's 9.
+
+What went wrong, read from the programs themselves (a hypothesis, not a finding):
+
+- **Restrictions breed workarounds.** With `match` limited to `let`, `set` and `return`, and no early exit from a loop, tasks such as `apply_ops` produced 10 different Canon programs, against TypeScript's single early-return loop.
+- **Names and optional contracts multiply programs.** Identical structures differ only in a helper's name or an added `requires:` line.
+- **Cost.** The reference rides in every prompt: about 11 to 13 times the tokens per correct program, and about 1.4 to 1.7 times the wall time.
+
+The next step is a pre-registered follow-up testing specific changes: `match` anywhere or an early loop exit, fewer reasons to invent helpers, and the spellings the likelihood study found far more natural (`while`, bare assignment).

@@ -81,8 +81,8 @@ Build / and /play as described in the Landing page section.
 Only after M7, and only when the owner provides model access.
 
 - [x] research/likelihood/: score equivalent spellings of 10 to 15 constructs with a small open-weights model and report which form wins and by how much
-- [ ] research/benchmark/: 40 tasks run 10 times each in Canon and in TypeScript, reporting distinct programs per task, first-pass check rate and fix rounds
-- [ ] One chart per study, embedded in the docs Design notes page
+- [x] research/benchmark/: 40 tasks run 10 times each in Canon and in TypeScript, reporting distinct programs per task, first-pass check rate and fix rounds
+- [x] One chart per study, embedded in the docs Design notes page
 
 
 ## Progress log
@@ -129,6 +129,7 @@ Only after M7, and only when the owner provides model access.
 - The remaining steps need the owner: Vercel import with root apps/web plus NEXT_PUBLIC_GITHUB_URL, and `npm publish` of canon-lang (see DEPLOY.md). M8 needs model access.
 - Next session: M8 only, if the owner provides model access. Otherwise maintenance.
 
-### M8 (in progress)
+### M8 (done)
 - Likelihood study done with local Qwen2.5-Coder 1.5B and 7B (research/likelihood). Strongest finding: models strongly prefer `x = ...` over `set x = ...`, and `while` over `for cond`. Results are in the Design notes page.
 - Benchmark: Claude Opus 5.5 and GPT-6.2 Sol, with keys in .env.local (git-ignored). Generated modules now expose `fns` so harnesses can call Canon functions directly.
+- Benchmark done: 2,000 runs. Pre-registered verdicts: C1 (understood), C2 (correct) and C4 (as fast) supported; **C3 (convergence, the core bet) not supported**; C5 (runtime speed) not tested. The exploratory analysis points at `match` placement, the missing early loop exit, and helper naming as the sources of divergence. The next step is a new pre-registered run after changing those.
