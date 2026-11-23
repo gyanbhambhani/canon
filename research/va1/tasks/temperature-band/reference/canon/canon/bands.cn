@@ -1,0 +1,17 @@
+type Band {
+  low: Int,
+  high: Int,
+  label: String,
+}
+
+api fn create_band(b: Band) -> Band
+  route: POST "/bands"
+  requires: b.low >= -50
+    && b.low <= 50
+    && b.high >= -50
+    && b.high <= 50
+    && b.high - b.low >= 2
+    && str_len(b.label) <= 20
+{
+  return b
+}

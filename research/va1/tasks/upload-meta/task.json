@@ -1,0 +1,148 @@
+{
+  "id": "upload-meta",
+  "set": 1,
+  "title": "Register an upload",
+  "adapted": null,
+  "route": {
+    "method": "POST",
+    "path": "/uploads"
+  },
+  "feature": {
+    "module": "registerUpload",
+    "fn": "registerUpload"
+  },
+  "base": {
+    "filename": "=alnum(int(1, 100))",
+    "size_kb": "=int(1, 10240)",
+    "kind": "=pick(['png', 'jpg', 'pdf'])"
+  },
+  "random": {
+    "filename": "=alnum(int(0, 110))",
+    "size_kb": "=int(-20, 11000)",
+    "kind": "=pick(['png', 'jpg', 'pdf', 'gif', 'PNG', ''])"
+  },
+  "rules": [
+    {
+      "id": "filename_length",
+      "kind": "single",
+      "desc": "filename has 1 to 100 characters",
+      "inside": [
+        {
+          "set": {
+            "filename": "a"
+          }
+        },
+        {
+          "set": {
+            "filename": "=rep('a', 100)"
+          }
+        },
+        {
+          "set": {
+            "filename": "=emoji(100)"
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "filename": ""
+          }
+        },
+        {
+          "set": {
+            "filename": "=rep('a', 101)"
+          }
+        },
+        {
+          "set": {
+            "filename": "=emoji(101)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "size_range",
+      "kind": "single",
+      "desc": "size_kb is 1 to 10240",
+      "inside": [
+        {
+          "set": {
+            "size_kb": 1
+          }
+        },
+        {
+          "set": {
+            "size_kb": 10240
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "size_kb": 0
+          }
+        },
+        {
+          "set": {
+            "size_kb": 10241
+          }
+        },
+        {
+          "set": {
+            "size_kb": -1
+          }
+        },
+        {
+          "set": {
+            "size_kb": 100000
+          }
+        }
+      ]
+    },
+    {
+      "id": "kind_enum",
+      "kind": "single",
+      "desc": "kind is png, jpg or pdf",
+      "inside": [
+        {
+          "set": {
+            "kind": "png"
+          }
+        },
+        {
+          "set": {
+            "kind": "jpg"
+          }
+        },
+        {
+          "set": {
+            "kind": "pdf"
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "kind": "PNG"
+          }
+        },
+        {
+          "set": {
+            "kind": "gif"
+          }
+        },
+        {
+          "set": {
+            "kind": "png "
+          }
+        },
+        {
+          "set": {
+            "kind": ""
+          }
+        }
+      ]
+    }
+  ]
+}

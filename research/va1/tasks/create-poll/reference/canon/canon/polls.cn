@@ -1,0 +1,14 @@
+type Poll {
+  question: String,
+  options: List[String],
+}
+
+api fn create_poll(poll: Poll) -> Poll
+  route: POST "/polls"
+  requires: str_len(poll.question) >= 5
+    && str_len(poll.question) <= 120
+    && len(poll.options) >= 2
+    && len(poll.options) <= 6
+{
+  return poll
+}

@@ -1,0 +1,16 @@
+{
+  "id": "password-change",
+  "set": 2,
+  "title": "Change a password",
+  "adapted": null,
+  "route": {"method": "POST", "path": "/password"},
+  "feature": {"module": "changePassword", "fn": "changePassword"},
+  "base": {"old_password": "='o' + alnum(int(0, 19))", "new_password": "='n' + alnum(int(7, 19))", "confirm": "=$new_password"},
+  "random": {"old_password": "=pick(['', 'old', alnum(int(1, 12))])", "new_password": "=pick(['', 'short', alnum(int(1, 14))])", "confirm": "=pick(['', 'short', alnum(int(1, 14))])"},
+  "rules": [
+    {"id": "old_required", "kind": "single", "desc": "old_password has at least 1 character", "inside": [{"set": {"old_password": "x"}}, {"set": {"old_password": " "}}], "outside": [{"set": {"old_password": ""}}]},
+    {"id": "new_min_length", "kind": "single", "desc": "new_password has at least 8 characters", "inside": [{"set": {"new_password": "=rep('p', 8)", "confirm": "=rep('p', 8)"}}, {"set": {"new_password": "=rep('p', 20)", "confirm": "=rep('p', 20)"}}], "outside": [{"set": {"new_password": "=rep('p', 7)", "confirm": "=rep('p', 7)"}}, {"set": {"new_password": "p", "confirm": "p"}}, {"set": {"new_password": "", "confirm": ""}}]},
+    {"id": "confirm_matches", "kind": "cross", "desc": "confirm equals new_password", "inside": [{"set": {"confirm": "=$new_password"}}], "outside": [{"set": {"confirm": "=$new_password + 'x'"}}, {"set": {"confirm": "=$new_password.slice(1)"}}, {"set": {"confirm": "=$new_password.toUpperCase()"}}, {"set": {"confirm": ""}}]},
+    {"id": "new_differs_from_old", "kind": "cross", "desc": "new_password differs from old_password", "inside": [{"set": {"new_password": "=$old_password + 'xxxxxxxx'", "confirm": "=$old_password + 'xxxxxxxx'"}}, {"set": {"old_password": "=rep('q', 8)", "new_password": "=rep('q', 9)", "confirm": "=rep('q', 9)"}}, {"set": {"old_password": "=rep('q', 8)", "new_password": "=rep('Q', 8)", "confirm": "=rep('Q', 8)"}}], "outside": [{"set": {"old_password": "=rep('q', 8)", "new_password": "=rep('q', 8)", "confirm": "=rep('q', 8)"}}, {"set": {"old_password": "=$new_password"}}, {"set": {"old_password": "=rep('z', 20)", "new_password": "=rep('z', 20)", "confirm": "=rep('z', 20)"}}]}
+  ]
+}

@@ -1,0 +1,10 @@
+type ProjectRename {
+  name: String,
+}
+
+api fn rename_project(r: ProjectRename) -> ProjectRename
+  route: POST "/projects/rename"
+  requires: str_len(r.name) >= 3 && str_len(r.name) <= 40
+{
+  return r
+}

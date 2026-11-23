@@ -1,0 +1,14 @@
+{
+  "id": "tip-amount",
+  "set": 1,
+  "title": "Add a tip",
+  "adapted": null,
+  "route": {"method": "POST", "path": "/tips"},
+  "feature": {"module": "addTip", "fn": "addTip"},
+  "base": {"amount": "=float(0.01, 10000)", "percent": "=int(0, 100)"},
+  "random": {"amount": "=float(-20, 10050)", "percent": "=int(-5, 110)"},
+  "rules": [
+    {"id": "amount_range", "kind": "single", "desc": "amount is 0.01 to 10000.0", "inside": [{"set": {"amount": 0.01}}, {"set": {"amount": 10000.0}}, {"set": {"amount": 0.02}}, {"set": {"amount": 9999.99}}], "outside": [{"set": {"amount": 0.0}}, {"set": {"amount": -0.01}}, {"set": {"amount": 10000.01}}, {"set": {"amount": -5.0}}]},
+    {"id": "percent_range", "kind": "single", "desc": "percent is 0 to 100", "inside": [{"set": {"percent": 0}}, {"set": {"percent": 100}}], "outside": [{"set": {"percent": -1}}, {"set": {"percent": 101}}, {"set": {"percent": 1000}}]}
+  ]
+}

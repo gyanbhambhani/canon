@@ -1,0 +1,18 @@
+type SeatBlock {
+  seats: Int,
+  row: Int,
+  first_seat: Int,
+}
+
+api fn reserve_seats(r: SeatBlock) -> SeatBlock
+  route: POST "/seats/reserve"
+  requires: r.seats >= 1
+    && r.seats <= 10
+    && r.row >= 1
+    && r.row <= 30
+    && r.first_seat >= 1
+    && r.first_seat <= 20
+    && r.first_seat + r.seats - 1 <= 20
+{
+  return r
+}

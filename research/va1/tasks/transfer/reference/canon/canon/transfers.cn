@@ -1,0 +1,34 @@
+type TransferRequest {
+  from_account: String,
+  to_account: String,
+  amount: Int,
+  balance: Int,
+}
+
+type Transfer {
+  from_account: String,
+  to_account: String,
+  amount: Int,
+  balance: Int,
+  remaining: Int,
+}
+
+api fn make_transfer(r: TransferRequest) -> Transfer
+  route: POST "/transfers"
+  requires: str_len(r.from_account) >= 1
+    && str_len(r.from_account) <= 20
+    && str_len(r.to_account) >= 1
+    && str_len(r.to_account) <= 20
+    && r.from_account != r.to_account
+    && r.amount >= 1
+    && r.balance >= 0
+    && r.amount <= r.balance
+{
+  return Transfer {
+    from_account: r.from_account,
+    to_account: r.to_account,
+    amount: r.amount,
+    balance: r.balance,
+    remaining: r.balance - r.amount,
+  }
+}

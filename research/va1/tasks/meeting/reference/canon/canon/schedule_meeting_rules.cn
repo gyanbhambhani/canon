@@ -1,0 +1,19 @@
+type Meeting {
+  title: String,
+  start_hour: Int,
+  duration_min: Int,
+}
+
+api fn schedule_meeting(r: Meeting) -> Meeting
+  route: POST "/meetings"
+  requires: str_len(r.title) >= 1
+    && str_len(r.title) <= 60
+    && r.start_hour >= 0
+    && r.start_hour <= 23
+    && r.duration_min >= 15
+    && r.duration_min <= 240
+    && r.duration_min % 15 == 0
+    && r.start_hour * 60 + r.duration_min <= 1440
+{
+  return r
+}

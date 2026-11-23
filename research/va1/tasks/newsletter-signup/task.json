@@ -1,0 +1,21 @@
+{
+  "id": "newsletter-signup",
+  "set": 1,
+  "title": "Subscribe to the newsletter",
+  "adapted": null,
+  "route": { "method": "POST", "path": "/newsletter" },
+  "feature": { "module": "subscribeNewsletter", "fn": "subscribeNewsletter" },
+  "base": { "email": "=alnum(int(3, 10)) + '@' + alnum(int(2, 8)) + '.' + alnum(int(2, 3))", "name": "=alnum(int(1, 50))" },
+  "random": { "email": "=pick(['', 'a@b.c', 'ab', 'a@b', '@b.c', 'a b@c.d', alnum(5) + '@' + alnum(4) + '.com'])", "name": "=pick(['', ' ', 'Ada', rep('a', int(40, 60))])" },
+  "rules": [
+    { "id": "email_format", "kind": "single", "desc": "email is an email address",
+      "inside": [{ "set": { "email": "a@b.c" } }, { "set": { "email": "a@b.c.d" } }],
+      "outside": [{ "set": { "email": "ab.c" } }, { "set": { "email": "a@b" } }, { "set": { "email": "@b.c" } }, { "set": { "email": "a@@b.c" } }] },
+    { "id": "name_not_blank", "kind": "single", "desc": "name is not blank",
+      "inside": [{ "set": { "name": " a " } }, { "set": { "name": "a" } }],
+      "outside": [{ "set": { "name": "" } }, { "set": { "name": " " } }, { "set": { "name": "\t \n" } }] },
+    { "id": "name_length", "kind": "single", "desc": "name has at most 50 characters",
+      "inside": [{ "set": { "name": "=rep('a', 50)" } }, { "set": { "name": "=emoji(50)" } }],
+      "outside": [{ "set": { "name": "=rep('a', 51)" } }, { "set": { "name": "=emoji(51)" } }] }
+  ]
+}

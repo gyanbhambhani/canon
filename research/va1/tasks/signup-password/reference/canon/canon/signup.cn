@@ -1,0 +1,15 @@
+type SignupRequest {
+  email: String,
+  password: String,
+}
+
+type Account {
+  email: String,
+}
+
+api fn sign_up(r: SignupRequest) -> Account
+  route: POST "/signup"
+  requires: is_email(r.email) && str_len(r.password) >= 8 && r.password != r.email
+{
+  return Account { email: r.email }
+}

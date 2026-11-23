@@ -1,0 +1,117 @@
+{
+  "id": "create-tag",
+  "set": 1,
+  "title": "Create a tag",
+  "adapted": null,
+  "route": {
+    "method": "POST",
+    "path": "/tags"
+  },
+  "feature": {
+    "module": "createTag",
+    "fn": "createTag"
+  },
+  "base": {
+    "label": "=alnum(int(2, 20))",
+    "color": "=pick(['red', 'green', 'blue', 'gray'])"
+  },
+  "random": {
+    "label": "=alnum(int(0, 25))",
+    "color": "=pick(['red', 'green', 'blue', 'gray', 'grey', 'Red', ''])"
+  },
+  "rules": [
+    {
+      "id": "label_length",
+      "kind": "single",
+      "desc": "label has 2 to 20 characters",
+      "inside": [
+        {
+          "set": {
+            "label": "ab"
+          }
+        },
+        {
+          "set": {
+            "label": "=rep('a', 20)"
+          }
+        },
+        {
+          "set": {
+            "label": "=emoji(2)"
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "label": "a"
+          }
+        },
+        {
+          "set": {
+            "label": ""
+          }
+        },
+        {
+          "set": {
+            "label": "=rep('a', 21)"
+          }
+        },
+        {
+          "set": {
+            "label": "=emoji(21)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "color_enum",
+      "kind": "single",
+      "desc": "color is red, green, blue or gray",
+      "inside": [
+        {
+          "set": {
+            "color": "red"
+          }
+        },
+        {
+          "set": {
+            "color": "green"
+          }
+        },
+        {
+          "set": {
+            "color": "blue"
+          }
+        },
+        {
+          "set": {
+            "color": "gray"
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "color": "grey"
+          }
+        },
+        {
+          "set": {
+            "color": "Red"
+          }
+        },
+        {
+          "set": {
+            "color": "red "
+          }
+        },
+        {
+          "set": {
+            "color": ""
+          }
+        }
+      ]
+    }
+  ]
+}

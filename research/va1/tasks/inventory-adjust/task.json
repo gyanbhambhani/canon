@@ -1,0 +1,148 @@
+{
+  "id": "inventory-adjust",
+  "set": 2,
+  "title": "Remove stock",
+  "adapted": null,
+  "route": {
+    "method": "POST",
+    "path": "/inventory/remove"
+  },
+  "feature": {
+    "module": "removeStock",
+    "fn": "removeStock"
+  },
+  "base": {
+    "on_hand": "=int(1, 1000)",
+    "remove": "=int(1, $on_hand)",
+    "reason": "=pick(['sold', 'damaged', 'lost'])"
+  },
+  "random": {
+    "on_hand": "=int(-5, 110000)",
+    "remove": "=int(-5, 1100)",
+    "reason": "=pick(['sold', 'damaged', 'lost', 'stolen', 'Sold', ''])"
+  },
+  "rules": [
+    {
+      "id": "on_hand_max",
+      "kind": "single",
+      "desc": "on_hand is at most 100000 (the lower bound 0 is implied by the remove rules)",
+      "inside": [
+        {
+          "set": {
+            "on_hand": 100000
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "on_hand": 100001
+          }
+        },
+        {
+          "set": {
+            "on_hand": 200000
+          }
+        }
+      ]
+    },
+    {
+      "id": "remove_min",
+      "kind": "single",
+      "desc": "remove is at least 1",
+      "inside": [
+        {
+          "set": {
+            "remove": 1
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "remove": 0
+          }
+        },
+        {
+          "set": {
+            "remove": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "reason_enum",
+      "kind": "single",
+      "desc": "reason is sold, damaged or lost",
+      "inside": [
+        {
+          "set": {
+            "reason": "sold"
+          }
+        },
+        {
+          "set": {
+            "reason": "damaged"
+          }
+        },
+        {
+          "set": {
+            "reason": "lost"
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "reason": "Sold"
+          }
+        },
+        {
+          "set": {
+            "reason": "stolen"
+          }
+        },
+        {
+          "set": {
+            "reason": "lost "
+          }
+        },
+        {
+          "set": {
+            "reason": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "remove_within_stock",
+      "kind": "cross",
+      "desc": "remove <= on_hand",
+      "inside": [
+        {
+          "set": {
+            "remove": "=$on_hand"
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "remove": "=$on_hand + 1"
+          }
+        },
+        {
+          "set": {
+            "on_hand": 0,
+            "remove": 1
+          }
+        },
+        {
+          "set": {
+            "remove": "=$on_hand + 50"
+          }
+        }
+      ]
+    }
+  ]
+}

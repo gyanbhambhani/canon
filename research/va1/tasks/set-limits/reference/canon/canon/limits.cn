@@ -1,0 +1,11 @@
+type Limits {
+  daily: Int,
+  monthly: Int,
+}
+
+api fn set_limits(l: Limits) -> Limits
+  route: POST "/limits"
+  requires: l.daily >= 1 && l.daily <= 1000 && l.monthly >= 1 && l.monthly <= 31000
+{
+  return l
+}

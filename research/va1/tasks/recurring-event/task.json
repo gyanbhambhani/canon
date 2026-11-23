@@ -1,0 +1,24 @@
+{
+  "id": "recurring-event",
+  "set": 2,
+  "title": "Create a recurring event",
+  "adapted": null,
+  "route": { "method": "POST", "path": "/events/recurring" },
+  "feature": { "module": "createRecurring", "fn": "createRecurring" },
+  "base": { "occurrences": "=int(1, 52)", "interval_days": "=int(1, Math.floor(365 / $occurrences))", "title": "=alnum(int(1, 30))" },
+  "random": { "occurrences": "=int(-2, 56)", "interval_days": "=int(-2, 400)", "title": "=pick(['', ' ', 'Standup', rep('a', int(1, 30))])" },
+  "rules": [
+    { "id": "interval_range", "kind": "single", "desc": "interval_days is 1 to 365 (the upper bound is also implied by the span rule)",
+      "inside": [{ "set": { "interval_days": 1 } }, { "set": { "interval_days": 365, "occurrences": 1 } }],
+      "outside": [{ "set": { "interval_days": 0 } }, { "set": { "interval_days": -1 } }, { "set": { "interval_days": -30 } }] },
+    { "id": "occurrences_range", "kind": "single", "desc": "occurrences is 1 to 52",
+      "inside": [{ "set": { "occurrences": 1, "interval_days": 1 } }, { "set": { "occurrences": 52, "interval_days": 7 } }],
+      "outside": [{ "set": { "occurrences": 0 } }, { "set": { "occurrences": -1 } }, { "set": { "occurrences": 53, "interval_days": 1 } }, { "set": { "occurrences": 100, "interval_days": 1 } }] },
+    { "id": "span_max", "kind": "cross", "desc": "interval_days * occurrences is at most 365",
+      "inside": [{ "set": { "interval_days": 73, "occurrences": 5 } }, { "set": { "interval_days": 182, "occurrences": 2 } }, { "set": { "interval_days": 7, "occurrences": 52 } }],
+      "outside": [{ "set": { "interval_days": 74, "occurrences": 5 } }, { "set": { "interval_days": 183, "occurrences": 2 } }, { "set": { "interval_days": 8, "occurrences": 46 } }, { "set": { "interval_days": 52, "occurrences": 8 } }] },
+    { "id": "title_not_blank", "kind": "single", "desc": "title is not blank",
+      "inside": [{ "set": { "title": " a " } }, { "set": { "title": "a" } }],
+      "outside": [{ "set": { "title": "" } }, { "set": { "title": " " } }, { "set": { "title": "\t \r\n" } }] }
+  ]
+}

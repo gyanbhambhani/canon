@@ -1,0 +1,28 @@
+type StockRemoval {
+  on_hand: Int,
+  remove: Int,
+  reason: String,
+}
+
+type StockResult {
+  on_hand: Int,
+  remove: Int,
+  reason: String,
+  left: Int,
+}
+
+api fn remove_stock(r: StockRemoval) -> StockResult
+  route: POST "/inventory/remove"
+  requires: r.on_hand >= 0
+    && r.on_hand <= 100000
+    && r.remove >= 1
+    && contains(["sold", "damaged", "lost"], r.reason)
+    && r.remove <= r.on_hand
+{
+  return StockResult {
+    on_hand: r.on_hand,
+    remove: r.remove,
+    reason: r.reason,
+    left: r.on_hand - r.remove,
+  }
+}

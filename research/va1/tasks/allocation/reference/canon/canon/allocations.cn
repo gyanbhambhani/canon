@@ -1,0 +1,21 @@
+type Allocation {
+  ads: Int,
+  dev: Int,
+  ops: Int,
+  project: String,
+}
+
+api fn set_allocation(a: Allocation) -> Allocation
+  route: POST "/allocations"
+  requires: a.ads >= 0
+    && a.ads <= 100
+    && a.dev >= 0
+    && a.dev <= 100
+    && a.ops >= 0
+    && a.ops <= 100
+    && a.ads + a.dev + a.ops == 100
+    && str_len(a.project) >= 1
+    && str_len(a.project) <= 30
+{
+  return a
+}

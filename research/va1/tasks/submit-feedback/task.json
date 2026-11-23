@@ -1,0 +1,15 @@
+{
+  "id": "submit-feedback",
+  "set": 1,
+  "title": "Submit feedback",
+  "adapted": null,
+  "route": {"method": "POST", "path": "/feedback"},
+  "feature": {"module": "submitFeedback", "fn": "submitFeedback"},
+  "base": {"email": "=alnum(int(1, 12)) + '@' + alnum(int(1, 8)) + '.com'", "message": "=alnum(int(10, 1000))", "score": "=int(0, 10)"},
+  "random": {"email": "=pick(['', 'ada', 'a@b', 'a@b.c', 'a b@c.d', 'a@@b.c', alnum(5) + '@x.org'])", "message": "=alnum(int(0, 1100))", "score": "=int(-3, 13)"},
+  "rules": [
+    {"id": "email_format", "kind": "single", "desc": "email is an email address", "inside": [{"set": {"email": "a@b.c"}}, {"set": {"email": "first.last+tag@mail.example.org"}}], "outside": [{"set": {"email": "ada"}}, {"set": {"email": "a@b"}}, {"set": {"email": "@b.c"}}, {"set": {"email": "a b@c.d"}}]},
+    {"id": "message_length", "kind": "single", "desc": "message has 10 to 1000 characters", "inside": [{"set": {"message": "=rep('m', 10)"}}, {"set": {"message": "=rep('m', 1000)"}}], "outside": [{"set": {"message": "=rep('m', 9)"}}, {"set": {"message": "=rep('m', 1001)"}}, {"set": {"message": ""}}]},
+    {"id": "score_range", "kind": "single", "desc": "score is 0 to 10", "inside": [{"set": {"score": 0}}, {"set": {"score": 10}}], "outside": [{"set": {"score": -1}}, {"set": {"score": 11}}, {"set": {"score": 100}}]}
+  ]
+}

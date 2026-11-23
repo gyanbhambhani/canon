@@ -1,0 +1,214 @@
+{
+  "id": "date-range-report",
+  "set": 2,
+  "title": "Request a range report",
+  "adapted": null,
+  "route": {
+    "method": "POST",
+    "path": "/reports/range"
+  },
+  "feature": {
+    "module": "requestReport",
+    "fn": "requestReport"
+  },
+  "base": {
+    "from_day": "=int(1, 31)",
+    "to_day": "=int($from_day, Math.min(31, $from_day + 14))",
+    "granularity": "=pick(['day', 'week'])"
+  },
+  "random": {
+    "from_day": "=int(-2, 35)",
+    "to_day": "=int(-2, 35)",
+    "granularity": "=pick(['day', 'week', 'month', ''])"
+  },
+  "rules": [
+    {
+      "id": "from_range",
+      "kind": "single",
+      "desc": "from_day is 1 to 31",
+      "inside": [
+        {
+          "set": {
+            "from_day": 1,
+            "granularity": "week"
+          }
+        },
+        {
+          "set": {
+            "from_day": 31,
+            "to_day": 31
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "from_day": 0,
+            "granularity": "week"
+          }
+        },
+        {
+          "set": {
+            "from_day": -1,
+            "granularity": "week"
+          }
+        }
+      ]
+    },
+    {
+      "id": "to_range",
+      "kind": "single",
+      "desc": "to_day is 1 to 31 (the lower bound is implied by the order rule)",
+      "inside": [
+        {
+          "set": {
+            "to_day": 31,
+            "granularity": "week"
+          }
+        },
+        {
+          "set": {
+            "from_day": 1,
+            "to_day": 1
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "to_day": 32,
+            "granularity": "week"
+          }
+        },
+        {
+          "set": {
+            "to_day": 100,
+            "granularity": "week"
+          }
+        }
+      ]
+    },
+    {
+      "id": "granularity_enum",
+      "kind": "single",
+      "desc": "granularity is day or week",
+      "inside": [
+        {
+          "set": {
+            "granularity": "day"
+          }
+        },
+        {
+          "set": {
+            "granularity": "week"
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "granularity": "Day"
+          }
+        },
+        {
+          "set": {
+            "granularity": "month"
+          }
+        },
+        {
+          "set": {
+            "granularity": "week "
+          }
+        },
+        {
+          "set": {
+            "granularity": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "to_not_before_from",
+      "kind": "cross",
+      "desc": "to_day >= from_day",
+      "inside": [
+        {
+          "set": {
+            "to_day": "=$from_day"
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "from_day": "=Math.max($from_day, 2)",
+            "to_day": "=Math.max($from_day, 2) - 1"
+          }
+        },
+        {
+          "set": {
+            "from_day": 31,
+            "to_day": 30
+          }
+        },
+        {
+          "set": {
+            "from_day": 20,
+            "to_day": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "wide_is_week",
+      "kind": "cross",
+      "desc": "a range wider than 14 days must be week",
+      "inside": [
+        {
+          "set": {
+            "from_day": 1,
+            "to_day": 15,
+            "granularity": "day"
+          }
+        },
+        {
+          "set": {
+            "from_day": 1,
+            "to_day": 31,
+            "granularity": "week"
+          }
+        },
+        {
+          "set": {
+            "from_day": 17,
+            "to_day": 31,
+            "granularity": "day"
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "from_day": 1,
+            "to_day": 16,
+            "granularity": "day"
+          }
+        },
+        {
+          "set": {
+            "from_day": 1,
+            "to_day": 31,
+            "granularity": "day"
+          }
+        },
+        {
+          "set": {
+            "from_day": 10,
+            "to_day": 25,
+            "granularity": "day"
+          }
+        }
+      ]
+    }
+  ]
+}

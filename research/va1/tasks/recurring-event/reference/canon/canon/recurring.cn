@@ -1,0 +1,29 @@
+type RecurringRequest {
+  interval_days: Int,
+  occurrences: Int,
+  title: String,
+}
+
+type Recurring {
+  interval_days: Int,
+  occurrences: Int,
+  title: String,
+  span_days: Int,
+}
+
+api fn create_recurring(r: RecurringRequest) -> Recurring
+  route: POST "/events/recurring"
+  requires: r.interval_days >= 1
+    && r.interval_days <= 365
+    && r.occurrences >= 1
+    && r.occurrences <= 52
+    && r.interval_days * r.occurrences <= 365
+    && str_len(trim(r.title)) > 0
+{
+  return Recurring {
+    interval_days: r.interval_days,
+    occurrences: r.occurrences,
+    title: r.title,
+    span_days: r.interval_days * r.occurrences,
+  }
+}

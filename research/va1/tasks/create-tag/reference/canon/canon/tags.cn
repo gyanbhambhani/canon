@@ -1,0 +1,13 @@
+type TagDraft {
+  label: String,
+  color: String,
+}
+
+api fn create_tag(r: TagDraft) -> TagDraft
+  route: POST "/tags"
+  requires: str_len(r.label) >= 2
+    && str_len(r.label) <= 20
+    && contains(["red", "green", "blue", "gray"], r.color)
+{
+  return r
+}

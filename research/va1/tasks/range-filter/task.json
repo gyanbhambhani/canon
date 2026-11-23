@@ -1,0 +1,24 @@
+{
+  "id": "range-filter",
+  "set": 2,
+  "title": "Filter by price range",
+  "adapted": { "for": "canon", "reason": "the natural spec has both bounds optional, which needs values inside an Option, and a portable requires cannot state rules over them; the spec keeps both bounds required" },
+  "route": { "method": "POST", "path": "/filters/price" },
+  "feature": { "module": "filterByPrice", "fn": "filterByPrice" },
+  "base": { "min_price": "=int(1, 10000)", "max_price": "=$min_price + int(0, 10000)", "category": "=pick(['food', 'drink', 'tool'])" },
+  "random": { "min_price": "=int(-50, 10000)", "max_price": "=int(-50, 10000)", "category": "=pick(['food', 'drink', 'tool', 'Food', 'toys', ''])" },
+  "rules": [
+    { "id": "min_price_min", "kind": "single", "desc": "min_price is at least 0",
+      "inside": [{ "set": { "min_price": 0 } }],
+      "outside": [{ "set": { "min_price": -1 } }, { "set": { "min_price": -100 } }] },
+    { "id": "max_price_min", "kind": "single", "desc": "max_price is at least 0 (a negative max_price also breaks the order rule: it cannot be isolated)",
+      "inside": [{ "set": { "min_price": 0, "max_price": 0 } }],
+      "outside": [{ "set": { "max_price": -1 } }, { "set": { "max_price": -100 } }] },
+    { "id": "category_enum", "kind": "single", "desc": "category is food, drink or tool",
+      "inside": [{ "set": { "category": "food" } }, { "set": { "category": "drink" } }, { "set": { "category": "tool" } }],
+      "outside": [{ "set": { "category": "Food" } }, { "set": { "category": "tool " } }, { "set": { "category": "toys" } }, { "set": { "category": "" } }] },
+    { "id": "min_not_above_max", "kind": "cross", "desc": "min_price is at most max_price",
+      "inside": [{ "set": { "max_price": "=$min_price" } }, { "set": { "min_price": 0, "max_price": 1 } }],
+      "outside": [{ "set": { "max_price": "=$min_price - 1" } }, { "set": { "min_price": "=$max_price + 1" } }, { "set": { "min_price": "=$max_price + 100" } }] }
+  ]
+}
