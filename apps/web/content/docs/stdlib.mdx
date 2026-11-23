@@ -64,7 +64,7 @@ Pure. Combines the items left to right, starting from `init`.
 ```canon
 test "fold" {
   assert(fold([1, 2, 3], 0, |acc, x| acc + x) == 6)
-  assert(fold(["a", "b"], "", |acc, s| concat(acc, s)) == "ab")
+  assert(fold(["a", "b"], "", |acc, s| acc + s) == "ab")
 }
 ```
 
@@ -376,6 +376,16 @@ test "to_int" {
 
 ## Strings
 
+Strings join with the `+` operator, not a function: `"a" + b + "c"`. Both operands must be String (T001 otherwise), so convert other values with `to_string`. v0 had a variadic `concat` built-in; it is gone in v0.2, and the formatter rewrites `concat(a, b, c)` to `a + b + c`.
+
+```canon
+test "joining strings" {
+  let n = 3
+  assert("a" + "b" + "c" == "abc")
+  assert("n = " + to_string(n) == "n = 3")
+}
+```
+
 ### to_string
 
 ```text
@@ -431,20 +441,6 @@ test "parse_float" {
   assert(parse_float("2.5") == Some(2.5))
   assert(parse_float("3") == Some(3.0))
   assert(parse_float("x") == None)
-}
-```
-
-### concat
-
-```text
-concat(parts: String, ...) -> String
-```
-
-Pure. Joins one or more strings. It is the only variadic built-in, and the only way to join strings (`+` is numeric only). Because it is variadic it cannot be passed as a value; wrap it in a lambda.
-
-```canon
-test "concat" {
-  assert(concat("a", "b", "c") == "abc")
 }
 ```
 
@@ -653,9 +649,9 @@ fn count_lines() -> Int
 {
   var count = 0
   var line = read_line()
-  for line != None {
-    set count = count + 1
-    set line = read_line()
+  while line != None {
+    count = count + 1
+    line = read_line()
   }
   return count
 }

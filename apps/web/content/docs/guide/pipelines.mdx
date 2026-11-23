@@ -33,7 +33,7 @@ fn top(xs: List[Int], k: Int) -> List[Int] {
 }
 
 fn shout(words: List[String]) -> String {
-  return join(map(words, |w| concat(w, "!")), " ")
+  return join(map(words, |w| w + "!"), " ")
 }
 
 test "both forms" {
@@ -68,13 +68,13 @@ A two-stage pipeline becomes nested calls:
 ```canon
 # expect: C001
 fn shout(words: List[String]) -> String {
-  return words |> map(|w| concat(w, "!")) |> join(" ")
+  return words |> map(|w| w + "!") |> join(" ")
 }
 ```
 
 ```diff
--  return words |> map(|w| concat(w, "!")) |> join(" ")
-+  return join(map(words, |w| concat(w, "!")), " ")
+-  return words |> map(|w| w + "!") |> join(" ")
++  return join(map(words, |w| w + "!"), " ")
 ```
 
 ## Literal-first calls
@@ -122,11 +122,11 @@ In the second statement the chain is broken by `*`, so `print(to_string(...))` i
 
 ## Pipelines inside expressions
 
-The one-stage-per-line layout applies to a pipeline that is the whole value of a statement (`let`, `set`, `return`, or a call statement). A pipeline inside a larger expression, such as a function argument, is printed on one line:
+The one-stage-per-line layout applies to a pipeline that is the whole value of a statement (`let`, an assignment, `return`, or a call statement). A pipeline inside a larger expression, such as an operand or a function argument, is printed on one line:
 
 ```canon
 fn label(xs: List[Int]) -> String {
-  return concat("total: ", xs |> map(|x| x * 2) |> sum() |> to_string())
+  return "total: " + (xs |> map(|x| x * 2) |> sum() |> to_string())
 }
 ```
 

@@ -70,7 +70,7 @@ fn largest(orders: List[Order]) -> Float {
 fn report(orders: List[Order]) -> String {
   let t = ?
   let n = len(orders)
-  return concat(to_string(n), " orders, ", to_string(t + 1.0))
+  return to_string(n) + " orders, " + to_string(t + 1.0)
 }
 ```
 

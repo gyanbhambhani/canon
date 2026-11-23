@@ -146,3 +146,38 @@ describe("method-style calls", () => {
     expect(d.message).toContain("Canon has no methods; call len(xs, ...) instead");
   });
 });
+
+describe("v0.2 constructs", () => {
+  const ok = (src: string) => expect(check(src, "main.cn").diagnostics, src).toEqual([]);
+  const codes = (src: string) => check(src, "main.cn").diagnostics.map((d) => d.code);
+
+  it("plain assignment mutates a var, and is still T006 on a let", () => {
+    ok("fn f() -> Int {\n  var x = 1\n  x = x + 1\n  return x\n}\n");
+    expect(codes("fn f() -> Int {\n  let x = 1\n  x = 2\n  return x\n}\n")).toEqual(["T006"]);
+  });
+
+  it("field assignment updates a var record", () => {
+    ok("type P {\n  x: Int,\n}\n\nfn f(p: P) -> P {\n  var q = p\n  q.x = 3\n  return q\n}\n");
+  });
+
+  it("while is the condition loop", () => {
+    ok("fn f(n: Int) -> Int {\n  var i = 0\n  while i < n {\n    i = i + 1\n  }\n  return i\n}\n");
+  });
+
+  it("+ joins strings, and still refuses to mix types", () => {
+    ok('fn f(a: String, n: Int) -> String {\n  return a + " has " + to_string(n)\n}\n');
+    expect(codes('fn f(a: String, n: Int) -> String {\n  return a + n\n}\n')).toContain("T001");
+  });
+
+  it("match is allowed in any expression position", () => {
+    // as an operand (here an if condition) a match is parenthesized in canonical form
+    ok("fn f(o: Option[Int], b: Int) -> Bool {\n  if (match o {\n    Some(v) => v > b,\n    None => false,\n  }) {\n    return true\n  }\n  return false\n}\n");
+  });
+
+  it("v0 spellings still parse and format to v0.2 (C001 with the migration patch)", async () => {
+    const { fmt } = await import("@canon/compiler");
+    const v0 = 'fn f(n: Int) -> String {\n  var i = 0\n  for i < n {\n    set i = i + 1\n  }\n  return concat("n=", to_string(i))\n}\n';
+    expect(fmt(v0)).toBe('fn f(n: Int) -> String {\n  var i = 0\n  while i < n {\n    i = i + 1\n  }\n  return "n=" + to_string(i)\n}\n');
+    expect(codes(v0)).toEqual(["C001"]);
+  });
+});

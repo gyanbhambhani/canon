@@ -24,10 +24,7 @@ fn main() -> Unit
     |> names()
     |> print()
   for group in group_by(ps, |p| p.age) {
-    group.0
-      |> to_string()
-      |> concat(": ", names(group.1))
-      |> print()
+    print(to_string(group.0) + ": " + names(group.1))
   }
   ["b", "a", "c"]
     |> sort_by(|s| s)

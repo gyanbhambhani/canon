@@ -148,7 +148,7 @@ Running it prints the trap as one JSON line and exits with status 1:
 fn parse_port(s: String) -> Result[Int, Error] {
   let n = unwrap_or(parse_int(s), -1)
   if n < 1 or n > 65535 {
-    return Err(Error { message: concat("bad port: ", s) })
+    return Err(Error { message: "bad port: " + s })
   }
   return Ok(n)
 }

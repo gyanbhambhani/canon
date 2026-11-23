@@ -14,7 +14,8 @@ const dir = join(__dirname, "conformance");
 const canonical = readdirSync(dir)
   .filter((f) => f.endsWith(".diag.json"))
   .filter((f) => JSON.parse(readFileSync(join(dir, f), "utf8")).canonical)
-  .map((f) => ({ name: f, src: readSource(readFileSync(join(dir, f.replace(/\.diag\.json$/, ".cn")), "utf8")) }))
+  // v0.2: files the oracle marks canonical are canonical v0; fuzz their v0.2 canonical form
+  .map((f) => ({ name: f, src: fmt(readSource(readFileSync(join(dir, f.replace(/\.diag\.json$/, ".cn")), "utf8"))) }))
   .filter((c) => c.src.length > 0);
 
 const TOTAL = 5000;

@@ -23,10 +23,7 @@ fn main() -> Unit
   effects: io
 {
   for s in [Circle(1.0), Rect(2.0, 3.5), Dot] {
-    s
-      |> name()
-      |> concat(" ", to_string(area(s)))
-      |> print()
+    print(name(s) + " " + to_string(area(s)))
   }
   print(to_string(Rect(2.0, 3.5)))
   print(to_string([Dot, Circle(0.5)]))

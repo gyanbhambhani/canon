@@ -33,7 +33,7 @@ fn main() -> Unit
   for name in top_customers(orders, 2) {
     print(name)
   }
-  print(concat("total: ", orders |> map(|o| o.amount) |> sum_float() |> to_string()))
+  print("total: " + (orders |> map(|o| o.amount) |> sum_float() |> to_string()))
 }
 
 test "top customer is cy" {

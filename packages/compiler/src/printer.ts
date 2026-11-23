@@ -1,6 +1,5 @@
 /** Canonical printer. With a noise source it emits equivalent non-canonical variants (tests). */
 import type * as A from "./ast.js";
-import { CanonError, diag } from "./diagnostics.js";
 import { pyFloatRepr } from "./py.js";
 
 export const PREC: Record<string, number> = {
@@ -116,17 +115,15 @@ export class Printer {
         return [inner ? `${e.tname} { ${inner} }` : `${e.tname} {}`, PREC.atom];
       }
       case "Match": {
-        if (!stmt) {
-          throw new CanonError(diag("S001",
-            "match is only allowed as a whole statement value (let, set, return); bind it with let first",
-            e.line, e.col));
-        }
+        // v0.2: match may appear in any expression position (S001 retired)
         const lines = [`match ${this.ex(e.subject, 1, indent)} {`];
         for (const [pat, val] of e.arms) {
           lines.push(`${indent}${INDENT}${this.pat(pat)} => ${this.ex(val, 0, indent + INDENT)},`);
         }
         lines.push(`${indent}}`);
-        return [lines.join("\n"), PREC.atom];
+        // As a whole statement value it stands alone; anywhere else it is parenthesized as an
+        // operand, so `(match a { ... }) * 2` cannot be misread as part of the last arm.
+        return [lines.join("\n"), stmt ? PREC.atom : PREC.pipe];
       }
       case "Call": {
         const [head, stages] = unrollChain(e);
@@ -185,7 +182,7 @@ export class Printer {
       case "Let":
         return `${indent}${s.mutable ? "var" : "let"} ${s.name} = ${this.ex(s.value, 0, indent, true)}`;
       case "Set":
-        return `${indent}set ${this.ex(s.target, 0, indent)} = ${this.ex(s.value, 0, indent, true)}`;
+        return `${indent}${this.ex(s.target, 0, indent)} = ${this.ex(s.value, 0, indent, true)}`;
       case "Return":
         if (s.value === null) return indent + "return";
         return `${indent}return ${this.ex(s.value, 0, indent, true)}`;
@@ -196,7 +193,7 @@ export class Printer {
       case "ForIn":
         return `${indent}for ${s.var} in ${this.ex(s.iterable, 1, indent)} ${this.block(s.body, indent)}`;
       case "ForWhile":
-        return `${indent}for ${this.ex(s.cond, 1, indent)} ${this.block(s.body, indent)}`;
+        return `${indent}while ${this.ex(s.cond, 1, indent)} ${this.block(s.body, indent)}`;
     }
   }
 

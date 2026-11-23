@@ -1,6 +1,6 @@
 ---
 title: Pattern matching
-description: match as the value of let, set or return; the pattern forms; top-to-bottom arms; and exhaustiveness checking with a patch.
+description: match as an expression anywhere; the pattern forms; top-to-bottom arms; and exhaustiveness checking with a patch.
 ---
 
 `match` picks a value by the shape of another value. It is the only way to take apart a sum type, an Option or a Result.
@@ -24,27 +24,30 @@ test "area" {
 
 ## Where match may appear
 
-`match` is allowed only as the whole value of a `let`, a `set` or a `return`. Anywhere else (inside an argument, an operator, a lambda or another match) it is S001: bind it with `let` first.
+`match` is an expression, and since v0.2 it may appear anywhere an expression can: as the value of a `let`, an assignment or a `return`, as an argument, as an operand, or as a lambda body. (v0 allowed it only as the whole value of a statement and reported S001 otherwise; that code is retired.)
+
+As the whole value of a `let`, an assignment or a `return`, a match stands alone. Anywhere else (an operand, an `if` condition, a lambda body) canonical form wraps it in parentheses, so `(match a { ... }) * 2` cannot be misread as part of the last arm. Arguments are the exception: inside a call's parentheses it needs none.
 
 ```canon
 fn bucket(n: Int) -> Int {
   var size = 0
-  set size = match n {
+  size = match n {
     0 => 0,
     1 => 1,
     _ => 2,
   }
   return size
 }
-```
 
-```canon
-# expect: S001
-fn f(a: Int) -> Int {
-  let x = 1 + match a { _ => 1 }
-  return x
+fn label(n: Int) -> String {
+  return "size " + to_string(match n {
+    0 => "none",
+    _ => "some",
+  })
 }
 ```
+
+However it is nested, a match always prints with one arm per line, so a match inside a call or an operator spans several lines. When that reads badly, bind it with `let` first.
 
 Each arm sits on its own line as `pattern => expression,` with a trailing comma. An arm's value is one expression. Comments are not allowed between arms (P002).
 
@@ -96,7 +99,7 @@ fn sign_name(n: Int) -> String {
 fn greeting(lang: String) -> String {
   return match lang {
     "fr" => "bonjour",
-    other => concat("hello (", other, ")"),
+    other => "hello (" + other + ")",
   }
 }
 ```

@@ -24,7 +24,7 @@ fn parse_age(s: String) -> Result[Int, Error] {
     None => -1,
   }
   if n < 0 {
-    return Err(Error { message: concat("not an age: ", s) })
+    return Err(Error { message: "not an age: " + s })
   }
   return Ok(n)
 }
@@ -96,8 +96,8 @@ To handle an error rather than pass it on, match on the Result:
 ```canon include=parse
 fn describe(r: Result[Int, Error]) -> String {
   return match r {
-    Ok(n) => concat("age ", to_string(n)),
-    Err(e) => concat("error: ", e.message),
+    Ok(n) => "age " + to_string(n),
+    Err(e) => "error: " + e.message,
   }
 }
 

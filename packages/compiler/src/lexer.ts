@@ -14,6 +14,8 @@ export const KEYWORDS = new Set([
   "fn", "type", "let", "var", "set", "if", "else", "match", "for", "in",
   "return", "use", "effects", "requires", "ensures", "true", "false", "test",
   "and", "or", "not", "try",
+  // v0.2
+  "while",
 ]);
 
 const OPS = ["|>", "->", "=>", "==", "!=", "<=", ">=", "+", "-", "*", "/", "%", "<",

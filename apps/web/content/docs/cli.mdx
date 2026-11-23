@@ -83,7 +83,7 @@ Prints the canonical form of each file on stdout. With `--write`, rewrites each 
 }
 ```
 
-`fmt` needs a file that parses. A parse error (P001 to P005) or S001 prints the diagnostic on stderr and exits 1; in JSON mode it is reported as `{ path, error }`. `fmt` does not check names, effects or types, so a file it formats can still fail `check`.
+`fmt` needs a file that parses. A parse error (P001 to P005) prints the diagnostic on stderr and exits 1; in JSON mode it is reported as `{ path, error }`. `fmt` does not check names, effects or types, so a file it formats can still fail `check`.
 
 ## canon run
 

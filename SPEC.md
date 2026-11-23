@@ -153,6 +153,18 @@ return items
 
 **What fmt collapses.** The checker rejects any file fmt would change, and the error carries the patch. All of these collapse to one form: whitespace and blank lines; redundant parentheses; optional commas; `else { if … }` to `else if`; `x == true` to `x` and `x == false` to `not x`; `not not x` to `x`; `007` to `7` and `1.50` to `1.5`; import order and duplicates; effect order; clause order; pipeline versus nested call.
 
+
+### Amendment: v0.2 (2026-11-22)
+
+After the M8 studies, four rules above changed. DECISIONS.md has the evidence for each, and the docs and the implementation follow v0.2.
+
+- Assignment is `x = e` (and `p.field = e`) on a `var`; `set` is retired.
+- The condition loop is `while cond { }`; `for x in xs { }` remains the collection loop.
+- Strings join with `+`; `concat` is removed.
+- `match` may appear in any expression position; S001 is retired.
+
+The v0 spellings still parse, and fmt rewrites them, so every v0 program migrates with `canon fmt --write`.
+
 ## Runtime semantics
 
 This section defines what a Canon program does when it runs. Where this section and the reference implementation are silent, the implementer decides and records the decision in DECISIONS.md.

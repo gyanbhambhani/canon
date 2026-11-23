@@ -178,7 +178,6 @@ export class Runtime {
       const n = Number(s);
       return Number.isFinite(n) ? some(n) : NONE;
     },
-    concat: (_l: number, _c: number, ...parts: string[]) => parts.join(""),
     join: (_l: number, _c: number, parts: string[], sep: string) => parts.join(sep),
     split: (_l: number, _c: number, s: string, sep: string) => (sep === "" ? Array.from(s) : s.split(sep)),
     trim: (_l: number, _c: number, s: string) => s.trim(),

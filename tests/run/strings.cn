@@ -9,7 +9,7 @@ fn main() -> Unit
     |> print()
   print(trim("  hi  "))
   print(to_string(str_len("héllo")))
-  print(concat("x", "y", "z"))
+  print("x" + "y" + "z")
   print(to_string(parts))
   print(to_string("a" < "b"))
 }

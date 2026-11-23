@@ -391,6 +391,93 @@ fn f(a: Int) -> Int {
 }
 ```
 
+## v0 spellings: set, for cond, concat
+
+Canon v0.2 changed three spellings. The v0 forms still parse, so old files keep working, but the formatter rewrites them, so a file that still uses them fails with C001 and the patch migrates it.
+
+### `set x = e` becomes `x = e`
+
+Assignment to a `var`, or to a field of a `var` record (`p.field = e`), is written without a keyword.
+
+Before:
+
+```canon
+# expect: C001
+fn total(xs: List[Int]) -> Int {
+  var sum = 0
+  for x in xs {
+    set sum = sum + x
+  }
+  return sum
+}
+```
+
+After:
+
+```canon
+fn total(xs: List[Int]) -> Int {
+  var sum = 0
+  for x in xs {
+    sum = sum + x
+  }
+  return sum
+}
+```
+
+### `for cond` becomes `while cond`
+
+`for x in xs` walks a list; a loop that repeats while a condition holds is `while`.
+
+Before:
+
+```canon
+# expect: C001
+fn halvings(n: Int) -> Int {
+  var k = n
+  var steps = 0
+  for k > 1 {
+    k = k / 2
+    steps = steps + 1
+  }
+  return steps
+}
+```
+
+After:
+
+```canon
+fn halvings(n: Int) -> Int {
+  var k = n
+  var steps = 0
+  while k > 1 {
+    k = k / 2
+    steps = steps + 1
+  }
+  return steps
+}
+```
+
+### `concat(a, b)` becomes `a + b`
+
+Strings join with `+`. Every argument of `concat` becomes one operand of a `+` chain.
+
+Before:
+
+```canon
+# expect: C001
+fn greet(name: String, n: Int) -> String {
+  return concat("hello ", name, " #", to_string(n))
+}
+```
+
+After:
+
+```canon
+fn greet(name: String, n: Int) -> String {
+  return "hello " + name + " #" + to_string(n)
+}
+```
+
 ## Line length
 
 A canonical line is at most 100 characters. The formatter does not break long lines; it reports L001, and the fix is to bind a subexpression with `let`.
@@ -400,7 +487,7 @@ Before:
 ```canon
 # expect: L001
 fn f() -> String {
-  return concat("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "cccccccccccccccccccccc")
+  return "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" + "cccccccccccccccccccccc"
 }
 ```
 
@@ -408,7 +495,7 @@ After:
 
 ```canon
 fn f() -> String {
-  let head = concat("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
-  return concat(head, "cccccccccccccccccccccc")
+  let head = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  return head + "cccccccccccccccccccccc"
 }
 ```

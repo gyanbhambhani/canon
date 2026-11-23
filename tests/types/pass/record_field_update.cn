@@ -5,6 +5,6 @@ type Point {
 
 fn shift(p: Point, dx: Int) -> Point {
   var q = p
-  set q.x = q.x + dx
+  q.x = q.x + dx
   return q
 }

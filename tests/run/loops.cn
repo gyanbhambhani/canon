@@ -3,15 +3,15 @@ fn main() -> Unit
 {
   var i = 0
   var total = 0
-  for i < 5 {
-    set total = total + i * i
-    set i = i + 1
+  while i < 5 {
+    total = total + i * i
+    i = i + 1
   }
   print(to_string(total))
   for row in range(1, 4) {
     var line = ""
     for col in range(0, row) {
-      set line = concat(line, "*")
+      line = line + "*"
     }
     print(line)
   }

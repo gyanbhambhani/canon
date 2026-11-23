@@ -1,6 +1,6 @@
 fn f(n: Int) -> String {
   var s = "?"
-  set s = match n > 0 {
+  s = match n > 0 {
     true => "pos",
     false => "non-pos",
   }

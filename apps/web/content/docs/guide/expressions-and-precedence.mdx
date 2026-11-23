@@ -1,6 +1,6 @@
 ---
 title: Expressions and precedence
-description: Operator precedence, arithmetic and comparison rules, calls, fields, tuple slots, lambdas, and evaluation order.
+description: Operator precedence, arithmetic, string joining and comparison rules, calls, fields, tuple slots, lambdas, and evaluation order.
 ---
 
 ## Precedence
@@ -69,7 +69,17 @@ fn scale(n: Int, x: Float) -> Float {
 }
 ```
 
-`+` is numeric only. Strings join with `concat`, the one variadic built-in: `concat("a", b, "c")`.
+## Joining strings
+
+`+` also joins two Strings. Both sides must be String: `"n = " + 3` is T001, so convert with `to_string` first. (v0 joined strings with a `concat` built-in; the formatter rewrites `concat(a, b, c)` to `a + b + c`.) `-`, `*`, `/` and `%` stay numeric only.
+
+```canon
+test "strings join with +" {
+  let n = 3
+  assert("a" + "b" + "c" == "abc")
+  assert("n = " + to_string(n) == "n = 3")
+}
+```
 
 ## Comparison and equality
 
@@ -107,7 +117,7 @@ test "tuple unpacking and capture" {
   assert(map(pairs, |name, n| n * 2) == [2, 4])
   var k = 1
   let add_k = |x| x + k
-  set k = 100
+  k = 100
   assert(add_k(1) == 2)
 }
 ```
@@ -116,4 +126,4 @@ test "tuple unpacking and capture" {
 
 ## Evaluation order
 
-Evaluation is strict and left to right. Arguments are evaluated before the call. `match` is a statement-level form: it may only be the whole value of a `let`, `set` or `return`, never part of a larger expression (S001). See [Pattern matching](/docs/guide/pattern-matching).
+Evaluation is strict and left to right. Arguments are evaluated before the call. `match` is an expression and may appear in any expression position, including as an operand or an argument; it binds like a call, so `match a { … } + 1` adds 1 to the match's value. See [Pattern matching](/docs/guide/pattern-matching).

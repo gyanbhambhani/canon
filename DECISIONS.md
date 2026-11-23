@@ -2,6 +2,19 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — Language v0.2
+Decision: four language changes, each traced to M8 data.
+1. Assignment is `x = e` / `p.field = e` (on a `var`); `set` is retired. Likelihood study: `set x = ...` was about 2,600 to 4,000 times less likely than `x = ...` under both models. Mutations stay searchable: they are the `var` bindings and the `NAME =` lines.
+2. The condition loop is `while cond { }`; `for` is only `for x in xs`. Likelihood study: `for cond` was 50 to 750 times less likely. One construct per job still holds: `for` walks, `while` repeats.
+3. Strings join with `+`; the `concat` built-in is removed. Likelihood study: `concat(a, b)` was 14 to 50 times less likely than `a + b`. String + Int is still T001.
+4. `match` may appear in any expression position; S001 is retired. Benchmark: with `match` limited to let/set/return, models invented varied workarounds (helper functions, flag variables).
+Canonical form: a `match` that is the whole value of a `let`, an assignment or a `return` stands alone; anywhere else (an operand, an `if` condition, a lambda body) it is parenthesized, so `(match a { ... }) * 2` cannot be misread as part of the last arm. A call argument needs no extra parentheses.
+T006 now reads "cannot assign to n, which is not a var" (it used to say "set on n").
+The agent reference (For agents page, /llms.txt) was trimmed from about 9,800 to about 7,000 characters, because it is the main cost of a Canon run.
+Migration: the lenient parser still accepts `set x = e`, `for cond { }` and `concat(...)`, and fmt rewrites them (C001 with the patch), so `canon fmt --write` migrates any v0 file. `concat(...)` is left alone in a program that defines its own `concat`.
+Oracle: reference/canon.py stays the spec for everything v0.2 did not change. The conformance test still requires byte equality on every file that touches none of these constructs; a file that does may differ only on those lines, and v0.2 fmt must equal fmt of the oracle's output.
+Tests changed because the language changed (not to make them pass): `tests/types/fail/t001_string_plus.cn` (String + String is now legal; the file now tests String + Int); the fuzz test fuzzes the v0.2 canonical form of the oracle-canonical files; the corpora, examples and run programs were migrated with fmt.
+
 ## 2026-11-22 — M7: release
 - `canon-lang` is published from packages/cli as one esbuild bundle plus README and LICENSE (32 kB packed). It was verified by installing the packed tarball into an empty directory and running `npx canon run hello.cn`.
 - The repository already existed with an MIT LICENSE ("Copyright (c) 2026 Gyan"), so the build kept it and based its history on that initial commit.

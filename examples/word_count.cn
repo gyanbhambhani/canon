@@ -13,7 +13,7 @@ fn main() -> Unit
 {
   let text = "the cat and the hat and the bat"
   for pair in word_counts(text) {
-    print(concat(pair.0, ": ", to_string(pair.1)))
+    print(pair.0 + ": " + to_string(pair.1))
   }
 }
 

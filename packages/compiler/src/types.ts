@@ -559,10 +559,6 @@ export function checkTypes(prog: A.Program): TypeResult {
         }
         const sig = userFns.get(name) ?? pre.fns.get(name);
         if (sig) {
-          if (sig.name === "concat") {
-            err("T001", "concat is variadic and cannot be used as a value; wrap it in a lambda", e);
-            return expected ?? fresh();
-          }
           info.names.set(e, sig.builtin ? "builtin" : "user");
           const inst = instantiateSig(sig);
           return expectType(pos, expected, { t: "fn", params: inst.params, ret: inst.ret }, what);
@@ -767,11 +763,6 @@ export function checkTypes(prog: A.Program): TypeResult {
       return expected ?? fresh();
     }
     info.calls.set(e, sig.builtin ? "builtin" : "user");
-    if (sig.builtin && name === "concat") {
-      if (e.args.length === 0) err("T003", "concat takes at least 1 argument, got 0", e);
-      e.args.forEach((a, i) => expr(a, STRING, `argument ${i + 1} of concat`));
-      return STRING;
-    }
     const inst = instantiateSig(sig);
     if (expected) unify(expected, inst.ret);
     const before = diags.length;
@@ -819,10 +810,12 @@ export function checkTypes(prog: A.Program): TypeResult {
       return BOOL;
     }
     const arith = ["+", "-", "*", "/", "%"].includes(op);
-    const allowed = arith ? ["Int", "Float"] : ["Int", "Float", "String"];
+    // v0.2: + also joins strings
+    const allowed = op === "+" ? ["Int", "Float", "String"] : arith ? ["Int", "Float"] : ["Int", "Float", "String"];
     for (const [side, t] of [[e.left, lp], [e.right, rp]] as const) {
       if (t.t !== "var" && !(t.t === "con" && allowed.includes(t.name) && t.args.length === 0)) {
-        err("T001", `operator ${op} needs ${arith ? "Int or Float" : "Int, Float or String"} operands, found ${show(t)}`, exprPos(side));
+        const want = op === "+" ? "Int, Float or String" : arith ? "Int or Float" : "Int, Float or String";
+        err("T001", `operator ${op} needs ${want} operands, found ${show(t)}`, exprPos(side));
         return arith ? fresh() : BOOL;
       }
     }
@@ -1001,7 +994,7 @@ export function checkTypes(prog: A.Program): TypeResult {
         let root: A.Expr = s.target;
         while (root.k === "FieldGet") root = root.obj;
         if (root.k !== "Name" || root.path.length !== 1 || (s.target.k === "FieldGet" && /^\d/.test(s.target.name))) {
-          err("T001", "set needs a var or a field of a var on its left", s);
+          err("T001", "assignment needs a var or a field of a var on its left", s);
           expr(s.value, null);
           return;
         }
@@ -1012,7 +1005,7 @@ export function checkTypes(prog: A.Program): TypeResult {
           return;
         }
         if (!b.mutable) {
-          err("T006", `set on ${root.path[0]}, which is not a var; declare it with var to mutate it`, s);
+          err("T006", `cannot assign to ${root.path[0]}, which is not a var; declare it with var to mutate it`, s);
           expr(s.value, null);
           return;
         }

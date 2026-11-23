@@ -1,7 +1,7 @@
 fn f(xs: List[Int]) -> Int {
   let n = len(xs)
   let doubled = n * 2
-  let label = concat("n=", to_string(doubled))
+  let label = "n=" + to_string(doubled)
   let ok = str_len(label) > 0
   if ok {
     return doubled

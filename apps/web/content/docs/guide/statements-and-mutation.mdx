@@ -1,20 +1,20 @@
 ---
 title: Statements and mutation
-description: let, var and set; the one conditional statement; the one loop in two forms; explicit return; and expression statements.
+description: let, var and assignment; the one conditional statement; the for and while loops; explicit return; and expression statements.
 ---
 
-Canon has seven kinds of statement: `let`, `var`, `set`, `return`, `if`, `for`, and a call on its own line.
+Canon has eight kinds of statement: `let`, `var`, assignment `x = e`, `return`, `if`, `for`, `while`, and a call on its own line.
 
-## let, var and set
+## let, var and assignment
 
-`let` binds an immutable name. `var` binds a mutable one, and `set` assigns to it. Every mutation therefore starts with the word `set`, so it is one search away.
+`let` binds an immutable name. `var` binds a mutable one, and `x = e` assigns to it. Only a `var` can be assigned, so every name that can change is declared with `var`, one search away. (v0 wrote `set x = e`; it still parses, and the formatter rewrites it.)
 
 ```canon
 fn total_qty(qtys: List[Int]) -> Int {
   let start = 0
   var total = start
   for q in qtys {
-    set total = total + q
+    total = total + q
   }
   return total
 }
@@ -24,13 +24,13 @@ test "total" {
 }
 ```
 
-`set` on a `let` binding or on a parameter is T006:
+Assigning to a `let` binding or to a parameter is T006:
 
 ```canon
 # expect: T006
 fn f() -> Int {
   let x = 1
-  set x = 2
+  x = 2
   return x
 }
 ```
@@ -49,7 +49,7 @@ A local may shadow an outer local with a new `let` in an inner block.
 
 ## Updating records
 
-Values are immutable. `set p.field = v` on a `var` record rebinds `p` to an updated copy; any other name holding the old value still sees it. Nested fields work the same way: `set order.address.city = "Oslo"`.
+Values are immutable. `p.field = v` on a `var` record rebinds `p` to an updated copy; any other name holding the old value still sees it. Nested fields work the same way: `order.address.city = "Oslo"`.
 
 ```canon
 type Point {
@@ -59,7 +59,7 @@ type Point {
 
 fn moved(p: Point) -> Point {
   var q = p
-  set q.x = q.x + 10
+  q.x = q.x + 10
   return q
 }
 
@@ -93,11 +93,11 @@ test "fizzbuzz" {
 }
 ```
 
-To choose between values rather than statements, use [match](/docs/guide/pattern-matching) as the value of a `let`.
+To choose between values rather than statements, use [match](/docs/guide/pattern-matching), which is an expression.
 
-## for
+## for and while
 
-`for` is the only loop keyword, in two forms. `for x in xs { }` walks a List. `for cond { }` repeats while the condition is true. There is no `while`, `break` or `continue`; return from inside a loop to stop early.
+There are two loops. `for x in xs { }` walks a List. `while cond { }` repeats while the condition is true. There is no `break` or `continue`; return from inside a loop to stop early. (v0 wrote the condition loop as `for cond { }`; it still parses, and the formatter rewrites it to `while`.)
 
 ```canon
 fn index_of(xs: List[String], want: String) -> Int {
@@ -114,13 +114,13 @@ fn collatz_steps(start: Int) -> Int
 {
   var n = start
   var steps = 0
-  for n != 1 {
+  while n != 1 {
     if n % 2 == 0 {
-      set n = n / 2
+      n = n / 2
     } else {
-      set n = 3 * n + 1
+      n = 3 * n + 1
     }
-    set steps = steps + 1
+    steps = steps + 1
   }
   return steps
 }

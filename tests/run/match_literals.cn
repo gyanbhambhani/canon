@@ -18,7 +18,7 @@ fn both(a: Bool, b: Bool) -> String {
 fn greet(s: String) -> String {
   return match s {
     "hi" => "hello",
-    other => concat("? ", other),
+    other => "? " + other,
   }
 }
 

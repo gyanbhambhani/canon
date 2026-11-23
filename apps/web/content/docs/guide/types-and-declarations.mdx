@@ -63,9 +63,9 @@ type Light =
 
 fn describe(step: Step) -> String {
   return match step {
-    Call(tool, _) => concat("calling ", tool),
+    Call(tool, _) => "calling " + tool,
     Answer(text) => text,
-    Fail(reason) => concat("failed: ", reason),
+    Fail(reason) => "failed: " + reason,
   }
 }
 

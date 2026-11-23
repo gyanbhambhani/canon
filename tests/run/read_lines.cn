@@ -3,10 +3,10 @@ fn echo_all() -> Int
 {
   var count = 0
   var line = read_line()
-  for line != None {
-    set count = count + 1
-    print(concat("> ", unwrap_or(line, "")))
-    set line = read_line()
+  while line != None {
+    count = count + 1
+    print("> " + unwrap_or(line, ""))
+    line = read_line()
   }
   return count
 }
@@ -15,8 +15,5 @@ fn main() -> Unit
   effects: io
 {
   let n = echo_all()
-  n
-    |> to_string()
-    |> concat(" lines")
-    |> print()
+  print(to_string(n) + " lines")
 }

@@ -1,6 +1,9 @@
 /** Normalizer: semantic no-ops an agent tends to write, collapsed to one form. */
 import type * as A from "./ast.js";
 
+/** Set while normalizing a program that defines its own `concat` (then calls are left alone). */
+let userConcat = false;
+
 export function normalizeExpr(e: A.Expr): A.Expr {
   switch (e.k) {
     case "Binary": {
@@ -19,8 +22,14 @@ export function normalizeExpr(e: A.Expr): A.Expr {
       if (e.op === "not" && inner.k === "Unary" && inner.op === "not") return inner.operand;
       return { k: "Unary", op: e.op, operand: inner, line: e.line, col: e.col };
     }
-    case "Call":
-      return { ...e, args: e.args.map(normalizeExpr) };
+    case "Call": {
+      const args = e.args.map(normalizeExpr);
+      // v0.2: concat(a, b, c) is a + b + c
+      if (!userConcat && e.callee.k === "Name" && e.callee.path.length === 1 && e.callee.path[0] === "concat" && args.length >= 1) {
+        return args.slice(1).reduce<A.Expr>((l, r) => ({ k: "Binary", op: "+", left: l, right: r, line: 0, col: 0 }), args[0]);
+      }
+      return { ...e, args };
+    }
     case "FieldGet":
       return { ...e, obj: normalizeExpr(e.obj) };
     case "Lambda":
@@ -90,6 +99,7 @@ function cmpPath(a: string[], b: string[]): number {
 }
 
 export function normalize(prog: A.Program): A.Program {
+  userConcat = prog.items.some((it) => it.k === "Fn" && it.name === "concat");
   const items: A.Item[] = prog.items.map((it): A.Item => {
     if (it.k === "Fn") {
       return {

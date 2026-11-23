@@ -97,7 +97,7 @@ Where both models clearly disagree:
 
 Weak or split: words versus symbols for `and`, `or` and `not` leans slightly toward symbols; trailing commas and where the effects clause sits show small effects. The three-stage pipeline splits the two models (1.5B prefers the pipeline, 7B prefers nested calls), so the open question about the pipeline threshold stays open.
 
-These numbers are inputs to the design, not verdicts. `set` exists so that every mutation is searchable, and `concat` follows "one construct per job"; the study puts a price on those choices. Switching the condition loop to `while` looks like the cheapest win. Any change would go through the language reference, the docs and the implementation together.
+These numbers are inputs to the design, not verdicts. In v0, `set` existed so that every mutation was searchable, and `concat` followed "one construct per job"; the study put a price on those choices. v0.2 adopts all three of the alternatives (see [v0.2 changes](#v02-changes) below).
 
 ### Benchmark: do agents converge on Canon?
 
@@ -124,3 +124,14 @@ What went wrong, read from the programs themselves (a hypothesis, not a finding)
 - **Cost.** The reference rides in every prompt: about 11 to 13 times the tokens per correct program, about 1.4 to 1.7 times the wall time, and, with Claude's prompt caching on, about 1.8 times the dollar cost ($5.09 against $2.81 for 500 runs each).
 
 The next step is a pre-registered follow-up testing specific changes: `match` anywhere or an early loop exit, fewer reasons to invent helpers, and the spellings the likelihood study found far more natural (`while`, bare assignment).
+
+## v0.2 changes
+
+v0.2 makes four changes, taken from the two M8 studies. Everything else is unchanged.
+
+1. **Assignment** is `x = e` (and `p.field = e`) on a `var`, replacing `set x = e`. The likelihood study's strongest signal. Assigning to a `let` or a parameter is still T006.
+2. **The condition loop** is `while cond { }`, replacing `for cond { }`. `for x in xs { }` stays the only collection loop.
+3. **Strings join with `+`**, replacing the `concat` built-in. Mixing a String with an Int is T001; convert with `to_string`.
+4. **`match` may appear in any expression position.** The benchmark found that limiting it to `let`, `set` and `return` pushed models into workarounds. S001 is retired.
+
+The old spellings still parse, and `canon fmt` rewrites them, so a v0 file fails only with C001 and its patch migrates it. The pre-registered v0.2 benchmark will test whether these changes improve convergence; there are no results yet.

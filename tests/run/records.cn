@@ -5,7 +5,7 @@ type Point {
 
 fn moved(p: Point) -> Point {
   var q = p
-  set q.x = q.x + 10
+  q.x = q.x + 10
   return q
 }
 

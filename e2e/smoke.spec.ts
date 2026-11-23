@@ -37,10 +37,10 @@ test("playground formats, checks and runs hello.cn in a worker", async ({ page }
 });
 
 test("an infinite loop is stopped after 2 seconds", async ({ page }) => {
-  const src = "fn main() -> Unit {\n  var i = 0\n  for i >= 0 {\n    set i = i + 1\n    set i = i - 1\n  }\n}\n";
+  const src = "fn main() -> Unit {\n  var i = 0\n  while i >= 0 {\n    i = i + 1\n    i = i - 1\n  }\n}\n";
   const b64 = Buffer.from(src).toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   await page.goto(`/play#code=${b64}`);
-  await expect(page.getByTestId("editor").locator(".cm-content")).toContainText("for i >= 0");
+  await expect(page.getByTestId("editor").locator(".cm-content")).toContainText("while i >= 0");
   await page.getByRole("button", { name: "Run" }).click();
   await expect(page.getByTestId("output")).toContainText("Stopped after 2 seconds", { timeout: 6000 });
 });

@@ -133,3 +133,8 @@ Only after M7, and only when the owner provides model access.
 - Likelihood study done with local Qwen2.5-Coder 1.5B and 7B (research/likelihood). Strongest finding: models strongly prefer `x = ...` over `set x = ...`, and `while` over `for cond`. Results are in the Design notes page.
 - Benchmark: Claude Opus 5.5 and GPT-6.2 Sol, with keys in .env.local (git-ignored). Generated modules now expose `fns` so harnesses can call Canon functions directly.
 - Benchmark done: 2,000 runs. Pre-registered verdicts: C1 (understood), C2 (correct) and C4 (as fast) supported; **C3 (convergence, the core bet) not supported**; C5 (runtime speed) not tested. The exploratory analysis points at `match` placement, the missing early loop exit, and helper naming as the sources of divergence. The next step is a new pre-registered run after changing those.
+
+### Language v0.2 (after M8)
+- Four changes from the M8 data: `x = e` (not `set`), `while cond` (not `for cond`), `+` joins strings (no `concat`), `match` anywhere (S001 retired, and parenthesized as an operand). v0 spellings still parse and fmt migrates them. The reference was trimmed to about 2,000 tokens.
+- The conformance test keeps oracle byte-equality for every file that touches none of the changed constructs.
+- Benchmark v0.2: PREREGISTRATION-v0.2.md is committed before the run; src/report-v02.ts applies it (95% intervals, structural metric, cost, v0.2 vs v0).

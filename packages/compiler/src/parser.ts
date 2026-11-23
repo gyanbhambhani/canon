@@ -255,10 +255,16 @@ export class Parser {
       return { k: "Let", name, value: this.expr(), mutable, ...p };
     }
     if (this.atKw("set")) {
+      // v0 spelling of assignment; still accepted, printed as `target = value` (v0.2)
       this.advance();
       const target = this.postfix(this.primary());
       this.expect("op", "=");
       return { k: "Set", target, value: this.expr(), ...p };
+    }
+    if (this.atKw("while")) {
+      this.advance();
+      const cond = this.expr(true);
+      return { k: "ForWhile", cond, body: this.block(), ...p };
     }
     if (this.atKw("return")) {
       this.advance();
@@ -278,6 +284,11 @@ export class Parser {
       return { k: "ForWhile", cond, body: this.block(), ...p };
     }
     const e = this.expr();
+    if (this.atOp("=") && (e.k === "Name" || e.k === "FieldGet")) {
+      // v0.2 assignment: `x = e` or `x.field = e`
+      this.advance();
+      return { k: "Set", target: e, value: this.expr(), ...p };
+    }
     const inner = e.k === "Try" ? e.expr : e;
     if (inner.k !== "Call") {
       throw new CanonError(diag("P004",

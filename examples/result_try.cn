@@ -4,7 +4,7 @@ fn parse_age(s: String) -> Result[Int, Error] {
     None => -1,
   }
   if n < 0 {
-    return Err(Error { message: concat("not an age: ", s) })
+    return Err(Error { message: "not an age: " + s })
   }
   return Ok(n)
 }
@@ -17,8 +17,8 @@ fn total_age(a: String, b: String) -> Result[Int, Error] {
 
 fn describe(r: Result[Int, Error]) -> String {
   return match r {
-    Ok(n) => concat("total ", to_string(n)),
-    Err(e) => concat("error: ", e.message),
+    Ok(n) => "total " + to_string(n),
+    Err(e) => "error: " + e.message,
   }
 }
 

@@ -51,10 +51,10 @@ Patches are computed against the original file, so one patch fixes the reported 
 |---|---|---|
 | Patch | C001, E101, E102, T004, T009 | Apply `fix.diff` mechanically |
 | Question | H001 | Fill the hole with a value of `data.expected`, often one of `data.candidates` |
-| Rewrite | P001 to P005, S001, L001, N001, E100, M001, the other T codes | Change the code; the message says what was expected |
+| Rewrite | P001 to P005, L001, N001, E100, M001, the other T codes | Change the code; the message says what was expected |
 | Trap | R001 to R006 | A runtime failure: fix the logic, or the contract it broke |
 
-A parse error (P codes) or S001 stops the check at the first problem, because there is no tree to check further. Otherwise every problem in the file is reported in one pass.
+A parse error (P codes) stops the check at the first problem, because there is no tree to check further. Otherwise every problem in the file is reported in one pass.
 
 In the examples below, the `# expect:` line is part of the checked file, so it counts in the line numbers.
 
@@ -167,7 +167,7 @@ example.cn:3:13: error P005: each pipeline stage must be a call, like '|> f()'
 
 ### C001
 
-The file is not in canonical form. The patch is the whole normalization: every rule on the [Canonical form](/docs/canonical-form) page, applied at once.
+The file is not in canonical form. The patch is the whole normalization: every rule on the [Canonical form](/docs/canonical-form) page, applied at once. That includes the v0 spellings `set x = e`, `for cond { }` and `concat(a, b)`, which still parse but are rewritten to `x = e`, `while cond { }` and `a + b`.
 
 ```canon
 # expect: C001
@@ -193,19 +193,7 @@ The patch:
 
 ### S001
 
-A `match` used inside a larger expression. `match` may only be the whole value of a `let`, `set` or `return`.
-
-```canon
-# expect: S001
-fn f(a: Int) -> Int {
-  let x = 1 + match a { _ => 1 }
-  return x
-}
-```
-
-```text
-example.cn:3:15: error S001: match is only allowed as a whole statement value (let, set, return); bind it with let first
-```
+Retired in v0.2. v0 rejected a `match` inside a larger expression; since v0.2 `match` may appear in any expression position, so the checker no longer reports S001.
 
 ### L001
 
@@ -214,12 +202,12 @@ A line longer than 100 characters after formatting. There is no patch: bind a su
 ```canon
 # expect: L001
 fn f() -> String {
-  return concat("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "cccccccccccccccccccccc")
+  return "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" + "cccccccccccccccccccccc"
 }
 ```
 
 ```text
-example.cn:3:101: error L001: line is 115 characters (limit 100); bind a subexpression with let
+example.cn:3:101: error L001: line is 109 characters (limit 100); bind a subexpression with let
 ```
 
 ### N001
@@ -377,17 +365,17 @@ fn score(xs: List[Int]) -> Int {
 
 ### T001
 
-Type mismatch. This is also the code for other type-level rule breaks: a missing or duplicate record field, a duplicate declaration, redefining a built-in type or function name, an Int literal outside the 53-bit range, an unknown string escape, comparing functions, or a Map key that is not Int, Float or String.
+Type mismatch, such as joining a String and an Int with `+` (convert with `to_string`). This is also the code for other type-level rule breaks: a missing or duplicate record field, a duplicate declaration, redefining a built-in type or function name, an Int literal outside the 53-bit range, an unknown string escape, comparing functions, or a Map key that is not Int, Float or String.
 
 ```canon
 # expect: T001
-fn f(a: String) -> String {
-  return a + "x"
+fn f(n: Int) -> String {
+  return "n = " + n
 }
 ```
 
 ```text
-example.cn:3:10: error T001: operator + needs Int or Float operands, found String
+example.cn:3:10: error T001: type mismatch in operands of +: expected String, found Int
 ```
 
 ### T002
@@ -474,18 +462,18 @@ example.cn:2:4: error T005: fn f returns Int but can reach its end without a ret
 
 ### T006
 
-`set` on a name that is not a `var`: a `let` binding or a parameter.
+Assignment (`x = e` or `x.field = e`) to a name that is not a `var`: a `let` binding or a parameter. The message still says "set", the v0 spelling.
 
 ```canon
 # expect: T006
 fn f(n: Int) -> Int {
-  set n = 2
+  n = 2
   return n
 }
 ```
 
 ```text
-example.cn:3:3: error T006: set on n, which is not a var; declare it with var to mutate it
+example.cn:3:3: error T006: cannot assign to n, which is not a var; declare it with var to mutate it
 ```
 
 ### T007

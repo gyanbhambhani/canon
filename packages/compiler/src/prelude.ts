@@ -2,7 +2,7 @@
  * The standard library's types and signatures, written in Canon and parsed by the
  * compiler itself. The runtime package implements every function listed here.
  * A type parameter named K is a key: it must be Int, Float or String.
- * `concat` is the only variadic built-in and is special-cased by the checker.
+ * Strings join with `+` (v0.2); `concat(a, b)` is normalized to `a + b`.
  */
 export const PRELUDE = `type Option[T] =
   | Some(value: T)
@@ -44,7 +44,6 @@ fn to_float(n: Int) -> Float {}
 fn to_int(x: Float) -> Int {}
 fn parse_int(s: String) -> Option[Int] {}
 fn parse_float(s: String) -> Option[Float] {}
-fn concat(parts: String) -> String {}
 fn join(parts: List[String], sep: String) -> String {}
 fn split(s: String, sep: String) -> List[String] {}
 fn trim(s: String) -> String {}

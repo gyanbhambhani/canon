@@ -1,4 +1,4 @@
 # expect: T001
-fn f(a: String) -> String {
-  return a + "x"
+fn f(a: String, n: Int) -> String {
+  return a + n
 }
