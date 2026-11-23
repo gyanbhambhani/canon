@@ -27,6 +27,21 @@ function node(file: string, input = "") {
 const dir = () => mkdtempSync(join(tmpdir(), "canon-build-"));
 
 describe("canon build", () => {
+  it("creates a missing output folder, and reports an unwritable output cleanly", () => {
+    const d = dir();
+    const nested = join(d, "dist", "deep", "hello.js");
+    const b = canon(["build", "examples/hello.cn", "-o", nested]);
+    expect(b.code, b.err).toBe(0);
+    expect(node(nested).out).toBe("hello, canon\n");
+    // an output path under a regular file cannot be created: a clean error, exit 1, no stack trace
+    const file = join(d, "not-a-folder");
+    writeFileSync(file, "x");
+    const bad = canon(["build", "examples/hello.cn", "-o", join(file, "hello.js")]);
+    expect(bad.code).toBe(1);
+    expect(bad.err).toMatch(/cannot write/);
+    expect(bad.err).not.toMatch(/at cmdBuild|node:fs/);
+  });
+
   it("builds every example to a standalone file that prints what canon run prints", () => {
     const d = dir();
     for (const f of examples) {

@@ -4,7 +4,7 @@
  */
 import { spawn, type ChildProcess } from "node:child_process";
 import {
-  chmodSync, existsSync, readFileSync, unwatchFile, watch as fsWatch, watchFile as pollFile, writeFileSync, type FSWatcher,
+  chmodSync, existsSync, mkdirSync, readFileSync, unwatchFile, watch as fsWatch, watchFile as pollFile, writeFileSync, type FSWatcher,
 } from "node:fs";
 import { basename, dirname, resolve } from "node:path";
 import {
@@ -377,8 +377,17 @@ function cmdBuild(a: Args, io: CliIO): Outcome {
   if (js === null) return { code: 1, summary: "does not check" };
   const out = a.out ?? path.replace(/\.cn$/, "") + (a.module ? ".mjs" : ".js");
   const text = a.module ? moduleText(js, a, path) : standaloneScript(js, a, path);
-  writeFileSync(out, text);
-  if (!a.module) chmodSync(out, 0o755);
+  try {
+    // create the output folder if it does not exist yet (`-o dist/app.js`)
+    mkdirSync(dirname(resolve(out)), { recursive: true });
+    writeFileSync(out, text);
+    if (!a.module) chmodSync(out, 0o755);
+  } catch (e) {
+    const message = `cannot write ${out}: ${(e as Error).message}`;
+    if (a.json) io.stdout(JSON.stringify({ ok: false, out, error: message }, null, 2) + "\n");
+    else io.stderr(`${path}: ${message}\n`);
+    return { code: 1, summary: message };
+  }
   if (a.json) io.stdout(JSON.stringify({ ok: true, out, module: a.module, bytes: Buffer.byteLength(text) }, null, 2) + "\n");
   else io.stdout(`${path}: wrote ${out}\n`);
   return { code: 0, summary: `wrote ${out}` };
