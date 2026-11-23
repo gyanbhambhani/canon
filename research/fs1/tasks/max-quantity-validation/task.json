@@ -3,6 +3,13 @@
   "kind": "change",
   "title": "Limit an order line's quantity to 1..99 (a typed BadQuantity error)",
   "features": [
-    { "module": "frontend/src/features/placeOrder.ts", "signature": "placeOrder(baseUrl: string, email: string, lines: Line[]): Promise<Outcome<Order>> (errors now include BadQuantity)" }
-  ]
+    {
+      "module": "frontend/src/features/placeOrder.ts",
+      "signature": "placeOrder(baseUrl: string, email: string, lines: Line[]): Promise<Outcome<Order>> (errors now include BadQuantity)"
+    }
+  ],
+  "adapted": {
+    "for": "canon",
+    "reason": "a bad quantity is a typed 400 (BadQuantity), not a 422: Canon's portable requires cannot check each element of a list"
+  }
 }

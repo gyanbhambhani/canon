@@ -3,7 +3,18 @@
   "kind": "change",
   "title": "Add a required, validated shipping address to orders",
   "features": [
-    { "module": "frontend/src/features/placeOrder.ts", "signature": "placeOrder(baseUrl: string, email: string, lines: Line[], shippingAddress: string): Promise<Outcome<Order>>" }
+    {
+      "module": "frontend/src/features/placeOrder.ts",
+      "signature": "placeOrder(baseUrl: string, email: string, lines: Line[], shippingAddress: string): Promise<Outcome<Order>>"
+    }
   ],
-  "supersedes": ["test_orders", "test_reports", "order-and-pay-probe"]
+  "supersedes": [
+    "test_orders",
+    "test_reports",
+    "order-and-pay-probe"
+  ],
+  "adapted": {
+    "for": "canon",
+    "reason": "only a minimum length (5 after trimming), not the planned 5 to 50 range, because the full rule was L001 with no fix when the task was written"
+  }
 }

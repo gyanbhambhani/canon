@@ -8,21 +8,47 @@
       "signature": "signup(baseUrl: string, email: string, firstName: string, lastName: string, password: string): Promise<Outcome<Profile>>, where Profile has first_name and last_name"
     }
   ],
-  "supersedes": ["test_signup_and_login", "test_signup_validation", "test_reports", "signup-probe"],
+  "supersedes": [
+    "test_signup_and_login",
+    "test_signup_validation",
+    "test_reports",
+    "signup-probe"
+  ],
   "validation": [
     {
       "feature": "signup",
       "args": [
-        { "name": "email", "gen": "email" },
-        { "name": "firstName", "gen": "name" },
-        { "name": "lastName", "gen": "name" },
-        { "name": "password", "gen": "password" }
+        {
+          "name": "email",
+          "gen": "email"
+        },
+        {
+          "name": "firstName",
+          "gen": "name"
+        },
+        {
+          "name": "lastName",
+          "gen": "name"
+        },
+        {
+          "name": "password",
+          "gen": "password"
+        }
       ],
       "request": {
         "method": "POST",
         "path": "/users",
-        "body": { "email": "$email", "first_name": "$firstName", "last_name": "$lastName", "password": "$password" }
+        "body": {
+          "email": "$email",
+          "first_name": "$firstName",
+          "last_name": "$lastName",
+          "password": "$password"
+        }
       }
     }
-  ]
+  ],
+  "adapted": {
+    "for": "canon",
+    "reason": "last_name is required but may be empty, so the Canon reference can express the rule"
+  }
 }
