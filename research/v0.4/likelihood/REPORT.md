@@ -43,3 +43,36 @@ Ratio is e^delta. Totals are not length-normalized: a longer spelling pays for i
 | Blank lines between top-level definitions: two (PEP 8) or one? | one | two | **one** | +0.88 | 2.4x | 3/3 |
 | Option type (values stay Some(x)/None): `Option[T]` or `T \| None`? | option | union | **option** | +2.67 | 14.4x | 2/3 |
 | Effects in a function type: `Callable[[A], B, io]`, `Effects[Callable[[A], B], io]`, `Annotated[Callable[[A], B], effects(io)]`, or `Callable[[A], Effect[B, io]]`? | callable-extra | effects-wrap, annotated, ret-wrap | **callable-extra** | +2.54 | 12.7x | 2/3 |
+
+## Qwen/Qwen2.5-Coder-7B
+
+| Construct | Chosen | Alternatives | Winner | Delta (nats) | Ratio | Contexts chosen wins |
+| --- | --- | --- | --- | ---: | ---: | :---: |
+| Logical operators: and/or/not or &&/\|\|/!? | words | symbols | **words** | +5.82 | 335x | 3/3 |
+| Declared effects: decorator, docstring tag, trailing comment, or return-type wrapper? | decorator | docstring, comment, rettype | **comment** | -0.89 | 0.409x | 1/3 |
+| Contracts: @requires/@ensures decorators, asserts at entry and before return, or a docstring? | decorators | asserts, docstring | **asserts** | -1.26 | 0.283x | 1/3 |
+| Records: @dataclass class, plain class, NamedTuple, or frozen dataclass? | class | dataclass, namedtuple, frozen | **dataclass** | -0.97 | 0.381x | 0/3 |
+| Sum types: one `type` line with variant fields, or one dataclass per variant plus a union alias? | compact | dataclasses, dataclasses-bare-alias | **compact** | +0.80 | 2.24x | 1/3 |
+| Result propagation: try_(e), e?, propagate(e), or an explicit match? | q | try_, propagate, match | **try_** | -1.78 | 0.169x | 1/3 |
+| Match whose value is returned: case blocks, one-line cases, a `return match` expression, or Canon arrows? | block | oneline, expr, arrow | **block** | +1.67 | 5.3x | 3/3 |
+| A value chosen by a Bool: `a if c else b`, or a match on True/False? | conditional | match | **conditional** | +7.01 | 1.11e+03x | 3/3 |
+| Lambdas: `lambda x: e` or `\|x\| e`? | lambda | bars | **lambda** | +8.14 | 3.42e+03x | 3/3 |
+| Three or more chained calls: nested calls, a `\|>` pipeline, or named steps? | nested | pipeline, steps | **steps** | -2.48 | 0.0834x | 1/3 |
+| Local bindings: bare `x = e` (mutability inferred), `let`/`var`, or `x: Final = e` for immutables? | bare | letvar, final | **bare** | +12.13 | 1.86e+05x | 3/3 |
+| Updating a variable: `x += e` or `x = x + e`? | augmented | plain | **plain** | -0.19 | 0.83x | 2/3 |
+| Changing a parameter's value: assign to it directly, or copy it into a local first? | direct | copy | **direct** | +7.98 | 2.92e+03x | 3/3 |
+| A hole ("fill this in"): `...`, `?`, `hole()` or `todo()`? | ellipsis | q, hole, todo | **ellipsis** | +3.07 | 21.5x | 3/3 |
+| Type names: Python's (int, str, list[T], dict[K, V], None) or Canon's (Int, String, List[T], Map[K, V], Unit)? | python | canon | **python** | +1.89 | 6.63x | 2/3 |
+| Function types: `Callable[[A], B]` or `fn(A) -> B`? | callable | fn | **callable** | +2.06 | 7.83x | 3/3 |
+| Building strings: f-strings, `+` with to_string, or `+` with str()? | fstring | plus, plus-str | **fstring** | +2.94 | 19x | 3/3 |
+| Test blocks: `def test_name() -> None:` (pytest), `@test("name")` on a def, or `test "name":`? | pytest | decorator, canon | **pytest** | +7.45 | 1.72e+03x | 3/3 |
+| Membership: `x in xs` or `contains(xs, x)`? | in | contains | **in** | +6.39 | 593x | 2/3 |
+| Tuple slots: `t[0]` or `t.0`? | index | dot | **index** | +7.87 | 2.63e+03x | 3/3 |
+| Boolean literals: True/False or true/false? | python | lower | **python** | +5.00 | 148x | 3/3 |
+| Testing for None: `x is None` or `x == None`? | is | eq | **is** | +2.05 | 7.74x | 3/3 |
+| Indentation: 4 spaces or 2? | four | two | **four** | +2.44 | 11.5x | 3/3 |
+| Re-test in a Python-shaped program: colon + indentation, or braces? | indent | braces | **indent** | +16.72 | 1.82e+07x | 3/3 |
+| Re-test in a Python-shaped program: `def` or `fn`? | def | fn | **def** | +5.08 | 161x | 3/3 |
+| Blank lines between top-level definitions: two (PEP 8) or one? | one | two | **one** | +1.73 | 5.64x | 3/3 |
+| Option type (values stay Some(x)/None): `Option[T]` or `T \| None`? | option | union | **option** | +5.02 | 151x | 3/3 |
+| Effects in a function type: `Callable[[A], B, io]`, `Effects[Callable[[A], B], io]`, `Annotated[Callable[[A], B], effects(io)]`, or `Callable[[A], Effect[B, io]]`? | callable-extra | effects-wrap, annotated, ret-wrap | **callable-extra** | +3.14 | 23.1x | 2/3 |
