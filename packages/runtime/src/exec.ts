@@ -247,6 +247,8 @@ export class Runtime {
 }
 
 export interface CanonModule {
+  /** Every user function, by Canon name (for embedding and test harnesses). */
+  fns: Record<string, (...args: any[]) => unknown>;
   main?: () => unknown;
   tests: [string, () => void][];
   types: TypeTable;

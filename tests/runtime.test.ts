@@ -149,3 +149,12 @@ describe("net through the node host", () => {
     expect(out.join("")).toBe('Ok("pong")\nOk("got ping")\n');
   });
 });
+
+describe("embedding", () => {
+  it("a loaded module exposes every user function by name", async () => {
+    const { Runtime, load } = await import("@canon/runtime");
+    const js = compileOrThrow("fn add(a: Int, b: Int) -> Int {\n  return a + b\n}\n");
+    const mod = load(js, new Runtime(testHost(new MemoryHost())));
+    expect(mod.fns.add(2, 3)).toBe(5);
+  });
+});

@@ -17,3 +17,7 @@ playwright-report/
 apps/web/public/generated/
 apps/web/lib/generated/
 .vercel
+
+# research
+research/**/.venv/
+research/**/__pycache__/

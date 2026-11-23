@@ -1,0 +1,692 @@
+{
+  "model": "Qwen/Qwen2.5-Coder-7B",
+  "header": "# A Canon source file (main.cn). Canon is a small, strictly formatted language.\n",
+  "constructs": [
+    {
+      "id": "pipeline-3",
+      "question": "Three chained calls: pipeline or nested calls?",
+      "canon": "pipeline",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "pipeline",
+          "logprob": -87.4300537109375,
+          "tokens": 49,
+          "text": "fn cheapest(items: List[Item], k: Int) -> List[String] {\n  return items\n    |> filter(|i| i.qty > 0)\n    |> sort_by(|i| i.price)\n    |> take(k)\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "nested",
+          "logprob": -88.44234466552734,
+          "tokens": 43,
+          "text": "fn cheapest(items: List[Item], k: Int) -> List[String] {\n  return take(sort_by(filter(items, |i| i.qty > 0), |i| i.price), k)\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "pipeline",
+          "logprob": -62.776126861572266,
+          "tokens": 47,
+          "text": "fn even_squares(xs: List[Int]) -> List[Int] {\n  return xs\n    |> filter(|x| x % 2 == 0)\n    |> map(|x| x * x)\n    |> reverse()\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "nested",
+          "logprob": -62.919036865234375,
+          "tokens": 40,
+          "text": "fn even_squares(xs: List[Int]) -> List[Int] {\n  return reverse(map(filter(xs, |x| x % 2 == 0), |x| x * x))\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "pipeline",
+          "logprob": -71.37555694580078,
+          "tokens": 46,
+          "text": "fn word_lengths(text: String) -> List[Int] {\n  return text\n    |> split(\" \")\n    |> filter(|w| str_len(w) > 0)\n    |> map(|w| str_len(w))\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "nested",
+          "logprob": -68.84406280517578,
+          "tokens": 40,
+          "text": "fn word_lengths(text: String) -> List[Int] {\n  return map(filter(split(text, \" \"), |w| str_len(w) > 0), |w| str_len(w))\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "pipeline-2",
+      "question": "Two chained calls: pipeline or nested calls?",
+      "canon": "nested",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "pipeline",
+          "logprob": -72.54845428466797,
+          "tokens": 33,
+          "text": "fn in_stock(items: List[Item]) -> Int {\n  return items\n    |> filter(|i| i.qty > 0)\n    |> len()\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "nested",
+          "logprob": -65.57168579101562,
+          "tokens": 28,
+          "text": "fn in_stock(items: List[Item]) -> Int {\n  return len(filter(items, |i| i.qty > 0))\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "pipeline",
+          "logprob": -58.59268569946289,
+          "tokens": 32,
+          "text": "fn doubled(xs: List[Int]) -> List[Int] {\n  return xs\n    |> map(|x| x * 2)\n    |> reverse()\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "nested",
+          "logprob": -55.18640899658203,
+          "tokens": 27,
+          "text": "fn doubled(xs: List[Int]) -> List[Int] {\n  return reverse(map(xs, |x| x * 2))\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "pipeline",
+          "logprob": -66.13289642333984,
+          "tokens": 26,
+          "text": "fn first_word(text: String) -> Option[String] {\n  return text\n    |> split(\" \")\n    |> first()\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "nested",
+          "logprob": -73.2140121459961,
+          "tokens": 21,
+          "text": "fn first_word(text: String) -> Option[String] {\n  return first(split(text, \" \"))\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "bool-true",
+      "question": "Testing a Bool: `x` or `x == true`?",
+      "canon": "bare",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "bare",
+          "logprob": -84.6615982055664,
+          "tokens": 35,
+          "text": "fn check(item: Item, job: Job, done: Bool) -> Int {\n  if item.active {\n    return 1\n  }\n  return 0\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "eq-true",
+          "logprob": -86.18997955322266,
+          "tokens": 37,
+          "text": "fn check(item: Item, job: Job, done: Bool) -> Int {\n  if item.active == true {\n    return 1\n  }\n  return 0\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "bare",
+          "logprob": -86.16429901123047,
+          "tokens": 37,
+          "text": "fn check(item: Item, job: Job, done: Bool) -> Int {\n  if is_ready(job) {\n    return 1\n  }\n  return 0\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "eq-true",
+          "logprob": -89.66969299316406,
+          "tokens": 39,
+          "text": "fn check(item: Item, job: Job, done: Bool) -> Int {\n  if is_ready(job) == true {\n    return 1\n  }\n  return 0\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "bare",
+          "logprob": -73.50028991699219,
+          "tokens": 34,
+          "text": "fn check(item: Item, job: Job, done: Bool) -> Int {\n  if done {\n    return 1\n  }\n  return 0\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "eq-true",
+          "logprob": -75.18792724609375,
+          "tokens": 36,
+          "text": "fn check(item: Item, job: Job, done: Bool) -> Int {\n  if done == true {\n    return 1\n  }\n  return 0\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "bool-false",
+      "question": "Negating a Bool: `not x` or `x == false`?",
+      "canon": "not",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "not",
+          "logprob": -87.7342758178711,
+          "tokens": 36,
+          "text": "fn check(item: Item, job: Job, done: Bool) -> Int {\n  if not item.active {\n    return 1\n  }\n  return 0\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "eq-false",
+          "logprob": -87.53926849365234,
+          "tokens": 37,
+          "text": "fn check(item: Item, job: Job, done: Bool) -> Int {\n  if item.active == false {\n    return 1\n  }\n  return 0\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "not",
+          "logprob": -88.58954620361328,
+          "tokens": 38,
+          "text": "fn check(item: Item, job: Job, done: Bool) -> Int {\n  if not is_ready(job) {\n    return 1\n  }\n  return 0\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "eq-false",
+          "logprob": -91.55078125,
+          "tokens": 39,
+          "text": "fn check(item: Item, job: Job, done: Bool) -> Int {\n  if is_ready(job) == false {\n    return 1\n  }\n  return 0\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "not",
+          "logprob": -75.9541244506836,
+          "tokens": 35,
+          "text": "fn check(item: Item, job: Job, done: Bool) -> Int {\n  if not done {\n    return 1\n  }\n  return 0\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "eq-false",
+          "logprob": -76.88921356201172,
+          "tokens": 36,
+          "text": "fn check(item: Item, job: Job, done: Bool) -> Int {\n  if done == false {\n    return 1\n  }\n  return 0\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "logic-words",
+      "question": "Logical operators: words (and/or/not) or symbols (&&/||/!)?",
+      "canon": "words",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "words",
+          "logprob": -107.91561889648438,
+          "tokens": 41,
+          "text": "fn keep(item: Item, user: User, n: Int) -> Bool {\n  return item.qty > 0 and not is_discontinued(item) or item.price == 0.0\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "symbols",
+          "logprob": -107.85405731201172,
+          "tokens": 41,
+          "text": "fn keep(item: Item, user: User, n: Int) -> Bool {\n  return item.qty > 0 && !is_discontinued(item) || item.price == 0.0\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "words",
+          "logprob": -86.86703491210938,
+          "tokens": 31,
+          "text": "fn keep(item: Item, user: User, n: Int) -> Bool {\n  return user.active and not user.banned or user.admin\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "symbols",
+          "logprob": -86.71627807617188,
+          "tokens": 31,
+          "text": "fn keep(item: Item, user: User, n: Int) -> Bool {\n  return user.active && !user.banned || user.admin\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "words",
+          "logprob": -90.51136779785156,
+          "tokens": 36,
+          "text": "fn keep(item: Item, user: User, n: Int) -> Bool {\n  return n > 0 and not is_even(n) or n == 1\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "symbols",
+          "logprob": -90.1648941040039,
+          "tokens": 36,
+          "text": "fn keep(item: Item, user: User, n: Int) -> Bool {\n  return n > 0 && !is_even(n) || n == 1\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "mutation",
+      "question": "Assigning to a mutable local: `set x = ...` or `x = ...`?",
+      "canon": "set",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "set",
+          "logprob": -54.6646728515625,
+          "tokens": 38,
+          "text": "fn run(xs: List[Int]) -> Int {\n  var total = 0\n  for x in xs {\n    set total = total + x\n  }\n  return total\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "bare",
+          "logprob": -46.4000358581543,
+          "tokens": 37,
+          "text": "fn run(xs: List[Int]) -> Int {\n  var total = 0\n  for x in xs {\n    total = total + x\n  }\n  return total\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "set",
+          "logprob": -57.68840026855469,
+          "tokens": 38,
+          "text": "fn run(xs: List[Int]) -> Int {\n  var product = 1\n  for x in xs {\n    set product = product * x\n  }\n  return product\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "bare",
+          "logprob": -49.838600158691406,
+          "tokens": 37,
+          "text": "fn run(xs: List[Int]) -> Int {\n  var product = 1\n  for x in xs {\n    product = product * x\n  }\n  return product\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "set",
+          "logprob": -57.487205505371094,
+          "tokens": 39,
+          "text": "fn run(xs: List[Int]) -> Int {\n  var count = 0\n  for x in xs {\n    set count = count + 1\n  }\n  return count\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "bare",
+          "logprob": -49.952369689941406,
+          "tokens": 38,
+          "text": "fn run(xs: List[Int]) -> Int {\n  var count = 0\n  for x in xs {\n    count = count + 1\n  }\n  return count\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "while-loop",
+      "question": "A condition loop: `for cond { }` or `while cond { }`?",
+      "canon": "for",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "for",
+          "logprob": -83.21501159667969,
+          "tokens": 47,
+          "text": "fn run(n: Int, queue: List[Int], done: Bool) -> Int {\n  var i = 0\n  for i < n {\n    set i = i + 1\n  }\n  return i\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "while",
+          "logprob": -79.4179458618164,
+          "tokens": 47,
+          "text": "fn run(n: Int, queue: List[Int], done: Bool) -> Int {\n  var i = 0\n  while i < n {\n    set i = i + 1\n  }\n  return i\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "for",
+          "logprob": -89.97474670410156,
+          "tokens": 50,
+          "text": "fn run(n: Int, queue: List[Int], done: Bool) -> Int {\n  var i = 0\n  for len(queue) > 0 {\n    set i = i + 1\n  }\n  return i\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "while",
+          "logprob": -89.44129180908203,
+          "tokens": 50,
+          "text": "fn run(n: Int, queue: List[Int], done: Bool) -> Int {\n  var i = 0\n  while len(queue) > 0 {\n    set i = i + 1\n  }\n  return i\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "for",
+          "logprob": -87.48751068115234,
+          "tokens": 46,
+          "text": "fn run(n: Int, queue: List[Int], done: Bool) -> Int {\n  var i = 0\n  for not done {\n    set i = i + 1\n  }\n  return i\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "while",
+          "logprob": -79.94212341308594,
+          "tokens": 46,
+          "text": "fn run(n: Int, queue: List[Int], done: Bool) -> Int {\n  var i = 0\n  while not done {\n    set i = i + 1\n  }\n  return i\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "effects-placement",
+      "question": "Where the effects clause goes: its own line, or inline before `{`?",
+      "canon": "own-line",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "own-line",
+          "logprob": -78.3165054321289,
+          "tokens": 20,
+          "text": "fn greet(name: String) -> Unit\n  effects: io\n{\n  return body()\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "inline",
+          "logprob": -76.112548828125,
+          "tokens": 17,
+          "text": "fn greet(name: String) -> Unit effects: io {\n  return body()\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "own-line",
+          "logprob": -87.35570526123047,
+          "tokens": 25,
+          "text": "fn fetch(url: String) -> Result[String, Error]\n  effects: net, time\n{\n  return body()\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "inline",
+          "logprob": -88.44798278808594,
+          "tokens": 23,
+          "text": "fn fetch(url: String) -> Result[String, Error] effects: net, time {\n  return body()\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "own-line",
+          "logprob": -76.50603485107422,
+          "tokens": 17,
+          "text": "fn roll() -> Int\n  effects: rand\n{\n  return body()\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "inline",
+          "logprob": -75.80828857421875,
+          "tokens": 14,
+          "text": "fn roll() -> Int effects: rand {\n  return body()\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "trailing-comma",
+      "question": "Record fields, one per line: trailing comma or not? (open question in SPEC.md)",
+      "canon": "trailing",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "trailing",
+          "logprob": -51.676918029785156,
+          "tokens": 19,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "none",
+          "logprob": -50.90245056152344,
+          "tokens": 19,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "trailing",
+          "logprob": -30.34121322631836,
+          "tokens": 14,
+          "text": "type Point {\n  x: Int,\n  y: Int,\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "none",
+          "logprob": -30.88135528564453,
+          "tokens": 14,
+          "text": "type Point {\n  x: Int,\n  y: Int\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "trailing",
+          "logprob": -45.25605010986328,
+          "tokens": 19,
+          "text": "type User {\n  name: String,\n  email: String,\n  active: Bool,\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "none",
+          "logprob": -44.92839050292969,
+          "tokens": 19,
+          "text": "type User {\n  name: String,\n  email: String,\n  active: Bool\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "else-if",
+      "question": "A second condition: `else if` or `else { if ... }`?",
+      "canon": "else-if",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "else-if",
+          "logprob": -88.23007202148438,
+          "tokens": 52,
+          "text": "fn label(n: Int, score: Int, xs: List[Int]) -> String {\n  if n < 0 {\n    return \"negative\"\n  } else if n == 0 {\n    return \"zero\"\n  }\n  return \"other\"\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "else-block",
+          "logprob": -92.68732452392578,
+          "tokens": 56,
+          "text": "fn label(n: Int, score: Int, xs: List[Int]) -> String {\n  if n < 0 {\n    return \"negative\"\n  } else {\n    if n == 0 {\n      return \"zero\"\n    }\n  }\n  return \"other\"\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "else-if",
+          "logprob": -88.0344467163086,
+          "tokens": 54,
+          "text": "fn label(n: Int, score: Int, xs: List[Int]) -> String {\n  if score > 90 {\n    return \"A\"\n  } else if score > 80 {\n    return \"B\"\n  }\n  return \"other\"\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "else-block",
+          "logprob": -92.7745590209961,
+          "tokens": 58,
+          "text": "fn label(n: Int, score: Int, xs: List[Int]) -> String {\n  if score > 90 {\n    return \"A\"\n  } else {\n    if score > 80 {\n      return \"B\"\n    }\n  }\n  return \"other\"\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "else-if",
+          "logprob": -90.60713195800781,
+          "tokens": 56,
+          "text": "fn label(n: Int, score: Int, xs: List[Int]) -> String {\n  if len(xs) == 0 {\n    return \"empty\"\n  } else if len(xs) == 1 {\n    return \"one\"\n  }\n  return \"other\"\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "else-block",
+          "logprob": -95.15861511230469,
+          "tokens": 60,
+          "text": "fn label(n: Int, score: Int, xs: List[Int]) -> String {\n  if len(xs) == 0 {\n    return \"empty\"\n  } else {\n    if len(xs) == 1 {\n      return \"one\"\n    }\n  }\n  return \"other\"\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "string-join",
+      "question": "Joining strings: `concat(a, b)` or `a + b`?",
+      "canon": "concat",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "concat",
+          "logprob": -69.08306121826172,
+          "tokens": 31,
+          "text": "fn text(name: String, first: String, last: String, n: Int) -> String {\n  return concat(\"hello, \", name)\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "plus",
+          "logprob": -64.02995300292969,
+          "tokens": 31,
+          "text": "fn text(name: String, first: String, last: String, n: Int) -> String {\n  return \"hello, \" + name\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "concat",
+          "logprob": -63.05848693847656,
+          "tokens": 29,
+          "text": "fn text(name: String, first: String, last: String, n: Int) -> String {\n  return concat(first, last)\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "plus",
+          "logprob": -60.43557357788086,
+          "tokens": 28,
+          "text": "fn text(name: String, first: String, last: String, n: Int) -> String {\n  return first + last\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "concat",
+          "logprob": -82.58053588867188,
+          "tokens": 32,
+          "text": "fn text(name: String, first: String, last: String, n: Int) -> String {\n  return concat(to_string(n), \" items\")\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "plus",
+          "logprob": -78.53684997558594,
+          "tokens": 32,
+          "text": "fn text(name: String, first: String, last: String, n: Int) -> String {\n  return to_string(n) + \" items\"\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "lambda",
+      "question": "Lambda syntax: `|x| x + 1` or `(x) => x + 1`?",
+      "canon": "bars",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "bars",
+          "logprob": -60.08596420288086,
+          "tokens": 28,
+          "text": "fn run(xs: List[Item]) -> List[Item] {\n  return map(xs, |x| x * 2)\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "arrow",
+          "logprob": -60.350868225097656,
+          "tokens": 29,
+          "text": "fn run(xs: List[Item]) -> List[Item] {\n  return map(xs, (x) => x * 2)\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "bars",
+          "logprob": -69.7130355834961,
+          "tokens": 29,
+          "text": "fn run(xs: List[Item]) -> List[Item] {\n  return filter(xs, |i| i.qty > 0)\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "arrow",
+          "logprob": -70.57835388183594,
+          "tokens": 30,
+          "text": "fn run(xs: List[Item]) -> List[Item] {\n  return filter(xs, (i) => i.qty > 0)\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "bars",
+          "logprob": -77.24938201904297,
+          "tokens": 27,
+          "text": "fn run(xs: List[Item]) -> List[Item] {\n  return sort_by(xs, |u| u.name)\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "arrow",
+          "logprob": -78.32726287841797,
+          "tokens": 28,
+          "text": "fn run(xs: List[Item]) -> List[Item] {\n  return sort_by(xs, (u) => u.name)\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "match-arm-comma",
+      "question": "Match arms, one per line: trailing comma or not?",
+      "canon": "comma",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "comma",
+          "logprob": -84.52352905273438,
+          "tokens": 42,
+          "text": "fn pick(o: Option[Int], r: Result[Int, Error], b: Bool) -> Int {\n  return match o {\n    Some(v) => v,\n    None => 0,\n  }\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "none",
+          "logprob": -83.18929290771484,
+          "tokens": 42,
+          "text": "fn pick(o: Option[Int], r: Result[Int, Error], b: Bool) -> Int {\n  return match o {\n    Some(v) => v\n    None => 0\n  }\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "comma",
+          "logprob": -88.4740219116211,
+          "tokens": 43,
+          "text": "fn pick(o: Option[Int], r: Result[Int, Error], b: Bool) -> Int {\n  return match r {\n    Ok(n) => n,\n    Err(_) => -1,\n  }\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "none",
+          "logprob": -87.35420989990234,
+          "tokens": 43,
+          "text": "fn pick(o: Option[Int], r: Result[Int, Error], b: Bool) -> Int {\n  return match r {\n    Ok(n) => n\n    Err(_) => -1\n  }\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "comma",
+          "logprob": -82.74818420410156,
+          "tokens": 41,
+          "text": "fn pick(o: Option[Int], r: Result[Int, Error], b: Bool) -> Int {\n  return match b {\n    true => 1,\n    false => 0,\n  }\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "none",
+          "logprob": -81.46533966064453,
+          "tokens": 41,
+          "text": "fn pick(o: Option[Int], r: Result[Int, Error], b: Bool) -> Int {\n  return match b {\n    true => 1\n    false => 0\n  }\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "explicit-return",
+      "question": "Function result: explicit `return e` or a final bare expression?",
+      "canon": "return",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "return",
+          "logprob": -71.34540557861328,
+          "tokens": 36,
+          "text": "fn f(a: Int, b: Int, xs: List[Int], n: Int) -> Int {\n  let unused = 0\n  return a + b\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "implicit",
+          "logprob": -72.31861877441406,
+          "tokens": 35,
+          "text": "fn f(a: Int, b: Int, xs: List[Int], n: Int) -> Int {\n  let unused = 0\n  a + b\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "return",
+          "logprob": -81.73097229003906,
+          "tokens": 39,
+          "text": "fn f(a: Int, b: Int, xs: List[Int], n: Int) -> Int {\n  let unused = 0\n  return len(xs) * 2\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "implicit",
+          "logprob": -81.27734375,
+          "tokens": 38,
+          "text": "fn f(a: Int, b: Int, xs: List[Int], n: Int) -> Int {\n  let unused = 0\n  len(xs) * 2\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "return",
+          "logprob": -101.69258880615234,
+          "tokens": 40,
+          "text": "fn f(a: Int, b: Int, xs: List[Int], n: Int) -> Int {\n  let unused = 0\n  return concat(\"id-\", to_string(n))\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "implicit",
+          "logprob": -101.97981262207031,
+          "tokens": 39,
+          "text": "fn f(a: Int, b: Int, xs: List[Int], n: Int) -> Int {\n  let unused = 0\n  concat(\"id-\", to_string(n))\n}\n"
+        }
+      ]
+    }
+  ]
+}

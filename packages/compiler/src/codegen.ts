@@ -393,7 +393,7 @@ export function generate(prog: A.Program, info: TypeInfo): string {
   const main = info.userFns.get("main");
   const mainRet = main ? typeExprToTD(main.ret, main.tparams) : null;
   out.push(
-    `return {\n  main: ${main ? "f_main" : "undefined"},\n  mainRet: ${JSON.stringify(mainRet)},\n  tests: [\n${tests.join(",\n")}\n  ],\n  types: ${JSON.stringify(table)},\n};`,
+    `return {\n  fns: { ${fnNames.map((n) => `${JSON.stringify(n)}: f_${n}`).join(", ")} },\n  main: ${main ? "f_main" : "undefined"},\n  mainRet: ${JSON.stringify(mainRet)},\n  tests: [\n${tests.join(",\n")}\n  ],\n  types: ${JSON.stringify(table)},\n};`,
   );
   return out.join("\n\n") + "\n";
 }

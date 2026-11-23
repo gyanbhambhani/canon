@@ -7,6 +7,7 @@ export default tseslint.config(
       "**/dist/**",
       "**/.next/**",
       "apps/web/out/**",
+      "research/**/.venv/**",
       "**/.source/**",
       "**/node_modules/**",
       "reference/**",

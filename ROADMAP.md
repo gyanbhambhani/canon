@@ -80,7 +80,7 @@ Build / and /play as described in the Landing page section.
 
 Only after M7, and only when the owner provides model access.
 
-- [ ] research/likelihood/: score equivalent spellings of 10 to 15 constructs with a small open-weights model and report which form wins and by how much
+- [x] research/likelihood/: score equivalent spellings of 10 to 15 constructs with a small open-weights model and report which form wins and by how much
 - [ ] research/benchmark/: 40 tasks run 10 times each in Canon and in TypeScript, reporting distinct programs per task, first-pass check rate and fix rounds
 - [ ] One chart per study, embedded in the docs Design notes page
 
@@ -128,3 +128,7 @@ Only after M7, and only when the owner provides model access.
 - README.md, CONTRIBUTING.md, DEPLOY.md, and LICENSE (MIT, from the original repository); tests/release.test.ts checks them and the 0.1.0 versions.
 - The remaining steps need the owner: Vercel import with root apps/web plus NEXT_PUBLIC_GITHUB_URL, and `npm publish` of canon-lang (see DEPLOY.md). M8 needs model access.
 - Next session: M8 only, if the owner provides model access. Otherwise maintenance.
+
+### M8 (in progress)
+- Likelihood study done with local Qwen2.5-Coder 1.5B and 7B (research/likelihood). Strongest finding: models strongly prefer `x = ...` over `set x = ...`, and `while` over `for cond`. Results are in the Design notes page.
+- Benchmark: Claude Opus 5.5 and GPT-6.2 Sol, with keys in .env.local (git-ignored). Generated modules now expose `fns` so harnesses can call Canon functions directly.

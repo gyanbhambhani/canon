@@ -79,9 +79,26 @@ Further out:
 
 ## M8 results
 
-Pending. M8 runs only after M7, and only when model access is available. It has two studies:
+M8 has two studies. The likelihood study is done; the benchmark is in progress.
 
-- **Likelihood.** Score equivalent spellings of 10 to 15 constructs with a small open-weights model, and report which form wins and by how much.
-- **Benchmark.** Run 40 tasks 10 times each in Canon and in TypeScript, and report distinct programs per task, first-pass check rate and fix rounds.
+### Likelihood: which spelling do models find most natural?
 
-If Canon does not cut the number of distinct programs per task sharply, the core bet is wrong. Charts for both studies will appear here once they exist.
+Each of 14 constructs is written two equivalent ways inside three small Canon programs, and every program is scored by its total log-probability under two local open-weights base models (Qwen2.5-Coder 1.5B and 7B). A bar to the right means the model prefers the spelling Canon already requires; to the left, the alternative. One nat is a factor of about 2.7 in probability. The scripts, raw scores and full tables are in `research/likelihood/` (`REPORT.md`).
+
+![Log-likelihood of Canon's spelling minus the best alternative, per construct and model](/research/likelihood.svg)
+
+Where both models agree with Canon, in every context: `else if` over `else { if ... }` (about 100 to 300 times more likely), a bare `x` over `x == true`, `|x|` lambdas over `(x) =>`, `not x` over `x == false`, and nested calls for two chained calls.
+
+Where both models clearly disagree:
+
+- **`set x = ...`** is about 2,600 to 4,000 times less likely than a bare `x = ...`. This is the strongest signal in the study.
+- **`for cond { }`** is about 50 to 750 times less likely than `while cond { }`.
+- **`concat(a, b)`** is about 14 to 50 times less likely than `a + b`.
+
+Weak or split: words versus symbols for `and`, `or` and `not` leans slightly toward symbols; trailing commas and where the effects clause sits show small effects. The three-stage pipeline splits the two models (1.5B prefers the pipeline, 7B prefers nested calls), so the open question about the pipeline threshold stays open.
+
+These numbers are inputs to the design, not verdicts. `set` exists so that every mutation is searchable, and `concat` follows "one construct per job"; the study puts a price on those choices. Switching the condition loop to `while` looks like the cheapest win. Any change would go through the language reference, the docs and the implementation together.
+
+### Benchmark
+
+In progress: 40 tasks, each run 10 times in Canon and in TypeScript with Claude Opus 5.5 and GPT-6.2 Sol, measuring distinct programs per task, first-pass check rate, fix rounds and test pass rate. If Canon does not cut the number of distinct programs per task sharply, the core bet is wrong. Its chart will appear here.
