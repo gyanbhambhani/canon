@@ -1,0 +1,13 @@
+use billing.money.{Money, Tender, add, label}
+
+fn total(xs: List[Money]) -> Money {
+  return fold(xs, Money { cents: 0 }, add)
+}
+
+fn receipt(xs: List[Money], t: Tender) -> String {
+  return to_string(total(xs).cents) + " by " + label(t)
+}
+
+test "receipt" {
+  assert(receipt([Money { cents: 2 }, Money { cents: 3 }], Cash) == "5 by cash")
+}

@@ -1,0 +1,22 @@
+type Money {
+  cents: Int,
+}
+
+type Tender =
+  | Card(last4: String)
+  | Cash
+
+fn add(a: Money, b: Money) -> Money {
+  return Money { cents: a.cents + b.cents }
+}
+
+fn label(t: Tender) -> String {
+  return match t {
+    Card(last4) => "card " + last4,
+    Cash => "cash",
+  }
+}
+
+test "add" {
+  assert(add(Money { cents: 1 }, Money { cents: 2 }).cents == 3)
+}

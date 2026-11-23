@@ -6,11 +6,13 @@ import { spawn, type ChildProcess } from "node:child_process";
 import {
   chmodSync, existsSync, mkdirSync, readFileSync, unwatchFile, watch as fsWatch, watchFile as pollFile, writeFileSync, type FSWatcher,
 } from "node:fs";
-import { basename, dirname, resolve } from "node:path";
+import { basename, dirname, relative, resolve } from "node:path";
 import {
-  CanonError, check, compileJs, fix, flagName, fmt, readSource, FEATURE_NAMES, V02, V03, VERSION,
-  type CheckResult, type CompileOptions, type Diagnostic, type FeatureName, type Features,
+  CanonError, applyPatch, check, checkProject, compileJs, fix, flagName, fmt, linkProject, programText, readSource,
+  withFeatures, FEATURE_NAMES, MECHANICAL_CODES, V02, V03, VERSION,
+  type CheckResult, type CompileOptions, type Diagnostic, type FeatureName, type Features, type ProjectResult,
 } from "@canon/compiler";
+import { findProjectRoot, loadProject, projectOfFile, ProjectError, type Project } from "./project.js";
 import { fuzzContracts, runMain, runTests, testHost, type Effect, type Host, type TrapJson } from "@canon/runtime";
 import { nodeHost } from "@canon/runtime/node";
 
@@ -58,6 +60,9 @@ exit codes: 0 success, 1 diagnostics / failed tests / traps, 2 usage error
 `;
 
 class UsageError extends Error {}
+
+/** Commands that take no file inside a project (v0.5). */
+const PROJECT_CMDS = new Set(["check", "test"]);
 
 interface Args {
   cmd: string;
@@ -141,7 +146,8 @@ function parseArgs(argv: string[]): Args {
     }
   }
   if (syntax !== null) a.features.py = syntax;
-  if (a.files.length === 0) throw new UsageError(`canon ${cmd} needs a file`);
+  // v0.5: check and test with no file work on the project around the current directory
+  if (a.files.length === 0 && !PROJECT_CMDS.has(cmd)) throw new UsageError(`canon ${cmd} needs a file`);
   if ((cmd === "run" || cmd === "build") && a.files.length > 1) throw new UsageError(`canon ${cmd} takes one file`);
   if (a.watch && a.files.length > 1) throw new UsageError("--watch takes one file");
   if (cmd === "check" && a.write && !a.fix) throw new UsageError("--write needs --fix (canon check --fix --write)");
@@ -196,9 +202,52 @@ function writeOwn(path: string, text: string) {
   writeFileSync(path, text);
 }
 
+// ---------------------------------------------------------------------------------- projects (v0.5)
+
+interface Scope {
+  project: Project;
+  /** Absolute paths of the files named on the command line (null: the whole project). */
+  only: Set<string> | null;
+}
+
+/** The project this command works on, or null for plain single-file mode. */
+function projectScope(a: Args): Scope | null {
+  try {
+    if (a.files.length === 0) {
+      const root = findProjectRoot(process.cwd());
+      if (!root) throw new UsageError(`canon ${a.cmd} needs a file, or a project: run it in a folder with canon.toml`);
+      return { project: loadProject(root), only: null };
+    }
+    const project = projectOfFile(a.files[0]);
+    if (!project) return null;
+    const only = new Set(a.files.map((f) => resolve(f)));
+    for (const f of only) {
+      if (!project.modules.some((m) => m.abs === f)) {
+        throw new UsageError(`${relative(process.cwd(), f)} is not a module of the project at ${relative(process.cwd(), project.root) || "."}`);
+      }
+    }
+    return { project, only };
+  } catch (e) {
+    if (e instanceof ProjectError) throw new UsageError(e.message);
+    throw e;
+  }
+}
+
+function checkScope(scope: Scope, a: Args, sources?: Map<string, string>): ProjectResult {
+  return checkProject(scope.project.modules.map((m) => ({ ...m, src: sources?.get(m.abs) ?? m.src })), opts(a));
+}
+
+function inScope(scope: Scope, path: string): boolean {
+  return scope.only === null || scope.only.has(resolve(path));
+}
+
 function cmdCheck(a: Args, io: CliIO): Outcome {
   if (a.fix) return cmdFix(a, io);
-  const results = a.files.map((f) => ({ path: f, result: check(readFile(f), f, opts(a)) }));
+  const scope = projectScope(a);
+  const results = scope
+    ? checkScope(scope, a).modules.filter((m) => inScope(scope, m.path)).sort((x, y) => x.path.localeCompare(y.path))
+      .map((m) => ({ path: m.path, result: m.result }))
+    : a.files.map((f) => ({ path: f, result: check(readFile(f), f, opts(a)) }));
   if (a.json) {
     const out = results.length === 1 ? results[0].result : results.map((r) => ({ path: r.path, ...r.result }));
     io.stdout(JSON.stringify(out, null, 2) + "\n");
@@ -211,6 +260,8 @@ function cmdCheck(a: Args, io: CliIO): Outcome {
 
 /** `check --fix`: the self-healing loop. Only diagnostics that need judgment are reported. */
 function cmdFix(a: Args, io: CliIO): Outcome {
+  const scope = projectScope(a);
+  if (scope) return cmdFixProject(a, io, scope);
   const results = a.files.map((f) => {
     const src = readFile(f);
     const r = fix(src, f, opts(a));
@@ -229,6 +280,66 @@ function cmdFix(a: Args, io: CliIO): Outcome {
   }
   const n = results.reduce((s, r) => s + r.result.diagnostics.length, 0);
   return { code: results.every((r) => r.result.ok) ? 0 : 1, summary: problems(n) };
+}
+
+/** `check --fix` across a project: apply mechanical patches module by module to a fixed point. */
+function cmdFixProject(a: Args, io: CliIO, scope: Scope): Outcome {
+  const sources = new Map(scope.project.modules.map((m) => [m.abs, m.src]));
+  const applied = new Map<string, string[]>(scope.project.modules.map((m) => [m.abs, []]));
+  const allowed = new Set(MECHANICAL_CODES);
+  let result = checkScope(scope, a, sources);
+  for (let round = 0; round < 64; round++) {
+    let changed = false;
+    for (const m of result.modules) {
+      const abs = resolve(m.path);
+      if (!inScope(scope, m.path)) continue;
+      const d = m.result.diagnostics.find((x) => allowed.has(x.code) && x.fix !== undefined);
+      if (!d) continue;
+      const next = applyPatch(sources.get(abs)!, d.fix!.diff);
+      if (next === null || next === sources.get(abs)) continue;
+      sources.set(abs, next);
+      applied.get(abs)!.push(d.code);
+      changed = true;
+      break;
+    }
+    if (!changed) break;
+    result = checkScope(scope, a, sources);
+  }
+  const rows = result.modules.filter((m) => inScope(scope, m.path)).sort((x, y) => x.path.localeCompare(y.path)).map((m) => {
+    const abs = resolve(m.path);
+    const original = scope.project.modules.find((x) => x.abs === abs)!.src;
+    if (a.write && sources.get(abs) !== original) writeOwn(m.path, sources.get(abs)!);
+    return { path: m.path, result: m.result, applied: applied.get(abs)!, source: sources.get(abs)! };
+  });
+  if (a.json) {
+    const shape = (r: (typeof rows)[number]) => ({ ...r.result, applied: r.applied, source: r.source });
+    io.stdout(JSON.stringify(rows.length === 1 ? shape(rows[0]) : rows.map((r) => ({ path: r.path, ...shape(r) })), null, 2) + "\n");
+  } else {
+    for (const r of rows) {
+      if (r.applied.length) io.stdout(`${r.path}: applied ${r.applied.join(", ")}${a.write ? "" : " (not written; add --write)"}\n`);
+      report(r.path, r.result, io);
+    }
+  }
+  const n = rows.reduce((s, r) => s + r.result.diagnostics.length, 0);
+  return { code: result.ok ? 0 : 1, summary: problems(n) };
+}
+
+/**
+ * A checked project compiled to one JavaScript program (top-level names are unique across a
+ * project, so the modules link by concatenation). Null after reporting diagnostics.
+ */
+function compileProject(a: Args, scope: Scope, io: CliIO): string | null {
+  const r = checkScope(scope, a);
+  if (!r.ok) {
+    const bad = r.modules.filter((m) => !m.result.ok);
+    if (a.json) io.stdout(JSON.stringify({ ok: false, files: bad.map((m) => ({ path: m.path, ...m.result })) }, null, 2) + "\n");
+    else for (const m of bad) report(m.path, m.result, io, "stderr");
+    return null;
+  }
+  const text = withFeatures(a.features, () => programText(linkProject(r)));
+  const c = compileJs(text, scope.project.config.project.name, opts(a));
+  if (!c.js) throw new Error(`internal error: the linked project does not compile: ${JSON.stringify(c.check.diagnostics.slice(0, 3))}`);
+  return c.js;
 }
 
 function cmdFmt(a: Args, io: CliIO): number {
@@ -288,8 +399,11 @@ function cmdTest(a: Args, io: CliIO): Outcome {
   let skipped = 0;
   const tests: unknown[] = [];
   let stdout = "";
-  for (const path of a.files) {
-    const js = compileFor(a, path, io);
+  const scope = projectScope(a);
+  const units = scope ? [{ path: scope.project.config.project.name, js: () => compileProject(a, scope, io) }]
+    : a.files.map((path) => ({ path, js: () => compileFor(a, path, io) }));
+  for (const { path, js: compile } of units) {
+    const js = compile();
     if (js === null) {
       broken++;
       continue;

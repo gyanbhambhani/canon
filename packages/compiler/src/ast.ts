@@ -57,10 +57,18 @@ export type Break = { k: "Break" } & Pos;
 export type Stmt = Comment | Let | SetStmt | Return | If | ForIn | ForWhile | ExprStmt | Break;
 
 // items
-export type Use = { k: "Use"; path: string[] } & Pos;
-export type RecordType = { k: "RecordType"; name: string; params: string[]; fields: [string, TypeExpr][] } & Pos;
+/** v0.5: `names` is set for a project import, `use todos.{NewTodo, Todo}` (sorted, no duplicates). */
+export type Use = { k: "Use"; path: string[]; names?: string[] } & Pos;
+/** v0.5: `table todos: Todo key id`. */
+export type Table = { k: "Table"; name: string; row: string; key: string; extern?: true } & Pos;
+/** v0.5: the route of an `api fn`. `path` is the literal's text without quotes. */
+export interface Route {
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  path: string;
+}
+export type RecordType = { k: "RecordType"; name: string; params: string[]; fields: [string, TypeExpr][]; extern?: true } & Pos;
 export type Variant = [string, [string, TypeExpr][]];
-export type SumType = { k: "SumType"; name: string; params: string[]; variants: Variant[] } & Pos;
+export type SumType = { k: "SumType"; name: string; params: string[]; variants: Variant[]; extern?: true } & Pos;
 export type Fn = {
   k: "Fn";
   name: string;
@@ -71,10 +79,22 @@ export type Fn = {
   requires: Expr | null;
   ensures: Expr | null;
   body: Stmt[];
+  /** v0.5: set for an `api fn`. */
+  route?: Route;
+  /**
+   * v0.5: an item imported from another module of the project, present only so this module can
+   * be checked. Checkers skip it (it was checked in its own module) and printers omit it.
+   */
+  extern?: true;
 } & Pos;
 /** v0.3: `effects` lists the real effects (fs, net) a test may use; io, time and rand are virtual. */
 export type Test = { k: "Test"; name: string; effects: string[]; body: Stmt[] } & Pos;
-export type Item = Comment | Use | RecordType | SumType | Fn | Test;
+export type Item = Comment | Use | RecordType | SumType | Fn | Test | Table;
+
+/** v0.5: true for an item imported from another module (see Fn.extern). */
+export function isExtern(it: Item): boolean {
+  return "extern" in it && it.extern === true;
+}
 
 export interface Program {
   k: "Program";

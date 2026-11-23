@@ -105,7 +105,9 @@ fn getUser(id: Int) -> Int {
 
 ## Imports
 
-A program is one file plus the standard library, which is always in scope. `use std.<name>` lines are accepted (the formatter sorts them and removes duplicates) but never needed. Any other `use` is M001 ("modules arrive in v1"), and a call through a module path, such as `json.stringify(s)`, is T002.
+A program is one file plus the standard library, which is always in scope. `use std.<name>` lines are accepted (the formatter sorts them and removes duplicates) but never needed. A call through a module path, such as `json.stringify(s)`, is T002.
+
+In a project (a folder with canon.toml), each file under the source folder is a module named by its path: canon/billing/money.cn is `billing.money`. A module takes items from another by name, `use billing.money.{Money, add}` (in Canon-Py, `from billing.money import Money, add`). There are no wildcards, no renaming and no cycles (M002); an unknown or unimported name is M003. Importing a sum type brings its variants. Top-level names are unique across a project (M004). Outside a project, any `use` other than `use std.<name>` is M001.
 
 ```canon
 use std.list

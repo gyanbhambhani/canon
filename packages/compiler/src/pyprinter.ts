@@ -4,6 +4,7 @@
  * fixed point and one text per program still holds.
  */
 import type * as A from "./ast.js";
+import { isExtern } from "./ast.js";
 import { CanonError, diag } from "./diagnostics.js";
 import { features } from "./features.js";
 import { MAX_LINE, floatText } from "./printer.js";
@@ -310,7 +311,9 @@ export class PyPrinter {
       case "Comment":
         return it.text;
       case "Use":
-        return "import " + it.path.join(".");
+        return it.names ? `from ${it.path.join(".")} import ${it.names.join(", ")}` : "import " + it.path.join(".");
+      case "Table":
+        return `${it.name} = table(${it.row}, key="${it.key}")`;
       case "RecordType": {
         const tp = it.params.length ? `[${it.params.join(", ")}]` : "";
         const fields = it.fields.length ? it.fields.map(([n, t]) => `${PY_INDENT}${n}: ${this.ty(t)}`) : [`${PY_INDENT}pass`];
@@ -325,7 +328,8 @@ export class PyPrinter {
       }
       case "Fn": {
         const deco: string[] = [];
-        if (it.effects.length) deco.push(`@effects(${it.effects.join(", ")})`);
+        if (it.route) deco.push(`@api("${it.route.method}", "${it.route.path}")`);
+        if (it.effects.length) deco.push(`@effects(${pyEffects(it.effects)})`);
         if (it.requires !== null) deco.push(`@requires(${this.ex(it.requires)})`);
         if (it.ensures !== null) deco.push(`@ensures(${this.ex(it.ensures)})`);
         const tp = it.tparams.length ? `[${it.tparams.join(", ")}]` : "";
@@ -338,7 +342,7 @@ export class PyPrinter {
         return [...deco, head, this.block(it.body.slice(paramCopies(it)), "")].join("\n");
       }
       case "Test": {
-        const deco = it.effects.length ? [`@effects(${it.effects.join(", ")})`] : [];
+        const deco = it.effects.length ? [`@effects(${pyEffects(it.effects)})`] : [];
         return [...deco, `def ${testIdent(it.name)}() -> None:`, this.block(it.body, "")].join("\n");
       }
     }
@@ -348,6 +352,7 @@ export class PyPrinter {
     const out: string[] = [];
     let prev: A.Item | null = null;
     for (const it of prog.items) {
+      if (isExtern(it)) continue;
       const text = this.item(it);
       if (prev !== null) {
         const tight = (prev.k === "Use" && it.k === "Use") || prev.k === "Comment";
@@ -358,4 +363,9 @@ export class PyPrinter {
     }
     return out.length ? out.join("") + "\n" : "";
   }
+}
+
+/** v0.5: an effect with an argument is written as a string, `@effects(io, "store(todos)")`. */
+function pyEffects(effects: string[]): string {
+  return effects.map((e) => (e.includes("(") ? `"${e}"` : e)).join(", ");
 }

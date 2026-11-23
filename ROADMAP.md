@@ -100,10 +100,10 @@ Copied from the Milestones section of docs/v0.5-fullstack.md. M3 and M4 may run 
 
 ## v0.5 M1: Projects and modules
 
-- [ ] canon.toml is read; canon check and canon test work across a multi-file project.
-- [ ] Explicit named imports work in both surfaces; M002 (cycle) and M003 (unknown name) each have tests.
-- [ ] Canonical form sorts imports; fuzzed import orders collapse to one text.
-- [ ] Every existing single-file test still passes unchanged.
+- [x] canon.toml is read; canon check and canon test work across a multi-file project.
+- [x] Explicit named imports work in both surfaces; M002 (cycle) and M003 (unknown name) each have tests.
+- [x] Canonical form sorts imports; fuzzed import orders collapse to one text.
+- [x] Every existing single-file test still passes unchanged.
 
 ## v0.5 M2: API functions, tables and effects with arguments
 

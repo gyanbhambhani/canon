@@ -120,7 +120,18 @@ export function normalize(prog: A.Program): A.Program {
     .map(([u]) => u);
   const deduped: A.Use[] = [];
   for (const u of uses) {
-    if (deduped.length === 0 || cmpPath(deduped[deduped.length - 1].path, u.path) !== 0) deduped.push(u);
+    const prev = deduped[deduped.length - 1];
+    if (prev && cmpPath(prev.path, u.path) === 0 && !prev.names === !u.names) {
+      // v0.5: two imports from one module merge into one line
+      if (prev.names && u.names) deduped[deduped.length - 1] = { ...prev, names: [...prev.names, ...u.names] };
+      continue;
+    }
+    deduped.push(u);
+  }
+  // v0.5: the names inside an import are sorted and unique
+  for (let i = 0; i < deduped.length; i++) {
+    const names = deduped[i].names;
+    if (names) deduped[i] = { ...deduped[i], names: [...new Set(names)].sort(cmpStr) };
   }
   const rest = items.filter((it) => it.k !== "Use");
   return { k: "Program", items: [...deduped, ...rest] };

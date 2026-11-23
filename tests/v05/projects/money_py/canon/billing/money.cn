@@ -1,0 +1,17 @@
+class Money:
+    cents: int
+
+type Tender = Card(last4: str) | Cash
+
+def add(a: Money, b: Money) -> Money:
+    return Money(cents=a.cents + b.cents)
+
+def label(t: Tender) -> str:
+    match t:
+        case Card(last4):
+            return "card " + last4
+        case Cash:
+            return "cash"
+
+def test_add() -> None:
+    assert add(Money(cents=1), Money(cents=2)).cents == 3

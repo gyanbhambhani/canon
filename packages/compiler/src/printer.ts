@@ -1,5 +1,6 @@
 /** Canonical printer. With a noise source it emits equivalent non-canonical variants (tests). */
 import type * as A from "./ast.js";
+import { isExtern } from "./ast.js";
 import { features } from "./features.js";
 import { pyFloatRepr, pyLen } from "./py.js";
 
@@ -296,7 +297,9 @@ export class Printer {
       case "Comment":
         return it.text;
       case "Use":
-        return "use " + it.path.join(".");
+        return "use " + it.path.join(".") + (it.names ? `.{${it.names.join(", ")}}` : "");
+      case "Table":
+        return `table ${it.name}: ${it.row} key ${it.key}`;
       case "RecordType": {
         const tp = it.params.length ? `[${it.params.join(", ")}]` : "";
         const lines = [`type ${it.name}${tp} {`];
@@ -316,8 +319,9 @@ export class Printer {
       case "Fn": {
         const tp = it.tparams.length ? `[${it.tparams.join(", ")}]` : "";
         const params = it.params.map(([n, t]) => `${n}: ${this.ty(t)}`).join(", ");
-        const head = `fn ${it.name}${tp}(${params}) -> ${this.ty(it.ret)}`;
+        const head = `${it.route ? "api " : ""}fn ${it.name}${tp}(${params}) -> ${this.ty(it.ret)}`;
         const clauses: string[] = [];
+        if (it.route) clauses.push(`${INDENT}route: ${it.route.method} "${it.route.path}"`);
         if (it.effects.length) clauses.push(`${INDENT}effects: ${it.effects.join(", ")}`);
         if (it.requires !== null) clauses.push(`${INDENT}requires: ${this.ex(it.requires, 1)}`);
         if (it.ensures !== null) clauses.push(`${INDENT}ensures: ${this.ex(it.ensures, 1)}`);
@@ -335,6 +339,7 @@ export class Printer {
     const out: string[] = [];
     let prev: A.Item | null = null;
     for (const it of prog.items) {
+      if (isExtern(it)) continue;
       const text = this.item(it);
       if (prev !== null) {
         const tight = (prev.k === "Use" && it.k === "Use") || prev.k === "Comment";

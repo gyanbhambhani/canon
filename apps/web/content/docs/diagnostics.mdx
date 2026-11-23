@@ -661,7 +661,7 @@ example.cn:8:9: error T011: print performs io, but it is used where the function
 
 ### M001
 
-A `use` line other than `use std.<name>`. A program is one file plus the standard library. (`use` lines always sort to the top, so the `# expect:` comment sits below.)
+A `use` line Canon cannot resolve. Outside a project (a folder with canon.toml), a program is one file plus the standard library, so only `use std.<name>` is allowed. Inside a project, a module import must name what it takes, `use billing.money.{Money}`, and the standard library is never imported with names. (`use` lines always sort to the top, so the `# expect:` comment sits below.)
 
 ```canon
 use agent.tools
@@ -673,7 +673,31 @@ fn f() -> Int {
 ```
 
 ```text
-example.cn:1:1: error M001: use agent.tools: modules arrive in v1; only std.<name> is available in v0
+example.cn:1:1: error M001: use agent.tools: only std.<name> is available outside a project
+```
+
+### M002
+
+An import cycle between modules of a project. Every module on the cycle reports it, on the import that closes it. Move the items both modules need into a third module that both import.
+
+```text
+canon/a.cn:1:1: error M002: import cycle: a -> b -> a; move the shared items into a module both can import
+```
+
+### M003
+
+A name that does not resolve across modules: an unknown module, a name the module does not define, a variant imported by name (import its type, which brings its variants), or an item of another module used without importing it. The last case carries a patch that adds the name to the import.
+
+```text
+canon/shop.cn:4:10: error M003: fn add is defined in module billing.money; import it: use billing.money.{add}
+```
+
+### M004
+
+A top-level name (type, variant, function or table) defined in two modules of a project. Names are unique across a project, because the generated TypeScript types and client are one flat namespace.
+
+```text
+canon/shop.cn:1:1: error M004: type Money is already defined in module billing.money; top-level names are unique across a project
 ```
 
 ## Runtime traps

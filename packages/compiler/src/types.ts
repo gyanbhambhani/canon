@@ -346,7 +346,12 @@ function replaceNode<T>(root: T, target: object, replacement: object): T {
   return visit(root);
 }
 
-export function checkTypes(prog: A.Program): TypeResult {
+export interface CheckTypesOptions {
+  /** v0.5: the program is a module of a project, so `use m.{...}` imports are resolved by the linker. */
+  project?: boolean;
+}
+
+export function checkTypes(prog: A.Program, opts: CheckTypesOptions = {}): TypeResult {
   const pre = prelude();
   const diags: Diagnostic[] = [];
   const fixes = new Map<Diagnostic, A.Program>();
@@ -375,8 +380,18 @@ export function checkTypes(prog: A.Program): TypeResult {
 
   // -- modules
   for (const it of prog.items) {
-    if (it.k === "Use" && !(it.path[0] === "std" && it.path.length === 2)) {
-      err("M001", `use ${it.path.join(".")}: modules arrive in v1; only std.<name> is available in v0`, it);
+    if (it.k !== "Use") continue;
+    if (it.names) {
+      // v0.5: a project import; the linker (project.ts) resolves it and reports M002/M003
+      if (it.path[0] === "std") {
+        err("M001", `use ${it.path.join(".")}.{...}: the standard library is imported whole, use std.<name>`, it);
+      } else if (!opts.project) {
+        err("M001", `use ${it.path.join(".")}.{${it.names.join(", ")}}: importing from a module needs a project (a folder with canon.toml)`, it);
+      }
+    } else if (!(it.path[0] === "std" && it.path.length === 2)) {
+      err("M001", opts.project
+        ? `use ${it.path.join(".")}: name what you take, use ${it.path.join(".")}.{Name}`
+        : `use ${it.path.join(".")}: only std.<name> is available outside a project`, it);
     }
   }
 
@@ -1245,7 +1260,7 @@ export function checkTypes(prog: A.Program): TypeResult {
 
   for (const it of prog.items) {
     if (it.k === "Fn") {
-      if (userFns.get(it.name)?.node !== it) continue;
+      if (userFns.get(it.name)?.node !== it || it.extern) continue;
       const scope = new Map(it.tparams.map((p) => [p, { t: "rigid", name: p } as Type]));
       const params = it.params.map(([, t]) => toType(t, scope));
       const ret = toType(it.ret, scope);

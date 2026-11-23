@@ -60,6 +60,8 @@ function requote(body: string, q: string): string {
   return out;
 }
 
+const HTTP_METHODS = new Set(["GET", "POST", "PUT", "PATCH", "DELETE"]);
+
 export class PyParser {
   private i = 0;
 
@@ -167,7 +169,42 @@ export class PyParser {
       this.endLine();
       return { k: "Use", path, ...this.pos(t) };
     }
-    if (this.at("name", "from")) this.fail("write `import std.name`; `from` imports do not exist in Canon");
+    if (this.at("name", "from")) {
+      // v0.5: `from todos import NewTodo, Todo`
+      const fromTok = this.advance();
+      const path = [this.expect("name", undefined, "module name").text];
+      while (this.eatOp(".")) path.push(this.expect("name", undefined, "module name").text);
+      if (path[0] === "std") this.fail("write `import std.name`; the standard library is imported whole", fromTok);
+      if (!this.atKw("import")) this.error("'import' and the names to take: from todos import Todo");
+      this.advance();
+      if (this.atOp("*")) this.fail("Canon imports name what they take; there are no wildcards");
+      const names: string[] = [];
+      do {
+        const n = this.tok;
+        if (n.kind !== "name" && n.kind !== "tname") this.error("an imported name");
+        names.push(this.advance().text);
+        if (this.at("name", "as")) this.fail("Canon imports do not rename");
+      } while (this.eatOp(","));
+      this.endLine();
+      return { k: "Use", path, names, ...this.pos(t) };
+    }
+    if (this.tok.kind === "name" && this.peek().kind === "op" && this.peek().text === "=" &&
+        this.peek(2).kind === "name" && this.peek(2).text === "table" && this.peek(3).kind === "op" && this.peek(3).text === "(") {
+      // v0.5: `todos = table(Todo, key="id")`
+      const name = this.advance().text;
+      this.advance();
+      this.advance();
+      this.advance();
+      const row = this.expect("tname", undefined, "the row's record type").text;
+      this.expect("op", ",");
+      if (!this.at("name", "key")) this.error('key="field": todos = table(Todo, key="id")');
+      this.advance();
+      this.expect("op", "=");
+      const k = this.expect("str", undefined, "the key field's name as a string");
+      this.expect("op", ")");
+      this.endLine();
+      return { k: "Table", name, row, key: k.text.slice(1, -1), ...this.pos(t) };
+    }
     if (this.atKw("type")) return this.typeDecl();
     if (this.atOp("@") || this.atKw("def") || this.atKw("class")) return this.decorated();
     return this.error("'def', 'class', 'type' or 'import' at top level");
@@ -179,9 +216,10 @@ export class PyParser {
     let ensures: A.Expr | null = null;
     let sawEffects = false;
     let contract: PyTok | null = null;
+    let route: A.Route | undefined;
     while (this.atOp("@")) {
       this.advance();
-      const d = this.expect("name", undefined, "decorator name (effects, requires or ensures)");
+      const d = this.expect("name", undefined, "decorator name (api, effects, requires or ensures)");
       if (d.text === "dataclass") {
         // accepted for familiarity; records need no decorator, and fmt removes it
         this.endLine();
@@ -191,10 +229,26 @@ export class PyParser {
         sawEffects = true;
         this.expect("op", "(");
         while (!this.atOp(")")) {
-          effects.push(this.expect("name", undefined, "effect name").text);
+          // v0.5: an effect with an argument is a string, @effects("store(todos)")
+          if (this.at("str")) effects.push(this.advance().text.slice(1, -1));
+          else effects.push(this.expect("name", undefined, "effect name").text);
           if (!this.eatOp(",")) break;
         }
         this.expect("op", ")");
+      } else if (d.text === "api") {
+        // v0.5: @api("POST", "/todos")
+        if (route) this.fail("an api function has one @api decorator", d);
+        this.expect("op", "(");
+        const m = this.expect("str", undefined, 'the HTTP method as a string, @api("GET", "/items")');
+        const method = m.text.slice(1, -1);
+        if (!HTTP_METHODS.has(method)) this.fail(`unknown HTTP method ${method}; use GET, POST, PUT, PATCH or DELETE`, m);
+        this.expect("op", ",");
+        const p = this.expect("str", undefined, "the route's path as a string");
+        const path = p.text.slice(1, -1);
+        if (path.includes("\\")) this.fail("a route path has no escapes", p);
+        if (!path.startsWith("/")) this.fail(`a route path starts with /: "/${path}"`, p);
+        this.expect("op", ")");
+        route = { method: method as A.Route["method"], path };
       } else if (d.text === "requires" || d.text === "ensures") {
         contract ??= d;
         this.expect("op", "(");
@@ -204,16 +258,21 @@ export class PyParser {
         if (d.text === "requires") requires = and(requires);
         else ensures = and(ensures);
       } else {
-        this.fail(`unknown decorator @${d.text}; Canon's decorators are @effects, @requires and @ensures`, d);
+        this.fail(`unknown decorator @${d.text}; Canon's decorators are @api, @effects, @requires and @ensures`, d);
       }
       this.endLine();
     }
     if (this.atKw("class")) {
-      if (sawEffects || contract) this.fail("@effects, @requires and @ensures apply to functions, not records");
+      if (sawEffects || contract || route) this.fail("@api, @effects, @requires and @ensures apply to functions, not records");
       return this.classDecl();
     }
     if (!this.atKw("def")) this.error("'def' after decorators");
-    return this.fnDecl(effects, requires, ensures, contract);
+    const fn = this.fnDecl(effects, requires, ensures, contract);
+    if (route) {
+      if (fn.k === "Test") this.fail("a test function cannot be an api function");
+      return { ...fn, route };
+    }
+    return fn;
   }
 
   private tparams(): string[] {

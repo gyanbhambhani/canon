@@ -1,0 +1,10 @@
+from billing.money import Money, Tender, add, label
+
+def total(xs: list[Money]) -> Money:
+    return fold(xs, Money(cents=0), add)
+
+def receipt(xs: list[Money], t: Tender) -> str:
+    return f"{total(xs).cents} by " + label(t)
+
+def test_receipt() -> None:
+    assert receipt([Money(cents=2), Money(cents=3)], Cash) == "5 by cash"

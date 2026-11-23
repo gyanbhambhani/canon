@@ -13,6 +13,8 @@ export function intText(t: string): string {
   return s === "" ? "0" : s;
 }
 
+const HTTP_METHODS = new Set(["GET", "POST", "PUT", "PATCH", "DELETE"]);
+
 export class Parser {
   private i = 0;
   private ns = false; // "no struct": a TypeName followed by '{' is not a record literal
@@ -48,6 +50,11 @@ export class Parser {
     const t = this.tok;
     const found = t.kind === "eof" ? "end of file" : pyRepr(t.text);
     throw new CanonError(diag("P001", `expected ${expected}, found ${found}`, t.line, t.col));
+  }
+
+  /** P001 with a free-form message at the current token. */
+  private fail(message: string): never {
+    throw new CanonError(diag("P001", message, this.tok.line, this.tok.col));
   }
 
   private expect(kind: TokKind, text?: string, what?: string): Tok {
@@ -89,11 +96,42 @@ export class Parser {
     if (this.atKw("use")) {
       this.advance();
       const path = [this.expect("name", undefined, "module name").text];
-      while (this.eatOp(".")) path.push(this.expect("name", undefined, "module name").text);
+      while (this.eatOp(".")) {
+        if (this.atOp("{")) {
+          // v0.5: `use todos.{NewTodo, Todo}` names what it takes
+          this.advance();
+          const names: string[] = [];
+          while (!this.atOp("}")) {
+            const n = this.tok;
+            if (n.kind !== "name" && n.kind !== "tname") this.error("an imported name");
+            names.push(this.advance().text);
+            if (!this.eatOp(",")) break;
+          }
+          this.expect("op", "}");
+          if (!names.length) this.fail("an import names at least one item: use module.{Name}");
+          return { k: "Use", path, names, ...this.pos(t) };
+        }
+        path.push(this.expect("name", undefined, "module name").text);
+      }
       return { k: "Use", path, ...this.pos(t) };
     }
     if (this.atKw("type")) return this.typeDecl();
     if (this.atKw("fn")) return this.fnDecl();
+    // v0.5: `api fn` and `table` are contextual, so `api` and `table` stay usable as names
+    if (t.kind === "name" && t.text === "api" && this.peek().kind === "kw" && this.peek().text === "fn") {
+      this.advance();
+      return this.fnDecl(true);
+    }
+    if (t.kind === "name" && t.text === "table" && this.peek().kind === "name" && this.peek(2).kind === "op" && this.peek(2).text === ":") {
+      this.advance();
+      const name = this.advance().text;
+      this.advance();
+      const row = this.expect("tname", undefined, "the row's record type").text;
+      if (!(this.tok.kind === "name" && this.tok.text === "key")) this.error("'key' and the key field: table todos: Todo key id");
+      this.advance();
+      const key = this.expect("name", undefined, "key field name").text;
+      return { k: "Table", name, row, key, ...this.pos(t) };
+    }
     if (this.atKw("test")) {
       this.advance();
       const name = this.expect("str", undefined, "test name string").text;
@@ -102,8 +140,8 @@ export class Parser {
       while (this.atKw("effects")) {
         this.advance();
         this.expect("op", ":");
-        effects.push(this.expect("name", undefined, "effect name").text);
-        while (this.eatOp(",")) effects.push(this.expect("name", undefined, "effect name").text);
+        effects.push(this.effectName());
+        while (this.eatOp(",")) effects.push(this.effectName());
       }
       return { k: "Test", name, effects, body: this.block(), ...this.pos(t) };
     }
@@ -211,7 +249,27 @@ export class Parser {
     return { k: "TName", name, args, ...this.pos(t) };
   }
 
-  private fnDecl(): A.Fn {
+  /**
+   * An effect: a name, or (v0.5) a name with one argument on the same line, `store(todos)` or
+   * `net(api.stripe.com)`. The argument is the tokens' text joined, so a host keeps its dots and
+   * hyphens; check.ts validates it.
+   */
+  private effectName(): string {
+    const name = this.expect("name", undefined, "effect name");
+    if (!this.atOp("(") || this.tok.line !== name.line) return name.text;
+    this.advance();
+    let arg = "";
+    while (!this.atOp(")")) {
+      if (this.at("eof") || this.tok.line !== name.line) this.error("')' closing the effect's argument");
+      arg += this.advance().text;
+    }
+    this.advance();
+    if (arg === "") this.fail(`effect ${name.text}() needs an argument, like store(todos) or net(api.example.com)`);
+    return `${name.text}(${arg})`;
+  }
+
+  private fnDecl(api = false): A.Fn {
+    const fnTok = this.tok;
     this.advance();
     const nameTok = this.expect("name", undefined, "function name");
     const tparams = this.tparams();
@@ -229,12 +287,28 @@ export class Parser {
     const effects: string[] = [];
     let requires: A.Expr | null = null;
     let ensures: A.Expr | null = null;
-    while (this.atKw("effects") || this.atKw("requires") || this.atKw("ensures")) {
-      const kw = this.advance().text;
+    let route: A.Route | undefined;
+    const atRoute = () => this.tok.kind === "name" && this.tok.text === "route" && this.peek().kind === "op" && this.peek().text === ":";
+    while (this.atKw("effects") || this.atKw("requires") || this.atKw("ensures") || atRoute()) {
+      const kwTok = this.advance();
+      const kw = kwTok.text;
       this.expect("op", ":");
-      if (kw === "effects") {
-        effects.push(this.expect("name", undefined, "effect name").text);
-        while (this.eatOp(",")) effects.push(this.expect("name", undefined, "effect name").text);
+      if (kw === "route") {
+        if (!api) {
+          throw new CanonError(diag("P001", `a route: clause belongs to an api fn; write 'api fn ${nameTok.text}'`, kwTok.line, kwTok.col));
+        }
+        if (route) this.fail("an api fn has one route: clause");
+        const m = this.tok;
+        if (!(m.kind === "tname" && HTTP_METHODS.has(m.text))) this.error("an HTTP method: GET, POST, PUT, PATCH or DELETE");
+        this.advance();
+        const p = this.expect("str", undefined, "the route's path as a string literal");
+        const path = p.text.slice(1, -1);
+        if (path.includes("\\")) throw new CanonError(diag("P001", "a route path has no escapes", p.line, p.col));
+        if (!path.startsWith("/")) throw new CanonError(diag("P001", `a route path starts with /: "/${path}"`, p.line, p.col));
+        route = { method: m.text as A.Route["method"], path };
+      } else if (kw === "effects") {
+        effects.push(this.effectName());
+        while (this.eatOp(",")) effects.push(this.effectName());
       } else {
         const e = this.expr(true);
         if (kw === "requires") {
@@ -244,8 +318,14 @@ export class Parser {
         }
       }
     }
+    if (api && !route) {
+      throw new CanonError(diag("P001", `api fn ${nameTok.text} needs a route: clause, like route: GET "/items"`, fnTok.line, fnTok.col));
+    }
     const body = this.block();
-    return { k: "Fn", name: nameTok.text, tparams, params, ret, effects, requires, ensures, body, ...this.pos(nameTok) };
+    return {
+      k: "Fn", name: nameTok.text, tparams, params, ret, effects, requires, ensures, body,
+      ...(route ? { route } : {}), ...this.pos(nameTok),
+    };
   }
 
   // statements

@@ -2,6 +2,25 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — v0.5 M1: projects and modules
+Decision: top-level names (types, variants, functions, tables) are unique across a project; a second definition is M004.
+Reason: the spec's TypeScript output is one flat types.ts and one createClient object for the whole project, so two modules defining `Todo` or `create_todo` could not both be generated. It also lets codegen link a project by concatenating its modules, and keeps every name greppable across Canon, Python and TypeScript.
+
+Decision: each module is checked as its own program, with the items it imports (and every type those items mention) appended as `extern` items. Checkers skip extern items and printers omit them.
+Reason: the type and effect checkers stay single-program, and every diagnostic and patch stays in the module's own file (line numbers never mix files).
+
+Decision: a type reached only through an import's signature is not visible; naming it is M003, with a patch that adds it to the import. Importing a sum type brings its variants; a variant cannot be imported by name (M003 names its type). A function or table of another module used without an import is reported as M003 (with the same patch) instead of T002.
+Reason: "imports name what they take". The patch keeps the fix mechanical for agents.
+
+Decision: `canon check` and `canon test` with no file work on the project around the current directory; a file inside a project's source folder is checked as part of its project. Project `--json` keeps the existing shape (one object for one file, otherwise a list with paths).
+Reason: the agent loop is one command after each edit. Keeping the JSON shape means existing agent prompts still parse it.
+
+Decision: `canon test` in a project compiles the linked project (all modules, dependency order) as one program. Trap line numbers then refer to the linked text, not to a module file.
+Reason: the simplest correct linker for M1. Per-module source positions in traps are a follow-up if the experiment's agents need them.
+
+Decision: Canon-Py rejects `from std import x` (as v0.4 did) and only project modules use `from m import A, B`.
+Reason: v0.4's test requires it, and the standard library is never imported by name.
+
 ## 2026-11-22 — v0.5 is the full-stack version
 Decision: v0.5 is now "full-stack" (docs/v0.5-fullstack.md). The earlier v0.5 plan in docs/roadmap-to-1.0.md ("write less": proven contracts, synthesis, a library of proven functions) moves after FS-1 and gets a version number when it is scheduled.
 Reason: the owner's v0.5 build spec. Building v0.5 no longer waits for Experiments 1, 1b and 2; Experiments 1 and 1b must run before FS-1's main run, because they decide FS-1's Canon surface. Experiment 2 must still run before v0.7, whose proof point repeats it.

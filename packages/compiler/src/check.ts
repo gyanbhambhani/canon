@@ -1,6 +1,6 @@
 /** Front-end checks, ported from canon.py: canonical form, line length, naming, effects, holes. */
 import type * as A from "./ast.js";
-import { walkExprs, walkStmts } from "./ast.js";
+import { isExtern, walkExprs, walkStmts } from "./ast.js";
 import { CanonError, diag, type Diagnostic, type Fix } from "./diagnostics.js";
 import { features, withFeatures, type CompileOptions } from "./features.js";
 import { unifiedDiff } from "./difflib.js";
@@ -78,6 +78,7 @@ export function checkNames(prog: A.Program): Diagnostic[] {
   const bad = (kind: string, name: string, want: string, node: A.Pos) =>
     diags.push(diag("N001", `${kind} '${name}' must be ${want}`, node.line, node.col));
   for (const it of prog.items) {
+    if (isExtern(it)) continue;
     if (it.k === "RecordType" || it.k === "SumType") {
       if (!PASCAL.test(it.name)) bad("type", it.name, "PascalCase", it);
       if (it.k === "RecordType") {
@@ -125,6 +126,7 @@ export function checkEffects(
   for (const it of prog.items) if (it.k === "Fn") user.set(it.name, new Set(it.effects));
   prog.items.forEach((it, idx) => {
     if (it.k !== "Fn" && !(it.k === "Test" && features().sealedEffects)) return;
+    if (isExtern(it)) return;
     const used = new Map<string, string>();
     let allKnown = true;
     if (countValues) {
@@ -197,7 +199,7 @@ export function checkContractPurity(prog: A.Program, tables: EffectTables): Diag
   for (const it of prog.items) if (it.k === "Fn") user.set(it.name, it.effects);
   const effectsOfName = (n: string) => (Object.hasOwn(tables.effects, n) ? tables.effects[n] : user.get(n) ?? []);
   for (const it of prog.items) {
-    if (it.k !== "Fn") continue;
+    if (it.k !== "Fn" || it.extern) continue;
     // v0.4 (fnEffects): a contract that calls a function-typed parameter performs that type's effects
     const paramEffects = new Map<string, string[]>();
     if (features().fnEffects) {
@@ -241,7 +243,7 @@ export function checkHoles(prog: A.Program): Diagnostic[] {
     return out;
   };
   for (const it of prog.items) {
-    if (it.k !== "Fn") continue;
+    if (it.k !== "Fn" || it.extern) continue;
     const expected = new Map<object, string>();
     for (const s of walkStmts(it.body)) {
       if (s.k === "Return" && s.value !== null && s.value.k === "Hole") expected.set(s.value, printer.ty(it.ret));
@@ -357,11 +359,16 @@ function specTables(): EffectTables {
   return fullTables;
 }
 
-export function analyze(src: string, path = "main.cn", opts: CompileOptions = {}): Analysis {
-  return withFeatures(opts.features, () => analyzeInner(src, path));
+/** v0.5: what the project linker hands a module: the items it imports, marked extern. */
+export interface ModuleLink {
+  externs: A.Item[];
 }
 
-function analyzeInner(src: string, path: string): Analysis {
+export function analyze(src: string, path = "main.cn", opts: CompileOptions = {}, link?: ModuleLink): Analysis {
+  return withFeatures(opts.features, () => analyzeInner(src, path, link));
+}
+
+function analyzeInner(src: string, path: string, link?: ModuleLink): Analysis {
   let parsed: Parsed;
   try {
     parsed = parseCanonical(src);
@@ -371,9 +378,10 @@ function analyzeInner(src: string, path: string): Analysis {
     }
     throw e;
   }
-  const { prog, canonical } = parsed;
+  const { canonical } = parsed;
+  const prog: A.Program = link ? { k: "Program", items: [...parsed.prog.items, ...link.externs] } : parsed.prog;
   const tables = specTables();
-  const typed = checkTypes(prog);
+  const typed = checkTypes(prog, { project: link !== undefined });
   const effectDiags = checkEffects(prog, src, path, tables, true, typed.info.valueCallEffects);
   for (const [d, fixed] of typed.fixes) d.fix = makePatch(src, programText(fixed), path);
   for (const [d, cands] of typed.suggestions) {
