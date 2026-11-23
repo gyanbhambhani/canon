@@ -3,7 +3,9 @@
  * tests or traps; 2 usage errors (unknown command or flag, missing or unreadable file).
  */
 import { spawn, type ChildProcess } from "node:child_process";
-import { chmodSync, existsSync, readFileSync, watch as fsWatch, writeFileSync, type FSWatcher } from "node:fs";
+import {
+  chmodSync, existsSync, readFileSync, unwatchFile, watch as fsWatch, watchFile as pollFile, writeFileSync, type FSWatcher,
+} from "node:fs";
 import { basename, dirname, resolve } from "node:path";
 import {
   CanonError, check, compileJs, fix, flagName, fmt, readSource, FEATURE_NAMES, V02, V03, VERSION,
@@ -461,8 +463,12 @@ function watchFile(a: Args, io: CliIO, once: () => Outcome): Promise<number> {
     };
     rerun();
     const watcher: FSWatcher = fsWatch(dirname(full), schedule);
+    // file-system events can be dropped or coalesced under load; a slow stat poll backs them up
+    // (the text comparison in rerun makes a duplicate trigger harmless)
+    pollFile(full, { interval: 300 }, () => schedule());
     process.once("SIGINT", () => {
       watcher.close();
+      unwatchFile(full);
       if (timer) clearTimeout(timer);
       if (child) {
         child.removeAllListeners("exit");

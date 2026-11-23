@@ -245,9 +245,10 @@ This program prints `error: bad port: 80x` and exits 1.
 
 The effects a checked program can perform are bounded by its entry point: `main`'s effects clause under `canon run`, and under `canon test`, each test's declared `fs` and `net` plus the virtual `io`, `time` and `rand`. The checker guarantees it, and at run time a capability guard enforces it again: the host performs only the effects the entry point declares, and contract fuzzing allows none. On a checked program the guard never fires; it is there in case the checker has a bug, and it reports R006 naming the entry point (`effect fs denied (write_file): fn main does not declare it`). `--no-capability-guard` turns it off for experiments.
 
-The guarantee is per program, not per function. A function type carries no effects, so a function whose own signature declares none can still perform effects it is handed as a parameter or a record field:
+Since v0.4 the guarantee also holds per function, because function types carry effects. `fn(String) -> Unit` is a pure function type, and `fn(String) -> Unit effects: io` is one whose calls perform `io`. Passing an effectful function where a pure function type is expected is T011, whether it goes through a parameter, a record field, a list, a lambda or a return value:
 
 ```canon
+# expect: T011
 fn apply(f: fn(String) -> Unit, s: String) -> Unit {
   f(s)
 }
@@ -255,8 +256,24 @@ fn apply(f: fn(String) -> Unit, s: String) -> Unit {
 fn main() -> Unit
   effects: io
 {
-  apply(print, "printed through a function that declares no effects")
+  apply(print, "apply's signature says it is pure")
 }
 ```
 
-`apply` checks as pure and still prints. The effect is not lost: `main` names `print`, so `main` must declare `io` (without it, E101 says `io (via print as a value)`), and the bound on the whole program holds. What you cannot conclude is that `apply` is harmless from its signature alone. Effects on function types (so that `apply`'s signature would show the `io`) are planned for v0.4; see the [Roadmap](/docs/roadmap).
+To accept an effectful function, write its effects in the function type. Calling a function value performs its type's effects, so `apply` declares `io` too (E101 if it does not):
+
+```canon
+fn apply(f: fn(String) -> Unit effects: io, s: String) -> Unit
+  effects: io
+{
+  f(s)
+}
+
+fn main() -> Unit
+  effects: io
+{
+  apply(print, "the effect shows in every signature on the way")
+}
+```
+
+The standard library's higher-order functions (`map`, `filter`, `fold`, `sort_by`, ...) take pure functions, so `map(xs, print)` is T011. Use a `for` loop to perform an effect per item. `--no-fn-effects` (or `--v0.3`) turns function-type effects off, for experiments.
