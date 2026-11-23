@@ -521,6 +521,18 @@ export function checkTypes(prog: A.Program): TypeResult {
   };
 
   /**
+   * An Int expression as a Float. Wrapping an integer division whole (`to_float(a / b)`) would keep
+   * its truncation, so a division (and any + - * around one) converts its operands instead:
+   * `a / b` becomes `to_float(a) / to_float(b)`.
+   */
+  const floatOf = (e: A.Expr): A.Expr => {
+    const hasDiv = (x: A.Expr): boolean =>
+      x.k === "Binary" && ["+", "-", "*", "/"].includes(x.op) && (x.op === "/" || hasDiv(x.left) || hasDiv(x.right));
+    if (e.k === "Binary" && hasDiv(e)) return { ...e, left: floatOf(e.left), right: floatOf(e.right) };
+    return { k: "Call", callee: { k: "Name", path: ["to_float"], line: 0, col: 0 }, args: [e], line: 0, col: 0 };
+  };
+
+  /**
    * v0.3: candidate rewrites of an expression whose type is wrong, most likely first. Each is
    * a conversion an agent would otherwise have to look up; none is applied automatically.
    */
@@ -537,7 +549,7 @@ export function checkTypes(prog: A.Program): TypeResult {
     const is = (t: Type, name: string) => t.t === "con" && t.name === name;
     const out: A.Expr[] = [];
     if (is(want, "String") && (is(got, "Int") || is(got, "Float") || is(got, "Bool"))) out.push(call("to_string", node));
-    if (is(want, "Float") && is(got, "Int")) out.push(call("to_float", node));
+    if (is(want, "Float") && is(got, "Int")) out.push(floatOf(node));
     if (is(want, "Int") && is(got, "Float")) out.push(call("to_int", node));
     if (got.t === "con" && got.name === "Option" && show(got.args[0]) === show(want)) out.push(call("unwrap_or", node, hole));
     if (want.t === "con" && want.name === "Option" && !is(got, "Option") && show(want.args[0]) === show(got)) out.push(ctor("Some", node));
@@ -612,17 +624,10 @@ export function checkTypes(prog: A.Program): TypeResult {
     return t.t === "var" || isPrim(t, "Int") || isPrim(t, "Float");
   };
 
-  /** Report T009 with a patch that wraps the Int operand in to_float. */
+  /** Report T009 with a patch that converts the Int operand with to_float (see floatOf). */
   const t009 = (e: A.Binary, intSide: A.Expr) => {
     const d = err("T009", `operator ${e.op} mixes Int and Float; convert the Int side with to_float`, exprPos(e));
-    const wrapped: A.Call = {
-      k: "Call",
-      callee: { k: "Name", path: ["to_float"], line: 0, col: 0 },
-      args: [intSide],
-      line: 0,
-      col: 0,
-    };
-    fixes.set(d, replaceNode(prog, intSide, wrapped));
+    fixes.set(d, replaceNode(prog, intSide, floatOf(intSide)));
   };
 
   const checkEscapes = (e: A.StrLit) => {

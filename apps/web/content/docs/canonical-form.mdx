@@ -105,7 +105,7 @@ fn contact(s: String) -> Contact {
 }
 ```
 
-A long line with no such bracket (a chain of operators, or a pipeline stage) is L001, which has no patch: bind a subexpression with `let`.
+A pipeline stage that is too long has its arguments broken the same way ([Pipelines](/docs/guide/pipelines#long-stages)). A long line with no such bracket (a chain of operators) is L001, which has no patch: bind a subexpression with `let`.
 
 ```canon
 # expect: L001

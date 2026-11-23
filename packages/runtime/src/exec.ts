@@ -5,7 +5,7 @@
 import { type Effect, type Host } from "./host.js";
 import { Early, type Frame, Trap, type TrapJson } from "./trap.js";
 import {
-  cmpKey, cmpStr, eq, err, errorRecord, NONE, ok, show, some, type Tagged, type TD, type TypeTable,
+  cmpKey, cmpStr, eq, err, errorRecord, NONE, ok, setPyStyle, show, some, type Tagged, type TD, type TypeTable,
 } from "./values.js";
 
 type List = unknown[];
@@ -268,7 +268,9 @@ export interface CanonModule {
   /** v0.3: main's declared effects (the capability guard's allow-list). */
   mainEffects?: string[];
   /** v0.3: pure functions with contracts, and their parameter types, for contract fuzzing. */
-  fuzz?: { name: string; params: [string, TD][] }[];
+  fuzz?: { name: string; params: [string, TD][]; skip?: string }[];
+  /** v0.4: compiled from Canon-Py, so values print in Python spelling. */
+  py?: boolean;
   /** Descriptor of main's return type, used to print an Err. */
   mainRet?: TD;
 }
@@ -277,6 +279,7 @@ export interface CanonModule {
 export function load(js: string, rt: Runtime): CanonModule {
   const mod = new Function("$rt", js)(rt) as CanonModule;
   rt.types = mod.types;
+  setPyStyle(mod.py === true);
   return mod;
 }
 

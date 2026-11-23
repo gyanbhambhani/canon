@@ -412,7 +412,7 @@ export class Parser {
       const op = this.advance().text;
       const right = this.addExpr();
       if (this.tok.kind === "op" && CMP.has(this.tok.text)) {
-        this.error("end of comparison (comparisons do not chain; use 'and')");
+        this.error(`end of comparison (comparisons do not chain; use '${features().symbols ? "&&" : "and"}')`);
       }
       return { k: "Binary", op, left, right, line: 0, col: 0 };
     }

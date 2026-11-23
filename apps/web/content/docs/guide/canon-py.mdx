@@ -103,6 +103,7 @@ Every construct has one canonical Canon-Py form; `fmt` turns the other accepted 
 | Lambdas | `\|x\| x + 1` | `lambda x: x + 1` |
 | Logic | `&&` `\|\|` `!` | `and` `or` `not` |
 | Literals | `true` `false` | `True` `False` |
+| Printed values (`to_string`, `print`) | `true`, `()`, `Item { sku: "a" }` | `True`, `None`, `Item(sku="a")` |
 | None test | `x == None` | `x is None` |
 | Membership | `contains(xs, x)` | `x in xs` |
 | Tuple slots | `t.0` | `t[0]` |

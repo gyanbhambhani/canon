@@ -8,7 +8,7 @@
  */
 import type * as A from "./ast.js";
 import { analyze, type CheckResult } from "./check.js";
-import { withFeatures, type CompileOptions } from "./features.js";
+import { features, withFeatures, type CompileOptions } from "./features.js";
 import { prune, resolve, type Type, type TypeInfo } from "./types.js";
 
 type TD = string | { L: TD } | { M: [TD, TD] } | { T: TD[] } | { F: 1 } | { C: string; a: TD[] } | { P: number };
@@ -396,13 +396,19 @@ export function generate(prog: A.Program, info: TypeInfo): string {
   const main = info.userFns.get("main");
   const mainRet = main ? typeExprToTD(main.ret, main.tparams) : null;
   const mainEffects = main ? main.node.effects : [];
-  // v0.3 contract fuzzing: every non-generic, pure function with a contract, and its parameter types
+  // v0.3 contract fuzzing: every function with a contract and its parameter types. One that cannot be
+  // fuzzed (generic, effectful, or without parameters) carries the reason, so `canon test` reports it.
   const fuzz = fnNames
     .map((n) => info.userFns.get(n)!.node)
-    .filter((f) => f.tparams.length === 0 && f.effects.length === 0 && (f.requires !== null || f.ensures !== null) && f.params.length > 0)
-    .map((f) => ({ name: f.name, params: f.params.map(([pn, t]) => [pn, typeExprToTD(t, [])]) }));
+    .filter((f) => f.requires !== null || f.ensures !== null)
+    .map((f) => {
+      const skip = f.tparams.length ? "a generic function"
+        : f.effects.length ? `performs effects: ${f.effects.join(", ")}`
+        : f.params.length === 0 ? "no parameters" : undefined;
+      return skip ? { name: f.name, params: [], skip } : { name: f.name, params: f.params.map(([pn, t]) => [pn, typeExprToTD(t, [])]) };
+    });
   out.push(
-    `return {\n  fns: { ${fnNames.map((n) => `${JSON.stringify(n)}: f_${n}`).join(", ")} },\n  main: ${main ? "f_main" : "undefined"},\n  mainRet: ${JSON.stringify(mainRet)},\n  mainEffects: ${JSON.stringify(mainEffects)},\n  fuzz: ${JSON.stringify(fuzz)},\n  tests: [\n${tests.join(",\n")}\n  ],\n  types: ${JSON.stringify(table)},\n};`,
+    `return {\n  fns: { ${fnNames.map((n) => `${JSON.stringify(n)}: f_${n}`).join(", ")} },\n  main: ${main ? "f_main" : "undefined"},\n  mainRet: ${JSON.stringify(mainRet)},\n  mainEffects: ${JSON.stringify(mainEffects)},\n  fuzz: ${JSON.stringify(fuzz)},\n${features().py ? "  py: true,\n" : ""}  tests: [\n${tests.join(",\n")}\n  ],\n  types: ${JSON.stringify(table)},\n};`,
   );
   return out.join("\n\n") + "\n";
 }

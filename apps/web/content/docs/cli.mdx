@@ -6,7 +6,7 @@ description: Every canon command and flag - check and check --fix, fmt, run, tes
 This page lists every `canon` command, flag and exit code, with output produced by running the CLI. Install the command with `npm i -g canon-lang`, or run it without installing as `npx canon-lang`. `canon --help` prints:
 
 ```text
-canon 0.4.0: a programming language for AI agents
+canon 0.4.1: a programming language for AI agents
 
 usage:
   canon check FILE... [--fix [--write]]
@@ -85,7 +85,7 @@ canon check --fix [--write] [--json] FILE...
 
 Runs every check: layout (C001), line length, naming, effects, modules, types and holes. Exits 1 if any file has a diagnostic.
 
-Text output prints one line per diagnostic as `path:line:col: severity CODE: message`, then the patch indented by two spaces when there is one, then a summary line per file: `hello.cn: 1 problem`, or `hello.cn: ok` for a clean file. For H001, the candidates follow the message under `candidates:`. T001 suggestions appear only in JSON.
+Text output prints one line per diagnostic as `path:line:col: severity CODE: message`, then the patch indented by two spaces when there is one, then a summary line per file: `hello.cn: 1 problem`, or `hello.cn: ok` for a clean file. For H001, the candidates follow the message under `candidates:`. T001 suggestions follow under `did you mean (patches in --json):`, one per line, most likely first; their patches appear only in JSON.
 
 `--json` prints `{ ok, canonical, diagnostics }` for one file, where `canonical` says whether the file is already in the formatter's layout. Given several files, it prints an array of such objects, each with a `path` field. [Errors and fixes](/docs/diagnostics) describes the fields. Patch paths are `a/` and `b/` plus the path as given, so `patch -p1` applies them from the same directory.
 
@@ -199,12 +199,12 @@ FAIL fuzz abs_diff: a = -19, b = 12
   {"code":"R002","message":"ensures failed in fn abs_diff","line":2,"col":12,"stack":[{"fn":"abs_diff","line":2,"col":12}]}
 PASS fuzz halve (107 inputs)
 SKIP fuzz apply_twice (a function-typed parameter)
-2 passed, 1 failed
+2 passed, 1 failed, 1 skipped
 ```
 
-`PASS fuzz NAME (N inputs)` counts the inputs that ran; a skipped function is not counted as passed or failed. The program is on [Functions and side effects](/docs/guide/functions-effects-contracts#contract-fuzzing).
+`PASS fuzz NAME (N inputs)` counts the inputs that ran. A function with a contract that cannot be fuzzed is reported as `SKIP` with the reason: a generic, effectful or parameterless function, a parameter type with no generator, or a `requires` that rejected every generated input (nothing was checked, so it is not a pass). Skips are not counted as passed or failed; the summary counts them. The program is on [Functions and side effects](/docs/guide/functions-effects-contracts#contract-fuzzing).
 
-`--json` prints `{ ok, passed, failed, files_with_errors, tests, stdout }`. Each test is `{ file, name, passed }` plus `trap` when it failed. Each fuzz entry adds `fn`, `runs`, `discarded`, and either `skipped` (the reason) or, on failure, `counterexample: { args, trap }`:
+`--json` prints `{ ok, passed, failed, skipped, files_with_errors, tests, stdout }`. Each test is `{ file, name, passed }` plus `trap` when it failed. Each fuzz entry adds `fn`, `runs`, `discarded`, and either `skipped` (the reason) or, on failure, `counterexample: { args, trap }`:
 
 ```json
 {

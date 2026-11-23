@@ -151,7 +151,10 @@ describe("conformance corpus", () => {
           if (expected.canonical) expect(got.diagnostics.map((d) => d.code)).toContain("C001");
           return;
         }
-        expect(JSON.parse(JSON.stringify(got))).toEqual(expected);
+        // v0.4: with v0.3 defaults the chained-comparison hint names `&&`, the operator v0.3 prints
+        // (DECISIONS.md, 2026-11-22); the v0.2 mode above still matches the oracle's 'and'.
+        const v03Expected = JSON.parse(JSON.stringify(expected).replace("use 'and')", "use '&&')"));
+        expect(JSON.parse(JSON.stringify(got))).toEqual(v03Expected);
       });
     }
   });

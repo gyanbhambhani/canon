@@ -2,6 +2,25 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — v0.4.1: six follow-ups from the v0.4 review (every package moves to 0.4.1)
+Decision: a `to_float` fix never wraps an integer division. T009's patch and T001's suggestion convert an Int `/` operand by operand (`to_float(a) / to_float(b)`), also through `+ - *` around it.
+Reason: `to_float(sum(xs) / len(xs))` checks clean but still truncates, so a "fix" that an agent applies on trust (T009 is in `--fix`) silently changes the meaning of a mean.
+
+Decision: with v0.3 defaults, the chained-comparison P001 says `use '&&'`; `--v0.2` keeps the oracle's `use 'and'`, and the conformance test substitutes only that hint when comparing v0.3 defaults to the oracle.
+Reason: v0.3 prints `&&`, so the old hint named a spelling the formatter rewrites. The oracle is v0 and cannot know v0.3's operators; the v0.2 mode still matches it byte for byte.
+
+Decision: text output lists T001 suggestions by label under `did you mean (patches in --json):`; the diffs stay JSON-only.
+Reason: people reading text output never saw the suggestions. Printing every diff would bury the error, and agents are told to use `--json`.
+
+Decision: `canon test` reports every contract-bearing function it does not fuzz as `SKIP` with a reason, counts skips in the summary and adds `skipped` to the JSON. Generic, effectful and parameterless functions now get a SKIP line instead of nothing, and a function whose `requires` rejected all 200 inputs is a SKIP, not `PASS (0 inputs)`.
+Reason: a silent omission or a vacuous pass reads as "contracts checked" when nothing was checked.
+
+Decision: the formatter breaks a too-long pipeline stage's arguments one per line (trailing comma), and the head the same way as any long value, but only when every resulting line fits; otherwise the line stays and is L001.
+Reason: pipelines were the one common long line `fmt` could not break, so L001 had no mechanical answer there. Breaking only when it helps keeps the output stable and avoids reformatting that leaves L001 anyway.
+
+Decision: a program compiled from Canon-Py prints values in Python spelling: `True`/`False`, `None` for Unit, records as `Item(sku="a")`. The compiled module carries `py: true`, and the runtime switches the display. Brace programs are unchanged. Canon-Py golden outputs that differ live in tests/py/run/*.out.
+Reason: a Canon-Py program that writes `True` and prints `true` contradicts itself. Experiment 1b is unaffected, because its hidden tests run the reply after conversion to brace syntax.
+
 ## 2026-11-22 — v0.4: measurement, rulings, docs and release
 Decision: the default syntax stays brace syntax; Experiment 1 decides whether Canon-Py becomes the default (it must be at least as correct as v0.3 syntax, at lower cost).
 Reason: the owner's plan (docs/roadmap-to-1.0.md). Our own measurement supports waiting. On the benchmark's programs converted by fmt (same algorithm in both surfaces), Canon-Py is less surprising than brace syntax without documentation. With each surface's own agent reference, it is slightly *more* surprising, and both remain well above idiomatic typed Python (research/v0.4/surprisal/RESULTS.md). The v0.3 prototype's large advantage came mostly from Python's library and idioms, which v0.4 does not adopt (same AST, same standard library).

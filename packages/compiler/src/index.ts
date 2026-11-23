@@ -1,4 +1,4 @@
-export const VERSION = "0.4.0";
+export const VERSION = "0.4.1";
 export * from "./diagnostics.js";
 export * from "./lexer.js";
 export type * from "./ast.js";

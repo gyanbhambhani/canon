@@ -94,6 +94,22 @@ function quote(s: string): string {
   return '"' + s.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\t/g, "\\t") + '"';
 }
 
+/**
+ * v0.4: a Canon-Py program shows values in its own spelling: `True`/`False`, `None` for Unit, and
+ * records as `Item(sku="a", qty=1)`. Set by load() from the compiled module.
+ */
+let pyStyle = false;
+export function setPyStyle(on: boolean): void {
+  pyStyle = on;
+}
+
+const boolText = (b: unknown) => (pyStyle ? (b ? "True" : "False") : b ? "true" : "false");
+const unitText = () => (pyStyle ? "None" : "()");
+const recordText = (name: string, parts: [string, string][]) =>
+  pyStyle
+    ? `${name}(${parts.map(([n, v]) => `${n}=${v}`).join(", ")})`
+    : parts.length ? `${name} { ${parts.map(([n, v]) => `${n}: ${v}`).join(", ")} }` : `${name} {}`;
+
 export function show(x: unknown, td: TD, table: TypeTable, top = true): string {
   if (typeof td === "string") {
     switch (td) {
@@ -104,9 +120,9 @@ export function show(x: unknown, td: TD, table: TypeTable, top = true): string {
       case "String":
         return top ? (x as string) : quote(x as string);
       case "Bool":
-        return x ? "true" : "false";
+        return boolText(x);
       case "Unit":
-        return "()";
+        return unitText();
     }
     return showDynamic(x, table, top);
   }
@@ -120,8 +136,7 @@ export function show(x: unknown, td: TD, table: TypeTable, top = true): string {
     const decl = table[td.C];
     const o = x as Tagged;
     if (decl?.fields) {
-      const parts = decl.fields.map(([n, ft]) => `${n}: ${show(o[n], subst(ft, td.a), table, false)}`);
-      return parts.length ? `${td.C} { ${parts.join(", ")} }` : `${td.C} {}`;
+      return recordText(td.C, decl.fields.map(([n, ft]) => [n, show(o[n], subst(ft, td.a), table, false)]));
     }
     const fields = decl?.variants?.[o.$t];
     if (fields) {
@@ -135,15 +150,15 @@ export function show(x: unknown, td: TD, table: TypeTable, top = true): string {
 function showDynamic(x: unknown, table: TypeTable, top: boolean): string {
   if (typeof x === "number") return Number.isInteger(x) ? String(x) : floatText(x);
   if (typeof x === "string") return top ? x : quote(x);
-  if (typeof x === "boolean") return x ? "true" : "false";
-  if (x === undefined || x === null) return "()";
+  if (typeof x === "boolean") return boolText(x);
+  if (x === undefined || x === null) return unitText();
   if (typeof x === "function") return "<fn>";
   if (Array.isArray(x)) return `[${x.map((v) => showDynamic(v, table, false)).join(", ")}]`;
   if (x instanceof Map) return `{${[...x].map(([k, v]) => `${showDynamic(k, table, false)}: ${showDynamic(v, table, false)}`).join(", ")}}`;
   const o = x as Tagged;
   const keys = Object.keys(o).filter((k) => k !== "$t");
   if (table[o.$t]?.fields) {
-    return keys.length ? `${o.$t} { ${keys.map((k) => `${k}: ${showDynamic(o[k], table, false)}`).join(", ")} }` : `${o.$t} {}`;
+    return recordText(o.$t, keys.map((k) => [k, showDynamic(o[k], table, false)]));
   }
   return keys.length ? `${o.$t}(${keys.map((k) => showDynamic(o[k], table, false)).join(", ")})` : o.$t;
 }

@@ -196,11 +196,42 @@ export class Printer {
     const flat = prefix + this.ex(value, 0, indent, true);
     if (this.noise !== null || !features().wrap) return flat;
     if (!flat.split("\n").some((l) => pyLen(l) > MAX_LINE)) return flat;
-    const wrapped = this.wrapped(value, indent);
+    const wrapped = this.wrapped(value, indent, prefix);
     return wrapped === null ? flat : prefix + wrapped;
   }
 
-  private wrapped(e: A.Expr, indent: string): string | null {
+  /**
+   * v0.4: a pipeline already has one stage per line, so wrap the pieces that are still too long:
+   * the head (after the statement's prefix) and each stage's arguments, one per line.
+   */
+  private wrappedPipeline(head: A.Expr, stages: A.Call[], indent: string, prefix: string): string | null {
+    const inner = indent + INDENT;
+    const headFlat = this.ex(head, 1, indent);
+    let changed = false;
+    let headS = headFlat;
+    if (headFlat.split("\n").some((l, i) => pyLen(i === 0 ? prefix + l : l) > MAX_LINE)) {
+      const w = this.wrapped(head, indent, prefix);
+      if (w !== null) {
+        headS = w;
+        changed = true;
+      }
+    }
+    const parts = stages.map((st) => {
+      const name = (st.callee as A.Name).path.join(".");
+      const args = st.args.slice(1);
+      const flat = `|> ${name}(${this.items(args, inner)})`;
+      if (args.length === 0 || !flat.split("\n").some((l, i) => pyLen(i === 0 ? inner + l : l) > MAX_LINE)) return flat;
+      const deeper = inner + INDENT;
+      const lines = args.map((x) => `${deeper}${this.ex(x, 0, deeper)},`);
+      // wrap only when it helps: an argument too long on its own line is L001 either way
+      if (lines.some((l) => l.split("\n").some((x) => pyLen(x) > MAX_LINE))) return flat;
+      changed = true;
+      return `|> ${name}(\n${lines.join("\n")}\n${inner})`;
+    });
+    return changed ? headS + "\n" + inner + parts.join("\n" + inner) : null;
+  }
+
+  private wrapped(e: A.Expr, indent: string, prefix = ""): string | null {
     const inner = indent + INDENT;
     const lines = (xs: string[]) => xs.map((x) => `${inner}${x},`).join("\n");
     const items = (xs: A.Expr[]) => lines(xs.map((x) => this.ex(x, 0, inner)));
@@ -212,7 +243,9 @@ export class Printer {
       case "Record":
         return e.fields.length ? `${e.tname} {\n${lines(e.fields.map(([n, v]) => `${n}: ${this.ex(v, 0, inner)}`))}\n${indent}}` : null;
       case "Call": {
-        if (unrollChain(e)[1].length >= PIPELINE_MIN_STAGES || e.args.length === 0) return null;
+        const [head, stages] = unrollChain(e);
+        if (stages.length >= PIPELINE_MIN_STAGES) return this.wrappedPipeline(head, stages, indent, prefix);
+        if (e.args.length === 0) return null;
         return `${this.ex(e.callee, PREC.postfix, indent)}(\n${items(e.args)}\n${indent})`;
       }
       default:

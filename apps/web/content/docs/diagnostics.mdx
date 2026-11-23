@@ -216,7 +216,7 @@ s001.cn:2:15: error S001: in Canon-Py a match is a statement: return its value o
 
 ### L001
 
-A line longer than 100 characters after formatting. The formatter breaks a long statement at its outermost list, tuple, record or call brackets (reported as C001, with the patch), so L001 is left for lines it cannot break: a long chain of operators, or a long pipeline stage. There is no patch: bind a subexpression with `let`. (With `--no-wrap` or `--v0.2`, every long line is L001, as in v0.2.)
+A line longer than 100 characters after formatting. The formatter breaks a long statement at its outermost list, tuple, record or call brackets (reported as C001, with the patch), and breaks a long pipeline stage's arguments the same way, so L001 is left for lines it cannot break: a long chain of operators, or a single argument too long for its own line. There is no patch: bind a subexpression with `let`. (With `--no-wrap` or `--v0.2`, every long line is L001, as in v0.2.)
 
 ```canon
 # expect: L001

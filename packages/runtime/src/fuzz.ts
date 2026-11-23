@@ -117,6 +117,11 @@ export function fuzzContracts(js: string, host: Host, opts: FuzzOptions = {}): F
   for (const entry of mod.fuzz ?? []) {
     const f = mod.fns[entry.name];
     const res: FuzzOutcome = { name: `fuzz ${entry.name}`, fn: entry.name, passed: true, runs: 0, discarded: 0 };
+    if (entry.skip) {
+      res.skipped = entry.skip;
+      out.push(res);
+      continue;
+    }
     const rnd = seeded(opts.seed ?? 2026);
     for (let i = 0; i < tries; i++) {
       let args: unknown[];
@@ -149,6 +154,8 @@ export function fuzzContracts(js: string, host: Host, opts: FuzzOptions = {}): F
         break;
       }
     }
+    // no input got past requires: nothing was checked, so it is a skip, not a pass
+    if (!res.skipped && res.passed && res.runs === 0) res.skipped = `all ${res.discarded} generated inputs failed requires`;
     out.push(res);
   }
   return out;

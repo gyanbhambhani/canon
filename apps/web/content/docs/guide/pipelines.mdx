@@ -134,7 +134,26 @@ fn label(xs: List[Int]) -> String {
 
 ## Long stages
 
-The formatter breaks an over-long statement at its outermost list, tuple, record or call brackets, but never inside a pipeline. A stage line over 100 characters is L001, which has no patch:
+A pipeline already has one stage per line. When a stage line is still over 100 characters, the formatter breaks that stage's arguments one per line, with a trailing comma, as it does for any long call:
+
+```canon
+type Order {
+  id: Int,
+  customer: String,
+  amount: Float,
+}
+
+fn big_spenders(orders: List[Order], floor: Float) -> List[String] {
+  return orders
+    |> filter(
+      |o| o.amount > floor && o.customer != "" && o.customer != "internal test account here",
+    )
+    |> sort_by(|o| o.amount)
+    |> map(|o| o.customer)
+}
+```
+
+It breaks a stage only when that brings every line under the limit. An argument that is too long even on its own line is L001, which has no patch:
 
 ```canon
 # expect: L001
@@ -146,7 +165,7 @@ type Order {
 
 fn big_spenders(orders: List[Order], floor: Float) -> List[String] {
   return orders
-    |> filter(|o| o.amount > floor && o.customer != "" && o.customer != "internal test account here")
+    |> filter(|o| o.amount > floor && o.customer != "" && o.customer != "internal test account" && o.id > 1000)
     |> sort_by(|o| o.amount)
     |> map(|o| o.customer)
 }
@@ -162,10 +181,10 @@ type Order {
 }
 
 fn big_spenders(orders: List[Order], floor: Float) -> List[String] {
-  let internal = "internal test account here"
+  let internal = "internal test account"
   return orders
     |> filter(|o| o.amount > floor && o.customer != "")
-    |> filter(|o| o.customer != internal)
+    |> filter(|o| o.customer != internal && o.id > 1000)
     |> sort_by(|o| o.amount)
     |> map(|o| o.customer)
 }

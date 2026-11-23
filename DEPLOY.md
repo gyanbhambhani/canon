@@ -123,3 +123,18 @@ pnpm pack --pack-destination /tmp      # writes /tmp/canon-lang-0.4.0.tgz with w
 tar -tzf /tmp/canon-lang-0.4.0.tgz | grep runtime-standalone.js
 npm publish /tmp/canon-lang-0.4.0.tgz --access public --auth-type=web
 ```
+
+## 10. Publish canon-lang 0.4.1 (v0.4 fixes)
+
+0.4.1 fixes six issues from the v0.4 review (DECISIONS.md): `to_float` fixes never keep an integer
+division's truncation, the chained-comparison hint names `&&`, text output lists T001 suggestions,
+`canon test` reports and counts fuzz skips, long pipeline stages wrap, and Canon-Py programs print
+`True`, `None` and `Item(sku="a")`.
+
+```bash
+cd ~/Desktop/canon
+pnpm build
+cd packages/cli
+pnpm pack --pack-destination /tmp      # writes /tmp/canon-lang-0.4.1.tgz with workspace:* rewritten
+npm publish /tmp/canon-lang-0.4.1.tgz --access public --auth-type=web
+```

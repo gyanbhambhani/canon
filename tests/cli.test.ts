@@ -190,7 +190,7 @@ describe("usage", () => {
 
   it("--help and --version exit 0", () => {
     expect(canon(["--help"]).code).toBe(0);
-    expect(canon(["--version"])).toMatchObject({ code: 0, out: "canon 0.4.0\n" });
+    expect(canon(["--version"])).toMatchObject({ code: 0, out: "canon 0.4.1\n" });
   });
 });
 

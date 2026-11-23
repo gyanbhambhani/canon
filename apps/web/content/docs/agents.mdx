@@ -146,7 +146,7 @@ Since v0.4 the bound also holds for each function, because function types carry 
 
 - **Load the reference every session.** Models have not seen Canon in training. Keep the reference in the project instructions, not in a message that scrolls away.
 - **Let the agent run commands.** Allow the `canon` command (or `npx canon-lang`) in the tool's permission settings.
-- **Prefer `--json`.** Text output is for people and leaves out `data.suggestions`; the JSON keeps every field and the exact diffs.
+- **Prefer `--json`.** Text output is for people: it lists T001 suggestions by label but leaves out their diffs; the JSON keeps every field and the exact diffs.
 - **Apply, do not retype.** A patch fixes the problem and any layout drift together. Retyping by hand can introduce a layout error, which `--fix` then has to undo.
 - **Ask with holes.** Tell the agent it may write `?` when unsure and use the H001 answer, rather than guess.
 - **Write contracts.** `canon test` fuzzes every pure function that has `requires` or `ensures`, so a contract is a test the agent did not have to write.

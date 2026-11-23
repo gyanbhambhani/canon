@@ -163,6 +163,8 @@ export function formatDiagnostic(path: string, d: Diagnostic): string {
     const data = d.data as { candidates?: string[] };
     if (data.candidates?.length) s += `  candidates:\n${data.candidates.map((c) => `    ${c}`).join("\n")}\n`;
   }
+  const sug = (d.data as { suggestions?: { label: string }[] } | undefined)?.suggestions;
+  if (sug?.length) s += `  did you mean (patches in --json):\n${sug.map((c) => `    ${c.label}`).join("\n")}\n`;
   if (d.fix) s += d.fix.diff.replace(/^/gm, "  ").replace(/ {2}$/, "");
   return s;
 }
@@ -283,6 +285,7 @@ function cmdTest(a: Args, io: CliIO): Outcome {
   let passed = 0;
   let failed = 0;
   let broken = 0;
+  let skipped = 0;
   const tests: unknown[] = [];
   let stdout = "";
   for (const path of a.files) {
@@ -303,6 +306,7 @@ function cmdTest(a: Args, io: CliIO): Outcome {
     if (a.fuzz) {
       for (const z of fuzzContracts(js, testHost(nodeHost({ write: () => {} })), { capabilityGuard: a.guard })) {
         if (z.skipped) {
+          skipped++;
           if (!a.json) io.stdout(`SKIP ${z.name} (${z.skipped})\n`);
           tests.push({ file: path, ...z });
           continue;
@@ -319,9 +323,9 @@ function cmdTest(a: Args, io: CliIO): Outcome {
     }
   }
   const ok = failed === 0 && broken === 0;
-  const summary = `${passed} passed, ${failed} failed${broken ? `, ${broken} file${broken === 1 ? "" : "s"} with errors` : ""}`;
+  const summary = `${passed} passed, ${failed} failed${skipped ? `, ${skipped} skipped` : ""}${broken ? `, ${broken} file${broken === 1 ? "" : "s"} with errors` : ""}`;
   if (a.json) {
-    io.stdout(JSON.stringify({ ok, passed, failed, files_with_errors: broken, tests, stdout }, null, 2) + "\n");
+    io.stdout(JSON.stringify({ ok, passed, failed, skipped, files_with_errors: broken, tests, stdout }, null, 2) + "\n");
   } else {
     io.stdout(summary + "\n");
   }

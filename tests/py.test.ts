@@ -4,7 +4,9 @@
  *  - be canonical Canon-Py and check clean with --syntax py;
  *  - stay in sync with its brace source (fmt of the brace source to Canon-Py gives this file);
  *  - convert back to braces as a fixed point (braces -> Canon-Py -> braces -> Canon-Py is stable);
- *  - behave identically: print the same output, and pass the same test blocks.
+ *  - behave identically: print the same output, and pass the same test blocks. Values print in each
+ *    syntax's own spelling (`True`, `None`, `Item(sku="a")`), so where they differ the Canon-Py
+ *    output is pinned by a .out file next to the Canon-Py source.
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -52,8 +54,11 @@ describe("Canon-Py corpus", () => {
         const input = existsSync(inFile) ? readFileSync(inFile, "utf8").split("\n").slice(0, -1) : [];
         const a = runWith(pySrc, py, input);
         const b = runWith(braceSrc, {}, input);
-        expect(a).toEqual(b);
-        expect(a.out).toBe(readFileSync(join(root, s.out(f)), "utf8"));
+        expect({ ...a, out: "" }).toEqual({ ...b, out: "" });
+        const braceOut = readFileSync(join(root, s.out(f)), "utf8");
+        expect(b.out).toBe(braceOut);
+        const pyOut = join(root, s.dir, f.replace(/\.cn$/, ".out"));
+        expect(a.out).toBe(existsSync(pyOut) ? readFileSync(pyOut, "utf8") : braceOut);
         const ta = runTests(compileJs(pySrc, f, py).js!, testHost(new MemoryHost()));
         const tb = runTests(compileJs(braceSrc, f).js!, testHost(new MemoryHost()));
         expect(ta.map((t) => t.passed)).toEqual(tb.map((t) => t.passed));
