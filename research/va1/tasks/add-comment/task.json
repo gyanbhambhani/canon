@@ -1,0 +1,18 @@
+{
+  "id": "add-comment",
+  "set": 1,
+  "title": "Add a comment",
+  "adapted": null,
+  "route": { "method": "POST", "path": "/comments" },
+  "feature": { "module": "addComment", "fn": "addComment" },
+  "base": { "body": "=alnum(int(1, 500))" },
+  "random": { "body": "=pick(['', ' ', 'Nice', rep('a', int(480, 520)), '\\t\\n'])" },
+  "rules": [
+    { "id": "body_not_blank", "kind": "single", "desc": "body is not blank",
+      "inside": [{ "set": { "body": " a " } }, { "set": { "body": "a" } }, { "set": { "body": "\n\tx\r" } }],
+      "outside": [{ "set": { "body": "" } }, { "set": { "body": " " } }, { "set": { "body": "\t \n\r" } }] },
+    { "id": "body_length", "kind": "single", "desc": "body has at most 500 characters",
+      "inside": [{ "set": { "body": "=rep('a', 500)" } }, { "set": { "body": "=emoji(500)" } }],
+      "outside": [{ "set": { "body": "=rep('a', 501)" } }, { "set": { "body": "=emoji(501)" } }, { "set": { "body": "=rep('a', 600)" } }] }
+  ]
+}

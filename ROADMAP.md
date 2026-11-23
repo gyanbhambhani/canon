@@ -147,9 +147,9 @@ Copied from the Milestones section of docs/v0.5-fullstack.md. M3 and M4 may run 
 
 ## v0.5 M8: Experiment FS-1, ready to run
 
-- [ ] The three starter apps and the task suite are built as described in Experiment FS-1, and every task's reference solution passes its hidden tests in all three arms.
-- [ ] A 10-task pilot has run in every arm with every model.
-- [ ] The power analysis and pre-registration are committed before the main run starts.
+- [x] The three starter apps and the task suite are built as described in Experiment FS-1, and every task's reference solution passes its hidden tests in all three arms.
+- [ ] A 10-task pilot has run in every arm with every model. (Not met: gpt-6.2-sol 30 of 30 runs; claude-opus-5-5 24 of 30, because the Anthropic account ran out of credit; Qwen 7B incomplete, local server crashes. See research/fs1/REPORT.md.)
+- [x] The power analysis and pre-registration are committed before the main run starts (research/fs1/PREREGISTRATION.md, commit 03fa504, before any main-run call).
 
 
 ## Progress log

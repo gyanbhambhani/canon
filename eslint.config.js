@@ -16,6 +16,8 @@ export default tseslint.config(
       "apps/web/public/**",
       "apps/web/lib/generated/**",
       "test-results/**",
+      "research/**/.work/**",
+      ".claude/**",
       "playwright-report/**",
     ],
   },

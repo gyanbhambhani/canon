@@ -1,0 +1,6 @@
+{
+  "id": "product-price-label",
+  "kind": "feature",
+  "title": "A product's formatted price as a string field",
+  "features": [{ "module": "frontend/src/features/productPriceLabel.ts", "signature": "productPriceLabel(baseUrl: string, sku: string): Promise<Outcome<PriceLabel>>" }]
+}

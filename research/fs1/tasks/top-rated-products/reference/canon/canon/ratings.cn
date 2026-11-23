@@ -1,0 +1,71 @@
+use catalog.{CatalogError, Product, find, products}
+
+table ratings: Rating key id
+
+type Rating {
+  id: Int,
+  sku: String,
+  stars: Int,
+}
+
+type NewRating {
+  stars: Int,
+}
+
+type RatingSummary {
+  sku: String,
+  count: Int,
+  average: Float,
+}
+
+type TopRated {
+  sku: String,
+  name: String,
+  average: Float,
+  count: Int,
+}
+
+api fn rate_product(sku: String, input: NewRating) -> Result[RatingSummary, CatalogError]
+  route: POST "/products/{sku}/ratings"
+  effects: store(products), store(ratings)
+  requires: input.stars >= 1 && input.stars <= 5
+{
+  let p = try find(sku)
+  insert(ratings, Rating { id: next_id(ratings), sku: p.sku, stars: input.stars })
+  let stars = stars_of(scan(ratings), p.sku)
+  return Ok(RatingSummary { sku: p.sku, count: len(stars), average: mean(stars) })
+}
+
+api fn top_rated(limit: Int) -> List[TopRated]
+  route: GET "/top-rated"
+  effects: store(products), store(ratings)
+  requires: limit >= 1 && limit <= 20
+{
+  let all = scan(ratings)
+  let rows = products
+    |> scan()
+    |> filter(|p| len(stars_of(all, p.sku)) > 0)
+    |> map(|p| top_row(p, stars_of(all, p.sku)))
+    |> sort_by(|r| r.sku)
+    |> sort_desc_by(|r| r.average)
+  return take(rows, limit)
+}
+
+fn stars_of(all: List[Rating], sku: String) -> List[Int] {
+  return map(filter(all, |r| r.sku == sku), |r| r.stars)
+}
+
+fn top_row(p: Product, stars: List[Int]) -> TopRated {
+  return TopRated { sku: p.sku, name: p.name, average: mean(stars), count: len(stars) }
+}
+
+fn mean(xs: List[Int]) -> Float
+  requires: len(xs) > 0
+{
+  return to_float(sum(xs)) / to_float(len(xs))
+}
+
+test "mean" {
+  assert(mean([5, 4]) == 4.5)
+  assert(mean([3]) == 3.0)
+}

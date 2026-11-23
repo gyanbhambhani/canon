@@ -1,0 +1,16 @@
+type GiftCard {
+  code: String,
+  amount: Int,
+  currency: String,
+}
+
+api fn register_gift_card(card: GiftCard) -> GiftCard
+  route: POST "/gift-cards"
+  requires: str_len(card.code) >= 8
+    && str_len(card.code) <= 12
+    && card.amount >= 5
+    && card.amount <= 500
+    && contains(["USD", "EUR", "GBP"], card.currency)
+{
+  return card
+}

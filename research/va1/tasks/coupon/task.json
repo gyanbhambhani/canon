@@ -1,0 +1,24 @@
+{
+  "id": "coupon",
+  "set": 2,
+  "title": "Apply a coupon",
+  "adapted": null,
+  "route": { "method": "POST", "path": "/coupons/apply" },
+  "feature": { "module": "applyCoupon", "fn": "applyCoupon" },
+  "base": { "code": "=alnum(int(3, 20))", "subtotal": "=int(1, 100000)", "discount": "=int(0, $subtotal)" },
+  "random": { "code": "=pick(['', 'ab', 'SAVE10', alnum(int(15, 25))])", "subtotal": "=int(-50, 100000)", "discount": "=int(-50, 100000)" },
+  "rules": [
+    { "id": "code_length", "kind": "single", "desc": "code has 3 to 20 characters",
+      "inside": [{ "set": { "code": "=rep('c', 3)" } }, { "set": { "code": "=rep('c', 20)" } }, { "set": { "code": "=emoji(3)" } }],
+      "outside": [{ "set": { "code": "=rep('c', 2)" } }, { "set": { "code": "=rep('c', 21)" } }, { "set": { "code": "" } }, { "set": { "code": "=emoji(21)" } }] },
+    { "id": "subtotal_min", "kind": "single", "desc": "subtotal is at least 1",
+      "inside": [{ "set": { "subtotal": 1, "discount": 0 } }, { "set": { "subtotal": 1, "discount": 1 } }],
+      "outside": [{ "set": { "subtotal": 0, "discount": 0 } }, { "set": { "subtotal": -1, "discount": 0 } }, { "set": { "subtotal": -500, "discount": 0 } }] },
+    { "id": "discount_min", "kind": "single", "desc": "discount is at least 0",
+      "inside": [{ "set": { "discount": 0 } }],
+      "outside": [{ "set": { "discount": -1 } }, { "set": { "discount": -100 } }] },
+    { "id": "discount_within_subtotal", "kind": "cross", "desc": "discount is at most subtotal",
+      "inside": [{ "set": { "discount": "=$subtotal" } }, { "set": { "subtotal": 7, "discount": 6 } }],
+      "outside": [{ "set": { "discount": "=$subtotal + 1" } }, { "set": { "discount": "=$subtotal + 100" } }, { "set": { "subtotal": 1, "discount": 2 } }] }
+  ]
+}

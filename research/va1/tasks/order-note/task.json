@@ -1,0 +1,14 @@
+{
+  "id": "order-note",
+  "set": 1,
+  "title": "Add an order note",
+  "adapted": null,
+  "route": {"method": "POST", "path": "/order-notes"},
+  "feature": {"module": "addOrderNote", "fn": "addOrderNote"},
+  "base": {"note": "=alnum(int(0, 200))", "priority": "=int(0, 9)"},
+  "random": {"note": "=pick(['', 'hi', rep('a', int(190, 215)), emoji(int(195, 205))])", "priority": "=int(-3, 12)"},
+  "rules": [
+    {"id": "note_length", "kind": "single", "desc": "note has at most 200 characters (may be empty)", "inside": [{"set": {"note": ""}}, {"set": {"note": "=rep('a', 200)"}}, {"set": {"note": "=emoji(200)"}}], "outside": [{"set": {"note": "=rep('a', 201)"}}, {"set": {"note": "=emoji(201)"}}, {"set": {"note": "=rep('a', 250)"}}]},
+    {"id": "priority_range", "kind": "single", "desc": "priority is 0 to 9", "inside": [{"set": {"priority": 0}}, {"set": {"priority": 9}}], "outside": [{"set": {"priority": -1}}, {"set": {"priority": 10}}, {"set": {"priority": 100}}]}
+  ]
+}

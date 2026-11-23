@@ -126,11 +126,21 @@ function delimiters(toks: Tok[]): { i: number; p: number }[] {
   const out: { i: number; p: number }[] = [];
   let depth = 0;
   let inLambda = false;
+  // a comprehension's target (`for key, value in xs`) is one unit: its commas and its `in` are
+  // not places to split (Black's rule; splitting there is a syntax error)
+  let inFor = false;
   for (let i = 0; i < toks.length; i++) {
     const t = toks[i].t;
     if (OPEN.has(t)) depth++;
     else if (CLOSE.has(t)) depth--;
     else if (depth === 0) {
+      if (t === "for") inFor = true;
+      else if (inFor && t === "in") {
+        inFor = false;
+        continue;
+      } else if (inFor && t !== "for") {
+        continue;
+      }
       if (t === "lambda") inLambda = true;
       if (inLambda && t === ":") {
         inLambda = false;

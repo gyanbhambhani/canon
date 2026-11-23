@@ -1,0 +1,168 @@
+{
+  "id": "loan",
+  "set": 2,
+  "title": "Apply for a loan",
+  "adapted": null,
+  "route": {
+    "method": "POST",
+    "path": "/loans"
+  },
+  "feature": {
+    "module": "applyForLoan",
+    "fn": "applyForLoan"
+  },
+  "base": {
+    "principal": "=int(1000, 1000000)",
+    "months": "=int(6, 360)",
+    "monthly_payment": "=Math.ceil($principal / $months) + int(0, 500)"
+  },
+  "random": {
+    "principal": "=int(-100, 1100000)",
+    "months": "=int(0, 400)",
+    "monthly_payment": "=int(-5, 1200000)"
+  },
+  "rules": [
+    {
+      "id": "principal_range",
+      "kind": "single",
+      "desc": "principal is 1000 to 1000000",
+      "inside": [
+        {
+          "set": {
+            "principal": 1000
+          }
+        },
+        {
+          "set": {
+            "principal": 1000000,
+            "monthly_payment": "=Math.ceil(1000000 / $months)"
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "principal": 999
+          }
+        },
+        {
+          "set": {
+            "principal": 1000001,
+            "monthly_payment": "=Math.ceil(1000001 / $months)"
+          }
+        },
+        {
+          "set": {
+            "principal": 0
+          }
+        },
+        {
+          "set": {
+            "principal": -1000
+          }
+        }
+      ]
+    },
+    {
+      "id": "months_range",
+      "kind": "single",
+      "desc": "months is 6 to 360",
+      "inside": [
+        {
+          "set": {
+            "months": 6,
+            "monthly_payment": "=Math.ceil($principal / 6)"
+          }
+        },
+        {
+          "set": {
+            "months": 360
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "months": 5,
+            "monthly_payment": "=Math.ceil($principal / 5)"
+          }
+        },
+        {
+          "set": {
+            "months": 361
+          }
+        },
+        {
+          "set": {
+            "months": 1,
+            "monthly_payment": "=$principal"
+          }
+        }
+      ]
+    },
+    {
+      "id": "payment_max",
+      "kind": "single",
+      "desc": "monthly_payment is at most 1000000 (the lower bound 1 is implied by the cover rule)",
+      "inside": [
+        {
+          "set": {
+            "monthly_payment": 1000000
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "monthly_payment": 1000001
+          }
+        },
+        {
+          "set": {
+            "monthly_payment": 2000000
+          }
+        }
+      ]
+    },
+    {
+      "id": "payments_cover_principal",
+      "kind": "cross",
+      "desc": "monthly_payment * months >= principal",
+      "inside": [
+        {
+          "set": {
+            "monthly_payment": "=Math.ceil($principal / $months)"
+          }
+        },
+        {
+          "set": {
+            "principal": 6000,
+            "months": 6,
+            "monthly_payment": 1000
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "monthly_payment": "=Math.ceil($principal / $months) - 1"
+          }
+        },
+        {
+          "set": {
+            "principal": 6001,
+            "months": 6,
+            "monthly_payment": 1000
+          }
+        },
+        {
+          "set": {
+            "principal": 1000,
+            "months": 6,
+            "monthly_payment": 1
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+use catalog.{CatalogError, find, products}
+
+table ratings: Rating key id
+
+type Rating {
+  id: Int,
+  sku: String,
+  stars: Int,
+}
+
+type NewRating {
+  stars: Int,
+}
+
+type RatingSummary {
+  sku: String,
+  count: Int,
+  average: Option[Float],
+}
+
+api fn rate_product(sku: String, input: NewRating) -> Result[RatingSummary, CatalogError]
+  route: POST "/products/{sku}/ratings"
+  effects: store(products), store(ratings)
+  requires: input.stars >= 1 && input.stars <= 5
+{
+  let p = try find(sku)
+  insert(ratings, Rating { id: next_id(ratings), sku: p.sku, stars: input.stars })
+  return Ok(summary_of(p.sku))
+}
+
+api fn product_rating(sku: String) -> Result[RatingSummary, CatalogError]
+  route: GET "/products/{sku}/rating"
+  effects: store(products), store(ratings)
+{
+  let p = try find(sku)
+  return Ok(summary_of(p.sku))
+}
+
+fn summary_of(sku: String) -> RatingSummary
+  effects: store(ratings)
+{
+  let stars = ratings
+    |> scan()
+    |> filter(|r| r.sku == sku)
+    |> map(|r| r.stars)
+  return RatingSummary { sku: sku, count: len(stars), average: mean(stars) }
+}
+
+fn mean(xs: List[Int]) -> Option[Float] {
+  return match len(xs) {
+    0 => None,
+    n => Some(to_float(sum(xs)) / to_float(n)),
+  }
+}
+
+test "mean" {
+  assert(mean([]) == None)
+  assert(mean([5, 4]) == Some(4.5))
+}

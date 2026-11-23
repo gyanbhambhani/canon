@@ -1,0 +1,66 @@
+{
+  "id": "rename-project",
+  "set": 1,
+  "title": "Rename a project",
+  "adapted": null,
+  "route": {
+    "method": "POST",
+    "path": "/projects/rename"
+  },
+  "feature": {
+    "module": "renameProject",
+    "fn": "renameProject"
+  },
+  "base": {
+    "name": "=alnum(int(3, 40))"
+  },
+  "random": {
+    "name": "=alnum(int(0, 50))"
+  },
+  "rules": [
+    {
+      "id": "name_length",
+      "kind": "single",
+      "desc": "name has 3 to 40 characters",
+      "inside": [
+        {
+          "set": {
+            "name": "abc"
+          }
+        },
+        {
+          "set": {
+            "name": "=rep('a', 40)"
+          }
+        },
+        {
+          "set": {
+            "name": "=emoji(3)"
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "name": "ab"
+          }
+        },
+        {
+          "set": {
+            "name": ""
+          }
+        },
+        {
+          "set": {
+            "name": "=rep('a', 41)"
+          }
+        },
+        {
+          "set": {
+            "name": "=emoji(41)"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "transfer",
+  "set": 2,
+  "title": "Make a transfer",
+  "adapted": null,
+  "route": { "method": "POST", "path": "/transfers" },
+  "feature": { "module": "makeTransfer", "fn": "makeTransfer" },
+  "base": { "from_account": "='A' + alnum(int(0, 19))", "to_account": "='B' + alnum(int(0, 19))", "balance": "=int(1, 100000)", "amount": "=int(1, $balance)" },
+  "random": { "from_account": "=pick(['', 'A', 'same', rep('x', int(15, 25))])", "to_account": "=pick(['', 'B', 'same', rep('x', int(15, 25))])", "balance": "=int(-20, 100000)", "amount": "=int(-20, 100000)" },
+  "rules": [
+    { "id": "from_length", "kind": "single", "desc": "from_account has 1 to 20 characters",
+      "inside": [{ "set": { "from_account": "A" } }, { "set": { "from_account": "=rep('A', 20)" } }, { "set": { "from_account": "=emoji(20)" } }],
+      "outside": [{ "set": { "from_account": "" } }, { "set": { "from_account": "=rep('A', 21)" } }, { "set": { "from_account": "=emoji(21)" } }] },
+    { "id": "to_length", "kind": "single", "desc": "to_account has 1 to 20 characters",
+      "inside": [{ "set": { "to_account": "B" } }, { "set": { "to_account": "=rep('B', 20)" } }, { "set": { "to_account": "=emoji(20)" } }],
+      "outside": [{ "set": { "to_account": "" } }, { "set": { "to_account": "=rep('B', 21)" } }, { "set": { "to_account": "=emoji(21)" } }] },
+    { "id": "amount_min", "kind": "single", "desc": "amount is at least 1",
+      "inside": [{ "set": { "amount": 1 } }],
+      "outside": [{ "set": { "amount": 0 } }, { "set": { "amount": -1 } }, { "set": { "amount": -500 } }] },
+    { "id": "balance_min", "kind": "single", "desc": "balance is at least 0 (a negative balance also breaks the funds rule: it cannot be isolated)",
+      "inside": [{ "set": { "balance": 1, "amount": 1 } }],
+      "outside": [{ "set": { "balance": -1, "amount": 1 } }, { "set": { "balance": -100, "amount": 1 } }] },
+    { "id": "accounts_differ", "kind": "cross", "desc": "from_account and to_account are different",
+      "inside": [{ "set": { "to_account": "=$from_account.toLowerCase()" } }, { "set": { "from_account": "x", "to_account": "X" } }, { "set": { "from_account": "x", "to_account": "xx" } }],
+      "outside": [{ "set": { "to_account": "=$from_account" } }, { "set": { "from_account": "same", "to_account": "same" } }, { "set": { "from_account": "=rep('A', 20)", "to_account": "=rep('A', 20)" } }] },
+    { "id": "amount_within_balance", "kind": "cross", "desc": "amount is at most balance",
+      "inside": [{ "set": { "amount": "=$balance" } }, { "set": { "balance": 1, "amount": 1 } }],
+      "outside": [{ "set": { "amount": "=$balance + 1" } }, { "set": { "balance": "=$amount - 1" } }, { "set": { "amount": "=$balance + 1000" } }] }
+  ]
+}

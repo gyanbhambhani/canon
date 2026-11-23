@@ -1,0 +1,13 @@
+type Setting {
+  temperature: Int,
+  mode: String,
+}
+
+api fn set_thermostat(setting: Setting) -> Setting
+  route: POST "/thermostat"
+  requires: setting.temperature >= 10
+    && setting.temperature <= 30
+    && contains(["eco", "comfort", "away"], setting.mode)
+{
+  return setting
+}

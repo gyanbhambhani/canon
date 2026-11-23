@@ -2,6 +2,103 @@
 
 Judgment calls made while building the harness, newest first. Each entry: date, decision, reason.
 
+## 2026-11-23 — Amendment 3: GPT stopped on credit; partial analysis
+Decision: the coordinator's figure of about 345 GPT runs counted infrastructure failures; 161 are
+real. The 188 failures were moved, unedited, to results/dropped-gpt-infrastructure-failures.jsonl,
+the runner was stopped, and Amendment 3 records what exists. The pre-registered analysis was re-run
+unchanged, labelled partial, on the 29 tasks where all three arms have the same number of GPT runs
+(analysis/partial.ts, config-partial.json). The win-rule line is not reported.
+Reason: the coordinator's instruction to keep the arms paired and give no verdict; the pre-registered
+rerun rule (infrastructure failures are never scored).
+
+Decision: runner/run.ts now treats OpenAI's credit errors like Anthropic's (record nothing, stop the
+model). Its new hash is in Amendment 3.
+Reason: before this, 183 billing errors were written as records instead of nothing. It changes no
+scoring.
+
+## 2026-11-23 — Qwen2.5-Coder-32B dropped
+Decision: the 32B exploratory run is not made; Amendment 2 in PREREGISTRATION.md says so. Its 60
+infrastructure-failure records moved to results/dropped-qwen32-infrastructure-failures.jsonl (kept,
+unscored, outside the analysis glob), and its waiter was stopped. Qwen 7B on port 8091 is the only
+local model.
+Reason: the coordinator reported that three weight downloads failed, so the model cannot be served.
+FS-1 never started a server for it.
+
+## 2026-11-23 — Local-server crashes are infrastructure failures, and GPT runs as two processes
+Decision: runs that hit a dead MLX server ("generation thread died", "Connection error") are
+infrastructure failures. They stay in the JSONL files (nothing is deleted), the analysis replaces
+each with its rerun, and the reruns come from `runner/local-until-done.sh`, which makes a real
+generation call before every attempt and never starts a server. The 22 of 30 Qwen-7B pilot records,
+10 of 11 Qwen-7B main records and all 60 Qwen-32B records recorded while the shared servers were
+down are of this kind; the pilot's Qwen-7B "0% in every arm" came from the 8 runs that did complete
+and is restated in the report from the full rerun.
+Reason: the pre-registered rerun rule (rerun infrastructure failures, never wrong answers). Two
+MLX servers had crashed under memory pressure.
+
+Decision: the Qwen-32B waiter's first readiness check (grep for the model name in /v1/models) was
+wrong: a server also lists models it has cached but not loaded. It started the 32B runs against a
+server that was not generating, and all 60 failed as infrastructure errors. The check is now one
+real generation call.
+Reason: found when the 32B run finished in minutes.
+
+Decision: the single GPT process was too slow (32 runs in about 20 minutes with four workers on a
+loaded machine), so it was stopped and restarted as two processes (replicates 1-2 and replicate 3,
+four workers each), with the $100 cap counted across every GPT file. No recorded run was lost
+(recorded keys are skipped).
+Reason: 540 runs must finish before morning. Run order within a replicate is unchanged.
+
+Decision: runner/local-until-done.sh, probe.ts and opus-when-available.sh were added after the
+pre-registration and are not in MANIFEST.sha256; they change no scoring (analysis/analyze.ts,
+runner/run.ts, the harness, the starters and the tasks are unchanged and still match it).
+Reason: the manifest pins what affects a result; these only decide when to call the runner.
+
+## 2026-11-23 — Amendment 1: Opus off, Qwen on the shared server, Qwen-32B exploratory
+Decision: the owner's decisions, recorded as Amendment 1 in PREREGISTRATION.md before any 32B call:
+Opus off (24 pilot runs kept; main run not run; win rule undecidable); Qwen-7B on CanonBench's
+server on port 8091; Qwen2.5-Coder-32B-Instruct-4bit exploratory on a seeded 20-task subset × 3 arms
+× 1 run (port 8092, waited for, never started by FS-1). GPT's reduction check: projected $22.99, no
+reduction.
+Reason: the Anthropic account has no credit; two MLX servers at once crashed one under memory
+pressure; 32B at 60 tasks would not finish by morning.
+
+Decision: Qwen-7B's interrupted pilot resumes from its 5 recorded runs (none was an error).
+Reason: the runner skips recorded keys; the server change does not change the model or its weights.
+
+## 2026-11-23 — FS-1 pilot, power analysis and pre-registration
+Decision: the pilot hit the ceiling for both frontier models (every arm 100% end-to-end pass), so
+the pre-registration keeps the plan's primary analysis unchanged and adds first-round pass (the
+hidden verdict right after the first edit round, recorded by the runner) as a secondary measure.
+Reason: the difficulty check asks for tasks that are neither trivial nor impossible everywhere, and
+there is no time overnight to author harder tasks. First-round pass varied in the pilot (Opus 50% to
+88%, GPT 70% to 90% by arm), so it can still separate the arms. It cannot change the win rule.
+
+Decision: margin 10 percentage points (the pre-set floor, because the pilot's paired differences have
+no variance at the ceiling); runs per task 3 for gpt-6.2-sol and 2 for claude-opus-5-5 (the largest
+R ≤ 3 whose projected cost stays within 90% of the $100 cap); Qwen 1 run per task if exploratory.
+Reason: the power analysis rule in analysis/power.ts, applied to the pilot.
+
+Decision: the baseline is openapi for both frontier models (both A and B scored 100% in the pilot;
+a tie goes to B).
+Reason: the plan calls B the arm that matters; the pre-registration fixed the tie rule before the
+pilot was read.
+
+Decision: GPT-6.2 Sol is priced at $2 / $10 per million input / output tokens, cached input $0.10,
+from the CanonBench run's lookup (research/canonbench/runner/models.ts, 2026-11-22), and runs at
+reasoning effort medium like CanonBench.
+Reason: FS-1 needs a price for the $100 cap, and FS-1 and CanonBench should describe the same model
+the same way.
+
+Decision: when the provider account is out of credit, the runner records nothing for that run and
+stops the model; the six Opus pilot runs that failed that way were removed from
+results/pilot-claude.jsonl. A probe calls Opus about every 15 minutes and resumes it under the same
+pre-registration if credit returns.
+Reason: these are infrastructure failures, never wrong answers, and the main thread asked for them
+to resume cleanly.
+
+Decision: the runner gained `--concurrency` (several runs at once per model, each in its own working
+copy) and `--cap` (stop launching runs at a model's recorded dollars across the pilot and main files).
+Reason: 540 GPT runs one at a time would take about six hours.
+
 ## 2026-11-23 — The runner
 Decision: one text protocol for every model (`<read/>`, `<write>`, `<run>check|test</run>`,
 `<done/>`), not native tool calling. An edit round is a reply that writes files; after it the
@@ -94,3 +191,7 @@ show it: the hand-written arms score 0.07 to 0.60, and Canon 1.0.
 ## 2026-11-23 — Separate Python environment
 Decision: research/fs1/.venv (requirements.txt: the root pins plus pytest 8.4.2).
 Reason: the root requirements-dev.txt has no pytest, and the brief limits edits to research/fs1.
+
+## 2026-11-23 — the task suite: 60 tasks (39 feature, 21 change), 10 adapted
+Decision: the suite has 39 feature tasks and 21 change tasks rather than the plan's 40 and 20, because the first six tasks were split three and three. Ten tasks carry an `adapted` tag: their spec was narrowed so that a Canon reference could exist. The analysis reports every result with and without them.
+Reason: rewriting a verified task only to restore an exact 40/20 split would add risk and no information. The adapted tasks document real expressiveness limits of Canon's portable validation subset: characters, list elements, values inside an Option, and long rules before the line-breaking fix.

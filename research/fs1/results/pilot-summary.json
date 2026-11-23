@@ -1,0 +1,2197 @@
+{
+  "label": "FS-1 pilot",
+  "models": {
+    "Qwen2.5-Coder-7B-Instruct-8bit|All tasks": {
+      "baseline": "openapi",
+      "primary": "non-inferior",
+      "prim": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 1
+      },
+      "changeDiff": {
+        "mean": null,
+        "lo": null,
+        "hi": null,
+        "n": 0
+      },
+      "mismatchDiff": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 1
+      },
+      "exploratory": true,
+      "metrics": {
+        "pass": {
+          "direct": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          }
+        },
+        "mismatch": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          }
+        },
+        "firstRound": {
+          "direct": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          }
+        },
+        "change": {
+          "direct": {
+            "mean": null,
+            "lo": null,
+            "hi": null,
+            "n": 0
+          },
+          "openapi": {
+            "mean": null,
+            "lo": null,
+            "hi": null,
+            "n": 0
+          },
+          "canon": {
+            "mean": null,
+            "lo": null,
+            "hi": null,
+            "n": 0
+          },
+          "diff": {
+            "mean": null,
+            "lo": null,
+            "hi": null,
+            "n": 0
+          }
+        },
+        "feature": {
+          "direct": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          }
+        },
+        "agreement": {
+          "direct": {
+            "mean": 0.493,
+            "lo": 0.493,
+            "hi": 0.493,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 0.493,
+            "lo": 0.493,
+            "hi": 0.493,
+            "n": 1
+          },
+          "canon": {
+            "mean": null,
+            "lo": null,
+            "hi": null,
+            "n": 0
+          },
+          "diff": {
+            "mean": null,
+            "lo": null,
+            "hi": null,
+            "n": 0
+          }
+        },
+        "falseAcceptance": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "canon": {
+            "mean": null,
+            "lo": null,
+            "hi": null,
+            "n": 0
+          },
+          "diff": {
+            "mean": null,
+            "lo": null,
+            "hi": null,
+            "n": 0
+          }
+        },
+        "checksOk": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "diff": {
+            "mean": -1,
+            "lo": -1,
+            "hi": -1,
+            "n": 1
+          }
+        },
+        "tokens": {
+          "direct": {
+            "mean": 36884,
+            "lo": 36884,
+            "hi": 36884,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 35022,
+            "lo": 35022,
+            "hi": 35022,
+            "n": 1
+          },
+          "canon": {
+            "mean": 47586,
+            "lo": 47586,
+            "hi": 47586,
+            "n": 1
+          },
+          "diff": {
+            "mean": 12564,
+            "lo": 12564,
+            "hi": 12564,
+            "n": 1
+          }
+        },
+        "outputTokens": {
+          "direct": {
+            "mean": 1689,
+            "lo": 1689,
+            "hi": 1689,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 1536,
+            "lo": 1536,
+            "hi": 1536,
+            "n": 1
+          },
+          "canon": {
+            "mean": 1658,
+            "lo": 1658,
+            "hi": 1658,
+            "n": 1
+          },
+          "diff": {
+            "mean": 122,
+            "lo": 122,
+            "hi": 122,
+            "n": 1
+          }
+        },
+        "rounds": {
+          "direct": {
+            "mean": 5,
+            "lo": 5,
+            "hi": 5,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 5,
+            "lo": 5,
+            "hi": 5,
+            "n": 1
+          },
+          "canon": {
+            "mean": 5,
+            "lo": 5,
+            "hi": 5,
+            "n": 1
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          }
+        },
+        "wall": {
+          "direct": {
+            "mean": 133.476,
+            "lo": 133.476,
+            "hi": 133.476,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 117.321,
+            "lo": 117.321,
+            "hi": 117.321,
+            "n": 1
+          },
+          "canon": {
+            "mean": 127.522,
+            "lo": 127.522,
+            "hi": 127.522,
+            "n": 1
+          },
+          "diff": {
+            "mean": 10.201000000000008,
+            "lo": 10.201000000000008,
+            "hi": 10.201000000000008,
+            "n": 1
+          }
+        },
+        "dollars": {
+          "direct": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          }
+        }
+      }
+    },
+    "claude-opus-5-5|All tasks": {
+      "baseline": "openapi",
+      "primary": "non-inferior",
+      "prim": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 8
+      },
+      "changeDiff": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 1
+      },
+      "mismatchDiff": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 8
+      },
+      "exploratory": false,
+      "metrics": {
+        "pass": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 8
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 8
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          }
+        },
+        "mismatch": {
+          "direct": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          }
+        },
+        "firstRound": {
+          "direct": {
+            "mean": 0.5,
+            "lo": 0.125,
+            "hi": 0.875,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 0.75,
+            "lo": 0.375,
+            "hi": 1,
+            "n": 8
+          },
+          "canon": {
+            "mean": 0.875,
+            "lo": 0.625,
+            "hi": 1,
+            "n": 8
+          },
+          "diff": {
+            "mean": 0.125,
+            "lo": -0.25,
+            "hi": 0.5,
+            "n": 8
+          }
+        },
+        "change": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          }
+        },
+        "feature": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 7
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 7
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 7
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 7
+          }
+        },
+        "agreement": {
+          "direct": {
+            "mean": 0.426,
+            "lo": 0.20866666666666664,
+            "hi": 0.617,
+            "n": 6
+          },
+          "openapi": {
+            "mean": 0.5926666666666667,
+            "lo": 0.3853333333333333,
+            "hi": 0.7883333333333332,
+            "n": 6
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 6
+          },
+          "diff": {
+            "mean": 0.4073333333333333,
+            "lo": 0.20633333333333334,
+            "hi": 0.6215,
+            "n": 6
+          }
+        },
+        "falseAcceptance": {
+          "direct": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          }
+        },
+        "checksOk": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 8
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 8
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          }
+        },
+        "tokens": {
+          "direct": {
+            "mean": 37114.375,
+            "lo": 28389.875,
+            "hi": 46473.625,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 29727.5,
+            "lo": 23685,
+            "hi": 37519.125,
+            "n": 8
+          },
+          "canon": {
+            "mean": 32824.25,
+            "lo": 26547.5,
+            "hi": 41150.25,
+            "n": 8
+          },
+          "diff": {
+            "mean": 3096.75,
+            "lo": -5154.25,
+            "hi": 13069.125,
+            "n": 8
+          }
+        },
+        "outputTokens": {
+          "direct": {
+            "mean": 4794.75,
+            "lo": 3393.375,
+            "hi": 6340,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 3657.25,
+            "lo": 2763,
+            "hi": 4682.625,
+            "n": 8
+          },
+          "canon": {
+            "mean": 3234.125,
+            "lo": 2685.25,
+            "hi": 3840.375,
+            "n": 8
+          },
+          "diff": {
+            "mean": -423.125,
+            "lo": -1510.25,
+            "hi": 544,
+            "n": 8
+          }
+        },
+        "rounds": {
+          "direct": {
+            "mean": 1.5,
+            "lo": 1.125,
+            "hi": 1.875,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 1.25,
+            "lo": 1,
+            "hi": 1.625,
+            "n": 8
+          },
+          "canon": {
+            "mean": 1.125,
+            "lo": 1,
+            "hi": 1.375,
+            "n": 8
+          },
+          "diff": {
+            "mean": -0.125,
+            "lo": -0.5,
+            "hi": 0.25,
+            "n": 8
+          }
+        },
+        "wall": {
+          "direct": {
+            "mean": 60.248749999999994,
+            "lo": 42.479124999999996,
+            "hi": 79.76062499999999,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 46.066874999999996,
+            "lo": 36.6455,
+            "hi": 58.25375,
+            "n": 8
+          },
+          "canon": {
+            "mean": 38.03925,
+            "lo": 32.661625,
+            "hi": 44.306999999999995,
+            "n": 8
+          },
+          "diff": {
+            "mean": -8.027625,
+            "lo": -20.44,
+            "hi": 3.0015000000000023,
+            "n": 8
+          }
+        },
+        "dollars": {
+          "direct": {
+            "mean": 0.22517350000000003,
+            "lo": 0.16822399999999998,
+            "hi": 0.2866255,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 0.177426,
+            "lo": 0.13893049999999998,
+            "hi": 0.22436450000000002,
+            "n": 8
+          },
+          "canon": {
+            "mean": 0.13231607499999998,
+            "lo": 0.108189425,
+            "hi": 0.16282975,
+            "n": 8
+          },
+          "diff": {
+            "mean": -0.045109924999999995,
+            "lo": -0.093158075,
+            "hi": -0.0014289500000000035,
+            "n": 8
+          }
+        }
+      }
+    },
+    "gpt-6.2-sol|All tasks": {
+      "baseline": "openapi",
+      "primary": "non-inferior",
+      "prim": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 10
+      },
+      "changeDiff": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 3
+      },
+      "mismatchDiff": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 10
+      },
+      "exploratory": false,
+      "metrics": {
+        "pass": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 10
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 10
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 10
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 10
+          }
+        },
+        "mismatch": {
+          "direct": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 10
+          },
+          "openapi": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 10
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 10
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 10
+          }
+        },
+        "firstRound": {
+          "direct": {
+            "mean": 0.9,
+            "lo": 0.7,
+            "hi": 1,
+            "n": 10
+          },
+          "openapi": {
+            "mean": 0.9,
+            "lo": 0.7,
+            "hi": 1,
+            "n": 10
+          },
+          "canon": {
+            "mean": 0.7,
+            "lo": 0.4,
+            "hi": 1,
+            "n": 10
+          },
+          "diff": {
+            "mean": -0.2,
+            "lo": -0.5,
+            "hi": 0,
+            "n": 10
+          }
+        },
+        "change": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 3
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 3
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 3
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 3
+          }
+        },
+        "feature": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 7
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 7
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 7
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 7
+          }
+        },
+        "agreement": {
+          "direct": {
+            "mean": 0.3708571428571429,
+            "lo": 0.16285714285714284,
+            "hi": 0.5681428571428571,
+            "n": 7
+          },
+          "openapi": {
+            "mean": 0.3708571428571429,
+            "lo": 0.16285714285714284,
+            "hi": 0.5681428571428571,
+            "n": 7
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 7
+          },
+          "diff": {
+            "mean": 0.6291428571428571,
+            "lo": 0.4281428571428572,
+            "hi": 0.8324285714285714,
+            "n": 7
+          }
+        },
+        "falseAcceptance": {
+          "direct": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 10
+          },
+          "openapi": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 10
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 10
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 10
+          }
+        },
+        "checksOk": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 10
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 10
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 10
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 10
+          }
+        },
+        "tokens": {
+          "direct": {
+            "mean": 16422.6,
+            "lo": 14685.8,
+            "hi": 18961.3,
+            "n": 10
+          },
+          "openapi": {
+            "mean": 17330.8,
+            "lo": 14001.3,
+            "hi": 23209.4,
+            "n": 10
+          },
+          "canon": {
+            "mean": 60159.5,
+            "lo": 43805.7,
+            "hi": 77949.9,
+            "n": 10
+          },
+          "diff": {
+            "mean": 42828.7,
+            "lo": 27614.1,
+            "hi": 59726,
+            "n": 10
+          }
+        },
+        "outputTokens": {
+          "direct": {
+            "mean": 1870.1,
+            "lo": 1449.9,
+            "hi": 2278,
+            "n": 10
+          },
+          "openapi": {
+            "mean": 1810.2,
+            "lo": 1358.5,
+            "hi": 2332.2,
+            "n": 10
+          },
+          "canon": {
+            "mean": 2055.9,
+            "lo": 1405.9,
+            "hi": 2755.1,
+            "n": 10
+          },
+          "diff": {
+            "mean": 245.7,
+            "lo": -370.1,
+            "hi": 829.8,
+            "n": 10
+          }
+        },
+        "rounds": {
+          "direct": {
+            "mean": 1.1,
+            "lo": 1,
+            "hi": 1.3,
+            "n": 10
+          },
+          "openapi": {
+            "mean": 1.2,
+            "lo": 1,
+            "hi": 1.6,
+            "n": 10
+          },
+          "canon": {
+            "mean": 1.4,
+            "lo": 1,
+            "hi": 1.8,
+            "n": 10
+          },
+          "diff": {
+            "mean": 0.2,
+            "lo": -0.2,
+            "hi": 0.7,
+            "n": 10
+          }
+        },
+        "wall": {
+          "direct": {
+            "mean": 37.522400000000005,
+            "lo": 32.0635,
+            "hi": 42.81400000000001,
+            "n": 10
+          },
+          "openapi": {
+            "mean": 37.4397,
+            "lo": 30.058699999999998,
+            "hi": 46.11279999999999,
+            "n": 10
+          },
+          "canon": {
+            "mean": 47.298500000000004,
+            "lo": 34.6143,
+            "hi": 61.87819999999999,
+            "n": 10
+          },
+          "diff": {
+            "mean": 9.858800000000002,
+            "lo": -1.6244999999999976,
+            "hi": 22.845299999999998,
+            "n": 10
+          }
+        },
+        "dollars": {
+          "direct": {
+            "mean": 0.03494775000000001,
+            "lo": 0.029778629999999993,
+            "hi": 0.03999972,
+            "n": 10
+          },
+          "openapi": {
+            "mean": 0.033860360000000006,
+            "lo": 0.02819577,
+            "hi": 0.04062259,
+            "n": 10
+          },
+          "canon": {
+            "mean": 0.046556099999999996,
+            "lo": 0.03584608000000001,
+            "hi": 0.058186270000000005,
+            "n": 10
+          },
+          "diff": {
+            "mean": 0.012695739999999997,
+            "lo": 0.0030237199999999997,
+            "hi": 0.022327889999999996,
+            "n": 10
+          }
+        }
+      }
+    },
+    "Qwen2.5-Coder-7B-Instruct-8bit|Without adapted tasks": {
+      "baseline": "openapi",
+      "primary": "non-inferior",
+      "prim": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 1
+      },
+      "changeDiff": {
+        "mean": null,
+        "lo": null,
+        "hi": null,
+        "n": 0
+      },
+      "mismatchDiff": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 1
+      },
+      "exploratory": true,
+      "metrics": {
+        "pass": {
+          "direct": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          }
+        },
+        "mismatch": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          }
+        },
+        "firstRound": {
+          "direct": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          }
+        },
+        "change": {
+          "direct": {
+            "mean": null,
+            "lo": null,
+            "hi": null,
+            "n": 0
+          },
+          "openapi": {
+            "mean": null,
+            "lo": null,
+            "hi": null,
+            "n": 0
+          },
+          "canon": {
+            "mean": null,
+            "lo": null,
+            "hi": null,
+            "n": 0
+          },
+          "diff": {
+            "mean": null,
+            "lo": null,
+            "hi": null,
+            "n": 0
+          }
+        },
+        "feature": {
+          "direct": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          }
+        },
+        "agreement": {
+          "direct": {
+            "mean": 0.493,
+            "lo": 0.493,
+            "hi": 0.493,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 0.493,
+            "lo": 0.493,
+            "hi": 0.493,
+            "n": 1
+          },
+          "canon": {
+            "mean": null,
+            "lo": null,
+            "hi": null,
+            "n": 0
+          },
+          "diff": {
+            "mean": null,
+            "lo": null,
+            "hi": null,
+            "n": 0
+          }
+        },
+        "falseAcceptance": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "canon": {
+            "mean": null,
+            "lo": null,
+            "hi": null,
+            "n": 0
+          },
+          "diff": {
+            "mean": null,
+            "lo": null,
+            "hi": null,
+            "n": 0
+          }
+        },
+        "checksOk": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "diff": {
+            "mean": -1,
+            "lo": -1,
+            "hi": -1,
+            "n": 1
+          }
+        },
+        "tokens": {
+          "direct": {
+            "mean": 36884,
+            "lo": 36884,
+            "hi": 36884,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 35022,
+            "lo": 35022,
+            "hi": 35022,
+            "n": 1
+          },
+          "canon": {
+            "mean": 47586,
+            "lo": 47586,
+            "hi": 47586,
+            "n": 1
+          },
+          "diff": {
+            "mean": 12564,
+            "lo": 12564,
+            "hi": 12564,
+            "n": 1
+          }
+        },
+        "outputTokens": {
+          "direct": {
+            "mean": 1689,
+            "lo": 1689,
+            "hi": 1689,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 1536,
+            "lo": 1536,
+            "hi": 1536,
+            "n": 1
+          },
+          "canon": {
+            "mean": 1658,
+            "lo": 1658,
+            "hi": 1658,
+            "n": 1
+          },
+          "diff": {
+            "mean": 122,
+            "lo": 122,
+            "hi": 122,
+            "n": 1
+          }
+        },
+        "rounds": {
+          "direct": {
+            "mean": 5,
+            "lo": 5,
+            "hi": 5,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 5,
+            "lo": 5,
+            "hi": 5,
+            "n": 1
+          },
+          "canon": {
+            "mean": 5,
+            "lo": 5,
+            "hi": 5,
+            "n": 1
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          }
+        },
+        "wall": {
+          "direct": {
+            "mean": 133.476,
+            "lo": 133.476,
+            "hi": 133.476,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 117.321,
+            "lo": 117.321,
+            "hi": 117.321,
+            "n": 1
+          },
+          "canon": {
+            "mean": 127.522,
+            "lo": 127.522,
+            "hi": 127.522,
+            "n": 1
+          },
+          "diff": {
+            "mean": 10.201000000000008,
+            "lo": 10.201000000000008,
+            "hi": 10.201000000000008,
+            "n": 1
+          }
+        },
+        "dollars": {
+          "direct": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          }
+        }
+      }
+    },
+    "claude-opus-5-5|Without adapted tasks": {
+      "baseline": "openapi",
+      "primary": "non-inferior",
+      "prim": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 7
+      },
+      "changeDiff": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 1
+      },
+      "mismatchDiff": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 7
+      },
+      "exploratory": false,
+      "metrics": {
+        "pass": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 7
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 7
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 7
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 7
+          }
+        },
+        "mismatch": {
+          "direct": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 7
+          },
+          "openapi": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 7
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 7
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 7
+          }
+        },
+        "firstRound": {
+          "direct": {
+            "mean": 0.5714285714285714,
+            "lo": 0.14285714285714285,
+            "hi": 0.8571428571428571,
+            "n": 7
+          },
+          "openapi": {
+            "mean": 0.7142857142857143,
+            "lo": 0.42857142857142855,
+            "hi": 1,
+            "n": 7
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 7
+          },
+          "diff": {
+            "mean": 0.2857142857142857,
+            "lo": 0,
+            "hi": 0.5714285714285714,
+            "n": 7
+          }
+        },
+        "change": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 1
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 1
+          }
+        },
+        "feature": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 6
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 6
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 6
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 6
+          }
+        },
+        "agreement": {
+          "direct": {
+            "mean": 0.4796,
+            "lo": 0.23220000000000002,
+            "hi": 0.6581999999999999,
+            "n": 5
+          },
+          "openapi": {
+            "mean": 0.6796,
+            "lo": 0.5414,
+            "hi": 0.8474,
+            "n": 5
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 5
+          },
+          "diff": {
+            "mean": 0.32039999999999996,
+            "lo": 0.1526,
+            "hi": 0.4586,
+            "n": 5
+          }
+        },
+        "falseAcceptance": {
+          "direct": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 7
+          },
+          "openapi": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 7
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 7
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 7
+          }
+        },
+        "checksOk": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 7
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 7
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 7
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 7
+          }
+        },
+        "tokens": {
+          "direct": {
+            "mean": 34280.42857142857,
+            "lo": 26299.285714285714,
+            "hi": 43536.142857142855,
+            "n": 7
+          },
+          "openapi": {
+            "mean": 30178.285714285714,
+            "lo": 23381.14285714286,
+            "hi": 39388.142857142855,
+            "n": 7
+          },
+          "canon": {
+            "mean": 28986.285714285714,
+            "lo": 26366.285714285714,
+            "hi": 33610.57142857143,
+            "n": 7
+          },
+          "diff": {
+            "mean": -1192,
+            "lo": -7073.571428571428,
+            "hi": 3499.285714285714,
+            "n": 7
+          }
+        },
+        "outputTokens": {
+          "direct": {
+            "mean": 4391.571428571428,
+            "lo": 3032.5714285714284,
+            "hi": 6013.714285714285,
+            "n": 7
+          },
+          "openapi": {
+            "mean": 3586.285714285714,
+            "lo": 2614.4285714285716,
+            "hi": 4788.142857142857,
+            "n": 7
+          },
+          "canon": {
+            "mean": 2999.1428571428573,
+            "lo": 2567.8571428571427,
+            "hi": 3460.5714285714284,
+            "n": 7
+          },
+          "diff": {
+            "mean": -587.1428571428571,
+            "lo": -1739.2857142857142,
+            "hi": 493.7142857142857,
+            "n": 7
+          }
+        },
+        "rounds": {
+          "direct": {
+            "mean": 1.4285714285714286,
+            "lo": 1.1428571428571428,
+            "hi": 1.8571428571428572,
+            "n": 7
+          },
+          "openapi": {
+            "mean": 1.2857142857142858,
+            "lo": 1,
+            "hi": 1.5714285714285714,
+            "n": 7
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 7
+          },
+          "diff": {
+            "mean": -0.2857142857142857,
+            "lo": -0.5714285714285714,
+            "hi": 0,
+            "n": 7
+          }
+        },
+        "wall": {
+          "direct": {
+            "mean": 54.12142857142857,
+            "lo": 37.636,
+            "hi": 72.92528571428572,
+            "n": 7
+          },
+          "openapi": {
+            "mean": 46.53971428571429,
+            "lo": 35.79871428571428,
+            "hi": 60.477,
+            "n": 7
+          },
+          "canon": {
+            "mean": 35.496,
+            "lo": 31.702571428571428,
+            "hi": 39.687714285714286,
+            "n": 7
+          },
+          "diff": {
+            "mean": -11.043714285714284,
+            "lo": -23.449571428571428,
+            "hi": -0.16257142857142526,
+            "n": 7
+          }
+        },
+        "dollars": {
+          "direct": {
+            "mean": 0.20738685714285715,
+            "lo": 0.15376514285714288,
+            "hi": 0.2696,
+            "n": 7
+          },
+          "openapi": {
+            "mean": 0.17809371428571427,
+            "lo": 0.13535199999999997,
+            "hi": 0.23416285714285712,
+            "n": 7
+          },
+          "canon": {
+            "mean": 0.11903197142857143,
+            "lo": 0.1043026857142857,
+            "hi": 0.1361894857142857,
+            "n": 7
+          },
+          "diff": {
+            "mean": -0.05906174285714285,
+            "lo": -0.10622182857142858,
+            "hi": -0.01826897142857143,
+            "n": 7
+          }
+        }
+      }
+    },
+    "gpt-6.2-sol|Without adapted tasks": {
+      "baseline": "openapi",
+      "primary": "non-inferior",
+      "prim": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 8
+      },
+      "changeDiff": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 2
+      },
+      "mismatchDiff": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 8
+      },
+      "exploratory": false,
+      "metrics": {
+        "pass": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 8
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 8
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          }
+        },
+        "mismatch": {
+          "direct": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          }
+        },
+        "firstRound": {
+          "direct": {
+            "mean": 0.875,
+            "lo": 0.625,
+            "hi": 1,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 0.875,
+            "lo": 0.625,
+            "hi": 1,
+            "n": 8
+          },
+          "canon": {
+            "mean": 0.625,
+            "lo": 0.25,
+            "hi": 0.875,
+            "n": 8
+          },
+          "diff": {
+            "mean": -0.25,
+            "lo": -0.5,
+            "hi": 0,
+            "n": 8
+          }
+        },
+        "change": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 2
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 2
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 2
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 2
+          }
+        },
+        "feature": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 6
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 6
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 6
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 6
+          }
+        },
+        "agreement": {
+          "direct": {
+            "mean": 0.4796,
+            "lo": 0.23220000000000002,
+            "hi": 0.6581999999999999,
+            "n": 5
+          },
+          "openapi": {
+            "mean": 0.4796,
+            "lo": 0.23220000000000002,
+            "hi": 0.6581999999999999,
+            "n": 5
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 5
+          },
+          "diff": {
+            "mean": 0.5204,
+            "lo": 0.3418,
+            "hi": 0.7678,
+            "n": 5
+          }
+        },
+        "falseAcceptance": {
+          "direct": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          },
+          "canon": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          }
+        },
+        "checksOk": {
+          "direct": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 8
+          },
+          "canon": {
+            "mean": 1,
+            "lo": 1,
+            "hi": 1,
+            "n": 8
+          },
+          "diff": {
+            "mean": 0,
+            "lo": 0,
+            "hi": 0,
+            "n": 8
+          }
+        },
+        "tokens": {
+          "direct": {
+            "mean": 16794.25,
+            "lo": 14813.875,
+            "hi": 19848.875,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 18140.5,
+            "lo": 14130.625,
+            "hi": 25382.125,
+            "n": 8
+          },
+          "canon": {
+            "mean": 64590.625,
+            "lo": 44584.875,
+            "hi": 85048.875,
+            "n": 8
+          },
+          "diff": {
+            "mean": 46450.125,
+            "lo": 27241.375,
+            "hi": 66426.25,
+            "n": 8
+          }
+        },
+        "outputTokens": {
+          "direct": {
+            "mean": 1949.875,
+            "lo": 1559.5,
+            "hi": 2344.5,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 1924.625,
+            "lo": 1451.75,
+            "hi": 2518.875,
+            "n": 8
+          },
+          "canon": {
+            "mean": 2302.875,
+            "lo": 1557.5,
+            "hi": 3056.75,
+            "n": 8
+          },
+          "diff": {
+            "mean": 378.25,
+            "lo": -367.125,
+            "hi": 1022.375,
+            "n": 8
+          }
+        },
+        "rounds": {
+          "direct": {
+            "mean": 1.125,
+            "lo": 1,
+            "hi": 1.375,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 1.25,
+            "lo": 1,
+            "hi": 1.75,
+            "n": 8
+          },
+          "canon": {
+            "mean": 1.5,
+            "lo": 1.125,
+            "hi": 2,
+            "n": 8
+          },
+          "diff": {
+            "mean": 0.25,
+            "lo": -0.25,
+            "hi": 0.875,
+            "n": 8
+          }
+        },
+        "wall": {
+          "direct": {
+            "mean": 38.335750000000004,
+            "lo": 33.473000000000006,
+            "hi": 43.53662500000001,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 39.128,
+            "lo": 31.868624999999998,
+            "hi": 49.114875,
+            "n": 8
+          },
+          "canon": {
+            "mean": 51.2815,
+            "lo": 36.2445,
+            "hi": 67.719875,
+            "n": 8
+          },
+          "diff": {
+            "mean": 12.153500000000001,
+            "lo": -1.7178749999999994,
+            "hi": 27.103750000000005,
+            "n": 8
+          }
+        },
+        "dollars": {
+          "direct": {
+            "mean": 0.035912675,
+            "lo": 0.0310141875,
+            "hi": 0.0409983875,
+            "n": 8
+          },
+          "openapi": {
+            "mean": 0.0352627125,
+            "lo": 0.0292072875,
+            "hi": 0.0430887625,
+            "n": 8
+          },
+          "canon": {
+            "mean": 0.050651999999999996,
+            "lo": 0.038366624999999994,
+            "hi": 0.06331011249999999,
+            "n": 8
+          },
+          "diff": {
+            "mean": 0.015389287499999998,
+            "lo": 0.0037049624999999993,
+            "hi": 0.0259112625,
+            "n": 8
+          }
+        }
+      }
+    }
+  },
+  "winRule|All tasks": {
+    "perModel": {
+      "claude-opus-5-5": false,
+      "gpt-6.2-sol": false
+    },
+    "supported": false
+  },
+  "winRule|Without adapted tasks": {
+    "perModel": {
+      "claude-opus-5-5": false,
+      "gpt-6.2-sol": false
+    },
+    "supported": false
+  }
+}

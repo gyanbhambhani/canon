@@ -1,0 +1,14 @@
+{
+  "id": "set-page-size",
+  "set": 1,
+  "title": "Set the page size",
+  "adapted": null,
+  "route": {"method": "POST", "path": "/settings/paging"},
+  "feature": {"module": "setPageSize", "fn": "setPageSize"},
+  "base": {"size": "=int(10, 100)", "sort": "=pick(['asc', 'desc'])"},
+  "random": {"size": "=int(-10, 120)", "sort": "=pick(['asc', 'desc', 'ASC', 'up', ''])"},
+  "rules": [
+    {"id": "size_range", "kind": "single", "desc": "size is 10 to 100", "inside": [{"set": {"size": 10}}, {"set": {"size": 100}}], "outside": [{"set": {"size": 9}}, {"set": {"size": 101}}, {"set": {"size": 0}}, {"set": {"size": -10}}]},
+    {"id": "sort_enum", "kind": "single", "desc": "sort is asc or desc", "inside": [{"set": {"sort": "asc"}}, {"set": {"sort": "desc"}}], "outside": [{"set": {"sort": "ASC"}}, {"set": {"sort": "up"}}, {"set": {"sort": "asc "}}, {"set": {"sort": ""}}]}
+  ]
+}

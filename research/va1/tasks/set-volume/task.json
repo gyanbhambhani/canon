@@ -1,0 +1,61 @@
+{
+  "id": "set-volume",
+  "set": 1,
+  "title": "Set the volume",
+  "adapted": null,
+  "route": {
+    "method": "POST",
+    "path": "/volume"
+  },
+  "feature": {
+    "module": "setVolume",
+    "fn": "setVolume"
+  },
+  "base": {
+    "level": "=int(0, 100)"
+  },
+  "random": {
+    "level": "=int(-30, 130)"
+  },
+  "rules": [
+    {
+      "id": "level_range",
+      "kind": "single",
+      "desc": "level is 0 to 100",
+      "inside": [
+        {
+          "set": {
+            "level": 0
+          }
+        },
+        {
+          "set": {
+            "level": 100
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "level": -1
+          }
+        },
+        {
+          "set": {
+            "level": 101
+          }
+        },
+        {
+          "set": {
+            "level": -100
+          }
+        },
+        {
+          "set": {
+            "level": 1000
+          }
+        }
+      ]
+    }
+  ]
+}

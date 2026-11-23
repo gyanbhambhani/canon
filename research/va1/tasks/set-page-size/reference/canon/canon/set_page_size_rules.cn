@@ -1,0 +1,11 @@
+type PageSettings {
+  size: Int,
+  sort: String,
+}
+
+api fn set_page_size(r: PageSettings) -> PageSettings
+  route: POST "/settings/paging"
+  requires: r.size >= 10 && r.size <= 100 && contains(["asc", "desc"], r.sort)
+{
+  return r
+}

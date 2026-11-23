@@ -1,0 +1,7 @@
+{
+  "id": "min-price-validation",
+  "kind": "change",
+  "title": "A product's cents must be at least 1",
+  "features": [{ "module": "frontend/src/features/addProduct.ts", "signature": "addProduct(baseUrl: string, product: Product): Promise<Outcome<Product>>" }],
+  "supersedes": []
+}

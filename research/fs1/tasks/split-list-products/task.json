@@ -1,0 +1,22 @@
+{
+  "id": "split-list-products",
+  "kind": "change",
+  "title": "Split the product list into all products and products with a tag",
+  "features": [
+    { "module": "frontend/src/features/listProducts.ts", "signature": "listProducts(baseUrl: string, page: number, perPage: number): Promise<Outcome<Product[]>>" },
+    { "module": "frontend/src/features/listTaggedProducts.ts", "signature": "listTaggedProducts(baseUrl: string, tag: string, page: number, perPage: number): Promise<Outcome<Product[]>>" }
+  ],
+  "supersedes": ["test_list_products_pages_and_tags", "listProducts-probe"],
+  "validation": [
+    {
+      "feature": "listProducts",
+      "args": [{ "name": "page", "gen": "small" }, { "name": "perPage", "gen": "int" }],
+      "request": { "method": "GET", "path": "/products", "query": { "page": "$page", "per_page": "$perPage" } }
+    },
+    {
+      "feature": "listTaggedProducts",
+      "args": [{ "name": "tag", "gen": "string" }, { "name": "page", "gen": "small" }, { "name": "perPage", "gen": "int" }],
+      "request": { "method": "GET", "path": "/tags/$tag/products", "query": { "page": "$page", "per_page": "$perPage" } }
+    }
+  ]
+}

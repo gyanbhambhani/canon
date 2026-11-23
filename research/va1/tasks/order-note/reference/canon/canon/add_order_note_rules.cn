@@ -1,0 +1,11 @@
+type OrderNote {
+  note: String,
+  priority: Int,
+}
+
+api fn add_order_note(r: OrderNote) -> OrderNote
+  route: POST "/order-notes"
+  requires: str_len(r.note) <= 200 && r.priority >= 0 && r.priority <= 9
+{
+  return r
+}

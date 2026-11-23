@@ -1,0 +1,16 @@
+{
+  "id": "average-rating",
+  "kind": "feature",
+  "title": "Star ratings and a product's average rating",
+  "features": [
+    { "module": "frontend/src/features/rateProduct.ts", "signature": "rateProduct(baseUrl: string, sku: string, stars: number): Promise<Outcome<RatingSummary>>" },
+    { "module": "frontend/src/features/productRating.ts", "signature": "productRating(baseUrl: string, sku: string): Promise<Outcome<RatingSummary>>" }
+  ],
+  "validation": [
+    {
+      "feature": "rateProduct",
+      "args": [{ "name": "sku", "gen": "sku" }, { "name": "stars", "gen": "small" }],
+      "request": { "method": "POST", "path": "/products/$sku/ratings", "body": { "stars": "$stars" } }
+    }
+  ]
+}

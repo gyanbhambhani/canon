@@ -1,0 +1,18 @@
+{
+  "id": "product-review",
+  "set": 1,
+  "title": "Post a product review",
+  "adapted": null,
+  "route": { "method": "POST", "path": "/reviews" },
+  "feature": { "module": "postReview", "fn": "postReview" },
+  "base": { "rating": "=int(1, 5)", "title": "=alnum(int(3, 80))" },
+  "random": { "rating": "=int(-2, 8)", "title": "=pick(['', 'ab', 'Great', rep('a', int(70, 95))])" },
+  "rules": [
+    { "id": "rating_range", "kind": "single", "desc": "rating is 1 to 5",
+      "inside": [{ "set": { "rating": 1 } }, { "set": { "rating": 5 } }],
+      "outside": [{ "set": { "rating": 0 } }, { "set": { "rating": 6 } }, { "set": { "rating": -1 } }, { "set": { "rating": 50 } }] },
+    { "id": "title_length", "kind": "single", "desc": "title has 3 to 80 characters",
+      "inside": [{ "set": { "title": "=rep('a', 3)" } }, { "set": { "title": "=rep('a', 80)" } }, { "set": { "title": "=emoji(3)" } }, { "set": { "title": "=emoji(80)" } }],
+      "outside": [{ "set": { "title": "=rep('a', 2)" } }, { "set": { "title": "=rep('a', 81)" } }, { "set": { "title": "" } }, { "set": { "title": "=emoji(2)" } }, { "set": { "title": "=emoji(81)" } }] }
+  ]
+}

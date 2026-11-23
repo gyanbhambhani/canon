@@ -1,0 +1,11 @@
+type Tip {
+  amount: Float,
+  percent: Int,
+}
+
+api fn add_tip(r: Tip) -> Tip
+  route: POST "/tips"
+  requires: r.amount >= 0.01 && r.amount <= 10000.0 && r.percent >= 0 && r.percent <= 100
+{
+  return r
+}

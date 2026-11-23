@@ -1,0 +1,15 @@
+{
+  "id": "book-table",
+  "set": 1,
+  "title": "Book a table",
+  "adapted": null,
+  "route": {"method": "POST", "path": "/tables/book"},
+  "feature": {"module": "bookTable", "fn": "bookTable"},
+  "base": {"party_size": "=int(1, 12)", "name": "=alnum(int(1, 40))"},
+  "random": {"party_size": "=int(-2, 16)", "name": "=pick(['', ' ', 'Ada', rep('a', int(35, 45))])"},
+  "rules": [
+    {"id": "party_size_range", "kind": "single", "desc": "party_size is 1 to 12", "inside": [{"set": {"party_size": 1}}, {"set": {"party_size": 12}}], "outside": [{"set": {"party_size": 0}}, {"set": {"party_size": 13}}, {"set": {"party_size": -1}}]},
+    {"id": "name_not_blank", "kind": "single", "desc": "name is not blank", "inside": [{"set": {"name": " a "}}, {"set": {"name": "a"}}], "outside": [{"set": {"name": ""}}, {"set": {"name": " "}}, {"set": {"name": "\t \r\n"}}]},
+    {"id": "name_length", "kind": "single", "desc": "name has at most 40 characters", "inside": [{"set": {"name": "=rep('a', 40)"}}, {"set": {"name": "=emoji(40)"}}], "outside": [{"set": {"name": "=rep('a', 41)"}}, {"set": {"name": "=emoji(41)"}}]}
+  ]
+}

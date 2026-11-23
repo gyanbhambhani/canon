@@ -1,0 +1,18 @@
+{
+  "id": "create-poll",
+  "set": 1,
+  "title": "Create a poll",
+  "adapted": null,
+  "route": { "method": "POST", "path": "/polls" },
+  "feature": { "module": "createPoll", "fn": "createPoll" },
+  "base": { "question": "=alnum(int(5, 120))", "options": "=Array.from({ length: int(2, 6) }, () => alnum(int(1, 8)))" },
+  "random": { "question": "=pick(['', 'Why?', 'Best color?', rep('q', int(100, 140))])", "options": "=Array.from({ length: int(0, 9) }, () => alnum(int(0, 5)))" },
+  "rules": [
+    { "id": "question_length", "kind": "single", "desc": "question has 5 to 120 characters",
+      "inside": [{ "set": { "question": "=rep('q', 5)" } }, { "set": { "question": "=rep('q', 120)" } }, { "set": { "question": "=emoji(5)" } }, { "set": { "question": "=emoji(120)" } }],
+      "outside": [{ "set": { "question": "=rep('q', 4)" } }, { "set": { "question": "=rep('q', 121)" } }, { "set": { "question": "" } }, { "set": { "question": "=emoji(4)" } }, { "set": { "question": "=emoji(121)" } }] },
+    { "id": "options_count", "kind": "single", "desc": "options has 2 to 6 entries",
+      "inside": [{ "set": { "options": ["a", "b"] } }, { "set": { "options": ["a", "b", "c", "d", "e", "f"] } }],
+      "outside": [{ "set": { "options": [] } }, { "set": { "options": ["a"] } }, { "set": { "options": ["a", "b", "c", "d", "e", "f", "g"] } }, { "set": { "options": ["a", "b", "c", "d", "e", "f", "g", "h", "i"] } }] }
+  ]
+}

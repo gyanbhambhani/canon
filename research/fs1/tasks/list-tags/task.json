@@ -1,0 +1,6 @@
+{
+  "id": "list-tags",
+  "kind": "feature",
+  "title": "List the distinct tags of the catalog, sorted",
+  "features": [{ "module": "frontend/src/features/listTags.ts", "signature": "listTags(baseUrl: string): Promise<Outcome<string[]>>" }]
+}

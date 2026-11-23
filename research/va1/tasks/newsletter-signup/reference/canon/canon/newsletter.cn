@@ -1,0 +1,11 @@
+type Subscription {
+  email: String,
+  name: String,
+}
+
+api fn subscribe_newsletter(sub: Subscription) -> Subscription
+  route: POST "/newsletter"
+  requires: is_email(sub.email) && str_len(trim(sub.name)) > 0 && str_len(sub.name) <= 50
+{
+  return sub
+}

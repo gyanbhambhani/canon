@@ -1,0 +1,6 @@
+{
+  "id": "discontinue-product",
+  "kind": "feature",
+  "title": "Discontinue a product: a flag that hides it from the product list",
+  "features": [{ "module": "frontend/src/features/discontinueProduct.ts", "signature": "discontinueProduct(baseUrl: string, sku: string): Promise<Outcome<Product>>" }]
+}

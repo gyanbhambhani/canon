@@ -1,0 +1,18 @@
+type LoanApplication {
+  principal: Int,
+  months: Int,
+  monthly_payment: Int,
+}
+
+api fn apply_for_loan(r: LoanApplication) -> LoanApplication
+  route: POST "/loans"
+  requires: r.principal >= 1000
+    && r.principal <= 1000000
+    && r.months >= 6
+    && r.months <= 360
+    && r.monthly_payment >= 1
+    && r.monthly_payment <= 1000000
+    && r.monthly_payment * r.months >= r.principal
+{
+  return r
+}

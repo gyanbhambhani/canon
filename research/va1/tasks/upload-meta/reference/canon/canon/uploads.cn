@@ -1,0 +1,16 @@
+type UploadMeta {
+  filename: String,
+  size_kb: Int,
+  kind: String,
+}
+
+api fn register_upload(r: UploadMeta) -> UploadMeta
+  route: POST "/uploads"
+  requires: str_len(r.filename) >= 1
+    && str_len(r.filename) <= 100
+    && r.size_kb >= 1
+    && r.size_kb <= 10240
+    && contains(["png", "jpg", "pdf"], r.kind)
+{
+  return r
+}

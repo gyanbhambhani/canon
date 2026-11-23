@@ -1,0 +1,5 @@
+{
+  "baseline": { "gpt-6.2-sol": "openapi", "Qwen2.5-Coder-7B-Instruct-8bit": "openapi", "claude-opus-5-5": "openapi" },
+  "margin": 0.1,
+  "frontier": ["gpt-6.2-sol"]
+}

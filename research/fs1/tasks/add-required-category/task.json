@@ -1,0 +1,33 @@
+{
+  "id": "add-required-category",
+  "kind": "change",
+  "title": "Add a required, non-blank category to products",
+  "features": [
+    {
+      "module": "frontend/src/features/addProduct.ts",
+      "signature": "addProduct(baseUrl: string, product: Product): Promise<Outcome<Product>>, where Product now has category: string"
+    },
+    {
+      "module": "frontend/src/features/listProducts.ts",
+      "signature": "listProducts(baseUrl: string, tag: string | null, page: number, perPage: number): Promise<Outcome<Product[]>>"
+    }
+  ],
+  "supersedes": [
+    "test_add_and_get_product",
+    "test_duplicate_product_is_invalid",
+    "test_product_validation",
+    "test_list_products_pages_and_tags",
+    "test_restock",
+    "test_prices_average_and_delete",
+    "test_orders",
+    "test_reports",
+    "addProduct-probe",
+    "addProduct-errors",
+    "listProducts-probe",
+    "order-and-pay-probe"
+  ],
+  "adapted": {
+    "for": "canon",
+    "reason": "the rule is \"not blank\", not \"one of food, drink, tool\": the enum rule was L001 with no fix when the task was written"
+  }
+}

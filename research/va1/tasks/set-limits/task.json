@@ -1,0 +1,18 @@
+{
+  "id": "set-limits",
+  "set": 1,
+  "title": "Set spending limits",
+  "adapted": null,
+  "route": { "method": "POST", "path": "/limits" },
+  "feature": { "module": "setLimits", "fn": "setLimits" },
+  "base": { "daily": "=int(1, 1000)", "monthly": "=int(1, 31000)" },
+  "random": { "daily": "=int(-10, 1200)", "monthly": "=int(-10, 33000)" },
+  "rules": [
+    { "id": "daily_range", "kind": "single", "desc": "daily is 1 to 1000",
+      "inside": [{ "set": { "daily": 1 } }, { "set": { "daily": 1000 } }, { "set": { "daily": 2 } }, { "set": { "daily": 999 } }],
+      "outside": [{ "set": { "daily": 0 } }, { "set": { "daily": 1001 } }, { "set": { "daily": -1 } }, { "set": { "daily": 31000 } }] },
+    { "id": "monthly_range", "kind": "single", "desc": "monthly is 1 to 31000",
+      "inside": [{ "set": { "monthly": 1 } }, { "set": { "monthly": 31000 } }, { "set": { "monthly": 2 } }, { "set": { "monthly": 30999 } }],
+      "outside": [{ "set": { "monthly": 0 } }, { "set": { "monthly": 31001 } }, { "set": { "monthly": -1 } }, { "set": { "monthly": 100000 } }] }
+  ]
+}

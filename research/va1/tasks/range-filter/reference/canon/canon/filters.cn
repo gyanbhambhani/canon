@@ -1,0 +1,15 @@
+type PriceFilter {
+  min_price: Int,
+  max_price: Int,
+  category: String,
+}
+
+api fn filter_by_price(f: PriceFilter) -> PriceFilter
+  route: POST "/filters/price"
+  requires: f.min_price >= 0
+    && f.max_price >= 0
+    && f.min_price <= f.max_price
+    && contains(["food", "drink", "tool"], f.category)
+{
+  return f
+}

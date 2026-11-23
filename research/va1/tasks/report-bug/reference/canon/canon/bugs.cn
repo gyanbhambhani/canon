@@ -1,0 +1,16 @@
+type BugReport {
+  title: String,
+  severity: Int,
+  steps: List[String],
+}
+
+api fn report_bug(b: BugReport) -> BugReport
+  route: POST "/bugs"
+  requires: str_len(b.title) >= 5
+    && str_len(b.title) <= 100
+    && b.severity >= 1
+    && b.severity <= 4
+    && len(b.steps) <= 10
+{
+  return b
+}

@@ -1,0 +1,17 @@
+{
+  "id": "meeting",
+  "set": 2,
+  "title": "Schedule a meeting",
+  "adapted": null,
+  "route": {"method": "POST", "path": "/meetings"},
+  "feature": {"module": "scheduleMeeting", "fn": "scheduleMeeting"},
+  "base": {"title": "=alnum(int(1, 60))", "start_hour": "=int(0, 23)", "duration_min": "=15 * int(1, Math.min(16, Math.floor((1440 - $start_hour * 60) / 15)))"},
+  "random": {"title": "=pick(['', ' ', 'Standup', rep('t', int(55, 65))])", "start_hour": "=int(-2, 26)", "duration_min": "=int(-15, 260)"},
+  "rules": [
+    {"id": "start_hour_range", "kind": "single", "desc": "start_hour is 0 to 23", "inside": [{"set": {"start_hour": 0}}, {"set": {"start_hour": 23, "duration_min": 60}}], "outside": [{"set": {"start_hour": -1}}, {"set": {"start_hour": -5}}, {"set": {"start_hour": 24, "duration_min": 15}}]},
+    {"id": "duration_range", "kind": "single", "desc": "duration_min is 15 to 240", "inside": [{"set": {"start_hour": 0, "duration_min": 15}}, {"set": {"start_hour": 0, "duration_min": 240}}], "outside": [{"set": {"start_hour": 0, "duration_min": 0}}, {"set": {"start_hour": 0, "duration_min": -15}}, {"set": {"start_hour": 0, "duration_min": 255}}]},
+    {"id": "duration_step", "kind": "single", "desc": "duration_min is a multiple of 15", "inside": [{"set": {"start_hour": 0, "duration_min": 30}}, {"set": {"start_hour": 0, "duration_min": 45}}], "outside": [{"set": {"start_hour": 0, "duration_min": 16}}, {"set": {"start_hour": 0, "duration_min": 29}}, {"set": {"start_hour": 0, "duration_min": 31}}, {"set": {"start_hour": 0, "duration_min": 239}}]},
+    {"id": "ends_by_midnight", "kind": "cross", "desc": "start_hour * 60 + duration_min is at most 1440", "inside": [{"set": {"start_hour": 23, "duration_min": 60}}, {"set": {"start_hour": 20, "duration_min": 240}}, {"set": {"start_hour": 22, "duration_min": 120}}], "outside": [{"set": {"start_hour": 23, "duration_min": 75}}, {"set": {"start_hour": 22, "duration_min": 135}}, {"set": {"start_hour": 21, "duration_min": 240}}]},
+    {"id": "title_length", "kind": "single", "desc": "title has 1 to 60 characters", "inside": [{"set": {"title": "a"}}, {"set": {"title": "=rep('a', 60)"}}, {"set": {"title": "=emoji(60)"}}], "outside": [{"set": {"title": ""}}, {"set": {"title": "=rep('a', 61)"}}, {"set": {"title": "=emoji(61)"}}]}
+  ]
+}

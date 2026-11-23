@@ -1,0 +1,32 @@
+{
+  "id": "contact-method",
+  "set": 2,
+  "title": "Add a contact",
+  "adapted": null,
+  "route": { "method": "POST", "path": "/contacts" },
+  "feature": { "module": "addContact", "fn": "addContact" },
+  "base": {
+    "name": "=alnum(int(1, 40))",
+    "email": "=alnum(int(1, 8)) + '@' + alnum(int(1, 8)) + '.' + alnum(int(2, 3))",
+    "phone": "=pick(['', rep('5', int(7, 15))])"
+  },
+  "random": {
+    "name": "=pick(['', 'Ada', rep('a', int(35, 45))])",
+    "email": "=pick(['', '', 'plain', 'a@b', 'a@b.c', 'a b@c.d'])",
+    "phone": "=pick(['', '', rep('5', int(0, 20))])"
+  },
+  "rules": [
+    { "id": "email_when_present", "kind": "single", "desc": "email is empty or a valid address",
+      "inside": [{ "set": { "email": "a@b.c", "phone": "" } }, { "set": { "email": "", "phone": "=rep('5', 7)" } }, { "set": { "email": "a@b.c.d" } }],
+      "outside": [{ "set": { "email": "plain" } }, { "set": { "email": "a@b" } }, { "set": { "email": "a@b." } }, { "set": { "email": "a b@c.d" } }, { "set": { "email": " " } }] },
+    { "id": "phone_when_present", "kind": "single", "desc": "phone is empty or has 7 to 15 characters",
+      "inside": [{ "set": { "phone": "" } }, { "set": { "phone": "=rep('5', 7)" } }, { "set": { "phone": "=rep('5', 15)" } }, { "set": { "phone": "=emoji(7)" } }],
+      "outside": [{ "set": { "phone": "=rep('5', 6)" } }, { "set": { "phone": "=rep('5', 16)" } }, { "set": { "phone": "1" } }, { "set": { "phone": "=emoji(6)" } }] },
+    { "id": "email_or_phone", "kind": "cross", "desc": "at least one of email and phone is non-empty",
+      "inside": [{ "set": { "email": "a@b.c", "phone": "" } }, { "set": { "email": "", "phone": "=rep('5', 7)" } }, { "set": { "email": "a@b.c", "phone": "=rep('5', 15)" } }],
+      "outside": [{ "set": { "email": "", "phone": "" } }] },
+    { "id": "name_length", "kind": "single", "desc": "name has 1 to 40 characters",
+      "inside": [{ "set": { "name": "a" } }, { "set": { "name": "=rep('a', 40)" } }, { "set": { "name": "=emoji(40)" } }],
+      "outside": [{ "set": { "name": "" } }, { "set": { "name": "=rep('a', 41)" } }, { "set": { "name": "=emoji(41)" } }] }
+  ]
+}

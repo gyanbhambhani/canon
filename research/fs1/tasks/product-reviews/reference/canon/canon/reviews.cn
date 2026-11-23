@@ -1,0 +1,34 @@
+use catalog.{CatalogError, find, products}
+
+table reviews: Review key id
+
+type Review {
+  id: Int,
+  sku: String,
+  rating: Int,
+  text: String,
+}
+
+type NewReview {
+  rating: Int,
+  text: String,
+}
+
+api fn add_review(sku: String, r: NewReview) -> Result[Review, CatalogError]
+  route: POST "/products/{sku}/reviews"
+  effects: store(products), store(reviews)
+  requires: r.rating >= 1 && r.rating <= 5 && str_len(trim(r.text)) > 0 && str_len(r.text) <= 500
+{
+  let p = try find(sku)
+  let review = Review { id: next_id(reviews), sku: p.sku, rating: r.rating, text: r.text }
+  insert(reviews, review)
+  return Ok(review)
+}
+
+api fn list_reviews(sku: String) -> Result[List[Review], CatalogError]
+  route: GET "/products/{sku}/reviews"
+  effects: store(products), store(reviews)
+{
+  let p = try find(sku)
+  return Ok(filter(scan(reviews), |r| r.sku == p.sku))
+}

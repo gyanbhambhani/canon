@@ -1,0 +1,12 @@
+type Donation {
+  amount: Float,
+  currency: String,
+  anonymous: Bool,
+}
+
+api fn donate(d: Donation) -> Donation
+  route: POST "/donations"
+  requires: d.amount >= 1.0 && d.amount <= 5000.0 && contains(["USD", "EUR"], d.currency)
+{
+  return d
+}

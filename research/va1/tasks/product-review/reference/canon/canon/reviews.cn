@@ -1,0 +1,14 @@
+type Review {
+  rating: Int,
+  title: String,
+}
+
+api fn post_review(review: Review) -> Review
+  route: POST "/reviews"
+  requires: review.rating >= 1
+    && review.rating <= 5
+    && str_len(review.title) >= 3
+    && str_len(review.title) <= 80
+{
+  return review
+}

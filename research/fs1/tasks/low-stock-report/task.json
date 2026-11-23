@@ -1,0 +1,13 @@
+{
+  "id": "low-stock-report",
+  "kind": "feature",
+  "title": "Report the products whose stock is below a threshold",
+  "features": [{ "module": "frontend/src/features/lowStockReport.ts", "signature": "lowStockReport(baseUrl: string, below: number): Promise<Outcome<LowStock[]>>, where LowStock is { sku: string; name: string; stock: number }" }],
+  "validation": [
+    {
+      "feature": "lowStockReport",
+      "args": [{ "name": "below", "gen": "int" }],
+      "request": { "method": "GET", "path": "/low-stock", "query": { "below": "$below" } }
+    }
+  ]
+}

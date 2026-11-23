@@ -1,0 +1,10 @@
+type VolumeSetting {
+  level: Int,
+}
+
+api fn set_volume(r: VolumeSetting) -> VolumeSetting
+  route: POST "/volume"
+  requires: r.level >= 0 && r.level <= 100
+{
+  return r
+}
