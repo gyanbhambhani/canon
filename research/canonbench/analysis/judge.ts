@@ -48,7 +48,9 @@ for (const model of ["opus", "gpt", "qwen7b"]) {
 const rnd = mulberry32(99);
 pairs.sort(() => rnd() - 0.5);
 const chosen = pairs.slice(0, 100);
-const judges = { opus: makeModel("gpt"), gpt: makeModel("opus"), qwen7b: makeModel("opus") } as const;
+// Opus is unavailable (credit, PREREGISTRATION.md amendment 1): GPT-6.2 Sol judges every pair, including
+// its own (flagged in the report as a possible self-preference bias)
+const judges = { opus: makeModel("gpt"), gpt: makeModel("gpt"), qwen7b: makeModel("gpt") } as const;
 let n = 0;
 await Promise.all(
   Array.from({ length: 6 }, async () => {
