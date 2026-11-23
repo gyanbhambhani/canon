@@ -22,7 +22,7 @@ export function SiteNav() {
         <ul className="hidden items-center gap-5 text-[14px] text-muted md:flex">
           {NAV_LINKS.map((l) => (
             <li key={l.href}>
-              <Link href={l.href} className="transition-colors hover:text-ink-strong">
+              <Link href={l.href} prefetch={l.href === "/play" ? false : undefined} className="transition-colors hover:text-ink-strong">
                 {l.label}
               </Link>
             </li>
@@ -50,7 +50,7 @@ export function SiteNav() {
       <ul className="flex items-center gap-5 overflow-x-auto border-t border-rule px-6 py-2 text-[14px] text-muted md:hidden">
         {NAV_LINKS.map((l) => (
           <li key={l.href} className="shrink-0">
-            <Link href={l.href} className="hover:text-ink-strong">
+            <Link href={l.href} prefetch={l.href === "/play" ? false : undefined} className="hover:text-ink-strong">
               {l.label}
             </Link>
           </li>

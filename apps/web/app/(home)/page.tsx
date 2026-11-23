@@ -39,7 +39,7 @@ function Button({ href, children, primary = false, size = "lg" }: { href: string
       {children}
     </a>
   ) : (
-    <Link href={href} className={cls}>
+    <Link href={href} className={cls} prefetch={href === "/play" ? false : undefined}>
       {children}
     </Link>
   );
@@ -233,7 +233,7 @@ export default function Home() {
           tabs={
             <div className="flex h-full items-end gap-1 self-stretch font-mono text-[13px]">
               <span className="border-b-2 border-ink-strong px-3 pb-2.5 text-ink-strong">orders.cn</span>
-              <Link href={playHref(siteData.examples.find((e) => e.id === "orders")!.source)} className="px-3 pb-2.5 text-faint hover:text-ink">
+              <Link prefetch={false} href={playHref(siteData.examples.find((e) => e.id === "orders")!.source)} className="px-3 pb-2.5 text-faint hover:text-ink">
                 output
               </Link>
             </div>

@@ -53,7 +53,7 @@ export function SiteFooter() {
                         {l.label}
                       </a>
                     ) : (
-                      <Link href={l.href} className="text-muted transition-colors hover:text-ink-strong">
+                      <Link href={l.href} prefetch={l.href === "/play" ? false : undefined} className="text-muted transition-colors hover:text-ink-strong">
                         {l.label}
                       </Link>
                     )}

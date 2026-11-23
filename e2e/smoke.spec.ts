@@ -50,6 +50,13 @@ test("docs load with the sidebar", async ({ page }) => {
   await page.goto("/docs");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(page.getByRole("link", { name: "Quickstart" }).first()).toBeVisible();
+  // search loads on first open
+  await page.getByRole("button", { name: /search/i }).first().click();
+  const input = page.getByPlaceholder(/search/i);
+  await expect(input).toBeVisible();
+  await input.fill("pipeline");
+  await expect(page.getByRole("dialog")).toContainText(/pipeline/i);
+  await page.keyboard.press("Escape");
   const llms = await page.request.get("/llms.txt");
   expect(llms.ok()).toBe(true);
   expect(await llms.text()).toContain("fn ");
