@@ -1,0 +1,7007 @@
+{
+"model": "Qwen/Qwen2.5-Coder-7B",
+"dtype": "torch.float16",
+"device": "mps",
+"rows": [
+{
+"set": "canon_brace_claude",
+"task": "sum_evens",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 80,
+"nodes": 16,
+"nll": 68.98653126275167,
+"tokens": 30
+},
+{
+"set": "canon_brace_claude",
+"task": "sum_evens",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 80,
+"nodes": 16,
+"nll": 30.131957756035263,
+"tokens": 30
+},
+{
+"set": "canon_py_claude",
+"task": "sum_evens",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 86,
+"nodes": 16,
+"nll": 48.758721217513084,
+"tokens": 29
+},
+{
+"set": "canon_py_claude",
+"task": "sum_evens",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 86,
+"nodes": 16,
+"nll": 43.8067043563351,
+"tokens": 29
+},
+{
+"set": "canon_py_claude",
+"task": "sum_evens",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 86,
+"nodes": 16,
+"nll": 32.503184761095326,
+"tokens": 29
+},
+{
+"set": "ts_claude",
+"task": "sum_evens",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 244,
+"nodes": 55,
+"nll": 54.70254793512868,
+"tokens": 75
+},
+{
+"set": "canon_brace_gpt",
+"task": "sum_evens",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 80,
+"nodes": 16,
+"nll": 68.98653126275167,
+"tokens": 30
+},
+{
+"set": "canon_brace_gpt",
+"task": "sum_evens",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 80,
+"nodes": 16,
+"nll": 30.131957756035263,
+"tokens": 30
+},
+{
+"set": "canon_py_gpt",
+"task": "sum_evens",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 86,
+"nodes": 16,
+"nll": 48.758721217513084,
+"tokens": 29
+},
+{
+"set": "canon_py_gpt",
+"task": "sum_evens",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 86,
+"nodes": 16,
+"nll": 43.8067043563351,
+"tokens": 29
+},
+{
+"set": "canon_py_gpt",
+"task": "sum_evens",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 86,
+"nodes": 16,
+"nll": 32.503184761095326,
+"tokens": 29
+},
+{
+"set": "ts_gpt",
+"task": "sum_evens",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 154,
+"nodes": 37,
+"nll": 39.084315881103976,
+"tokens": 53
+},
+{
+"set": "python",
+"task": "sum_evens",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 81,
+"nodes": 18,
+"nll": 32.83789680409245,
+"tokens": 29
+},
+{
+"set": "proto_cnpy",
+"task": "sum_evens",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 83,
+"nodes": null,
+"nll": 37.10044797853334,
+"tokens": 30
+},
+{
+"set": "canon_brace_claude",
+"task": "count_vowels",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 183,
+"nodes": 32,
+"nll": 88.3609164399968,
+"tokens": 68
+},
+{
+"set": "canon_brace_claude",
+"task": "count_vowels",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 183,
+"nodes": 32,
+"nll": 52.69706479539309,
+"tokens": 68
+},
+{
+"set": "canon_py_claude",
+"task": "count_vowels",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 180,
+"nodes": 32,
+"nll": 81.15073641820345,
+"tokens": 66
+},
+{
+"set": "canon_py_claude",
+"task": "count_vowels",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 180,
+"nodes": 32,
+"nll": 79.25297116383445,
+"tokens": 66
+},
+{
+"set": "canon_py_claude",
+"task": "count_vowels",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 180,
+"nodes": 32,
+"nll": 55.23872884575394,
+"tokens": 66
+},
+{
+"set": "ts_claude",
+"task": "count_vowels",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 212,
+"nodes": 55,
+"nll": 38.420466132840374,
+"tokens": 73
+},
+{
+"set": "canon_brace_gpt",
+"task": "count_vowels",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 161,
+"nodes": 26,
+"nll": 71.64880806964356,
+"tokens": 61
+},
+{
+"set": "canon_brace_gpt",
+"task": "count_vowels",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 161,
+"nodes": 26,
+"nll": 44.52138460856804,
+"tokens": 61
+},
+{
+"set": "canon_py_gpt",
+"task": "count_vowels",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 157,
+"nodes": 26,
+"nll": 52.64609868032858,
+"tokens": 56
+},
+{
+"set": "canon_py_gpt",
+"task": "count_vowels",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 157,
+"nodes": 26,
+"nll": 50.79991224061814,
+"tokens": 56
+},
+{
+"set": "canon_py_gpt",
+"task": "count_vowels",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 157,
+"nodes": 26,
+"nll": 47.25287354865577,
+"tokens": 56
+},
+{
+"set": "ts_gpt",
+"task": "count_vowels",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 226,
+"nodes": 55,
+"nll": 39.16414750897093,
+"tokens": 73
+},
+{
+"set": "python",
+"task": "count_vowels",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 78,
+"nodes": 14,
+"nll": 27.94218871202611,
+"tokens": 28
+},
+{
+"set": "proto_cnpy",
+"task": "count_vowels",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 80,
+"nodes": null,
+"nll": 31.382532548333984,
+"tokens": 28
+},
+{
+"set": "canon_brace_claude",
+"task": "reverse_words",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 105,
+"nodes": 13,
+"nll": 61.609883946948685,
+"tokens": 29
+},
+{
+"set": "canon_brace_claude",
+"task": "reverse_words",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 105,
+"nodes": 13,
+"nll": 30.53166087984573,
+"tokens": 29
+},
+{
+"set": "canon_py_claude",
+"task": "reverse_words",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 79,
+"nodes": 13,
+"nll": 38.273486897931434,
+"tokens": 22
+},
+{
+"set": "canon_py_claude",
+"task": "reverse_words",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 79,
+"nodes": 13,
+"nll": 34.75957548726001,
+"tokens": 22
+},
+{
+"set": "canon_py_claude",
+"task": "reverse_words",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 79,
+"nodes": 13,
+"nll": 36.18574777105823,
+"tokens": 22
+},
+{
+"set": "ts_claude",
+"task": "reverse_words",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 96,
+"nodes": 22,
+"nll": 28.14894481189549,
+"tokens": 22
+},
+{
+"set": "canon_brace_gpt",
+"task": "reverse_words",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 105,
+"nodes": 13,
+"nll": 61.609883946948685,
+"tokens": 29
+},
+{
+"set": "canon_brace_gpt",
+"task": "reverse_words",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 105,
+"nodes": 13,
+"nll": 30.53166087984573,
+"tokens": 29
+},
+{
+"set": "canon_py_gpt",
+"task": "reverse_words",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 79,
+"nodes": 13,
+"nll": 38.273486897931434,
+"tokens": 22
+},
+{
+"set": "canon_py_gpt",
+"task": "reverse_words",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 79,
+"nodes": 13,
+"nll": 34.75957548726001,
+"tokens": 22
+},
+{
+"set": "canon_py_gpt",
+"task": "reverse_words",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 79,
+"nodes": 13,
+"nll": 36.18574777105823,
+"tokens": 22
+},
+{
+"set": "ts_gpt",
+"task": "reverse_words",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 96,
+"nodes": 22,
+"nll": 28.14894481189549,
+"tokens": 22
+},
+{
+"set": "python",
+"task": "reverse_words",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 78,
+"nodes": 14,
+"nll": 24.037420720618684,
+"tokens": 22
+},
+{
+"set": "proto_cnpy",
+"task": "reverse_words",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 78,
+"nodes": null,
+"nll": 26.26680761593161,
+"tokens": 22
+},
+{
+"set": "canon_brace_claude",
+"task": "fizzbuzz_list",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 331,
+"nodes": 56,
+"nll": 110.73258505377453,
+"tokens": 122
+},
+{
+"set": "canon_brace_claude",
+"task": "fizzbuzz_list",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 331,
+"nodes": 56,
+"nll": 64.59697462719123,
+"tokens": 122
+},
+{
+"set": "canon_py_claude",
+"task": "fizzbuzz_list",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 332,
+"nodes": 56,
+"nll": 100.15571819332399,
+"tokens": 112
+},
+{
+"set": "canon_py_claude",
+"task": "fizzbuzz_list",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 332,
+"nodes": 56,
+"nll": 98.94593853897823,
+"tokens": 112
+},
+{
+"set": "canon_py_claude",
+"task": "fizzbuzz_list",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 332,
+"nodes": 56,
+"nll": 63.95241842591713,
+"tokens": 112
+},
+{
+"set": "ts_claude",
+"task": "fizzbuzz_list",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 358,
+"nodes": 85,
+"nll": 42.71853425502195,
+"tokens": 115
+},
+{
+"set": "canon_brace_gpt",
+"task": "fizzbuzz_list",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 292,
+"nodes": 48,
+"nll": 88.67832868240657,
+"tokens": 105
+},
+{
+"set": "canon_brace_gpt",
+"task": "fizzbuzz_list",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 292,
+"nodes": 48,
+"nll": 60.202867452939245,
+"tokens": 105
+},
+{
+"set": "canon_py_gpt",
+"task": "fizzbuzz_list",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 293,
+"nodes": 48,
+"nll": 82.13933425970026,
+"tokens": 96
+},
+{
+"set": "canon_py_gpt",
+"task": "fizzbuzz_list",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 293,
+"nodes": 48,
+"nll": 77.84015334712603,
+"tokens": 96
+},
+{
+"set": "canon_py_gpt",
+"task": "fizzbuzz_list",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 293,
+"nodes": 48,
+"nll": 61.804573785684624,
+"tokens": 96
+},
+{
+"set": "ts_gpt",
+"task": "fizzbuzz_list",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 360,
+"nodes": 85,
+"nll": 43.978338445047484,
+"tokens": 115
+},
+{
+"set": "python",
+"task": "fizzbuzz_list",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 343,
+"nodes": 62,
+"nll": 36.40190680575324,
+"tokens": 96
+},
+{
+"set": "proto_cnpy",
+"task": "fizzbuzz_list",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 332,
+"nodes": null,
+"nll": 38.758262458242825,
+"tokens": 92
+},
+{
+"set": "canon_brace_claude",
+"task": "max_or_none",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 150,
+"nodes": 25,
+"nll": 92.4563882574439,
+"tokens": 51
+},
+{
+"set": "canon_brace_claude",
+"task": "max_or_none",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 150,
+"nodes": 25,
+"nll": 50.439410505699925,
+"tokens": 51
+},
+{
+"set": "canon_py_claude",
+"task": "max_or_none",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 194,
+"nodes": 25,
+"nll": 82.70058629970299,
+"tokens": 50
+},
+{
+"set": "canon_py_claude",
+"task": "max_or_none",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 194,
+"nodes": 25,
+"nll": 78.94291823924868,
+"tokens": 50
+},
+{
+"set": "canon_py_claude",
+"task": "max_or_none",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 194,
+"nodes": 25,
+"nll": 49.21614726027474,
+"tokens": 50
+},
+{
+"set": "ts_claude",
+"task": "max_or_none",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 249,
+"nodes": 64,
+"nll": 58.337371040041035,
+"tokens": 83
+},
+{
+"set": "canon_brace_gpt",
+"task": "max_or_none",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 162,
+"nodes": 25,
+"nll": 98.3591286544688,
+"tokens": 51
+},
+{
+"set": "canon_brace_gpt",
+"task": "max_or_none",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 162,
+"nodes": 25,
+"nll": 54.99552110966761,
+"tokens": 51
+},
+{
+"set": "canon_py_gpt",
+"task": "max_or_none",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 206,
+"nodes": 25,
+"nll": 87.0662635116023,
+"tokens": 50
+},
+{
+"set": "canon_py_gpt",
+"task": "max_or_none",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 206,
+"nodes": 25,
+"nll": 83.44398178168922,
+"tokens": 50
+},
+{
+"set": "canon_py_gpt",
+"task": "max_or_none",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 206,
+"nodes": 25,
+"nll": 53.626677194901276,
+"tokens": 50
+},
+{
+"set": "ts_gpt",
+"task": "max_or_none",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 185,
+"nodes": 48,
+"nll": 54.42462824212271,
+"tokens": 54
+},
+{
+"set": "python",
+"task": "max_or_none",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 100,
+"nodes": 17,
+"nll": 39.48517737488146,
+"tokens": 28
+},
+{
+"set": "proto_cnpy",
+"task": "max_or_none",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 106,
+"nodes": null,
+"nll": 42.90534100699006,
+"tokens": 32
+},
+{
+"set": "canon_brace_claude",
+"task": "is_palindrome",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 121,
+"nodes": 20,
+"nll": 79.07394875446334,
+"tokens": 34
+},
+{
+"set": "canon_brace_claude",
+"task": "is_palindrome",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 121,
+"nodes": 20,
+"nll": 47.652041014516726,
+"tokens": 34
+},
+{
+"set": "canon_py_claude",
+"task": "is_palindrome",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 122,
+"nodes": 20,
+"nll": 66.71157660830067,
+"tokens": 32
+},
+{
+"set": "canon_py_claude",
+"task": "is_palindrome",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 122,
+"nodes": 20,
+"nll": 66.70807911953307,
+"tokens": 32
+},
+{
+"set": "canon_py_claude",
+"task": "is_palindrome",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 122,
+"nodes": 20,
+"nll": 50.16478058882058,
+"tokens": 32
+},
+{
+"set": "ts_claude",
+"task": "is_palindrome",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 250,
+"nodes": 61,
+"nll": 47.98984278613352,
+"tokens": 77
+},
+{
+"set": "canon_brace_gpt",
+"task": "is_palindrome",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 100,
+"nodes": 14,
+"nll": 62.85843077674508,
+"tokens": 27
+},
+{
+"set": "canon_brace_gpt",
+"task": "is_palindrome",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 100,
+"nodes": 14,
+"nll": 37.31989845400676,
+"tokens": 27
+},
+{
+"set": "canon_py_gpt",
+"task": "is_palindrome",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 95,
+"nodes": 14,
+"nll": 47.42294692940777,
+"tokens": 25
+},
+{
+"set": "canon_py_gpt",
+"task": "is_palindrome",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 95,
+"nodes": 14,
+"nll": 46.94524696687586,
+"tokens": 25
+},
+{
+"set": "canon_py_gpt",
+"task": "is_palindrome",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 95,
+"nodes": 14,
+"nll": 40.2955882945098,
+"tokens": 25
+},
+{
+"set": "ts_gpt",
+"task": "is_palindrome",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 272,
+"nodes": 56,
+"nll": 51.02795223612338,
+"tokens": 69
+},
+{
+"set": "python",
+"task": "is_palindrome",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 59,
+"nodes": 12,
+"nll": 19.277111538904137,
+"tokens": 19
+},
+{
+"set": "proto_cnpy",
+"task": "is_palindrome",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 72,
+"nodes": null,
+"nll": 25.95387015052256,
+"tokens": 21
+},
+{
+"set": "canon_brace_claude",
+"task": "factorial",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 166,
+"nodes": 29,
+"nll": 73.99457809817977,
+"tokens": 68
+},
+{
+"set": "canon_brace_claude",
+"task": "factorial",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 166,
+"nodes": 29,
+"nll": 35.92437056926428,
+"tokens": 68
+},
+{
+"set": "canon_py_claude",
+"task": "factorial",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 157,
+"nodes": 29,
+"nll": 60.26704410875391,
+"tokens": 57
+},
+{
+"set": "canon_py_claude",
+"task": "factorial",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 157,
+"nodes": 29,
+"nll": 54.72101331918384,
+"tokens": 57
+},
+{
+"set": "canon_py_claude",
+"task": "factorial",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 157,
+"nodes": 29,
+"nll": 42.52375457577,
+"tokens": 57
+},
+{
+"set": "ts_claude",
+"task": "factorial",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 252,
+"nodes": 51,
+"nll": 41.83123763691401,
+"tokens": 75
+},
+{
+"set": "canon_brace_gpt",
+"task": "factorial",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 184,
+"nodes": 26,
+"nll": 72.93693492969032,
+"tokens": 60
+},
+{
+"set": "canon_brace_gpt",
+"task": "factorial",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 184,
+"nodes": 26,
+"nll": 40.82720704458188,
+"tokens": 60
+},
+{
+"set": "canon_py_gpt",
+"task": "factorial",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 167,
+"nodes": 26,
+"nll": 52.506685087573715,
+"tokens": 49
+},
+{
+"set": "canon_py_gpt",
+"task": "factorial",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 167,
+"nodes": 26,
+"nll": 46.884225146175595,
+"tokens": 49
+},
+{
+"set": "canon_py_gpt",
+"task": "factorial",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 167,
+"nodes": 26,
+"nll": 44.97121780086309,
+"tokens": 49
+},
+{
+"set": "ts_gpt",
+"task": "factorial",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 363,
+"nodes": 59,
+"nll": 85.28460153957712,
+"tokens": 106
+},
+{
+"set": "python",
+"task": "factorial",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 113,
+"nodes": 20,
+"nll": 20.897976812411798,
+"tokens": 37
+},
+{
+"set": "proto_cnpy",
+"task": "factorial",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 113,
+"nodes": null,
+"nll": 22.28755276169977,
+"tokens": 37
+},
+{
+"set": "canon_brace_claude",
+"task": "fib",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 195,
+"nodes": 39,
+"nll": 74.02047385947662,
+"tokens": 92
+},
+{
+"set": "canon_brace_claude",
+"task": "fib",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 195,
+"nodes": 39,
+"nll": 38.51510713912285,
+"tokens": 92
+},
+{
+"set": "canon_py_claude",
+"task": "fib",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 195,
+"nodes": 39,
+"nll": 58.7776016920252,
+"tokens": 79
+},
+{
+"set": "canon_py_claude",
+"task": "fib",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 195,
+"nodes": 39,
+"nll": 54.46197036959347,
+"tokens": 79
+},
+{
+"set": "canon_py_claude",
+"task": "fib",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 195,
+"nodes": 39,
+"nll": 50.69485650067509,
+"tokens": 79
+},
+{
+"set": "ts_claude",
+"task": "fib",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 271,
+"nodes": 69,
+"nll": 44.52977349804496,
+"tokens": 95
+},
+{
+"set": "canon_brace_gpt",
+"task": "fib",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 252,
+"nodes": 39,
+"nll": 76.4223476149491,
+"tokens": 92
+},
+{
+"set": "canon_brace_gpt",
+"task": "fib",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 252,
+"nodes": 39,
+"nll": 42.21729975637572,
+"tokens": 92
+},
+{
+"set": "canon_py_gpt",
+"task": "fib",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 252,
+"nodes": 39,
+"nll": 58.96266426923103,
+"tokens": 79
+},
+{
+"set": "canon_py_gpt",
+"task": "fib",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 252,
+"nodes": 39,
+"nll": 54.18525432248134,
+"tokens": 79
+},
+{
+"set": "canon_py_gpt",
+"task": "fib",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 252,
+"nodes": 39,
+"nll": 51.205636445607524,
+"tokens": 79
+},
+{
+"set": "ts_gpt",
+"task": "fib",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 333,
+"nodes": 61,
+"nll": 97.97174109719708,
+"tokens": 105
+},
+{
+"set": "python",
+"task": "fib",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 100,
+"nodes": 27,
+"nll": 19.101362688743393,
+"tokens": 42
+},
+{
+"set": "proto_cnpy",
+"task": "fib",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 100,
+"nodes": null,
+"nll": 21.394058675534325,
+"tokens": 42
+},
+{
+"set": "canon_brace_claude",
+"task": "gcd",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 180,
+"nodes": 34,
+"nll": 78.32939897527103,
+"tokens": 79
+},
+{
+"set": "canon_brace_claude",
+"task": "gcd",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 180,
+"nodes": 34,
+"nll": 36.14237211643558,
+"tokens": 79
+},
+{
+"set": "canon_py_claude",
+"task": "gcd",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 180,
+"nodes": 34,
+"nll": 63.48525013178005,
+"tokens": 71
+},
+{
+"set": "canon_py_claude",
+"task": "gcd",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 180,
+"nodes": 34,
+"nll": 59.35222067133873,
+"tokens": 71
+},
+{
+"set": "canon_py_claude",
+"task": "gcd",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 180,
+"nodes": 34,
+"nll": 44.30012838582479,
+"tokens": 71
+},
+{
+"set": "ts_claude",
+"task": "gcd",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 179,
+"nodes": 56,
+"nll": 37.52031429117778,
+"tokens": 63
+},
+{
+"set": "canon_brace_gpt",
+"task": "gcd",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 144,
+"nodes": 24,
+"nll": 54.73206349287648,
+"tokens": 57
+},
+{
+"set": "canon_brace_gpt",
+"task": "gcd",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 144,
+"nodes": 24,
+"nll": 34.11703064687754,
+"tokens": 57
+},
+{
+"set": "canon_py_gpt",
+"task": "gcd",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 145,
+"nodes": 24,
+"nll": 33.73226159290789,
+"tokens": 51
+},
+{
+"set": "canon_py_gpt",
+"task": "gcd",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 145,
+"nodes": 24,
+"nll": 31.69029153297015,
+"tokens": 51
+},
+{
+"set": "canon_py_gpt",
+"task": "gcd",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 145,
+"nodes": 24,
+"nll": 35.22672544512898,
+"tokens": 51
+},
+{
+"set": "ts_gpt",
+"task": "gcd",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 164,
+"nodes": 46,
+"nll": 40.32746424263314,
+"tokens": 55
+},
+{
+"set": "python",
+"task": "gcd",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 87,
+"nodes": 21,
+"nll": 20.361025624151807,
+"tokens": 35
+},
+{
+"set": "proto_cnpy",
+"task": "gcd",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 87,
+"nodes": null,
+"nll": 21.54008053059806,
+"tokens": 35
+},
+{
+"set": "canon_brace_claude",
+"task": "is_prime",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 176,
+"nodes": 32,
+"nll": 52.76091451078537,
+"tokens": 68
+},
+{
+"set": "canon_brace_claude",
+"task": "is_prime",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 176,
+"nodes": 32,
+"nll": 33.73046468546818,
+"tokens": 68
+},
+{
+"set": "canon_py_claude",
+"task": "is_prime",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 176,
+"nodes": 32,
+"nll": 28.503513920026307,
+"tokens": 58
+},
+{
+"set": "canon_py_claude",
+"task": "is_prime",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 176,
+"nodes": 32,
+"nll": 26.68298901453818,
+"tokens": 58
+},
+{
+"set": "canon_py_claude",
+"task": "is_prime",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 176,
+"nodes": 32,
+"nll": 36.94573469921306,
+"tokens": 58
+},
+{
+"set": "ts_claude",
+"task": "is_prime",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 426,
+"nodes": 116,
+"nll": 57.23843540279995,
+"tokens": 153
+},
+{
+"set": "canon_brace_gpt",
+"task": "is_prime",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 252,
+"nodes": 42,
+"nll": 63.253957855456974,
+"tokens": 87
+},
+{
+"set": "canon_brace_gpt",
+"task": "is_prime",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 252,
+"nodes": 42,
+"nll": 42.04831479571294,
+"tokens": 87
+},
+{
+"set": "canon_py_gpt",
+"task": "is_prime",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 247,
+"nodes": 42,
+"nll": 37.29504721603007,
+"tokens": 75
+},
+{
+"set": "canon_py_gpt",
+"task": "is_prime",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 247,
+"nodes": 42,
+"nll": 34.759905568280374,
+"tokens": 75
+},
+{
+"set": "canon_py_gpt",
+"task": "is_prime",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 247,
+"nodes": 42,
+"nll": 45.20963449493138,
+"tokens": 75
+},
+{
+"set": "ts_gpt",
+"task": "is_prime",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 340,
+"nodes": 98,
+"nll": 51.72314726257537,
+"tokens": 119
+},
+{
+"set": "python",
+"task": "is_prime",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 176,
+"nodes": 32,
+"nll": 23.711417058359075,
+"tokens": 58
+},
+{
+"set": "proto_cnpy",
+"task": "is_prime",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 176,
+"nodes": null,
+"nll": 24.642045229913492,
+"tokens": 58
+},
+{
+"set": "canon_brace_claude",
+"task": "digit_sum",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 179,
+"nodes": 31,
+"nll": 80.59519655672193,
+"tokens": 74
+},
+{
+"set": "canon_brace_claude",
+"task": "digit_sum",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 179,
+"nodes": 31,
+"nll": 39.29238223998618,
+"tokens": 74
+},
+{
+"set": "canon_py_claude",
+"task": "digit_sum",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 168,
+"nodes": 31,
+"nll": 64.94591933849733,
+"tokens": 63
+},
+{
+"set": "canon_py_claude",
+"task": "digit_sum",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 168,
+"nodes": 31,
+"nll": 64.43018222765386,
+"tokens": 63
+},
+{
+"set": "canon_py_claude",
+"task": "digit_sum",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 168,
+"nodes": 31,
+"nll": 47.62646781850344,
+"tokens": 63
+},
+{
+"set": "ts_claude",
+"task": "digit_sum",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 711,
+"nodes": 125,
+"nll": 206.70762257682873,
+"tokens": 220
+},
+{
+"set": "canon_brace_gpt",
+"task": "digit_sum",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 196,
+"nodes": 28,
+"nll": 79.50206699378032,
+"tokens": 66
+},
+{
+"set": "canon_brace_gpt",
+"task": "digit_sum",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 196,
+"nodes": 28,
+"nll": 43.249104300382896,
+"tokens": 66
+},
+{
+"set": "canon_py_gpt",
+"task": "digit_sum",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 178,
+"nodes": 28,
+"nll": 63.50435593959992,
+"tokens": 55
+},
+{
+"set": "canon_py_gpt",
+"task": "digit_sum",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 178,
+"nodes": 28,
+"nll": 59.859403862588806,
+"tokens": 55
+},
+{
+"set": "canon_py_gpt",
+"task": "digit_sum",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 178,
+"nodes": 28,
+"nll": 51.39127883522451,
+"tokens": 55
+},
+{
+"set": "ts_gpt",
+"task": "digit_sum",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 205,
+"nodes": 52,
+"nll": 53.01979730511084,
+"tokens": 62
+},
+{
+"set": "python",
+"task": "digit_sum",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 119,
+"nodes": 21,
+"nll": 24.304622553128866,
+"tokens": 43
+},
+{
+"set": "proto_cnpy",
+"task": "digit_sum",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 119,
+"nodes": null,
+"nll": 25.94587351260634,
+"tokens": 43
+},
+{
+"set": "canon_brace_claude",
+"task": "average",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 129,
+"nodes": 22,
+"nll": 76.65194746595807,
+"tokens": 46
+},
+{
+"set": "canon_brace_claude",
+"task": "average",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 129,
+"nodes": 22,
+"nll": 31.946843459256343,
+"tokens": 46
+},
+{
+"set": "canon_py_claude",
+"task": "average",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 128,
+"nodes": 22,
+"nll": 62.99431078985799,
+"tokens": 41
+},
+{
+"set": "canon_py_claude",
+"task": "average",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 128,
+"nodes": 22,
+"nll": 61.51297679118579,
+"tokens": 41
+},
+{
+"set": "canon_py_claude",
+"task": "average",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 128,
+"nodes": 22,
+"nll": 36.504954353615176,
+"tokens": 41
+},
+{
+"set": "ts_claude",
+"task": "average",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 178,
+"nodes": 43,
+"nll": 37.84242838517821,
+"tokens": 59
+},
+{
+"set": "canon_brace_gpt",
+"task": "average",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 129,
+"nodes": 22,
+"nll": 76.65194746595807,
+"tokens": 46
+},
+{
+"set": "canon_brace_gpt",
+"task": "average",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 129,
+"nodes": 22,
+"nll": 31.946843459256343,
+"tokens": 46
+},
+{
+"set": "canon_py_gpt",
+"task": "average",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 128,
+"nodes": 22,
+"nll": 62.99431078985799,
+"tokens": 41
+},
+{
+"set": "canon_py_gpt",
+"task": "average",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 128,
+"nodes": 22,
+"nll": 61.51297679118579,
+"tokens": 41
+},
+{
+"set": "canon_py_gpt",
+"task": "average",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 128,
+"nodes": 22,
+"nll": 36.504954353615176,
+"tokens": 41
+},
+{
+"set": "ts_gpt",
+"task": "average",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 180,
+"nodes": 43,
+"nll": 40.17492394418514,
+"tokens": 59
+},
+{
+"set": "python",
+"task": "average",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 102,
+"nodes": 19,
+"nll": 33.41184808759135,
+"tokens": 31
+},
+{
+"set": "proto_cnpy",
+"task": "average",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 108,
+"nodes": null,
+"nll": 35.848910147702554,
+"tokens": 35
+},
+{
+"set": "canon_brace_claude",
+"task": "running_total",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 164,
+"nodes": 24,
+"nll": 70.76140001835302,
+"tokens": 53
+},
+{
+"set": "canon_brace_claude",
+"task": "running_total",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 164,
+"nodes": 24,
+"nll": 38.83498364404659,
+"tokens": 53
+},
+{
+"set": "canon_py_claude",
+"task": "running_total",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 158,
+"nodes": 24,
+"nll": 54.3735747183091,
+"tokens": 45
+},
+{
+"set": "canon_py_claude",
+"task": "running_total",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 158,
+"nodes": 24,
+"nll": 49.820796118001454,
+"tokens": 45
+},
+{
+"set": "canon_py_claude",
+"task": "running_total",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 158,
+"nodes": 24,
+"nll": 40.283651186560746,
+"tokens": 45
+},
+{
+"set": "ts_claude",
+"task": "running_total",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 230,
+"nodes": 58,
+"nll": 48.73326489592728,
+"tokens": 69
+},
+{
+"set": "canon_brace_gpt",
+"task": "running_total",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 185,
+"nodes": 27,
+"nll": 81.56064994011831,
+"tokens": 60
+},
+{
+"set": "canon_brace_gpt",
+"task": "running_total",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 185,
+"nodes": 27,
+"nll": 48.431098942888184,
+"tokens": 60
+},
+{
+"set": "canon_py_gpt",
+"task": "running_total",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 179,
+"nodes": 27,
+"nll": 64.73078670199175,
+"tokens": 52
+},
+{
+"set": "canon_py_gpt",
+"task": "running_total",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 179,
+"nodes": 27,
+"nll": 62.01048391275981,
+"tokens": 52
+},
+{
+"set": "canon_py_gpt",
+"task": "running_total",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 179,
+"nodes": 27,
+"nll": 49.13313356269464,
+"tokens": 52
+},
+{
+"set": "ts_gpt",
+"task": "running_total",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 187,
+"nodes": 42,
+"nll": 46.13375437966897,
+"tokens": 52
+},
+{
+"set": "python",
+"task": "running_total",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 171,
+"nodes": 30,
+"nll": 37.22383889727644,
+"tokens": 46
+},
+{
+"set": "proto_cnpy",
+"task": "running_total",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 160,
+"nodes": null,
+"nll": 40.67506291845348,
+"tokens": 42
+},
+{
+"set": "canon_brace_claude",
+"task": "dedupe",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 155,
+"nodes": 23,
+"nll": 71.52726384611015,
+"tokens": 52
+},
+{
+"set": "canon_brace_claude",
+"task": "dedupe",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 155,
+"nodes": 23,
+"nll": 35.168303281489216,
+"tokens": 52
+},
+{
+"set": "canon_py_claude",
+"task": "dedupe",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 148,
+"nodes": 23,
+"nll": 53.737616083282774,
+"tokens": 42
+},
+{
+"set": "canon_py_claude",
+"task": "dedupe",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 148,
+"nodes": 23,
+"nll": 52.03193511157224,
+"tokens": 42
+},
+{
+"set": "canon_py_claude",
+"task": "dedupe",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 148,
+"nodes": 23,
+"nll": 39.18390311613621,
+"tokens": 42
+},
+{
+"set": "ts_claude",
+"task": "dedupe",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 232,
+"nodes": 53,
+"nll": 40.676730681138,
+"tokens": 63
+},
+{
+"set": "canon_brace_gpt",
+"task": "dedupe",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 93,
+"nodes": 16,
+"nll": 83.33269294258207,
+"tokens": 33
+},
+{
+"set": "canon_brace_gpt",
+"task": "dedupe",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 93,
+"nodes": 16,
+"nll": 39.946861285483465,
+"tokens": 33
+},
+{
+"set": "canon_py_gpt",
+"task": "dedupe",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 106,
+"nodes": 16,
+"nll": 71.09628326050006,
+"tokens": 31
+},
+{
+"set": "canon_py_gpt",
+"task": "dedupe",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 106,
+"nodes": 16,
+"nll": 70.4814098009956,
+"tokens": 31
+},
+{
+"set": "canon_py_gpt",
+"task": "dedupe",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 106,
+"nodes": 16,
+"nll": 45.1545975827612,
+"tokens": 31
+},
+{
+"set": "ts_gpt",
+"task": "dedupe",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 234,
+"nodes": 53,
+"nll": 41.439303634731914,
+"tokens": 63
+},
+{
+"set": "python",
+"task": "dedupe",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 208,
+"nodes": 40,
+"nll": 37.343777876812965,
+"tokens": 56
+},
+{
+"set": "proto_cnpy",
+"task": "dedupe",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 187,
+"nodes": null,
+"nll": 39.50694641370501,
+"tokens": 48
+},
+{
+"set": "canon_brace_claude",
+"task": "count_word",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 115,
+"nodes": 17,
+"nll": 73.89896336663514,
+"tokens": 38
+},
+{
+"set": "canon_brace_claude",
+"task": "count_word",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 115,
+"nodes": 17,
+"nll": 37.20752495271154,
+"tokens": 38
+},
+{
+"set": "canon_py_claude",
+"task": "count_word",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 95,
+"nodes": 17,
+"nll": 60.92631838936359,
+"tokens": 30
+},
+{
+"set": "canon_py_claude",
+"task": "count_word",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 95,
+"nodes": 17,
+"nll": 58.78002783190459,
+"tokens": 30
+},
+{
+"set": "canon_py_claude",
+"task": "count_word",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 95,
+"nodes": 17,
+"nll": 39.94910337915644,
+"tokens": 30
+},
+{
+"set": "ts_claude",
+"task": "count_word",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 243,
+"nodes": 53,
+"nll": 52.663789192272816,
+"tokens": 75
+},
+{
+"set": "canon_brace_gpt",
+"task": "count_word",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 204,
+"nodes": 32,
+"nll": 78.63922257060767,
+"tokens": 71
+},
+{
+"set": "canon_brace_gpt",
+"task": "count_word",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 204,
+"nodes": 32,
+"nll": 49.10475244099507,
+"tokens": 71
+},
+{
+"set": "canon_py_gpt",
+"task": "count_word",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 190,
+"nodes": 32,
+"nll": 57.010700179162086,
+"tokens": 60
+},
+{
+"set": "canon_py_gpt",
+"task": "count_word",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 190,
+"nodes": 32,
+"nll": 54.83954763185466,
+"tokens": 60
+},
+{
+"set": "canon_py_gpt",
+"task": "count_word",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 190,
+"nodes": 32,
+"nll": 53.18449124961626,
+"tokens": 60
+},
+{
+"set": "ts_gpt",
+"task": "count_word",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 227,
+"nodes": 52,
+"nll": 57.53896350087598,
+"tokens": 70
+},
+{
+"set": "python",
+"task": "count_word",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 72,
+"nodes": 14,
+"nll": 36.192548602237366,
+"tokens": 23
+},
+{
+"set": "proto_cnpy",
+"task": "count_word",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 72,
+"nodes": null,
+"nll": 38.776388118974864,
+"tokens": 23
+},
+{
+"set": "canon_brace_claude",
+"task": "longest_word",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 159,
+"nodes": 23,
+"nll": 76.95617999392562,
+"tokens": 51
+},
+{
+"set": "canon_brace_claude",
+"task": "longest_word",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 159,
+"nodes": 23,
+"nll": 35.08057431393536,
+"tokens": 51
+},
+{
+"set": "canon_py_claude",
+"task": "longest_word",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 151,
+"nodes": 23,
+"nll": 58.25292770564556,
+"tokens": 44
+},
+{
+"set": "canon_py_claude",
+"task": "longest_word",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 151,
+"nodes": 23,
+"nll": 56.46822557813721,
+"tokens": 44
+},
+{
+"set": "canon_py_claude",
+"task": "longest_word",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 151,
+"nodes": 23,
+"nll": 35.439287902307115,
+"tokens": 44
+},
+{
+"set": "ts_claude",
+"task": "longest_word",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 396,
+"nodes": 83,
+"nll": 82.82469373077038,
+"tokens": 112
+},
+{
+"set": "canon_brace_gpt",
+"task": "longest_word",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 257,
+"nodes": 28,
+"nll": 80.41602110583335,
+"tokens": 68
+},
+{
+"set": "canon_brace_gpt",
+"task": "longest_word",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 257,
+"nodes": 28,
+"nll": 45.850060122058494,
+"tokens": 68
+},
+{
+"set": "canon_py_gpt",
+"task": "longest_word",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 253,
+"nodes": 28,
+"nll": 58.75016755866818,
+"tokens": 60
+},
+{
+"set": "canon_py_gpt",
+"task": "longest_word",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 253,
+"nodes": 28,
+"nll": 56.837042593804654,
+"tokens": 60
+},
+{
+"set": "canon_py_gpt",
+"task": "longest_word",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 253,
+"nodes": 28,
+"nll": 46.247857157548424,
+"tokens": 60
+},
+{
+"set": "ts_gpt",
+"task": "longest_word",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 201,
+"nodes": 41,
+"nll": 38.84234175561869,
+"tokens": 50
+},
+{
+"set": "python",
+"task": "longest_word",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 151,
+"nodes": 26,
+"nll": 34.94594080274692,
+"tokens": 41
+},
+{
+"set": "proto_cnpy",
+"task": "longest_word",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 151,
+"nodes": null,
+"nll": 37.194914431660436,
+"tokens": 41
+},
+{
+"set": "canon_brace_claude",
+"task": "clamp",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 136,
+"nodes": 23,
+"nll": 69.83353661419824,
+"tokens": 47
+},
+{
+"set": "canon_brace_claude",
+"task": "clamp",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 136,
+"nodes": 23,
+"nll": 30.004460787109565,
+"tokens": 47
+},
+{
+"set": "canon_py_claude",
+"task": "clamp",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 135,
+"nodes": 23,
+"nll": 67.3263995681773,
+"tokens": 44
+},
+{
+"set": "canon_py_claude",
+"task": "clamp",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 135,
+"nodes": 23,
+"nll": 61.16229871458199,
+"tokens": 44
+},
+{
+"set": "canon_py_claude",
+"task": "clamp",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 135,
+"nodes": 23,
+"nll": 43.66113664966542,
+"tokens": 44
+},
+{
+"set": "ts_claude",
+"task": "clamp",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 151,
+"nodes": 33,
+"nll": 30.667223418662616,
+"tokens": 50
+},
+{
+"set": "canon_brace_gpt",
+"task": "clamp",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 96,
+"nodes": 16,
+"nll": 64.59114793676417,
+"tokens": 36
+},
+{
+"set": "canon_brace_gpt",
+"task": "clamp",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 96,
+"nodes": 16,
+"nll": 30.711270079773385,
+"tokens": 36
+},
+{
+"set": "canon_py_gpt",
+"task": "clamp",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 95,
+"nodes": 16,
+"nll": 65.32091497367946,
+"tokens": 33
+},
+{
+"set": "canon_py_gpt",
+"task": "clamp",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 95,
+"nodes": 16,
+"nll": 61.178890717506874,
+"tokens": 33
+},
+{
+"set": "canon_py_gpt",
+"task": "clamp",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 95,
+"nodes": 16,
+"nll": 40.511566879285965,
+"tokens": 33
+},
+{
+"set": "ts_gpt",
+"task": "clamp",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 109,
+"nodes": 27,
+"nll": 27.6200293089787,
+"tokens": 31
+},
+{
+"set": "python",
+"task": "clamp",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 75,
+"nodes": 16,
+"nll": 30.16914790737792,
+"tokens": 27
+},
+{
+"set": "proto_cnpy",
+"task": "clamp",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 75,
+"nodes": null,
+"nll": 31.39457837693044,
+"tokens": 27
+},
+{
+"set": "canon_brace_claude",
+"task": "second_largest",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 197,
+"nodes": 29,
+"nll": 119.41462695854716,
+"tokens": 59
+},
+{
+"set": "canon_brace_claude",
+"task": "second_largest",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 197,
+"nodes": 29,
+"nll": 63.53913831699174,
+"tokens": 59
+},
+{
+"set": "canon_py_claude",
+"task": "second_largest",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 245,
+"nodes": 29,
+"nll": 91.93470604624599,
+"tokens": 57
+},
+{
+"set": "canon_py_claude",
+"task": "second_largest",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 245,
+"nodes": 29,
+"nll": 92.37395976262633,
+"tokens": 57
+},
+{
+"set": "canon_py_claude",
+"task": "second_largest",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 245,
+"nodes": 29,
+"nll": 63.73805607133545,
+"tokens": 57
+},
+{
+"set": "ts_claude",
+"task": "second_largest",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 460,
+"nodes": 97,
+"nll": 65.21184267837816,
+"tokens": 128
+},
+{
+"set": "canon_brace_gpt",
+"task": "second_largest",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 352,
+"nodes": 51,
+"nll": 107.42511438846122,
+"tokens": 99
+},
+{
+"set": "canon_brace_gpt",
+"task": "second_largest",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 352,
+"nodes": 51,
+"nll": 62.5046084538335,
+"tokens": 99
+},
+{
+"set": "canon_py_gpt",
+"task": "second_largest",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 360,
+"nodes": 51,
+"nll": 84.1976502892212,
+"tokens": 86
+},
+{
+"set": "canon_py_gpt",
+"task": "second_largest",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 360,
+"nodes": 51,
+"nll": 85.10342110402416,
+"tokens": 86
+},
+{
+"set": "canon_py_gpt",
+"task": "second_largest",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 360,
+"nodes": 51,
+"nll": 66.11182104167528,
+"tokens": 86
+},
+{
+"set": "ts_gpt",
+"task": "second_largest",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 359,
+"nodes": 85,
+"nll": 47.64580375132573,
+"tokens": 98
+},
+{
+"set": "python",
+"task": "second_largest",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 163,
+"nodes": 29,
+"nll": 45.17189891346743,
+"tokens": 44
+},
+{
+"set": "proto_cnpy",
+"task": "second_largest",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 163,
+"nodes": null,
+"nll": 47.3488898360838,
+"tokens": 44
+},
+{
+"set": "canon_brace_claude",
+"task": "merge_sorted",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 138,
+"nodes": 23,
+"nll": 96.4511065131519,
+"tokens": 49
+},
+{
+"set": "canon_brace_claude",
+"task": "merge_sorted",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 138,
+"nodes": 23,
+"nll": 55.16518225229811,
+"tokens": 49
+},
+{
+"set": "canon_py_claude",
+"task": "merge_sorted",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 148,
+"nodes": 23,
+"nll": 81.35778011596994,
+"tokens": 46
+},
+{
+"set": "canon_py_claude",
+"task": "merge_sorted",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 148,
+"nodes": 23,
+"nll": 74.72881101066014,
+"tokens": 46
+},
+{
+"set": "canon_py_claude",
+"task": "merge_sorted",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 148,
+"nodes": 23,
+"nll": 54.679515649564564,
+"tokens": 46
+},
+{
+"set": "ts_claude",
+"task": "merge_sorted",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 493,
+"nodes": 135,
+"nll": 57.13373316379875,
+"tokens": 154
+},
+{
+"set": "canon_brace_gpt",
+"task": "merge_sorted",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 521,
+"nodes": 88,
+"nll": 130.9981468191836,
+"tokens": 169
+},
+{
+"set": "canon_brace_gpt",
+"task": "merge_sorted",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 521,
+"nodes": 88,
+"nll": 78.2308636312664,
+"tokens": 169
+},
+{
+"set": "canon_py_gpt",
+"task": "merge_sorted",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 537,
+"nodes": 88,
+"nll": 115.3636152190411,
+"tokens": 153
+},
+{
+"set": "canon_py_gpt",
+"task": "merge_sorted",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 537,
+"nodes": 88,
+"nll": 113.57134637492345,
+"tokens": 153
+},
+{
+"set": "canon_py_gpt",
+"task": "merge_sorted",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 537,
+"nodes": 88,
+"nll": 76.61378520457947,
+"tokens": 153
+},
+{
+"set": "ts_gpt",
+"task": "merge_sorted",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 469,
+"nodes": 127,
+"nll": 63.22338858844887,
+"tokens": 143
+},
+{
+"set": "python",
+"task": "merge_sorted",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 352,
+"nodes": 82,
+"nll": 35.81573646821562,
+"tokens": 102
+},
+{
+"set": "proto_cnpy",
+"task": "merge_sorted",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 307,
+"nodes": null,
+"nll": 39.87637099308631,
+"tokens": 93
+},
+{
+"set": "canon_brace_claude",
+"task": "chunk",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 168,
+"nodes": 31,
+"nll": 111.05770911253057,
+"tokens": 65
+},
+{
+"set": "canon_brace_claude",
+"task": "chunk",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 168,
+"nodes": 31,
+"nll": 49.71616753807757,
+"tokens": 65
+},
+{
+"set": "canon_py_claude",
+"task": "chunk",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 168,
+"nodes": 31,
+"nll": 99.39243197988253,
+"tokens": 57
+},
+{
+"set": "canon_py_claude",
+"task": "chunk",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 168,
+"nodes": 31,
+"nll": 96.69148938194849,
+"tokens": 57
+},
+{
+"set": "canon_py_claude",
+"task": "chunk",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 168,
+"nodes": 31,
+"nll": 62.71357670676662,
+"tokens": 57
+},
+{
+"set": "ts_claude",
+"task": "chunk",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 295,
+"nodes": 73,
+"nll": 51.18715385942778,
+"tokens": 91
+},
+{
+"set": "canon_brace_gpt",
+"task": "chunk",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 192,
+"nodes": 31,
+"nll": 114.71591129549779,
+"tokens": 65
+},
+{
+"set": "canon_brace_gpt",
+"task": "chunk",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 192,
+"nodes": 31,
+"nll": 53.981121275399346,
+"tokens": 65
+},
+{
+"set": "canon_py_gpt",
+"task": "chunk",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 215,
+"nodes": 31,
+"nll": 109.55340963136405,
+"tokens": 62
+},
+{
+"set": "canon_py_gpt",
+"task": "chunk",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 215,
+"nodes": 31,
+"nll": 105.55379002424888,
+"tokens": 62
+},
+{
+"set": "canon_py_gpt",
+"task": "chunk",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 215,
+"nodes": 31,
+"nll": 70.87516582239186,
+"tokens": 62
+},
+{
+"set": "ts_gpt",
+"task": "chunk",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 199,
+"nodes": 55,
+"nll": 40.85494746491895,
+"tokens": 59
+},
+{
+"set": "python",
+"task": "chunk",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 108,
+"nodes": 29,
+"nll": 32.45703942983528,
+"tokens": 37
+},
+{
+"set": "proto_cnpy",
+"task": "chunk",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 108,
+"nodes": null,
+"nll": 34.60910386274918,
+"tokens": 37
+},
+{
+"set": "canon_brace_claude",
+"task": "flatten",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 151,
+"nodes": 20,
+"nll": 64.44723160500871,
+"tokens": 49
+},
+{
+"set": "canon_brace_claude",
+"task": "flatten",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 151,
+"nodes": 20,
+"nll": 35.32303990973742,
+"tokens": 49
+},
+{
+"set": "canon_py_claude",
+"task": "flatten",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 149,
+"nodes": 20,
+"nll": 48.62306267373788,
+"tokens": 42
+},
+{
+"set": "canon_py_claude",
+"task": "flatten",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 149,
+"nodes": 20,
+"nll": 45.842472618824104,
+"tokens": 42
+},
+{
+"set": "canon_py_claude",
+"task": "flatten",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 149,
+"nodes": 20,
+"nll": 37.9183294447721,
+"tokens": 42
+},
+{
+"set": "ts_claude",
+"task": "flatten",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 187,
+"nodes": 39,
+"nll": 30.57123241267982,
+"tokens": 53
+},
+{
+"set": "canon_brace_gpt",
+"task": "flatten",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 165,
+"nodes": 24,
+"nll": 84.39938413462369,
+"tokens": 56
+},
+{
+"set": "canon_brace_gpt",
+"task": "flatten",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 165,
+"nodes": 24,
+"nll": 52.21563902339403,
+"tokens": 56
+},
+{
+"set": "canon_py_gpt",
+"task": "flatten",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 163,
+"nodes": 24,
+"nll": 71.0294289602025,
+"tokens": 49
+},
+{
+"set": "canon_py_gpt",
+"task": "flatten",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 163,
+"nodes": 24,
+"nll": 68.6065830301959,
+"tokens": 49
+},
+{
+"set": "canon_py_gpt",
+"task": "flatten",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 163,
+"nodes": 24,
+"nll": 53.83403888820976,
+"tokens": 49
+},
+{
+"set": "ts_gpt",
+"task": "flatten",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 76,
+"nodes": 17,
+"nll": 27.741955110337585,
+"tokens": 19
+},
+{
+"set": "python",
+"task": "flatten",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 89,
+"nodes": 17,
+"nll": 31.73757454047154,
+"tokens": 27
+},
+{
+"set": "proto_cnpy",
+"task": "flatten",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 89,
+"nodes": null,
+"nll": 34.0564501542176,
+"tokens": 27
+},
+{
+"set": "canon_brace_claude",
+"task": "zip_sum",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 170,
+"nodes": 37,
+"nll": 84.32804073009174,
+"tokens": 65
+},
+{
+"set": "canon_brace_claude",
+"task": "zip_sum",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 170,
+"nodes": 37,
+"nll": 50.930564109286934,
+"tokens": 65
+},
+{
+"set": "canon_py_claude",
+"task": "zip_sum",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 170,
+"nodes": 37,
+"nll": 75.24820971256122,
+"tokens": 60
+},
+{
+"set": "canon_py_claude",
+"task": "zip_sum",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 170,
+"nodes": 37,
+"nll": 74.4923286819103,
+"tokens": 60
+},
+{
+"set": "canon_py_claude",
+"task": "zip_sum",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 170,
+"nodes": 37,
+"nll": 52.26486942443444,
+"tokens": 60
+},
+{
+"set": "ts_claude",
+"task": "zip_sum",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 261,
+"nodes": 73,
+"nll": 58.195646850945195,
+"tokens": 83
+},
+{
+"set": "canon_brace_gpt",
+"task": "zip_sum",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 94,
+"nodes": 18,
+"nll": 69.41352007444948,
+"tokens": 36
+},
+{
+"set": "canon_brace_gpt",
+"task": "zip_sum",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 94,
+"nodes": 18,
+"nll": 40.27246828080388,
+"tokens": 36
+},
+{
+"set": "canon_py_gpt",
+"task": "zip_sum",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 100,
+"nodes": 18,
+"nll": 54.794458238757215,
+"tokens": 34
+},
+{
+"set": "canon_py_gpt",
+"task": "zip_sum",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 100,
+"nodes": 18,
+"nll": 50.10401593602728,
+"tokens": 34
+},
+{
+"set": "canon_py_gpt",
+"task": "zip_sum",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 100,
+"nodes": 18,
+"nll": 40.3036162329081,
+"tokens": 34
+},
+{
+"set": "ts_gpt",
+"task": "zip_sum",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 232,
+"nodes": 63,
+"nll": 44.51134554071177,
+"tokens": 68
+},
+{
+"set": "python",
+"task": "zip_sum",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 95,
+"nodes": 24,
+"nll": 32.71550925214251,
+"tokens": 33
+},
+{
+"set": "proto_cnpy",
+"task": "zip_sum",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 95,
+"nodes": null,
+"nll": 37.16310751676065,
+"tokens": 33
+},
+{
+"set": "canon_brace_claude",
+"task": "index_of",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 146,
+"nodes": 22,
+"nll": 67.24744686554186,
+"tokens": 49
+},
+{
+"set": "canon_brace_claude",
+"task": "index_of",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 146,
+"nodes": 22,
+"nll": 38.7945611741452,
+"tokens": 49
+},
+{
+"set": "canon_py_claude",
+"task": "index_of",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 148,
+"nodes": 22,
+"nll": 53.476077175932005,
+"tokens": 43
+},
+{
+"set": "canon_py_claude",
+"task": "index_of",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 148,
+"nodes": 22,
+"nll": 52.285860596835846,
+"tokens": 43
+},
+{
+"set": "canon_py_claude",
+"task": "index_of",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 148,
+"nodes": 22,
+"nll": 41.73615514085395,
+"tokens": 43
+},
+{
+"set": "ts_claude",
+"task": "index_of",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 173,
+"nodes": 42,
+"nll": 40.54534382093698,
+"tokens": 56
+},
+{
+"set": "canon_brace_gpt",
+"task": "index_of",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 181,
+"nodes": 25,
+"nll": 67.39725462072238,
+"tokens": 58
+},
+{
+"set": "canon_brace_gpt",
+"task": "index_of",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 181,
+"nodes": 25,
+"nll": 41.61646562619717,
+"tokens": 58
+},
+{
+"set": "canon_py_gpt",
+"task": "index_of",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 176,
+"nodes": 25,
+"nll": 51.710762362752575,
+"tokens": 49
+},
+{
+"set": "canon_py_gpt",
+"task": "index_of",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 176,
+"nodes": 25,
+"nll": 49.46643951100123,
+"tokens": 49
+},
+{
+"set": "canon_py_gpt",
+"task": "index_of",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 176,
+"nodes": 25,
+"nll": 43.23369740768976,
+"tokens": 49
+},
+{
+"set": "ts_gpt",
+"task": "index_of",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 138,
+"nodes": 36,
+"nll": 43.12888559419662,
+"tokens": 36
+},
+{
+"set": "python",
+"task": "index_of",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 146,
+"nodes": 25,
+"nll": 36.704119822970824,
+"tokens": 40
+},
+{
+"set": "proto_cnpy",
+"task": "index_of",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 146,
+"nodes": null,
+"nll": 40.13585578685161,
+"tokens": 40
+},
+{
+"set": "canon_brace_claude",
+"task": "count_greater",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 118,
+"nodes": 18,
+"nll": 95.83898009965196,
+"tokens": 38
+},
+{
+"set": "canon_brace_claude",
+"task": "count_greater",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 118,
+"nodes": 18,
+"nll": 42.93937679415103,
+"tokens": 38
+},
+{
+"set": "canon_py_claude",
+"task": "count_greater",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 123,
+"nodes": 18,
+"nll": 74.77234772412339,
+"tokens": 36
+},
+{
+"set": "canon_py_claude",
+"task": "count_greater",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 123,
+"nodes": 18,
+"nll": 67.34704770951066,
+"tokens": 36
+},
+{
+"set": "canon_py_claude",
+"task": "count_greater",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 123,
+"nodes": 18,
+"nll": 49.350633310503326,
+"tokens": 36
+},
+{
+"set": "ts_claude",
+"task": "count_greater",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 174,
+"nodes": 35,
+"nll": 46.599848263780586,
+"tokens": 50
+},
+{
+"set": "canon_brace_gpt",
+"task": "count_greater",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 155,
+"nodes": 20,
+"nll": 69.98524244787404,
+"tokens": 51
+},
+{
+"set": "canon_brace_gpt",
+"task": "count_greater",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 155,
+"nodes": 20,
+"nll": 35.45906415695208,
+"tokens": 51
+},
+{
+"set": "canon_py_gpt",
+"task": "count_greater",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 146,
+"nodes": 20,
+"nll": 40.597169123764616,
+"tokens": 43
+},
+{
+"set": "canon_py_gpt",
+"task": "count_greater",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 146,
+"nodes": 20,
+"nll": 36.97690323198913,
+"tokens": 43
+},
+{
+"set": "canon_py_gpt",
+"task": "count_greater",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 146,
+"nodes": 20,
+"nll": 35.962669189611915,
+"tokens": 43
+},
+{
+"set": "ts_gpt",
+"task": "count_greater",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 174,
+"nodes": 35,
+"nll": 46.599848263780586,
+"tokens": 50
+},
+{
+"set": "python",
+"task": "count_greater",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 96,
+"nodes": 18,
+"nll": 40.24357445555506,
+"tokens": 29
+},
+{
+"set": "proto_cnpy",
+"task": "count_greater",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 98,
+"nodes": null,
+"nll": 42.52320627128938,
+"tokens": 29
+},
+{
+"set": "canon_brace_claude",
+"task": "word_lengths",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 121,
+"nodes": 21,
+"nll": 81.17743605189025,
+"tokens": 39
+},
+{
+"set": "canon_brace_claude",
+"task": "word_lengths",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 121,
+"nodes": 21,
+"nll": 41.25735636200989,
+"tokens": 39
+},
+{
+"set": "canon_py_claude",
+"task": "word_lengths",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 125,
+"nodes": 21,
+"nll": 74.01993238902651,
+"tokens": 34
+},
+{
+"set": "canon_py_claude",
+"task": "word_lengths",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 125,
+"nodes": 21,
+"nll": 72.45522293413524,
+"tokens": 34
+},
+{
+"set": "canon_py_claude",
+"task": "word_lengths",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 125,
+"nodes": 21,
+"nll": 42.89178717602044,
+"tokens": 34
+},
+{
+"set": "ts_claude",
+"task": "word_lengths",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 159,
+"nodes": 40,
+"nll": 51.070499928697245,
+"tokens": 44
+},
+{
+"set": "canon_brace_gpt",
+"task": "word_lengths",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 114,
+"nodes": 18,
+"nll": 76.73418041784316,
+"tokens": 35
+},
+{
+"set": "canon_brace_gpt",
+"task": "word_lengths",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 114,
+"nodes": 18,
+"nll": 40.73618380154949,
+"tokens": 35
+},
+{
+"set": "canon_py_gpt",
+"task": "word_lengths",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 112,
+"nodes": 18,
+"nll": 69.80627312534489,
+"tokens": 30
+},
+{
+"set": "canon_py_gpt",
+"task": "word_lengths",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 112,
+"nodes": 18,
+"nll": 67.29122043517418,
+"tokens": 30
+},
+{
+"set": "canon_py_gpt",
+"task": "word_lengths",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 112,
+"nodes": 18,
+"nll": 45.04388579854276,
+"tokens": 30
+},
+{
+"set": "ts_gpt",
+"task": "word_lengths",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 120,
+"nodes": 34,
+"nll": 40.12576282084774,
+"tokens": 32
+},
+{
+"set": "python",
+"task": "word_lengths",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 87,
+"nodes": 16,
+"nll": 31.060526701738127,
+"tokens": 25
+},
+{
+"set": "proto_cnpy",
+"task": "word_lengths",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 87,
+"nodes": null,
+"nll": 36.18601874951855,
+"tokens": 25
+},
+{
+"set": "canon_brace_claude",
+"task": "repeat_string",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 142,
+"nodes": 24,
+"nll": 67.3098822623142,
+"tokens": 54
+},
+{
+"set": "canon_brace_claude",
+"task": "repeat_string",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 142,
+"nodes": 24,
+"nll": 35.34602020072634,
+"tokens": 54
+},
+{
+"set": "canon_py_claude",
+"task": "repeat_string",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 129,
+"nodes": 24,
+"nll": 37.384802749496885,
+"tokens": 45
+},
+{
+"set": "canon_py_claude",
+"task": "repeat_string",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 129,
+"nodes": 24,
+"nll": 34.30893833312439,
+"tokens": 45
+},
+{
+"set": "canon_py_claude",
+"task": "repeat_string",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 129,
+"nodes": 24,
+"nll": 37.61039388665813,
+"tokens": 45
+},
+{
+"set": "ts_claude",
+"task": "repeat_string",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 355,
+"nodes": 89,
+"nll": 78.20686098481383,
+"tokens": 111
+},
+{
+"set": "canon_brace_gpt",
+"task": "repeat_string",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 310,
+"nodes": 44,
+"nll": 116.31309750548098,
+"tokens": 97
+},
+{
+"set": "canon_brace_gpt",
+"task": "repeat_string",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 310,
+"nodes": 44,
+"nll": 62.94468371214316,
+"tokens": 97
+},
+{
+"set": "canon_py_gpt",
+"task": "repeat_string",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 280,
+"nodes": 44,
+"nll": 94.57235169160413,
+"tokens": 79
+},
+{
+"set": "canon_py_gpt",
+"task": "repeat_string",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 280,
+"nodes": 44,
+"nll": 90.97152886033291,
+"tokens": 79
+},
+{
+"set": "canon_py_gpt",
+"task": "repeat_string",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 280,
+"nodes": 44,
+"nll": 78.65733124568942,
+"tokens": 79
+},
+{
+"set": "ts_gpt",
+"task": "repeat_string",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 86,
+"nodes": 18,
+"nll": 28.57654119003564,
+"tokens": 21
+},
+{
+"set": "python",
+"task": "repeat_string",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 59,
+"nodes": 10,
+"nll": 21.97927720064763,
+"tokens": 20
+},
+{
+"set": "proto_cnpy",
+"task": "repeat_string",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 59,
+"nodes": null,
+"nll": 25.60886539774947,
+"tokens": 20
+},
+{
+"set": "canon_brace_claude",
+"task": "join_ints",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 101,
+"nodes": 16,
+"nll": 71.03772655501962,
+"tokens": 32
+},
+{
+"set": "canon_brace_claude",
+"task": "join_ints",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 101,
+"nodes": 16,
+"nll": 35.68444459675811,
+"tokens": 32
+},
+{
+"set": "canon_py_claude",
+"task": "join_ints",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 101,
+"nodes": 16,
+"nll": 66.16168200963875,
+"tokens": 31
+},
+{
+"set": "canon_py_claude",
+"task": "join_ints",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 101,
+"nodes": 16,
+"nll": 64.0926025902445,
+"tokens": 31
+},
+{
+"set": "canon_py_claude",
+"task": "join_ints",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 101,
+"nodes": 16,
+"nll": 36.76729995396454,
+"tokens": 31
+},
+{
+"set": "ts_claude",
+"task": "join_ints",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 346,
+"nodes": 48,
+"nll": 142.98516675627525,
+"tokens": 93
+},
+{
+"set": "canon_brace_gpt",
+"task": "join_ints",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 101,
+"nodes": 16,
+"nll": 71.03772655501962,
+"tokens": 32
+},
+{
+"set": "canon_brace_gpt",
+"task": "join_ints",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 101,
+"nodes": 16,
+"nll": 35.68444459675811,
+"tokens": 32
+},
+{
+"set": "canon_py_gpt",
+"task": "join_ints",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 101,
+"nodes": 16,
+"nll": 66.16168200963875,
+"tokens": 31
+},
+{
+"set": "canon_py_gpt",
+"task": "join_ints",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 101,
+"nodes": 16,
+"nll": 64.0926025902445,
+"tokens": 31
+},
+{
+"set": "canon_py_gpt",
+"task": "join_ints",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 101,
+"nodes": 16,
+"nll": 36.76729995396454,
+"tokens": 31
+},
+{
+"set": "ts_gpt",
+"task": "join_ints",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 123,
+"nodes": 33,
+"nll": 55.54039967036465,
+"tokens": 36
+},
+{
+"set": "python",
+"task": "join_ints",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 87,
+"nodes": 18,
+"nll": 39.21519518479181,
+"tokens": 28
+},
+{
+"set": "proto_cnpy",
+"task": "join_ints",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 89,
+"nodes": null,
+"nll": 42.09267051919596,
+"tokens": 29
+},
+{
+"set": "canon_brace_claude",
+"task": "parse_sum",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 756,
+"nodes": 123,
+"nll": 246.46219732427562,
+"tokens": 248
+},
+{
+"set": "canon_brace_claude",
+"task": "parse_sum",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 756,
+"nodes": 123,
+"nll": 181.62507894024748,
+"tokens": 248
+},
+{
+"set": "canon_py_claude",
+"task": "parse_sum",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 738,
+"nodes": 123,
+"nll": 224.56529268173836,
+"tokens": 226
+},
+{
+"set": "canon_py_claude",
+"task": "parse_sum",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 738,
+"nodes": 123,
+"nll": 224.0601409607989,
+"tokens": 226
+},
+{
+"set": "canon_py_claude",
+"task": "parse_sum",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 738,
+"nodes": 123,
+"nll": 182.287568990585,
+"tokens": 226
+},
+{
+"set": "ts_claude",
+"task": "parse_sum",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 363,
+"nodes": 66,
+"nll": 100.84775701013677,
+"tokens": 92
+},
+{
+"set": "canon_brace_gpt",
+"task": "parse_sum",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 513,
+"nodes": 70,
+"nll": 167.52363124232215,
+"tokens": 158
+},
+{
+"set": "canon_brace_gpt",
+"task": "parse_sum",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 513,
+"nodes": 70,
+"nll": 129.23139914739295,
+"tokens": 158
+},
+{
+"set": "canon_py_gpt",
+"task": "parse_sum",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 516,
+"nodes": 70,
+"nll": 169.83301746327197,
+"tokens": 136
+},
+{
+"set": "canon_py_gpt",
+"task": "parse_sum",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 516,
+"nodes": 70,
+"nll": 166.16474440439197,
+"tokens": 136
+},
+{
+"set": "canon_py_gpt",
+"task": "parse_sum",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 516,
+"nodes": 70,
+"nll": 137.10688422812382,
+"tokens": 136
+},
+{
+"set": "ts_gpt",
+"task": "parse_sum",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 198,
+"nodes": 42,
+"nll": 67.86383128163288,
+"tokens": 59
+},
+{
+"set": "python",
+"task": "parse_sum",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 178,
+"nodes": 28,
+"nll": 53.970343309229065,
+"tokens": 52
+},
+{
+"set": "proto_cnpy",
+"task": "parse_sum",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 168,
+"nodes": null,
+"nll": 55.52082241792232,
+"tokens": 47
+},
+{
+"set": "canon_brace_claude",
+"task": "min_max",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 181,
+"nodes": 36,
+"nll": 91.26717828901019,
+"tokens": 67
+},
+{
+"set": "canon_brace_claude",
+"task": "min_max",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 181,
+"nodes": 36,
+"nll": 50.62967023771489,
+"tokens": 67
+},
+{
+"set": "canon_py_claude",
+"task": "min_max",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 232,
+"nodes": 36,
+"nll": 80.98272321553668,
+"tokens": 66
+},
+{
+"set": "canon_py_claude",
+"task": "min_max",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 232,
+"nodes": 36,
+"nll": 80.20470632408978,
+"tokens": 66
+},
+{
+"set": "canon_py_claude",
+"task": "min_max",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 232,
+"nodes": 36,
+"nll": 50.98614510343032,
+"tokens": 66
+},
+{
+"set": "ts_claude",
+"task": "min_max",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 317,
+"nodes": 86,
+"nll": 47.85567478695884,
+"tokens": 112
+},
+{
+"set": "canon_brace_gpt",
+"task": "min_max",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 190,
+"nodes": 36,
+"nll": 103.13497910043225,
+"tokens": 67
+},
+{
+"set": "canon_brace_gpt",
+"task": "min_max",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 190,
+"nodes": 36,
+"nll": 58.0453030623612,
+"tokens": 67
+},
+{
+"set": "canon_py_gpt",
+"task": "min_max",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 241,
+"nodes": 36,
+"nll": 91.11353223404149,
+"tokens": 66
+},
+{
+"set": "canon_py_gpt",
+"task": "min_max",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 241,
+"nodes": 36,
+"nll": 89.96839199686656,
+"tokens": 66
+},
+{
+"set": "canon_py_gpt",
+"task": "min_max",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 241,
+"nodes": 36,
+"nll": 57.727028295710625,
+"tokens": 66
+},
+{
+"set": "ts_gpt",
+"task": "min_max",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 272,
+"nodes": 69,
+"nll": 55.52821133379257,
+"tokens": 87
+},
+{
+"set": "python",
+"task": "min_max",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 119,
+"nodes": 25,
+"nll": 40.50588564958889,
+"tokens": 35
+},
+{
+"set": "proto_cnpy",
+"task": "min_max",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 125,
+"nodes": null,
+"nll": 44.01502369262744,
+"tokens": 39
+},
+{
+"set": "canon_brace_claude",
+"task": "pairs_summing",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 220,
+"nodes": 33,
+"nll": 97.68837162578711,
+"tokens": 75
+},
+{
+"set": "canon_brace_claude",
+"task": "pairs_summing",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 220,
+"nodes": 33,
+"nll": 62.56320842209243,
+"tokens": 75
+},
+{
+"set": "canon_py_claude",
+"task": "pairs_summing",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 212,
+"nodes": 33,
+"nll": 73.98623843319365,
+"tokens": 65
+},
+{
+"set": "canon_py_claude",
+"task": "pairs_summing",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 212,
+"nodes": 33,
+"nll": 72.3511211075238,
+"tokens": 65
+},
+{
+"set": "canon_py_claude",
+"task": "pairs_summing",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 212,
+"nodes": 33,
+"nll": 63.45014038043155,
+"tokens": 65
+},
+{
+"set": "ts_claude",
+"task": "pairs_summing",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 326,
+"nodes": 80,
+"nll": 67.70294079551968,
+"tokens": 98
+},
+{
+"set": "canon_brace_gpt",
+"task": "pairs_summing",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 525,
+"nodes": 63,
+"nll": 250.31151859756574,
+"tokens": 147
+},
+{
+"set": "canon_brace_gpt",
+"task": "pairs_summing",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 525,
+"nodes": 63,
+"nll": 177.04392427362836,
+"tokens": 147
+},
+{
+"set": "canon_py_gpt",
+"task": "pairs_summing",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 522,
+"nodes": 63,
+"nll": 244.14383392692253,
+"tokens": 134
+},
+{
+"set": "canon_py_gpt",
+"task": "pairs_summing",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 522,
+"nodes": 63,
+"nll": 240.2079175307481,
+"tokens": 134
+},
+{
+"set": "canon_py_gpt",
+"task": "pairs_summing",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 522,
+"nodes": 63,
+"nll": 182.26432232117077,
+"tokens": 134
+},
+{
+"set": "ts_gpt",
+"task": "pairs_summing",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 636,
+"nodes": 142,
+"nll": 175.42265017746013,
+"tokens": 183
+},
+{
+"set": "python",
+"task": "pairs_summing",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 221,
+"nodes": 43,
+"nll": 40.13172353415575,
+"tokens": 65
+},
+{
+"set": "proto_cnpy",
+"task": "pairs_summing",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 221,
+"nodes": null,
+"nll": 42.50902304491319,
+"tokens": 65
+},
+{
+"set": "canon_brace_claude",
+"task": "rotate_left",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 243,
+"nodes": 43,
+"nll": 125.82461407606024,
+"tokens": 89
+},
+{
+"set": "canon_brace_claude",
+"task": "rotate_left",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 243,
+"nodes": 43,
+"nll": 70.28900064001209,
+"tokens": 89
+},
+{
+"set": "canon_py_claude",
+"task": "rotate_left",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 241,
+"nodes": 43,
+"nll": 110.6479585658526,
+"tokens": 80
+},
+{
+"set": "canon_py_claude",
+"task": "rotate_left",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 241,
+"nodes": 43,
+"nll": 106.55051122640725,
+"tokens": 80
+},
+{
+"set": "canon_py_claude",
+"task": "rotate_left",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 241,
+"nodes": 43,
+"nll": 80.90404336134088,
+"tokens": 80
+},
+{
+"set": "ts_claude",
+"task": "rotate_left",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 262,
+"nodes": 71,
+"nll": 61.36900219299059,
+"tokens": 82
+},
+{
+"set": "canon_brace_gpt",
+"task": "rotate_left",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 240,
+"nodes": 38,
+"nll": 104.45126458410232,
+"tokens": 80
+},
+{
+"set": "canon_brace_gpt",
+"task": "rotate_left",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 240,
+"nodes": 38,
+"nll": 62.61879613072415,
+"tokens": 80
+},
+{
+"set": "canon_py_gpt",
+"task": "rotate_left",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 236,
+"nodes": 38,
+"nll": 77.8770544441486,
+"tokens": 70
+},
+{
+"set": "canon_py_gpt",
+"task": "rotate_left",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 236,
+"nodes": 38,
+"nll": 75.5099282026149,
+"tokens": 70
+},
+{
+"set": "canon_py_gpt",
+"task": "rotate_left",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 236,
+"nodes": 38,
+"nll": 64.17172181518981,
+"tokens": 70
+},
+{
+"set": "ts_gpt",
+"task": "rotate_left",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 199,
+"nodes": 49,
+"nll": 50.72877749821055,
+"tokens": 54
+},
+{
+"set": "python",
+"task": "rotate_left",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 133,
+"nodes": 32,
+"nll": 41.54632325147395,
+"tokens": 42
+},
+{
+"set": "proto_cnpy",
+"task": "rotate_left",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 139,
+"nodes": null,
+"nll": 43.348865741165355,
+"tokens": 46
+},
+{
+"set": "canon_brace_claude",
+"task": "balanced_parens",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 349,
+"nodes": 54,
+"nll": 155.11412810866022,
+"tokens": 114
+},
+{
+"set": "canon_brace_claude",
+"task": "balanced_parens",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 349,
+"nodes": 54,
+"nll": 114.87680857631494,
+"tokens": 114
+},
+{
+"set": "canon_py_claude",
+"task": "balanced_parens",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 334,
+"nodes": 54,
+"nll": 121.36088701582048,
+"tokens": 100
+},
+{
+"set": "canon_py_claude",
+"task": "balanced_parens",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 334,
+"nodes": 54,
+"nll": 122.06581237819046,
+"tokens": 100
+},
+{
+"set": "canon_py_claude",
+"task": "balanced_parens",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 334,
+"nodes": 54,
+"nll": 109.78077580325771,
+"tokens": 100
+},
+{
+"set": "ts_claude",
+"task": "balanced_parens",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 308,
+"nodes": 68,
+"nll": 53.27052798897785,
+"tokens": 99
+},
+{
+"set": "canon_brace_gpt",
+"task": "balanced_parens",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 259,
+"nodes": 38,
+"nll": 79.23559683180065,
+"tokens": 83
+},
+{
+"set": "canon_brace_gpt",
+"task": "balanced_parens",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 259,
+"nodes": 38,
+"nll": 42.73902690348041,
+"tokens": 83
+},
+{
+"set": "canon_py_gpt",
+"task": "balanced_parens",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 249,
+"nodes": 38,
+"nll": 62.116575833104434,
+"tokens": 69
+},
+{
+"set": "canon_py_gpt",
+"task": "balanced_parens",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 249,
+"nodes": 38,
+"nll": 61.9778055062925,
+"tokens": 69
+},
+{
+"set": "canon_py_gpt",
+"task": "balanced_parens",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 249,
+"nodes": 38,
+"nll": 47.19406435430574,
+"tokens": 69
+},
+{
+"set": "ts_gpt",
+"task": "balanced_parens",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 273,
+"nodes": 51,
+"nll": 47.3973447963981,
+"tokens": 79
+},
+{
+"set": "python",
+"task": "balanced_parens",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 234,
+"nodes": 34,
+"nll": 36.61079933239671,
+"tokens": 66
+},
+{
+"set": "proto_cnpy",
+"task": "balanced_parens",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 234,
+"nodes": null,
+"nll": 37.48220212630986,
+"tokens": 66
+},
+{
+"set": "canon_brace_claude",
+"task": "collatz_steps",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 239,
+"nodes": 42,
+"nll": 82.64789740934793,
+"tokens": 98
+},
+{
+"set": "canon_brace_claude",
+"task": "collatz_steps",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 239,
+"nodes": 42,
+"nll": 40.18257164932584,
+"tokens": 98
+},
+{
+"set": "canon_py_claude",
+"task": "collatz_steps",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 234,
+"nodes": 42,
+"nll": 68.44820786867058,
+"tokens": 84
+},
+{
+"set": "canon_py_claude",
+"task": "collatz_steps",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 234,
+"nodes": 42,
+"nll": 66.04031731201394,
+"tokens": 84
+},
+{
+"set": "canon_py_claude",
+"task": "collatz_steps",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 234,
+"nodes": 42,
+"nll": 53.050537883616926,
+"tokens": 84
+},
+{
+"set": "ts_claude",
+"task": "collatz_steps",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 826,
+"nodes": 185,
+"nll": 166.95445641676224,
+"tokens": 280
+},
+{
+"set": "canon_brace_gpt",
+"task": "collatz_steps",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 1256,
+"nodes": 163,
+"nll": 277.95078781967277,
+"tokens": 404
+},
+{
+"set": "canon_brace_gpt",
+"task": "collatz_steps",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 1256,
+"nodes": 163,
+"nll": 227.28700244430638,
+"tokens": 404
+},
+{
+"set": "canon_py_gpt",
+"task": "collatz_steps",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 1249,
+"nodes": 163,
+"nll": 269.6770269650224,
+"tokens": 363
+},
+{
+"set": "canon_py_gpt",
+"task": "collatz_steps",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 1249,
+"nodes": 163,
+"nll": 269.7050331645951,
+"tokens": 363
+},
+{
+"set": "canon_py_gpt",
+"task": "collatz_steps",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 1249,
+"nodes": 163,
+"nll": 234.5921907673196,
+"tokens": 363
+},
+{
+"set": "ts_gpt",
+"task": "collatz_steps",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 331,
+"nodes": 75,
+"nll": 63.78514490637281,
+"tokens": 104
+},
+{
+"set": "python",
+"task": "collatz_steps",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 185,
+"nodes": 32,
+"nll": 28.27421826160571,
+"tokens": 64
+},
+{
+"set": "proto_cnpy",
+"task": "collatz_steps",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 185,
+"nodes": null,
+"nll": 29.54218988500361,
+"tokens": 64
+},
+{
+"set": "canon_brace_claude",
+"task": "binary_string",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 190,
+"nodes": 36,
+"nll": 90.5292030122364,
+"tokens": 79
+},
+{
+"set": "canon_brace_claude",
+"task": "binary_string",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 190,
+"nodes": 36,
+"nll": 48.886164320956595,
+"tokens": 79
+},
+{
+"set": "canon_py_claude",
+"task": "binary_string",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 185,
+"nodes": 36,
+"nll": 78.53365112247411,
+"tokens": 68
+},
+{
+"set": "canon_py_claude",
+"task": "binary_string",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 185,
+"nodes": 36,
+"nll": 74.68043375582783,
+"tokens": 68
+},
+{
+"set": "canon_py_claude",
+"task": "binary_string",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 185,
+"nodes": 36,
+"nll": 62.30488927746046,
+"tokens": 68
+},
+{
+"set": "ts_claude",
+"task": "binary_string",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 114,
+"nodes": 23,
+"nll": 41.19632562343031,
+"tokens": 34
+},
+{
+"set": "canon_brace_gpt",
+"task": "binary_string",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 250,
+"nodes": 36,
+"nll": 95.17453820907394,
+"tokens": 80
+},
+{
+"set": "canon_brace_gpt",
+"task": "binary_string",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 250,
+"nodes": 36,
+"nll": 53.88610058207996,
+"tokens": 80
+},
+{
+"set": "canon_py_gpt",
+"task": "binary_string",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 237,
+"nodes": 36,
+"nll": 83.41600420849863,
+"tokens": 69
+},
+{
+"set": "canon_py_gpt",
+"task": "binary_string",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 237,
+"nodes": 36,
+"nll": 80.41183937271126,
+"tokens": 69
+},
+{
+"set": "canon_py_gpt",
+"task": "binary_string",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 237,
+"nodes": 36,
+"nll": 66.78619585888009,
+"tokens": 69
+},
+{
+"set": "ts_gpt",
+"task": "binary_string",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 77,
+"nodes": 15,
+"nll": 31.14763954782393,
+"tokens": 18
+},
+{
+"set": "python",
+"task": "binary_string",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 172,
+"nodes": 31,
+"nll": 38.03535383392591,
+"tokens": 55
+},
+{
+"set": "proto_cnpy",
+"task": "binary_string",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 172,
+"nodes": null,
+"nll": 39.72544239892159,
+"tokens": 55
+},
+{
+"set": "canon_brace_claude",
+"task": "mean_above",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 192,
+"nodes": 31,
+"nll": 98.29022190932301,
+"tokens": 67
+},
+{
+"set": "canon_brace_claude",
+"task": "mean_above",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 192,
+"nodes": 31,
+"nll": 48.91318114774913,
+"tokens": 67
+},
+{
+"set": "canon_py_claude",
+"task": "mean_above",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 195,
+"nodes": 31,
+"nll": 85.45411655778298,
+"tokens": 61
+},
+{
+"set": "canon_py_claude",
+"task": "mean_above",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 195,
+"nodes": 31,
+"nll": 85.18528748344397,
+"tokens": 61
+},
+{
+"set": "canon_py_claude",
+"task": "mean_above",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 195,
+"nodes": 31,
+"nll": 49.98869272424781,
+"tokens": 61
+},
+{
+"set": "ts_claude",
+"task": "mean_above",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 228,
+"nodes": 56,
+"nll": 60.15337481400638,
+"tokens": 74
+},
+{
+"set": "canon_brace_gpt",
+"task": "mean_above",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 255,
+"nodes": 37,
+"nll": 87.33680762618314,
+"tokens": 88
+},
+{
+"set": "canon_brace_gpt",
+"task": "mean_above",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 255,
+"nodes": 37,
+"nll": 45.42467300361022,
+"tokens": 88
+},
+{
+"set": "canon_py_gpt",
+"task": "mean_above",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 244,
+"nodes": 37,
+"nll": 71.37749076780165,
+"tokens": 74
+},
+{
+"set": "canon_py_gpt",
+"task": "mean_above",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 244,
+"nodes": 37,
+"nll": 69.45084321603645,
+"tokens": 74
+},
+{
+"set": "canon_py_gpt",
+"task": "mean_above",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 244,
+"nodes": 37,
+"nll": 49.40734284745122,
+"tokens": 74
+},
+{
+"set": "ts_gpt",
+"task": "mean_above",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 230,
+"nodes": 56,
+"nll": 62.24689092155313,
+"tokens": 74
+},
+{
+"set": "python",
+"task": "mean_above",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 169,
+"nodes": 30,
+"nll": 48.53026537662663,
+"tokens": 52
+},
+{
+"set": "proto_cnpy",
+"task": "mean_above",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 175,
+"nodes": null,
+"nll": 51.221428905155335,
+"tokens": 57
+},
+{
+"set": "canon_brace_claude",
+"task": "most_common_word",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 263,
+"nodes": 39,
+"nll": 137.1001075853128,
+"tokens": 85
+},
+{
+"set": "canon_brace_claude",
+"task": "most_common_word",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 263,
+"nodes": 39,
+"nll": 69.53449965285836,
+"tokens": 85
+},
+{
+"set": "canon_py_claude",
+"task": "most_common_word",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 282,
+"nodes": 39,
+"nll": 118.01768891583197,
+"tokens": 72
+},
+{
+"set": "canon_py_claude",
+"task": "most_common_word",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 282,
+"nodes": 39,
+"nll": 117.94191700837109,
+"tokens": 72
+},
+{
+"set": "canon_py_claude",
+"task": "most_common_word",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 282,
+"nodes": 39,
+"nll": 74.57960598892532,
+"tokens": 72
+},
+{
+"set": "ts_claude",
+"task": "most_common_word",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 600,
+"nodes": 128,
+"nll": 109.94838603551307,
+"tokens": 178
+},
+{
+"set": "canon_brace_gpt",
+"task": "most_common_word",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 349,
+"nodes": 45,
+"nll": 135.37936193612404,
+"tokens": 102
+},
+{
+"set": "canon_brace_gpt",
+"task": "most_common_word",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 349,
+"nodes": 45,
+"nll": 71.64995114727935,
+"tokens": 102
+},
+{
+"set": "canon_py_gpt",
+"task": "most_common_word",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 352,
+"nodes": 45,
+"nll": 97.16095015511382,
+"tokens": 89
+},
+{
+"set": "canon_py_gpt",
+"task": "most_common_word",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 352,
+"nodes": 45,
+"nll": 99.82570998487063,
+"tokens": 89
+},
+{
+"set": "canon_py_gpt",
+"task": "most_common_word",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 352,
+"nodes": 45,
+"nll": 64.40434846871358,
+"tokens": 89
+},
+{
+"set": "ts_gpt",
+"task": "most_common_word",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 437,
+"nodes": 97,
+"nll": 68.70217995244457,
+"tokens": 126
+},
+{
+"set": "python",
+"task": "most_common_word",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 345,
+"nodes": 65,
+"nll": 61.99802433007426,
+"tokens": 96
+},
+{
+"set": "proto_cnpy",
+"task": "most_common_word",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 317,
+"nodes": null,
+"nll": 59.34961057099281,
+"tokens": 86
+},
+{
+"set": "canon_brace_claude",
+"task": "triangle_numbers",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 115,
+"nodes": 24,
+"nll": 84.23237693530973,
+"tokens": 48
+},
+{
+"set": "canon_brace_claude",
+"task": "triangle_numbers",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 115,
+"nodes": 24,
+"nll": 45.23491354174621,
+"tokens": 48
+},
+{
+"set": "canon_py_claude",
+"task": "triangle_numbers",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 120,
+"nodes": 24,
+"nll": 76.60303421784192,
+"tokens": 45
+},
+{
+"set": "canon_py_claude",
+"task": "triangle_numbers",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 120,
+"nodes": 24,
+"nll": 70.80407588439994,
+"tokens": 45
+},
+{
+"set": "canon_py_claude",
+"task": "triangle_numbers",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 120,
+"nodes": 24,
+"nll": 51.69319451684714,
+"tokens": 45
+},
+{
+"set": "ts_claude",
+"task": "triangle_numbers",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 291,
+"nodes": 72,
+"nll": 63.10758849908598,
+"tokens": 88
+},
+{
+"set": "canon_brace_gpt",
+"task": "triangle_numbers",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 235,
+"nodes": 45,
+"nll": 132.03200451622251,
+"tokens": 89
+},
+{
+"set": "canon_brace_gpt",
+"task": "triangle_numbers",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 235,
+"nodes": 45,
+"nll": 88.55239259821246,
+"tokens": 89
+},
+{
+"set": "canon_py_gpt",
+"task": "triangle_numbers",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 241,
+"nodes": 45,
+"nll": 111.6538554202998,
+"tokens": 83
+},
+{
+"set": "canon_py_gpt",
+"task": "triangle_numbers",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 241,
+"nodes": 45,
+"nll": 110.96452645788668,
+"tokens": 83
+},
+{
+"set": "canon_py_gpt",
+"task": "triangle_numbers",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 241,
+"nodes": 45,
+"nll": 91.24696060933638,
+"tokens": 83
+},
+{
+"set": "ts_gpt",
+"task": "triangle_numbers",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 196,
+"nodes": 47,
+"nll": 40.93924123494071,
+"tokens": 59
+},
+{
+"set": "python",
+"task": "triangle_numbers",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 98,
+"nodes": 22,
+"nll": 30.853605432013865,
+"tokens": 37
+},
+{
+"set": "proto_cnpy",
+"task": "triangle_numbers",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 98,
+"nodes": null,
+"nll": 33.47135063188762,
+"tokens": 37
+},
+{
+"set": "canon_brace_claude",
+"task": "count_char",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 128,
+"nodes": 21,
+"nll": 95.88584847946186,
+"tokens": 47
+},
+{
+"set": "canon_brace_claude",
+"task": "count_char",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 128,
+"nodes": 21,
+"nll": 39.1041949155624,
+"tokens": 47
+},
+{
+"set": "canon_py_claude",
+"task": "count_char",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 120,
+"nodes": 21,
+"nll": 85.42587769369129,
+"tokens": 44
+},
+{
+"set": "canon_py_claude",
+"task": "count_char",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 120,
+"nodes": 21,
+"nll": 88.51194589881925,
+"tokens": 44
+},
+{
+"set": "canon_py_claude",
+"task": "count_char",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 120,
+"nodes": 21,
+"nll": 54.52127838857996,
+"tokens": 44
+},
+{
+"set": "ts_claude",
+"task": "count_char",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 205,
+"nodes": 44,
+"nll": 48.379623951157555,
+"tokens": 67
+},
+{
+"set": "canon_brace_gpt",
+"task": "count_char",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 77,
+"nodes": 13,
+"nll": 62.77021020837128,
+"tokens": 27
+},
+{
+"set": "canon_brace_gpt",
+"task": "count_char",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 77,
+"nodes": 13,
+"nll": 33.6432906887494,
+"tokens": 27
+},
+{
+"set": "canon_py_gpt",
+"task": "count_char",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 71,
+"nodes": 13,
+"nll": 41.79413391905837,
+"tokens": 26
+},
+{
+"set": "canon_py_gpt",
+"task": "count_char",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 71,
+"nodes": 13,
+"nll": 40.3864596565254,
+"tokens": 26
+},
+{
+"set": "canon_py_gpt",
+"task": "count_char",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 71,
+"nodes": 13,
+"nll": 35.71822981751757,
+"tokens": 26
+},
+{
+"set": "ts_gpt",
+"task": "count_char",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 169,
+"nodes": 34,
+"nll": 39.400928250921424,
+"tokens": 50
+},
+{
+"set": "python",
+"task": "count_char",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 61,
+"nodes": 11,
+"nll": 26.974085265945178,
+"tokens": 20
+},
+{
+"set": "proto_cnpy",
+"task": "count_char",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 61,
+"nodes": null,
+"nll": 29.604640888632275,
+"tokens": 20
+},
+{
+"set": "canon_brace_claude",
+"task": "safe_div",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 102,
+"nodes": 17,
+"nll": 55.4252243838273,
+"tokens": 37
+},
+{
+"set": "canon_brace_claude",
+"task": "safe_div",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 102,
+"nodes": 17,
+"nll": 28.264849584404146,
+"tokens": 37
+},
+{
+"set": "canon_py_claude",
+"task": "safe_div",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 103,
+"nodes": 17,
+"nll": 44.7334637560416,
+"tokens": 33
+},
+{
+"set": "canon_py_claude",
+"task": "safe_div",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 103,
+"nodes": 17,
+"nll": 41.70828972419258,
+"tokens": 33
+},
+{
+"set": "canon_py_claude",
+"task": "safe_div",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 103,
+"nodes": 17,
+"nll": 30.66300354048144,
+"tokens": 33
+},
+{
+"set": "ts_claude",
+"task": "safe_div",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 176,
+"nodes": 45,
+"nll": 56.448675015883055,
+"tokens": 55
+},
+{
+"set": "canon_brace_gpt",
+"task": "safe_div",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 102,
+"nodes": 17,
+"nll": 55.4252243838273,
+"tokens": 37
+},
+{
+"set": "canon_brace_gpt",
+"task": "safe_div",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 102,
+"nodes": 17,
+"nll": 28.264849584404146,
+"tokens": 37
+},
+{
+"set": "canon_py_gpt",
+"task": "safe_div",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 103,
+"nodes": 17,
+"nll": 44.7334637560416,
+"tokens": 33
+},
+{
+"set": "canon_py_gpt",
+"task": "safe_div",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 103,
+"nodes": 17,
+"nll": 41.70828972419258,
+"tokens": 33
+},
+{
+"set": "canon_py_gpt",
+"task": "safe_div",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 103,
+"nodes": 17,
+"nll": 30.66300354048144,
+"tokens": 33
+},
+{
+"set": "ts_gpt",
+"task": "safe_div",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 111,
+"nodes": 32,
+"nll": 42.60687365301419,
+"tokens": 33
+},
+{
+"set": "python",
+"task": "safe_div",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 101,
+"nodes": 20,
+"nll": 35.15449759818148,
+"tokens": 34
+},
+{
+"set": "proto_cnpy",
+"task": "safe_div",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 101,
+"nodes": null,
+"nll": 38.24338683253154,
+"tokens": 34
+},
+{
+"set": "canon_brace_claude",
+"task": "grade",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 222,
+"nodes": 29,
+"nll": 48.62109590921318,
+"tokens": 79
+},
+{
+"set": "canon_brace_claude",
+"task": "grade",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 222,
+"nodes": 29,
+"nll": 31.696987465802522,
+"tokens": 79
+},
+{
+"set": "canon_py_claude",
+"task": "grade",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 221,
+"nodes": 29,
+"nll": 30.123767750963452,
+"tokens": 69
+},
+{
+"set": "canon_py_claude",
+"task": "grade",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 221,
+"nodes": 29,
+"nll": 27.950766704714624,
+"tokens": 69
+},
+{
+"set": "canon_py_claude",
+"task": "grade",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 221,
+"nodes": 29,
+"nll": 34.83227711611835,
+"tokens": 69
+},
+{
+"set": "ts_claude",
+"task": "grade",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 227,
+"nodes": 43,
+"nll": 31.58030722902913,
+"tokens": 83
+},
+{
+"set": "canon_brace_gpt",
+"task": "grade",
+"tier": "basic",
+"prefix": "hdr:canon",
+"chars": 200,
+"nodes": 29,
+"nll": 50.756781813746784,
+"tokens": 75
+},
+{
+"set": "canon_brace_gpt",
+"task": "grade",
+"tier": "basic",
+"prefix": "ref:canon",
+"chars": 200,
+"nodes": 29,
+"nll": 34.192077554936986,
+"tokens": 75
+},
+{
+"set": "canon_py_gpt",
+"task": "grade",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 201,
+"nodes": 29,
+"nll": 32.711518017073104,
+"tokens": 66
+},
+{
+"set": "canon_py_gpt",
+"task": "grade",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 201,
+"nodes": 29,
+"nll": 30.560982178300037,
+"tokens": 66
+},
+{
+"set": "canon_py_gpt",
+"task": "grade",
+"tier": "basic",
+"prefix": "ref:canonpy",
+"chars": 201,
+"nodes": 29,
+"nll": 37.01097489189124,
+"tokens": 66
+},
+{
+"set": "ts_gpt",
+"task": "grade",
+"tier": "basic",
+"prefix": "hdr:ts",
+"chars": 187,
+"nodes": 39,
+"nll": 28.72130083801312,
+"tokens": 67
+},
+{
+"set": "python",
+"task": "grade",
+"tier": "basic",
+"prefix": "hdr:python",
+"chars": 201,
+"nodes": 30,
+"nll": 30.560982178300037,
+"tokens": 66
+},
+{
+"set": "proto_cnpy",
+"task": "grade",
+"tier": "basic",
+"prefix": "hdr:canonpy",
+"chars": 201,
+"nodes": null,
+"nll": 32.711518017073104,
+"tokens": 66
+},
+{
+"set": "canon_brace_claude",
+"task": "total_area",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 361,
+"nodes": 47,
+"nll": 107.15007638518,
+"tokens": 122
+},
+{
+"set": "canon_brace_claude",
+"task": "total_area",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 361,
+"nodes": 47,
+"nll": 57.880690948235724,
+"tokens": 122
+},
+{
+"set": "canon_py_claude",
+"task": "total_area",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 438,
+"nodes": 47,
+"nll": 107.43746436317451,
+"tokens": 124
+},
+{
+"set": "canon_py_claude",
+"task": "total_area",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 438,
+"nodes": 47,
+"nll": 108.34237257862696,
+"tokens": 124
+},
+{
+"set": "canon_py_claude",
+"task": "total_area",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 438,
+"nodes": 47,
+"nll": 61.68422429250222,
+"tokens": 124
+},
+{
+"set": "ts_claude",
+"task": "total_area",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 666,
+"nodes": 127,
+"nll": 81.83941910318026,
+"tokens": 184
+},
+{
+"set": "canon_brace_gpt",
+"task": "total_area",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 478,
+"nodes": 50,
+"nll": 92.92488863566541,
+"tokens": 139
+},
+{
+"set": "canon_brace_gpt",
+"task": "total_area",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 478,
+"nodes": 50,
+"nll": 61.75119918896962,
+"tokens": 139
+},
+{
+"set": "canon_py_gpt",
+"task": "total_area",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 541,
+"nodes": 50,
+"nll": 83.76186343029258,
+"tokens": 136
+},
+{
+"set": "canon_py_gpt",
+"task": "total_area",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 541,
+"nodes": 50,
+"nll": 85.72538981385878,
+"tokens": 136
+},
+{
+"set": "canon_py_gpt",
+"task": "total_area",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 541,
+"nodes": 50,
+"nll": 65.76601922282134,
+"tokens": 136
+},
+{
+"set": "ts_gpt",
+"task": "total_area",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 581,
+"nodes": 114,
+"nll": 66.34632333977788,
+"tokens": 157
+},
+{
+"set": "python",
+"task": "total_area",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 608,
+"nodes": 78,
+"nll": 73.9935162088941,
+"tokens": 150
+},
+{
+"set": "proto_cnpy",
+"task": "total_area",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 494,
+"nodes": null,
+"nll": 84.35069084537099,
+"tokens": 122
+},
+{
+"set": "canon_brace_claude",
+"task": "parse_pairs",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 1181,
+"nodes": 196,
+"nll": 297.9396912236407,
+"tokens": 373
+},
+{
+"set": "canon_brace_claude",
+"task": "parse_pairs",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 1181,
+"nodes": 196,
+"nll": 233.4458339145349,
+"tokens": 373
+},
+{
+"set": "canon_py_claude",
+"task": "parse_pairs",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 1196,
+"nodes": 196,
+"nll": 298.8562959758274,
+"tokens": 341
+},
+{
+"set": "canon_py_claude",
+"task": "parse_pairs",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 1196,
+"nodes": 196,
+"nll": 301.727639904806,
+"tokens": 341
+},
+{
+"set": "canon_py_claude",
+"task": "parse_pairs",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 1196,
+"nodes": 196,
+"nll": 223.23377883727517,
+"tokens": 341
+},
+{
+"set": "ts_claude",
+"task": "parse_pairs",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 932,
+"nodes": 208,
+"nll": 170.08441853516433,
+"tokens": 278
+},
+{
+"set": "canon_brace_gpt",
+"task": "parse_pairs",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 1124,
+"nodes": 180,
+"nll": 333.81727005825087,
+"tokens": 338
+},
+{
+"set": "canon_brace_gpt",
+"task": "parse_pairs",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 1124,
+"nodes": 180,
+"nll": 258.2692092017205,
+"tokens": 338
+},
+{
+"set": "canon_py_gpt",
+"task": "parse_pairs",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 1140,
+"nodes": 180,
+"nll": 325.498082328304,
+"tokens": 304
+},
+{
+"set": "canon_py_gpt",
+"task": "parse_pairs",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 1140,
+"nodes": 180,
+"nll": 330.02805715940485,
+"tokens": 304
+},
+{
+"set": "canon_py_gpt",
+"task": "parse_pairs",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 1140,
+"nodes": 180,
+"nll": 249.82976249451167,
+"tokens": 304
+},
+{
+"set": "ts_gpt",
+"task": "parse_pairs",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 813,
+"nodes": 184,
+"nll": 150.1042977220568,
+"tokens": 228
+},
+{
+"set": "python",
+"task": "parse_pairs",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 535,
+"nodes": 103,
+"nll": 126.3616395543122,
+"tokens": 154
+},
+{
+"set": "proto_cnpy",
+"task": "parse_pairs",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 417,
+"nodes": null,
+"nll": 106.27228382830799,
+"tokens": 108
+},
+{
+"set": "canon_brace_claude",
+"task": "restock",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 213,
+"nodes": 32,
+"nll": 107.49431613480556,
+"tokens": 74
+},
+{
+"set": "canon_brace_claude",
+"task": "restock",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 213,
+"nodes": 32,
+"nll": 48.46482396637475,
+"tokens": 74
+},
+{
+"set": "canon_py_claude",
+"task": "restock",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 231,
+"nodes": 32,
+"nll": 123.87266997908591,
+"tokens": 70
+},
+{
+"set": "canon_py_claude",
+"task": "restock",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 231,
+"nodes": 32,
+"nll": 119.07147091176012,
+"tokens": 70
+},
+{
+"set": "canon_py_claude",
+"task": "restock",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 231,
+"nodes": 32,
+"nll": 55.47930873958103,
+"tokens": 70
+},
+{
+"set": "ts_claude",
+"task": "restock",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 522,
+"nodes": 136,
+"nll": 104.66048877515777,
+"tokens": 144
+},
+{
+"set": "canon_brace_gpt",
+"task": "restock",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 545,
+"nodes": 80,
+"nll": 255.4027646734612,
+"tokens": 180
+},
+{
+"set": "canon_brace_gpt",
+"task": "restock",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 545,
+"nodes": 80,
+"nll": 201.17719476139155,
+"tokens": 180
+},
+{
+"set": "canon_py_gpt",
+"task": "restock",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 642,
+"nodes": 80,
+"nll": 285.4055754347064,
+"tokens": 177
+},
+{
+"set": "canon_py_gpt",
+"task": "restock",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 642,
+"nodes": 80,
+"nll": 280.89733450602216,
+"tokens": 177
+},
+{
+"set": "canon_py_gpt",
+"task": "restock",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 642,
+"nodes": 80,
+"nll": 213.43625661375881,
+"tokens": 177
+},
+{
+"set": "ts_gpt",
+"task": "restock",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 305,
+"nodes": 91,
+"nll": 80.99340112739992,
+"tokens": 91
+},
+{
+"set": "python",
+"task": "restock",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 306,
+"nodes": 52,
+"nll": 71.33055530040929,
+"tokens": 85
+},
+{
+"set": "proto_cnpy",
+"task": "restock",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 279,
+"nodes": null,
+"nll": 82.52559656335507,
+"tokens": 81
+},
+{
+"set": "canon_brace_claude",
+"task": "apply_ops",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 650,
+"nodes": 81,
+"nll": 173.49370035152242,
+"tokens": 202
+},
+{
+"set": "canon_brace_claude",
+"task": "apply_ops",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 650,
+"nodes": 81,
+"nll": 127.61690593645108,
+"tokens": 202
+},
+{
+"set": "canon_py_claude",
+"task": "apply_ops",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 712,
+"nodes": 81,
+"nll": 161.4629354912613,
+"tokens": 180
+},
+{
+"set": "canon_py_claude",
+"task": "apply_ops",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 712,
+"nodes": 81,
+"nll": 165.9813726812281,
+"tokens": 180
+},
+{
+"set": "canon_py_claude",
+"task": "apply_ops",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 712,
+"nodes": 81,
+"nll": 126.15188177616074,
+"tokens": 180
+},
+{
+"set": "ts_claude",
+"task": "apply_ops",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 652,
+"nodes": 139,
+"nll": 96.08275167120337,
+"tokens": 178
+},
+{
+"set": "canon_brace_gpt",
+"task": "apply_ops",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 594,
+"nodes": 71,
+"nll": 156.83326445610146,
+"tokens": 161
+},
+{
+"set": "canon_brace_gpt",
+"task": "apply_ops",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 594,
+"nodes": 71,
+"nll": 115.56821045802644,
+"tokens": 161
+},
+{
+"set": "canon_py_gpt",
+"task": "apply_ops",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 612,
+"nodes": 71,
+"nll": 142.24292447266635,
+"tokens": 144
+},
+{
+"set": "canon_py_gpt",
+"task": "apply_ops",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 612,
+"nodes": 71,
+"nll": 142.60318823251873,
+"tokens": 144
+},
+{
+"set": "canon_py_gpt",
+"task": "apply_ops",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 612,
+"nodes": 71,
+"nll": 113.89814236044185,
+"tokens": 144
+},
+{
+"set": "ts_gpt",
+"task": "apply_ops",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 551,
+"nodes": 124,
+"nll": 97.4138340151967,
+"tokens": 153
+},
+{
+"set": "python",
+"task": "apply_ops",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 653,
+"nodes": 84,
+"nll": 112.14808598622312,
+"tokens": 153
+},
+{
+"set": "proto_cnpy",
+"task": "apply_ops",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 450,
+"nodes": null,
+"nll": 107.98945724523219,
+"tokens": 95
+},
+{
+"set": "canon_brace_claude",
+"task": "rpn",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 1123,
+"nodes": 197,
+"nll": 249.37035655931686,
+"tokens": 359
+},
+{
+"set": "canon_brace_claude",
+"task": "rpn",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 1123,
+"nodes": 197,
+"nll": 183.14565260092422,
+"tokens": 359
+},
+{
+"set": "canon_py_claude",
+"task": "rpn",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 1142,
+"nodes": 197,
+"nll": 241.4726683631161,
+"tokens": 326
+},
+{
+"set": "canon_py_claude",
+"task": "rpn",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 1142,
+"nodes": 197,
+"nll": 242.090155891201,
+"tokens": 326
+},
+{
+"set": "canon_py_claude",
+"task": "rpn",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 1142,
+"nodes": 197,
+"nll": 167.20465826371583,
+"tokens": 326
+},
+{
+"set": "ts_claude",
+"task": "rpn",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 1328,
+"nodes": 264,
+"nll": 150.99216594614882,
+"tokens": 357
+},
+{
+"set": "canon_brace_gpt",
+"task": "rpn",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 1624,
+"nodes": 248,
+"nll": 328.9369549891362,
+"tokens": 471
+},
+{
+"set": "canon_brace_gpt",
+"task": "rpn",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 1624,
+"nodes": 248,
+"nll": 263.68675795314675,
+"tokens": 471
+},
+{
+"set": "canon_py_gpt",
+"task": "rpn",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 1807,
+"nodes": 248,
+"nll": 327.0395743046138,
+"tokens": 444
+},
+{
+"set": "canon_py_gpt",
+"task": "rpn",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 1807,
+"nodes": 248,
+"nll": 325.3795091721222,
+"tokens": 444
+},
+{
+"set": "canon_py_gpt",
+"task": "rpn",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 1807,
+"nodes": 248,
+"nll": 262.3248793083585,
+"tokens": 444
+},
+{
+"set": "ts_gpt",
+"task": "rpn",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 1109,
+"nodes": 228,
+"nll": 109.61043354629874,
+"tokens": 299
+},
+{
+"set": "python",
+"task": "rpn",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 993,
+"nodes": 153,
+"nll": 126.89118941625384,
+"tokens": 235
+},
+{
+"set": "proto_cnpy",
+"task": "rpn",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 851,
+"nodes": null,
+"nll": 101.55503216401848,
+"tokens": 184
+},
+{
+"set": "canon_brace_claude",
+"task": "word_counts_sorted",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 207,
+"nodes": 34,
+"nll": 113.9492579724174,
+"tokens": 72
+},
+{
+"set": "canon_brace_claude",
+"task": "word_counts_sorted",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 207,
+"nodes": 34,
+"nll": 62.5797897130833,
+"tokens": 72
+},
+{
+"set": "canon_py_claude",
+"task": "word_counts_sorted",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 225,
+"nodes": 34,
+"nll": 118.0671258445218,
+"tokens": 65
+},
+{
+"set": "canon_py_claude",
+"task": "word_counts_sorted",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 225,
+"nodes": 34,
+"nll": 115.7807124243991,
+"tokens": 65
+},
+{
+"set": "canon_py_claude",
+"task": "word_counts_sorted",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 225,
+"nodes": 34,
+"nll": 69.92126687950804,
+"tokens": 65
+},
+{
+"set": "ts_claude",
+"task": "word_counts_sorted",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 517,
+"nodes": 108,
+"nll": 135.26720286008276,
+"tokens": 152
+},
+{
+"set": "canon_brace_gpt",
+"task": "word_counts_sorted",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 245,
+"nodes": 34,
+"nll": 119.43537441070657,
+"tokens": 74
+},
+{
+"set": "canon_brace_gpt",
+"task": "word_counts_sorted",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 245,
+"nodes": 34,
+"nll": 73.46931489858252,
+"tokens": 74
+},
+{
+"set": "canon_py_gpt",
+"task": "word_counts_sorted",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 298,
+"nodes": 34,
+"nll": 118.15943873272045,
+"tokens": 72
+},
+{
+"set": "canon_py_gpt",
+"task": "word_counts_sorted",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 298,
+"nodes": 34,
+"nll": 114.70199579880136,
+"tokens": 72
+},
+{
+"set": "canon_py_gpt",
+"task": "word_counts_sorted",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 298,
+"nodes": 34,
+"nll": 78.08978504751576,
+"tokens": 72
+},
+{
+"set": "ts_gpt",
+"task": "word_counts_sorted",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 390,
+"nodes": 79,
+"nll": 125.86055566785944,
+"tokens": 108
+},
+{
+"set": "python",
+"task": "word_counts_sorted",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 274,
+"nodes": 55,
+"nll": 61.21907541348628,
+"tokens": 77
+},
+{
+"set": "proto_cnpy",
+"task": "word_counts_sorted",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 258,
+"nodes": null,
+"nll": 64.03520447479968,
+"tokens": 71
+},
+{
+"set": "canon_brace_claude",
+"task": "transpose",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 294,
+"nodes": 50,
+"nll": 155.9901310222922,
+"tokens": 98
+},
+{
+"set": "canon_brace_claude",
+"task": "transpose",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 294,
+"nodes": 50,
+"nll": 88.93472402598127,
+"tokens": 98
+},
+{
+"set": "canon_py_claude",
+"task": "transpose",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 322,
+"nodes": 50,
+"nll": 137.19061643374152,
+"tokens": 89
+},
+{
+"set": "canon_py_claude",
+"task": "transpose",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 322,
+"nodes": 50,
+"nll": 134.65162426035386,
+"tokens": 89
+},
+{
+"set": "canon_py_claude",
+"task": "transpose",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 322,
+"nodes": 50,
+"nll": 95.00809622075758,
+"tokens": 89
+},
+{
+"set": "ts_claude",
+"task": "transpose",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 391,
+"nodes": 100,
+"nll": 49.93096282820261,
+"tokens": 121
+},
+{
+"set": "canon_brace_gpt",
+"task": "transpose",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 348,
+"nodes": 51,
+"nll": 135.70158793899463,
+"tokens": 100
+},
+{
+"set": "canon_brace_gpt",
+"task": "transpose",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 348,
+"nodes": 51,
+"nll": 94.38569084480696,
+"tokens": 100
+},
+{
+"set": "canon_py_gpt",
+"task": "transpose",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 334,
+"nodes": 51,
+"nll": 117.93863446564501,
+"tokens": 87
+},
+{
+"set": "canon_py_gpt",
+"task": "transpose",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 334,
+"nodes": 51,
+"nll": 117.68766219264216,
+"tokens": 87
+},
+{
+"set": "canon_py_gpt",
+"task": "transpose",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 334,
+"nodes": 51,
+"nll": 92.4273897104722,
+"tokens": 87
+},
+{
+"set": "ts_gpt",
+"task": "transpose",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 197,
+"nodes": 53,
+"nll": 50.66245039614478,
+"tokens": 54
+},
+{
+"set": "python",
+"task": "transpose",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 147,
+"nodes": 33,
+"nll": 37.347634611898684,
+"tokens": 42
+},
+{
+"set": "proto_cnpy",
+"task": "transpose",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 153,
+"nodes": null,
+"nll": 39.745482624588476,
+"tokens": 46
+},
+{
+"set": "canon_brace_claude",
+"task": "run_lengths",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 426,
+"nodes": 72,
+"nll": 133.10082001000228,
+"tokens": 143
+},
+{
+"set": "canon_brace_claude",
+"task": "run_lengths",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 426,
+"nodes": 72,
+"nll": 79.0563944903588,
+"tokens": 143
+},
+{
+"set": "canon_py_claude",
+"task": "run_lengths",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 436,
+"nodes": 72,
+"nll": 125.496483743922,
+"tokens": 127
+},
+{
+"set": "canon_py_claude",
+"task": "run_lengths",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 436,
+"nodes": 72,
+"nll": 124.1880827836103,
+"tokens": 127
+},
+{
+"set": "canon_py_claude",
+"task": "run_lengths",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 436,
+"nodes": 72,
+"nll": 78.65296658575426,
+"tokens": 127
+},
+{
+"set": "ts_claude",
+"task": "run_lengths",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 469,
+"nodes": 99,
+"nll": 72.44874840036937,
+"tokens": 128
+},
+{
+"set": "canon_brace_gpt",
+"task": "run_lengths",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 446,
+"nodes": 68,
+"nll": 122.33956223922723,
+"tokens": 137
+},
+{
+"set": "canon_brace_gpt",
+"task": "run_lengths",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 446,
+"nodes": 68,
+"nll": 86.86284817699152,
+"tokens": 137
+},
+{
+"set": "canon_py_gpt",
+"task": "run_lengths",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 458,
+"nodes": 68,
+"nll": 110.04359593004847,
+"tokens": 119
+},
+{
+"set": "canon_py_gpt",
+"task": "run_lengths",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 458,
+"nodes": 68,
+"nll": 110.635465368101,
+"tokens": 119
+},
+{
+"set": "canon_py_gpt",
+"task": "run_lengths",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 458,
+"nodes": 68,
+"nll": 91.14357514383482,
+"tokens": 119
+},
+{
+"set": "ts_gpt",
+"task": "run_lengths",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 357,
+"nodes": 71,
+"nll": 62.93443680254859,
+"tokens": 93
+},
+{
+"set": "python",
+"task": "run_lengths",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 247,
+"nodes": 58,
+"nll": 42.31202573933115,
+"tokens": 81
+},
+{
+"set": "proto_cnpy",
+"task": "run_lengths",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 233,
+"nodes": null,
+"nll": 44.80898405323387,
+"tokens": 79
+},
+{
+"set": "canon_brace_claude",
+"task": "validate_user",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 450,
+"nodes": 64,
+"nll": 153.49959248679806,
+"tokens": 148
+},
+{
+"set": "canon_brace_claude",
+"task": "validate_user",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 450,
+"nodes": 64,
+"nll": 112.77721649123123,
+"tokens": 148
+},
+{
+"set": "canon_py_claude",
+"task": "validate_user",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 448,
+"nodes": 64,
+"nll": 143.15943594332202,
+"tokens": 141
+},
+{
+"set": "canon_py_claude",
+"task": "validate_user",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 448,
+"nodes": 64,
+"nll": 140.65018275080365,
+"tokens": 141
+},
+{
+"set": "canon_py_claude",
+"task": "validate_user",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 448,
+"nodes": 64,
+"nll": 106.2611041925702,
+"tokens": 141
+},
+{
+"set": "ts_claude",
+"task": "validate_user",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 383,
+"nodes": 84,
+"nll": 73.7040212150896,
+"tokens": 107
+},
+{
+"set": "canon_brace_gpt",
+"task": "validate_user",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 412,
+"nodes": 56,
+"nll": 140.88025269296486,
+"tokens": 131
+},
+{
+"set": "canon_brace_gpt",
+"task": "validate_user",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 412,
+"nodes": 56,
+"nll": 107.49329766418668,
+"tokens": 131
+},
+{
+"set": "canon_py_gpt",
+"task": "validate_user",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 410,
+"nodes": 56,
+"nll": 132.00595703280123,
+"tokens": 124
+},
+{
+"set": "canon_py_gpt",
+"task": "validate_user",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 410,
+"nodes": 56,
+"nll": 128.31275184186234,
+"tokens": 124
+},
+{
+"set": "canon_py_gpt",
+"task": "validate_user",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 410,
+"nodes": 56,
+"nll": 99.54543125344935,
+"tokens": 124
+},
+{
+"set": "ts_gpt",
+"task": "validate_user",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 385,
+"nodes": 84,
+"nll": 76.20121904861298,
+"tokens": 107
+},
+{
+"set": "python",
+"task": "validate_user",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 407,
+"nodes": 62,
+"nll": 65.93318697632003,
+"tokens": 108
+},
+{
+"set": "proto_cnpy",
+"task": "validate_user",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 360,
+"nodes": null,
+"nll": 72.28997361000802,
+"tokens": 97
+},
+{
+"set": "canon_brace_claude",
+"task": "report_card",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 499,
+"nodes": 74,
+"nll": 103.94791162069669,
+"tokens": 169
+},
+{
+"set": "canon_brace_claude",
+"task": "report_card",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 499,
+"nodes": 74,
+"nll": 64.49702021998837,
+"tokens": 169
+},
+{
+"set": "canon_py_claude",
+"task": "report_card",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 501,
+"nodes": 74,
+"nll": 99.60824151922861,
+"tokens": 154
+},
+{
+"set": "canon_py_claude",
+"task": "report_card",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 501,
+"nodes": 74,
+"nll": 95.23293936965638,
+"tokens": 154
+},
+{
+"set": "canon_py_claude",
+"task": "report_card",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 501,
+"nodes": 74,
+"nll": 64.05048738776168,
+"tokens": 154
+},
+{
+"set": "ts_claude",
+"task": "report_card",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 684,
+"nodes": 144,
+"nll": 109.46037862830053,
+"tokens": 197
+},
+{
+"set": "canon_brace_gpt",
+"task": "report_card",
+"tier": "hard",
+"prefix": "hdr:canon",
+"chars": 694,
+"nodes": 82,
+"nll": 107.76413646747824,
+"tokens": 201
+},
+{
+"set": "canon_brace_gpt",
+"task": "report_card",
+"tier": "hard",
+"prefix": "ref:canon",
+"chars": 694,
+"nodes": 82,
+"nll": 77.79955083341792,
+"tokens": 201
+},
+{
+"set": "canon_py_gpt",
+"task": "report_card",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 685,
+"nodes": 82,
+"nll": 109.11472923028668,
+"tokens": 182
+},
+{
+"set": "canon_py_gpt",
+"task": "report_card",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 685,
+"nodes": 82,
+"nll": 102.80769713165864,
+"tokens": 182
+},
+{
+"set": "canon_py_gpt",
+"task": "report_card",
+"tier": "hard",
+"prefix": "ref:canonpy",
+"chars": 685,
+"nodes": 82,
+"nll": 78.53388462737439,
+"tokens": 182
+},
+{
+"set": "ts_gpt",
+"task": "report_card",
+"tier": "hard",
+"prefix": "hdr:ts",
+"chars": 551,
+"nodes": 134,
+"nll": 102.94908256327108,
+"tokens": 161
+},
+{
+"set": "python",
+"task": "report_card",
+"tier": "hard",
+"prefix": "hdr:python",
+"chars": 606,
+"nodes": 98,
+"nll": 82.59791950232648,
+"tokens": 168
+},
+{
+"set": "proto_cnpy",
+"task": "report_card",
+"tier": "hard",
+"prefix": "hdr:canonpy",
+"chars": 556,
+"nodes": null,
+"nll": 87.11674098016556,
+"tokens": 158
+}
+]
+}

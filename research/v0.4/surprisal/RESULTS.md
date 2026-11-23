@@ -37,3 +37,36 @@ Paired differences (A − B, per task, mean):
 | Canon-Py (implemented) − v0.3 prototype Canon-Py, bare | 50 | 51.9 [41.1, 64.1] | 24.2 [13.1, 38.2] |
 | Canon-Py `# Python` header − `# Canon-Py` header | 50 | -1.0 [-2.0, 0.1] | 0.0 [0.0, 0.0] |
 
+## Qwen/Qwen2.5-Coder-7B
+
+| program set | nats per program | tokens | chars | nodes | nats/token | nats/char | nats/node |
+|---|---|---|---|---|---|---|---|
+| Canon brace (v0.3/v0.4 default), Claude's programs, bare | 103.3 [90.9, 118.0] | 87.9 | 256 | 42 [33, 53] | 1.175 [1.052, 1.333] | 0.404 [0.357, 0.466] | 2.489 [2.185, 2.871] |
+| Canon brace, Claude's programs, with reference | 60.1 [49.8, 72.7] | 87.9 | 256 | 42 [33, 53] | 0.684 [0.630, 0.747] | 0.235 [0.216, 0.258] | 1.449 [1.320, 1.601] |
+| Canon-Py (implemented), same programs, bare | 90.2 [77.2, 105.6] | 79.3 | 261 | 42 [33, 53] | 1.137 [1.029, 1.274] | 0.345 [0.310, 0.392] | 2.173 [1.934, 2.474] |
+| Canon-Py, same programs, `# Python` header | 88.0 [74.8, 103.7] | 79.3 | 261 | 42 [33, 53] | 1.110 [1.007, 1.240] | 0.337 [0.304, 0.381] | 2.122 [1.894, 2.406] |
+| Canon-Py, same programs, with Canon-Py reference | 63.4 [53.9, 74.9] | 79.3 | 261 | 42 [33, 53] | 0.799 [0.729, 0.886] | 0.243 [0.219, 0.273] | 1.528 [1.370, 1.713] |
+| Canon brace, GPT-6.2 Sol's programs, bare | 111.4 [94.6, 130.9] | 100.9 | 321 | 47 [36, 60] | 1.103 [0.982, 1.256] | 0.347 [0.306, 0.400] | 2.393 [2.114, 2.752] |
+| Canon brace, GPT-6.2 Sol's programs, with reference | 72.1 [57.7, 88.9] | 100.9 | 321 | 47 [36, 60] | 0.714 [0.649, 0.792] | 0.225 [0.203, 0.252] | 1.548 [1.399, 1.736] |
+| Canon-Py, GPT-6.2 Sol's programs converted, bare | 97.8 [79.6, 118.8] | 90.9 | 329 | 47 [36, 60] | 1.075 [0.961, 1.219] | 0.297 [0.263, 0.341] | 2.101 [1.867, 2.401] |
+| Canon-Py, GPT-6.2 Sol's programs converted, with reference | 75.2 [61.1, 91.9] | 90.9 | 329 | 47 [36, 60] | 0.827 [0.749, 0.924] | 0.229 [0.204, 0.259] | 1.616 [1.452, 1.826] |
+| TypeScript, Claude's programs | 70.5 [60.2, 82.2] | 110.6 | 367 | 83 [71, 96] | 0.638 [0.578, 0.706] | 0.192 [0.173, 0.213] | 0.854 [0.765, 0.962] |
+| TypeScript, GPT-6.2 Sol's programs | 59.4 [51.6, 68.4] | 83.3 | 287 | 66 [55, 78] | 0.714 [0.637, 0.798] | 0.207 [0.183, 0.232] | 0.903 [0.807, 1.014] |
+| Typed Python (hand-written) | 43.2 [37.1, 50.4] | 59.7 | 208 | 37 [30, 45] | 0.723 [0.655, 0.808] | 0.208 [0.184, 0.238] | 1.167 [1.049, 1.304] |
+| v0.3 prototype Canon-Py (Python's library), bare | 45.0 [39.6, 51.2] | 55.1 | 192 | – | 0.816 [0.735, 0.910] | 0.235 [0.207, 0.267] | – |
+
+Paired differences (A − B, per task, mean):
+
+| comparison | n | Δ nats | Δ tokens |
+|---|---|---|---|
+| Canon-Py − Canon brace, same programs, bare | 50 | -13.1 [-15.5, -10.7] | -8.6 [-10.6, -6.7] |
+| Canon-Py − Canon brace, same programs, each with its reference | 50 | 3.3 [1.6, 4.9] | -8.6 [-10.6, -6.7] |
+| (GPT's programs) Canon-Py − Canon brace, each with its reference | 50 | 3.2 [1.8, 4.5] | -10.0 [-12.4, -7.8] |
+| Canon-Py bare − typed Python | 50 | 47.0 [38.3, 57.2] | 19.7 [9.8, 31.7] |
+| Canon-Py with reference − typed Python | 50 | 20.3 [13.8, 27.8] | 19.7 [9.8, 31.7] |
+| Canon brace with reference − typed Python | 50 | 17.0 [10.1, 25.2] | 28.2 [17.3, 42.0] |
+| Canon-Py bare − TypeScript (Claude) | 50 | 19.7 [6.3, 32.4] | -31.3 [-45.5, -17.4] |
+| Canon-Py with reference − TypeScript (Claude) | 50 | -7.1 [-18.9, 3.7] | -31.3 [-45.5, -17.4] |
+| Canon-Py (implemented) − v0.3 prototype Canon-Py, bare | 50 | 45.2 [35.7, 56.4] | 24.2 [13.1, 38.2] |
+| Canon-Py `# Python` header − `# Canon-Py` header | 50 | -2.1 [-2.8, -1.5] | 0.0 [0.0, 0.0] |
+
