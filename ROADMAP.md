@@ -82,7 +82,7 @@ Build / and /play as described in the Landing page section.
 - [x] Landing page: hero with the generated terminal, features, benchmark, syntax, call to action
 - [x] /research renders verdicts, chart, findings, likelihood table and costs from data
 - [ ] Docs restructured (What is Canon, Quickstart, Use Canon with your agent, shorter guide, Reference, Project)
-- [ ] Playground opens on a mistake with Apply fix; Break it; tabs for Problems and Output
+- [x] Playground opens on a mistake with Apply fix; Break it; tabs for Problems and Output
 - [ ] README, npm metadata, CONTRIBUTING and DEPLOY updated
 
 ## M8 (stretch): Evidence

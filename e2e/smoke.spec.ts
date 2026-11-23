@@ -37,6 +37,15 @@ test("no horizontal scroll at 375px", async ({ browser }) => {
   }
 });
 
+test("/research renders every verdict from the reports, and the likelihood table", async ({ page }) => {
+  await page.goto("/research");
+  const table = page.getByTestId("verdicts");
+  for (const v of site.benchmark.verdicts) {
+    await expect(table.locator("tr", { hasText: v.id }).first()).toContainText(v.verdict);
+  }
+  await expect(page.getByTestId("likelihood").locator("tbody tr")).toHaveCount(site.likelihood.rows.length);
+});
+
 test("docs load with the sidebar", async ({ page }) => {
   await page.goto("/docs");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
@@ -46,24 +55,42 @@ test("docs load with the sidebar", async ({ page }) => {
   expect(await llms.text()).toContain("fn ");
 });
 
-test("playground formats, checks and runs hello.cn in a worker", async ({ page }) => {
+test("playground opens on a mistake; Apply fix clears it and Run prints the output", async ({ page }) => {
   await page.goto("/play");
   const editor = page.getByTestId("editor").locator(".cm-content");
   await expect(editor).toContainText("hello, canon");
+  await expect(page.locator(".cm-diag")).toHaveCount(1);
+  const problems = page.getByTestId("diagnostics");
+  await expect(problems).toContainText("E101");
+  await expect(problems).toContainText("+  effects: io");
+  await page.getByRole("button", { name: "Apply fix" }).click();
+  await expect(editor).toContainText("effects: io");
+  await expect(problems).toContainText("No problems.");
   await page.getByRole("button", { name: "Run" }).click();
   await expect(page.getByTestId("output")).toHaveText("hello, canon");
+});
 
-  // a missing effect shows a patch; Apply rewrites the editor and the problem goes away
-  await editor.click();
-  await page.keyboard.press("ControlOrMeta+a");
-  await page.keyboard.type('fn main() -> Unit {\nprint("hi")\n');
-  await page.getByRole("button", { name: "Format" }).click();
-  await expect(page.getByTestId("diagnostics")).toContainText("E101");
-  await page.getByRole("button", { name: "Apply" }).first().click();
-  await expect(editor).toContainText("effects: io");
-  await expect(page.getByTestId("diagnostics")).toContainText("No problems.");
+test("Break it shows a fix for each kind of mistake", async ({ page }) => {
+  await page.goto("/play");
+  const problems = page.getByTestId("diagnostics");
+  const seen = new Set<string>();
+  for (let i = 0; i < 3; i++) {
+    await page.getByRole("button", { name: "Break it" }).click();
+    await expect(page.getByRole("button", { name: "Apply fix" })).toBeVisible();
+    const code = (await problems.locator("li span.text-err").first().textContent())!;
+    seen.add(code);
+    await page.getByRole("button", { name: "Apply fix" }).click();
+    await expect(problems.getByText(code, { exact: true })).toHaveCount(0);
+  }
+  expect([...seen].sort()).toEqual(["E101", "T004", "T009"]);
+});
+
+test("the Examples menu loads a program that runs", async ({ page }) => {
+  await page.goto("/play");
+  await page.getByLabel("Examples").selectOption({ label: "Customer ranking" });
+  await expect(page.getByTestId("editor").locator(".cm-content")).toContainText("top_customers");
   await page.getByRole("button", { name: "Run" }).click();
-  await expect(page.getByTestId("output")).toHaveText("hi");
+  await expect(page.getByTestId("output")).toContainText("total:");
 });
 
 test("an infinite loop is stopped after 2 seconds", async ({ page }) => {
