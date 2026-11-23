@@ -1,0 +1,11 @@
+[project]
+name = "forms"
+src = "canon"
+
+[backend]
+target = "fastapi"
+out = "backend/canon_generated"
+
+[frontend]
+target = "ts-client"
+out = "frontend/src/canon"
