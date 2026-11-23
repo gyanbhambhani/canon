@@ -1,0 +1,13 @@
+{
+  "id": "orders-by-status",
+  "kind": "feature",
+  "title": "List the orders with one status",
+  "features": [{ "module": "frontend/src/features/listOrdersByStatus.ts", "signature": "listOrdersByStatus(baseUrl: string, status: string): Promise<Outcome<Order[]>>" }],
+  "validation": [
+    {
+      "feature": "listOrdersByStatus",
+      "args": [{ "name": "status", "gen": "string" }],
+      "request": { "method": "GET", "path": "/orders/by-status", "query": { "status": "$status" } }
+    }
+  ]
+}

@@ -301,15 +301,21 @@ function genModels(project: ProjectResult): string {
     for (const p of params) typeVars.add(p);
     return `, Generic[${params.join(", ")}]`;
   };
+  // a field that mentions a type defined further down is one quoted annotation ("Status | None"),
+  // which Pydantic resolves once the module is loaded; quoting only the name would break `|`
+  const fieldType = (te: A.TypeExpr): string => {
+    const text = pyType(te, im, true);
+    return mentionedTypes(te).some((n) => later.has(n)) ? `"${text}"` : text;
+  };
   for (const t of order) {
     later.delete(t.name);
     if (t.k === "RecordType") {
-      const fields = t.fields.map(([n, te]) => `    ${n}: ${pyType(te, im, true, later)}`);
+      const fields = t.fields.map(([n, te]) => `    ${n}: ${fieldType(te)}`);
       blocks.push([`class ${t.name}(BaseModel${generic(t.params)}):`, ...(fields.length ? fields : ["    pass"])].join("\n"));
     } else {
       for (const [vn, fs] of t.variants) {
         im.add("typing", "Literal");
-        const fields = fs.map(([n, te]) => `    ${n}: ${pyType(te, im, true, later)}`);
+        const fields = fs.map(([n, te]) => `    ${n}: ${fieldType(te)}`);
         blocks.push([`class ${vn}(BaseModel${generic(t.params)}):`, `    kind: Literal["${vn}"] = "${vn}"`, ...fields].join("\n"));
       }
       const tp = t.params.length ? `[${t.params.join(", ")}]` : "";
@@ -1331,11 +1337,10 @@ export function generateFastapi(project: ProjectResult, opts: PyGenOptions = {})
 
   // runtime files
   files.push({ path: "runtime.py", text: finishGenerated(PY_RUNTIME["runtime.py"], "#", null) });
-  if (d.tables.size) {
-    const keys = [...d.tables.values()].map((t) => `${pyStr(t.name)}: ${pyStr(t.key)}`).join(", ");
-    const store = PY_RUNTIME["store.py"].replace("KEYS: dict[str, str] = {}", formatPy([`KEYS: dict[str, str] = {${keys}}`]));
-    files.push({ path: "store.py", text: finishGenerated(store, "#", null) });
-  }
+  // store.py is always written: runtime.py's table() imports it, so mypy needs it even with no tables
+  const keys = [...d.tables.values()].map((t) => `${pyStr(t.name)}: ${pyStr(t.key)}`).join(", ");
+  const store = PY_RUNTIME["store.py"].replace("KEYS: dict[str, str] = {}", formatPy([`KEYS: dict[str, str] = {${keys}}`]));
+  files.push({ path: "store.py", text: finishGenerated(store, "#", null) });
   if (usesNet) files.push({ path: "net.py", text: finishGenerated(PY_RUNTIME["net.py"], "#", null) });
   if (usesAccounts) files.push({ path: "accounts.py", text: finishGenerated(PY_RUNTIME["accounts.py"], "#", null) });
   files.push({ path: "__init__.py", text: finishGenerated("", "#", null) });

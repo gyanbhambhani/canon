@@ -1,0 +1,140 @@
+use catalog.{CatalogError, Product, find, products}
+use users.{users}
+
+table orders: Order key id
+
+type Line {
+  sku: String,
+  quantity: Int,
+}
+
+type Order {
+  id: Int,
+  email: String,
+  lines: List[Line],
+  total: Int,
+  status: Status,
+}
+
+type Status =
+  | Open
+  | Paid(receipt: String)
+  | Cancelled
+
+type NewOrder {
+  email: String,
+  lines: List[Line],
+}
+
+type Summary {
+  email: String,
+  orders: Int,
+  spent: Int,
+}
+
+fn line_total(l: Line) -> Int
+  effects: store(products)
+  ensures: result >= 0
+{
+  return match find(l.sku) {
+    Ok(p) => p.cents * l.quantity,
+    Err(_) => 0,
+  }
+}
+
+api fn place_order(input: NewOrder) -> Result[Order, CatalogError]
+  route: POST "/orders"
+  effects: store(orders), store(products)
+  requires: len(input.lines) > 0
+{
+  var total = 0
+  for line in input.lines {
+    let p = try find(line.sku)
+    total = total + p.cents * line.quantity
+  }
+  let order = Order {
+    id: next_id(orders),
+    email: input.email,
+    lines: input.lines,
+    total: total,
+    status: Open,
+  }
+  insert(orders, order)
+  return Ok(order)
+}
+
+api fn pay(id: Int) -> Result[Order, CatalogError]
+  route: POST "/orders/{id}/pay"
+  effects: net(payments.example.com), store(orders)
+{
+  return match get(orders, id) {
+    Some(o) => match http_post("https://payments.example.com/charge", to_string(o.total)) {
+      Ok(receipt) => Ok(save(orders, paid(o, receipt))),
+      Err(e) => Err(Missing(e.message)),
+    },
+    None => Err(Missing("order " + to_string(id))),
+  }
+}
+
+fn paid(o: Order, receipt: String) -> Order {
+  var out = o
+  out.status = Paid(receipt)
+  return out
+}
+
+api fn summaries() -> List[Summary]
+  route: GET "/summaries"
+  effects: store(orders)
+{
+  let groups = group_by(scan(orders), |o| o.email)
+  let rows = map(
+    groups,
+    |g| Summary { email: g.0, orders: len(g.1), spent: fold(g.1, 0, |acc, o| acc + o.total) },
+  )
+  return sort_desc_by(rows, |s| s.spent)
+}
+
+api fn open_count(email: String) -> Int
+  route: GET "/orders/open"
+  effects: store(orders)
+{
+  var n = 0
+  for o in scan(orders) {
+    if o.email == email {
+      n = n + (match o.status {
+        Open => 1,
+        _ => 0,
+      })
+    }
+  }
+  return n
+}
+
+api fn customers() -> List[(String, Int)]
+  route: GET "/customers"
+  effects: store(orders), store(users)
+{
+  let names = map(scan(users), |u| u.name)
+  return map(enumerate(names), |i, n| (n, i + count(orders)))
+}
+
+api fn first_email() -> Option[String]
+  route: GET "/orders/first"
+  effects: store(orders)
+{
+  let all = scan(orders)
+  return match first(all) {
+    Some(o) => Some(o.email),
+    None => None,
+  }
+}
+
+api fn get_order(id: Int) -> Result[Order, CatalogError]
+  route: GET "/orders/{id}"
+  effects: store(orders)
+{
+  return match get(orders, id) {
+    Some(o) => Ok(o),
+    None => Err(Missing("order " + to_string(id))),
+  }
+}

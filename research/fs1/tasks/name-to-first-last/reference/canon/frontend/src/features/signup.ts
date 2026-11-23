@@ -1,0 +1,14 @@
+import { createClient } from "../canon/client";
+import type { Profile } from "../canon/types";
+import type { Outcome } from "./result";
+
+/** Create an account. */
+export async function signup(
+  baseUrl: string,
+  email: string,
+  firstName: string,
+  lastName: string,
+  password: string,
+): Promise<Outcome<Profile>> {
+  return createClient(baseUrl).signup({ email, first_name: firstName, last_name: lastName, password });
+}

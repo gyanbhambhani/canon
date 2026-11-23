@@ -1,0 +1,6 @@
+{
+  "id": "revenue-report",
+  "kind": "feature",
+  "title": "A report of paid revenue per customer",
+  "features": [{ "module": "frontend/src/features/revenueReport.ts", "signature": "revenueReport(baseUrl: string): Promise<Outcome<Revenue[]>>" }]
+}

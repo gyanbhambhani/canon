@@ -1,0 +1,13 @@
+{
+  "id": "ship-order",
+  "kind": "feature",
+  "title": "Ship a paid order with a tracking number",
+  "features": [{ "module": "frontend/src/features/shipOrder.ts", "signature": "shipOrder(baseUrl: string, orderId: number, tracking: string): Promise<Outcome<Order>>" }],
+  "validation": [
+    {
+      "feature": "shipOrder",
+      "args": [{ "name": "orderId", "gen": "small" }, { "name": "tracking", "gen": "string" }],
+      "request": { "method": "POST", "path": "/orders/$orderId/ship", "body": { "tracking": "$tracking" } }
+    }
+  ]
+}

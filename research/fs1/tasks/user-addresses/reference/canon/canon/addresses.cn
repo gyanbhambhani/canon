@@ -1,0 +1,49 @@
+use users.{users}
+
+table addresses: Address key id
+
+type Address {
+  id: Int,
+  email: String,
+  street: String,
+  city: String,
+  postcode: String,
+}
+
+type NewAddress {
+  street: String,
+  city: String,
+  postcode: String,
+}
+
+type AddressError =
+  | NoSuchUser(email: String)
+
+api fn add_address(email: String, a: NewAddress) -> Result[Address, AddressError]
+  route: POST "/users/{email}/addresses"
+  effects: store(addresses), store(users)
+  requires: str_len(trim(a.street)) > 0 && str_len(trim(a.city)) > 0 && str_len(a.postcode) >= 3
+{
+  if !is_some(get(users, email)) {
+    return Err(NoSuchUser(email))
+  }
+  let address = Address {
+    id: next_id(addresses),
+    email: email,
+    street: trim(a.street),
+    city: trim(a.city),
+    postcode: a.postcode,
+  }
+  insert(addresses, address)
+  return Ok(address)
+}
+
+api fn list_addresses(email: String) -> Result[List[Address], AddressError]
+  route: GET "/users/{email}/addresses"
+  effects: store(addresses), store(users)
+{
+  if !is_some(get(users, email)) {
+    return Err(NoSuchUser(email))
+  }
+  return Ok(filter(scan(addresses), |a| a.email == email))
+}

@@ -360,3 +360,14 @@ describe("long contracts break before each && or || (found by FS-1)", () => {
     expect(fmt('fn f(n: Int) -> Int\n  requires: n > 0 && n < 9\n{\n  return n\n}\n')).toContain("requires: n > 0 && n < 9\n");
   });
 });
+
+describe("a long match arm breaks at its value's outermost bracket (found by FS-1 task authors)", () => {
+  it("is canonical, checks, and round-trips through Canon-Py", () => {
+    const src = 'type Order {\n  id: Int,\n  email: String,\n  total: Int,\n  note: String,\n}\n\nfn f(o: Option[Order]) -> Order {\n  return match o {\n    Some(x) => Order { id: x.id, email: x.email, total: x.total + 1000000, note: "a rather long note text here" },\n    None => Order { id: 0, email: "", total: 0, note: "" },\n  }\n}\n';
+    const a = fmt(src);
+    expect(a).toContain('    Some(x) => Order {\n      id: x.id,\n      email: x.email,\n      total: x.total + 1000000,\n      note: "a rather long note text here",\n    },\n    None => Order { id: 0, email: "", total: 0, note: "" },');
+    expect(fmt(a)).toBe(a);
+    expect(check(a, "m.cn").diagnostics).toEqual([]);
+    expect(fmt(fmt(a, py))).toBe(a);
+  });
+});

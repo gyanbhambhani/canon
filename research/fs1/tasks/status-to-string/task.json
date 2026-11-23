@@ -1,0 +1,18 @@
+{
+  "id": "status-to-string",
+  "kind": "change",
+  "title": "Change an order's status from a sum type to a validated string, and count orders by status",
+  "features": [
+    { "module": "frontend/src/features/countOrders.ts", "signature": "countOrders(baseUrl: string, email: string, status: string): Promise<Outcome<number>>" },
+    { "module": "frontend/src/features/placeOrder.ts", "signature": "placeOrder(baseUrl: string, email: string, lines: Line[]): Promise<Outcome<Order>> (status is now a string, receipt a string or null)" },
+    { "module": "frontend/src/features/payOrder.ts", "signature": "payOrder(baseUrl: string, orderId: number): Promise<Outcome<Order>> (status is now a string, receipt a string or null)" }
+  ],
+  "supersedes": ["test_orders", "order-and-pay-probe"],
+  "validation": [
+    {
+      "feature": "countOrders",
+      "args": [{ "name": "email", "gen": "email" }, { "name": "status", "gen": "string" }],
+      "request": { "method": "GET", "path": "/orders/count", "query": { "email": "$email", "status": "$status" } }
+    }
+  ]
+}

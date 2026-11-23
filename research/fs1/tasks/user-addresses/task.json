@@ -1,0 +1,51 @@
+{
+  "id": "user-addresses",
+  "kind": "feature",
+  "title": "Users keep a list of addresses (a new table)",
+  "features": [
+    {
+      "module": "frontend/src/features/addAddress.ts",
+      "signature": "addAddress(baseUrl: string, email: string, street: string, city: string, postcode: string): Promise<Outcome<Address>>"
+    },
+    {
+      "module": "frontend/src/features/listAddresses.ts",
+      "signature": "listAddresses(baseUrl: string, email: string): Promise<Outcome<Address[]>>"
+    }
+  ],
+  "validation": [
+    {
+      "feature": "addAddress",
+      "args": [
+        {
+          "name": "email",
+          "gen": "email"
+        },
+        {
+          "name": "street",
+          "gen": "name"
+        },
+        {
+          "name": "city",
+          "gen": "name"
+        },
+        {
+          "name": "postcode",
+          "gen": "string"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/users/$email/addresses",
+        "body": {
+          "street": "$street",
+          "city": "$city",
+          "postcode": "$postcode"
+        }
+      }
+    }
+  ],
+  "adapted": {
+    "for": "canon",
+    "reason": "the postcode rule is only a minimum length (3), so the Canon reference can express it"
+  }
+}

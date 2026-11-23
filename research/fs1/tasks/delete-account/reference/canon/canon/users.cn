@@ -1,0 +1,83 @@
+table users: User key email
+
+type User {
+  email: String,
+  name: String,
+  password_hash: String,
+  id: String,
+}
+
+type Signup {
+  email: String,
+  name: String,
+  password: String,
+}
+
+type Profile {
+  email: String,
+  name: String,
+}
+
+type DeleteAccount {
+  password: String,
+}
+
+type UserError =
+  | Taken(email: String)
+  | BadLogin
+  | NoSuchUser(email: String)
+
+api fn signup(input: Signup) -> Result[Profile, UserError]
+  route: POST "/users"
+  effects: rand, store(users)
+  requires: is_email(input.email) && str_len(trim(input.name)) > 0 && str_len(input.password) >= 8
+{
+  if is_some(get(users, input.email)) {
+    return Err(Taken(input.email))
+  }
+  let user = User {
+    email: input.email,
+    name: trim(input.name),
+    password_hash: hash_password(input.password),
+    id: uuid(),
+  }
+  insert(users, user)
+  return Ok(profile(user))
+}
+
+fn profile(u: User) -> Profile {
+  return Profile { email: u.email, name: u.name }
+}
+
+api fn login(input: Signup) -> Result[Profile, UserError]
+  route: POST "/login"
+  effects: store(users)
+{
+  return match get(users, input.email) {
+    Some(u) => match verify_password(input.password, u.password_hash) {
+      true => Ok(profile(u)),
+      false => Err(BadLogin),
+    },
+    None => Err(BadLogin),
+  }
+}
+
+api fn delete_account(email: String, input: DeleteAccount) -> Result[Profile, UserError]
+  route: POST "/users/{email}/delete"
+  effects: store(users)
+{
+  return match get(users, email) {
+    Some(u) => match verify_password(input.password, u.password_hash) {
+      true => Ok(removed(u)),
+      false => Err(BadLogin),
+    },
+    None => Err(NoSuchUser(email)),
+  }
+}
+
+fn removed(u: User) -> Profile
+  effects: store(users)
+{
+  delete(users, u.email)
+  return profile(u)
+}

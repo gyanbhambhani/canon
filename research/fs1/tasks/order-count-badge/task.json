@@ -1,0 +1,6 @@
+{
+  "id": "order-count-badge",
+  "kind": "feature",
+  "title": "A labelled badge with a user's open-order count",
+  "features": [{ "module": "frontend/src/features/orderBadge.ts", "signature": "orderBadge(baseUrl: string, email: string): Promise<Outcome<Badge>>" }]
+}

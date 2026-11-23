@@ -1,0 +1,6 @@
+{
+  "id": "remove-line-from-order",
+  "kind": "feature",
+  "title": "Remove a line from an open order",
+  "features": [{ "module": "frontend/src/features/removeLine.ts", "signature": "removeLine(baseUrl: string, orderId: number, sku: string): Promise<Outcome<Order>>" }]
+}

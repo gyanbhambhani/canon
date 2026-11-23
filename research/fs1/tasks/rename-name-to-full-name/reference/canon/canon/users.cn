@@ -1,0 +1,63 @@
+table users: User key email
+
+type User {
+  email: String,
+  full_name: String,
+  password_hash: String,
+  id: String,
+}
+
+type Signup {
+  email: String,
+  full_name: String,
+  password: String,
+}
+
+type Login {
+  email: String,
+  password: String,
+}
+
+type Profile {
+  email: String,
+  full_name: String,
+}
+
+type UserError =
+  | Taken(email: String)
+  | BadLogin
+
+api fn signup(s: Signup) -> Result[Profile, UserError]
+  route: POST "/users"
+  effects: rand, store(users)
+  requires: is_email(s.email) && str_len(trim(s.full_name)) > 0 && str_len(s.password) >= 8
+{
+  if is_some(get(users, s.email)) {
+    return Err(Taken(s.email))
+  }
+  let user = User {
+    email: s.email,
+    full_name: trim(s.full_name),
+    password_hash: hash_password(s.password),
+    id: uuid(),
+  }
+  insert(users, user)
+  return Ok(profile(user))
+}
+
+fn profile(u: User) -> Profile {
+  return Profile { email: u.email, full_name: u.full_name }
+}
+
+api fn login(input: Login) -> Result[Profile, UserError]
+  route: POST "/login"
+  effects: store(users)
+{
+  return match get(users, input.email) {
+    Some(u) => match verify_password(input.password, u.password_hash) {
+      true => Ok(profile(u)),
+      false => Err(BadLogin),
+    },
+    None => Err(BadLogin),
+  }
+}

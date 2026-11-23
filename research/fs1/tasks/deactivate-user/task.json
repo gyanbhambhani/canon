@@ -1,0 +1,6 @@
+{
+  "id": "deactivate-user",
+  "kind": "feature",
+  "title": "Deactivate a user: no more logins or orders",
+  "features": [{ "module": "frontend/src/features/deactivateUser.ts", "signature": "deactivateUser(baseUrl: string, email: string): Promise<Outcome<Profile>>" }]
+}

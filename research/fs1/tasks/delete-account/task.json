@@ -1,0 +1,6 @@
+{
+  "id": "delete-account",
+  "kind": "feature",
+  "title": "Let a user delete their account, with their password",
+  "features": [{ "module": "frontend/src/features/deleteAccount.ts", "signature": "deleteAccount(baseUrl: string, email: string, password: string): Promise<Outcome<Profile>>" }]
+}

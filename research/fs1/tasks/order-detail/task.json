@@ -1,0 +1,6 @@
+{
+  "id": "order-detail",
+  "kind": "feature",
+  "title": "Show one order by id",
+  "features": [{ "module": "frontend/src/features/getOrder.ts", "signature": "getOrder(baseUrl: string, orderId: number): Promise<Outcome<Order>>" }]
+}

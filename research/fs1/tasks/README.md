@@ -36,6 +36,14 @@ Generators (`harness/client-runner.ts`): `email`, `name`, `password`, `string`, 
 Samples whose path parameters would be empty, `.`, `..` or contain `/` are drawn again (no URL
 carries them).
 
+## Adapted tasks
+
+A task whose spec was narrowed so that a Canon reference could exist at all carries
+`"adapted": {"for": "canon", "reason": "..."}` in `task.json`. The narrowed spec applies to every
+arm and is stated in `task.md`, but it removes a failure mode only the Canon arm had, so it leans
+toward Canon. The pre-registered analysis reports every result with and without adapted tasks,
+and the reasons are listed as Canon's expressiveness limits.
+
 ## The contract every arm keeps (starters/README.md has the details)
 
 - `backend/main.py` exposes `app` and `reset_database()`; the database is `$SHOP_DATABASE`; payments

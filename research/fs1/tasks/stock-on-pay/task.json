@@ -1,0 +1,6 @@
+{
+  "id": "stock-on-pay",
+  "kind": "feature",
+  "title": "Paying takes stock; out of stock is a typed error",
+  "features": [{ "module": "frontend/src/features/payOrder.ts", "signature": "payOrder(baseUrl: string, orderId: number): Promise<Outcome<Order>> (errors now include OutOfStock)" }]
+}

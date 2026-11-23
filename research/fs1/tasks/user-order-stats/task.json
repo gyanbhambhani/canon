@@ -1,0 +1,6 @@
+{
+  "id": "user-order-stats",
+  "kind": "feature",
+  "title": "A user's order count and amount spent",
+  "features": [{ "module": "frontend/src/features/getOrderStats.ts", "signature": "getOrderStats(baseUrl: string, email: string): Promise<Outcome<OrderStats>>" }]
+}

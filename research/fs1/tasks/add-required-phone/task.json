@@ -1,0 +1,54 @@
+{
+  "id": "add-required-phone",
+  "kind": "change",
+  "title": "Add a required, checked phone number to signup",
+  "features": [
+    {
+      "module": "frontend/src/features/signup.ts",
+      "signature": "signup(baseUrl: string, email: string, name: string, password: string, phone: string): Promise<Outcome<Profile>>"
+    }
+  ],
+  "supersedes": [
+    "test_signup_and_login",
+    "test_signup_validation",
+    "test_reports",
+    "signup-probe"
+  ],
+  "validation": [
+    {
+      "feature": "signup",
+      "args": [
+        {
+          "name": "email",
+          "gen": "email"
+        },
+        {
+          "name": "name",
+          "gen": "name"
+        },
+        {
+          "name": "password",
+          "gen": "password"
+        },
+        {
+          "name": "phone",
+          "gen": "string"
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/users",
+        "body": {
+          "email": "$email",
+          "name": "$name",
+          "password": "$password",
+          "phone": "$phone"
+        }
+      }
+    }
+  ],
+  "adapted": {
+    "for": "canon",
+    "reason": "a badly formatted phone is a typed 400 (BadPhone), not a 422: Canon's portable requires cannot inspect characters"
+  }
+}
