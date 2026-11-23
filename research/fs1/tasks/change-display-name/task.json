@@ -1,0 +1,13 @@
+{
+  "id": "change-display-name",
+  "kind": "feature",
+  "title": "Let a user change their display name",
+  "features": [{ "module": "frontend/src/features/changeDisplayName.ts", "signature": "changeDisplayName(baseUrl: string, email: string, name: string): Promise<Outcome<Profile>>" }],
+  "validation": [
+    {
+      "feature": "changeDisplayName",
+      "args": [{ "name": "email", "gen": "email" }, { "name": "name", "gen": "name" }],
+      "request": { "method": "PATCH", "path": "/users/$email", "body": { "name": "$name" } }
+    }
+  ]
+}

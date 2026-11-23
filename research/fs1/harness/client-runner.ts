@@ -89,8 +89,14 @@ async function validation(spec: ValidationSpec) {
   const samples = spec.samples ?? 1000;
   const disagreements: unknown[] = [];
   for (let i = 0; i < samples; i++) {
-    const values: Record<string, unknown> = {};
-    for (const a of spec.args) values[a.name] = (GENS[a.gen] ?? GENS.string)();
+    // a path parameter cannot be "", ".", ".." or contain "/" (no URL carries it): draw again
+    const inPath = [...spec.request.path.matchAll(/\$(\w+)/g)].map((m) => m[1]);
+    let values: Record<string, unknown> = {};
+    for (let tries = 0; tries < 100; tries++) {
+      values = {};
+      for (const a of spec.args) values[a.name] = (GENS[a.gen] ?? GENS.string)();
+      if (inPath.every((n) => !["", ".", ".."].includes(String(values[n])) && !String(values[n]).includes("/"))) break;
+    }
     // the client's own decision: rejected before any request
     let sent = 0;
     globalThis.fetch = (async (...a: Parameters<typeof fetch>) => {

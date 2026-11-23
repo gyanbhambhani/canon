@@ -44,7 +44,7 @@ export function loadTask(id: string): TaskInfo {
 
 function pytest(backend: string, files: string[], deselect: string[]): TestResult[] {
   const xml = join(mkdtempSync(join(tmpdir(), "fs1-junit-")), "out.xml");
-  const args = ["-q", "-p", "no:cacheprovider", `--junitxml=${xml}`, ...files];
+  const args = ["-q", "-p", "no:cacheprovider", "--import-mode=importlib", `--junitxml=${xml}`, ...files];
   for (const d of deselect) for (const f of files) args.push("--deselect", `${f}::${d}`);
   spawnSync(join(PY, "pytest"), args, { cwd: FS1, encoding: "utf8", env: { ...process.env, FS1_BACKEND: backend }, timeout: 600_000 });
   if (!existsSync(xml)) return [{ id: "pytest", tags: ["http"], passed: false, error: "pytest did not run" }];
