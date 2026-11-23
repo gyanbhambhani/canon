@@ -1,0 +1,13 @@
+{
+  "id": "add-line-to-order",
+  "kind": "feature",
+  "title": "Add a line to an open order",
+  "features": [{ "module": "frontend/src/features/addLine.ts", "signature": "addLine(baseUrl: string, orderId: number, sku: string, quantity: number): Promise<Outcome<Order>>" }],
+  "validation": [
+    {
+      "feature": "addLine",
+      "args": [{ "name": "orderId", "gen": "small" }, { "name": "sku", "gen": "sku" }, { "name": "quantity", "gen": "small" }],
+      "request": { "method": "POST", "path": "/orders/$orderId/lines", "body": { "sku": "$sku", "quantity": "$quantity" } }
+    }
+  ]
+}

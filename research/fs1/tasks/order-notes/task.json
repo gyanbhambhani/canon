@@ -1,0 +1,16 @@
+{
+  "id": "order-notes",
+  "kind": "feature",
+  "title": "A length-validated note on an order",
+  "features": [
+    { "module": "frontend/src/features/setOrderNote.ts", "signature": "setOrderNote(baseUrl: string, orderId: number, note: string): Promise<Outcome<OrderNote>>" },
+    { "module": "frontend/src/features/getOrderNote.ts", "signature": "getOrderNote(baseUrl: string, orderId: number): Promise<Outcome<OrderNote>>" }
+  ],
+  "validation": [
+    {
+      "feature": "setOrderNote",
+      "args": [{ "name": "orderId", "gen": "small" }, { "name": "note", "gen": "name" }],
+      "request": { "method": "PUT", "path": "/orders/$orderId/note", "body": { "note": "$note" } }
+    }
+  ]
+}

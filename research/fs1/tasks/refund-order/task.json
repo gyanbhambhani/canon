@@ -1,0 +1,6 @@
+{
+  "id": "refund-order",
+  "kind": "feature",
+  "title": "Refund a paid order through the payment provider",
+  "features": [{ "module": "frontend/src/features/refundOrder.ts", "signature": "refundOrder(baseUrl: string, orderId: number): Promise<Outcome<Order>>" }]
+}

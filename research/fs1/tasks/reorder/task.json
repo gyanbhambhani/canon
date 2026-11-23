@@ -1,0 +1,6 @@
+{
+  "id": "reorder",
+  "kind": "feature",
+  "title": "Reorder: copy a previous order",
+  "features": [{ "module": "frontend/src/features/reorder.ts", "signature": "reorder(baseUrl: string, orderId: number): Promise<Outcome<Order>>" }]
+}

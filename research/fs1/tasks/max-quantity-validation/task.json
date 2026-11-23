@@ -1,0 +1,8 @@
+{
+  "id": "max-quantity-validation",
+  "kind": "change",
+  "title": "Limit an order line's quantity to 1..99 (a typed BadQuantity error)",
+  "features": [
+    { "module": "frontend/src/features/placeOrder.ts", "signature": "placeOrder(baseUrl: string, email: string, lines: Line[]): Promise<Outcome<Order>> (errors now include BadQuantity)" }
+  ]
+}

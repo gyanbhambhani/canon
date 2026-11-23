@@ -1,0 +1,10 @@
+{
+  "id": "split-pay",
+  "kind": "change",
+  "title": "Split paying into authorize and capture",
+  "features": [
+    { "module": "frontend/src/features/authorizeOrder.ts", "signature": "authorizeOrder(baseUrl: string, orderId: number): Promise<Outcome<Order>>" },
+    { "module": "frontend/src/features/captureOrder.ts", "signature": "captureOrder(baseUrl: string, orderId: number): Promise<Outcome<Order>>" }
+  ],
+  "supersedes": ["test_orders", "order-and-pay-probe"]
+}

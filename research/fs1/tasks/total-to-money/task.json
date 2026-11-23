@@ -1,0 +1,10 @@
+{
+  "id": "total-to-money",
+  "kind": "change",
+  "title": "Change an order's total from an integer to money (cents and currency)",
+  "features": [
+    { "module": "frontend/src/features/placeOrder.ts", "signature": "placeOrder(baseUrl: string, email: string, lines: Line[]): Promise<Outcome<Order>> (its total is now a Money)" },
+    { "module": "frontend/src/features/payOrder.ts", "signature": "payOrder(baseUrl: string, orderId: number): Promise<Outcome<Order>> (its total is now a Money)" }
+  ],
+  "supersedes": ["test_orders", "order-and-pay-probe"]
+}

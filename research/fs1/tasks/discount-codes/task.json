@@ -1,0 +1,16 @@
+{
+  "id": "discount-codes",
+  "kind": "feature",
+  "title": "Discount codes that take a percentage off an open order",
+  "features": [
+    { "module": "frontend/src/features/addDiscount.ts", "signature": "addDiscount(baseUrl: string, code: string, percent: number): Promise<Outcome<Discount>>" },
+    { "module": "frontend/src/features/applyDiscount.ts", "signature": "applyDiscount(baseUrl: string, orderId: number, code: string): Promise<Outcome<Order>>" }
+  ],
+  "validation": [
+    {
+      "feature": "addDiscount",
+      "args": [{ "name": "code", "gen": "string" }, { "name": "percent", "gen": "int" }],
+      "request": { "method": "POST", "path": "/discounts", "body": { "code": "$code", "percent": "$percent" } }
+    }
+  ]
+}

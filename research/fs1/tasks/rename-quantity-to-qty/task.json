@@ -1,0 +1,9 @@
+{
+  "id": "rename-quantity-to-qty",
+  "kind": "change",
+  "title": "Rename an order line's quantity field to qty",
+  "features": [
+    { "module": "frontend/src/features/placeOrder.ts", "signature": "placeOrder(baseUrl: string, email: string, lines: Line[]): Promise<Outcome<Order>>, where Line is now {sku, qty}" }
+  ],
+  "supersedes": ["test_orders", "test_reports", "order-and-pay-probe"]
+}

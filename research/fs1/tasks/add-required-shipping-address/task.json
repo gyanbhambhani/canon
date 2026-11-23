@@ -1,0 +1,9 @@
+{
+  "id": "add-required-shipping-address",
+  "kind": "change",
+  "title": "Add a required, validated shipping address to orders",
+  "features": [
+    { "module": "frontend/src/features/placeOrder.ts", "signature": "placeOrder(baseUrl: string, email: string, lines: Line[], shippingAddress: string): Promise<Outcome<Order>>" }
+  ],
+  "supersedes": ["test_orders", "test_reports", "order-and-pay-probe"]
+}
