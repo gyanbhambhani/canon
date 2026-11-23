@@ -8,8 +8,8 @@ LOG=/tmp/canonbench/mlx7b-watch.log
 start_server() {
   pkill -f "mlx_lm.server --model mlx-community/Qwen2.5-Coder-7B-Instruct-8bit --port 8091"
   sleep 5
-  : > "$LOG"
-  nohup "$MLX" --model mlx-community/Qwen2.5-Coder-7B-Instruct-8bit --port 8091 --decode-concurrency 4 --prompt-concurrency 2 > "$LOG" 2>&1 &
+  cat "$LOG" >> /tmp/canonbench/mlx7b-history.log 2>/dev/null; : > "$LOG"
+  nohup "$MLX" --model mlx-community/Qwen2.5-Coder-7B-Instruct-8bit --port 8091 --decode-concurrency 4 --prompt-concurrency 2 --prompt-cache-size 8 --prompt-cache-bytes 6000000000 > "$LOG" 2>&1 &
   until curl -s -m 300 localhost:8091/v1/chat/completions -H 'Content-Type: application/json' \
     -d '{"model":"mlx-community/Qwen2.5-Coder-7B-Instruct-8bit","messages":[{"role":"user","content":"ok"}],"max_tokens":2}' | grep -q choices; do sleep 5; done
 }

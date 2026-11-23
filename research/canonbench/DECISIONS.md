@@ -186,3 +186,9 @@ made is recorded here (date, decision, reason). Approval of all of these is afte
 40. **Qwen 7B main-run throughput was lower than planned** (decode concurrency 4 after the crashes,
     and the Canon-Py arm sharing the server), so only part of runs 1 and 2 can finish by 07:00;
     the pre-registered stop rule applies.
+41. **More 7B server crashes (02:33 and 02:42 PST), with the FS-1 runner now sharing port 8091**
+    (as the coordinator arranged). The watchdog restarted server and runner each time. At 02:46 the
+    server was restarted with its prompt cache capped (`--prompt-cache-size 8 --prompt-cache-bytes
+    6000000000`), on the guess that FS-1's long full-stack contexts were filling an uncapped prompt
+    cache; crash logs are now kept (/tmp/canonbench/mlx7b-history.log). Caching does not change
+    outputs.
