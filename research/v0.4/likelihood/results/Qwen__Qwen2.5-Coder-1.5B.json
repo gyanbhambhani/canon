@@ -1,0 +1,1666 @@
+{
+ "model": "Qwen/Qwen2.5-Coder-1.5B",
+ "dtype": "torch.float32",
+ "header": "# A Canon source file (main.cn). Canon is a strictly formatted, effect-typed subset of Python.\n",
+ "constructs": [
+  {
+   "id": "logic-ops",
+   "question": "Logical operators: and/or/not or &&/||/!?",
+   "chosen": "words",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "words",
+     "logprob": -101.4040298461914,
+     "tokens": 84,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef count_ok(items: list[Item], banned: list[str]) -> int:\n    count = 0\n    for i in items:\n        if i.qty > 0 and not i.sku in banned or i.price == 0.0:\n            count += 1\n    return count\n"
+    },
+    {
+     "context": 0,
+     "variant": "symbols",
+     "logprob": -115.16250610351562,
+     "tokens": 84,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef count_ok(items: list[Item], banned: list[str]) -> int:\n    count = 0\n    for i in items:\n        if i.qty > 0 && !i.sku in banned || i.price == 0.0:\n            count += 1\n    return count\n"
+    },
+    {
+     "context": 1,
+     "variant": "words",
+     "logprob": -126.70648956298828,
+     "tokens": 64,
+     "text": "@effects(io)\ndef drain(limit: int, force: bool) -> int:\n    n = 0\n    done = False\n    while n < limit and not done or force:\n        line = unwrap_or(read_line(), \"\")\n        done = line == \"\"\n        n += 1\n    return n\n"
+    },
+    {
+     "context": 1,
+     "variant": "symbols",
+     "logprob": -133.07789611816406,
+     "tokens": 64,
+     "text": "@effects(io)\ndef drain(limit: int, force: bool) -> int:\n    n = 0\n    done = False\n    while n < limit && !done || force:\n        line = unwrap_or(read_line(), \"\")\n        done = line == \"\"\n        n += 1\n    return n\n"
+    },
+    {
+     "context": 2,
+     "variant": "words",
+     "logprob": -73.19222259521484,
+     "tokens": 39,
+     "text": "def keep(n: int) -> bool:\n    small = n < 100\n    ok = n > 0 and not small or n == 1\n    return ok\n"
+    },
+    {
+     "context": 2,
+     "variant": "symbols",
+     "logprob": -80.28070831298828,
+     "tokens": 39,
+     "text": "def keep(n: int) -> bool:\n    small = n < 100\n    ok = n > 0 && !small || n == 1\n    return ok\n"
+    }
+   ]
+  },
+  {
+   "id": "effects",
+   "question": "Declared effects: decorator, docstring tag, trailing comment, or return-type wrapper?",
+   "chosen": "decorator",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "decorator",
+     "logprob": -60.21489715576172,
+     "tokens": 39,
+     "text": "@effects(io)\ndef greet(name: str) -> None:\n    print(f\"hello, {name}\")\n\n\n@effects(io)\ndef main() -> None:\n    greet(\"canon\")\n"
+    },
+    {
+     "context": 0,
+     "variant": "docstring",
+     "logprob": -76.74134826660156,
+     "tokens": 41,
+     "text": "def greet(name: str) -> None:\n    \"\"\"effects: io\"\"\"\n    print(f\"hello, {name}\")\n\n\n@effects(io)\ndef main() -> None:\n    greet(\"canon\")\n"
+    },
+    {
+     "context": 0,
+     "variant": "comment",
+     "logprob": -67.28152465820312,
+     "tokens": 41,
+     "text": "def greet(name: str) -> None:  # effects: io\n    print(f\"hello, {name}\")\n\n\n@effects(io)\ndef main() -> None:\n    greet(\"canon\")\n"
+    },
+    {
+     "context": 0,
+     "variant": "rettype",
+     "logprob": -80.48661041259766,
+     "tokens": 39,
+     "text": "def greet(name: str) -> Effect[None, io]:\n    print(f\"hello, {name}\")\n\n\n@effects(io)\ndef main() -> None:\n    greet(\"canon\")\n"
+    },
+    {
+     "context": 1,
+     "variant": "decorator",
+     "logprob": -126.65677642822266,
+     "tokens": 56,
+     "text": "@effects(net, time)\ndef fetch_title(url: str) -> Result[str, Error]:\n    start = now()\n    page = try_(http_get(url))\n    ms = now() - start\n    return Ok(f\"{len(page)} bytes in {ms} ms\")\n"
+    },
+    {
+     "context": 1,
+     "variant": "docstring",
+     "logprob": -131.36026000976562,
+     "tokens": 58,
+     "text": "def fetch_title(url: str) -> Result[str, Error]:\n    \"\"\"effects: net, time\"\"\"\n    start = now()\n    page = try_(http_get(url))\n    ms = now() - start\n    return Ok(f\"{len(page)} bytes in {ms} ms\")\n"
+    },
+    {
+     "context": 1,
+     "variant": "comment",
+     "logprob": -123.92826080322266,
+     "tokens": 58,
+     "text": "def fetch_title(url: str) -> Result[str, Error]:  # effects: net, time\n    start = now()\n    page = try_(http_get(url))\n    ms = now() - start\n    return Ok(f\"{len(page)} bytes in {ms} ms\")\n"
+    },
+    {
+     "context": 1,
+     "variant": "rettype",
+     "logprob": -138.60723876953125,
+     "tokens": 56,
+     "text": "def fetch_title(url: str) -> Effect[Result[str, Error], net | time]:\n    start = now()\n    page = try_(http_get(url))\n    ms = now() - start\n    return Ok(f\"{len(page)} bytes in {ms} ms\")\n"
+    },
+    {
+     "context": 2,
+     "variant": "decorator",
+     "logprob": -89.14803314208984,
+     "tokens": 35,
+     "text": "@effects(fs)\ndef save_report(path: str, lines: list[str]) -> Result[None, Error]:\n    return write_file(path, join(lines, \"\\n\"))\n"
+    },
+    {
+     "context": 2,
+     "variant": "docstring",
+     "logprob": -99.34436798095703,
+     "tokens": 37,
+     "text": "def save_report(path: str, lines: list[str]) -> Result[None, Error]:\n    \"\"\"effects: fs\"\"\"\n    return write_file(path, join(lines, \"\\n\"))\n"
+    },
+    {
+     "context": 2,
+     "variant": "comment",
+     "logprob": -98.23519134521484,
+     "tokens": 37,
+     "text": "def save_report(path: str, lines: list[str]) -> Result[None, Error]:  # effects: fs\n    return write_file(path, join(lines, \"\\n\"))\n"
+    },
+    {
+     "context": 2,
+     "variant": "rettype",
+     "logprob": -104.2458724975586,
+     "tokens": 35,
+     "text": "def save_report(path: str, lines: list[str]) -> Effect[Result[None, Error], fs]:\n    return write_file(path, join(lines, \"\\n\"))\n"
+    }
+   ]
+  },
+  {
+   "id": "contracts",
+   "question": "Contracts: @requires/@ensures decorators, asserts at entry and before return, or a docstring?",
+   "chosen": "decorators",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "decorators",
+     "logprob": -72.21421813964844,
+     "tokens": 60,
+     "text": "@requires(n >= 0)\n@ensures(result * result <= n)\ndef isqrt(n: int) -> int:\n    r = 0\n    while (r + 1) * (r + 1) <= n:\n        r += 1\n    return r\n"
+    },
+    {
+     "context": 0,
+     "variant": "asserts",
+     "logprob": -56.28863525390625,
+     "tokens": 64,
+     "text": "def isqrt(n: int) -> int:\n    assert n >= 0\n    r = 0\n    while (r + 1) * (r + 1) <= n:\n        r += 1\n    result = r\n    assert result * result <= n\n    return result\n"
+    },
+    {
+     "context": 0,
+     "variant": "docstring",
+     "logprob": -62.681884765625,
+     "tokens": 64,
+     "text": "def isqrt(n: int) -> int:\n    \"\"\"requires: n >= 0\n    ensures: result * result <= n\n    \"\"\"\n    r = 0\n    while (r + 1) * (r + 1) <= n:\n        r += 1\n    return r\n"
+    },
+    {
+     "context": 1,
+     "variant": "decorators",
+     "logprob": -95.20884704589844,
+     "tokens": 53,
+     "text": "@requires(k >= 0 and k <= len(xs))\n@ensures(len(result) == k)\ndef take_last(xs: list[int], k: int) -> list[int]:\n    out = drop(xs, len(xs) - k)\n    return out\n"
+    },
+    {
+     "context": 1,
+     "variant": "asserts",
+     "logprob": -82.9493408203125,
+     "tokens": 57,
+     "text": "def take_last(xs: list[int], k: int) -> list[int]:\n    assert k >= 0 and k <= len(xs)\n    out = drop(xs, len(xs) - k)\n    result = out\n    assert len(result) == k\n    return result\n"
+    },
+    {
+     "context": 1,
+     "variant": "docstring",
+     "logprob": -88.12774658203125,
+     "tokens": 57,
+     "text": "def take_last(xs: list[int], k: int) -> list[int]:\n    \"\"\"requires: k >= 0 and k <= len(xs)\n    ensures: len(result) == k\n    \"\"\"\n    out = drop(xs, len(xs) - k)\n    return out\n"
+    },
+    {
+     "context": 2,
+     "variant": "decorators",
+     "logprob": -123.26070404052734,
+     "tokens": 95,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\n@requires(target >= 0)\n@ensures(result >= 0.0)\ndef restock_cost(items: list[Item], target: int) -> float:\n    total = 0.0\n    for item in items:\n        if item.qty < target:\n            total += to_float(target - item.qty) * item.price\n    return total\n"
+    },
+    {
+     "context": 2,
+     "variant": "asserts",
+     "logprob": -113.0579605102539,
+     "tokens": 99,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef restock_cost(items: list[Item], target: int) -> float:\n    assert target >= 0\n    total = 0.0\n    for item in items:\n        if item.qty < target:\n            total += to_float(target - item.qty) * item.price\n    result = total\n    assert result >= 0.0\n    return result\n"
+    },
+    {
+     "context": 2,
+     "variant": "docstring",
+     "logprob": -115.05464172363281,
+     "tokens": 99,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef restock_cost(items: list[Item], target: int) -> float:\n    \"\"\"requires: target >= 0\n    ensures: result >= 0.0\n    \"\"\"\n    total = 0.0\n    for item in items:\n        if item.qty < target:\n            total += to_float(target - item.qty) * item.price\n    return total\n"
+    }
+   ]
+  },
+  {
+   "id": "records",
+   "question": "Records: @dataclass class, plain class, NamedTuple, or frozen dataclass?",
+   "chosen": "dataclass",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "dataclass",
+     "logprob": -61.179744720458984,
+     "tokens": 39,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n\n\ndef make(sku: str) -> Item:\n    return Item(sku=sku, qty=1)\n"
+    },
+    {
+     "context": 0,
+     "variant": "class",
+     "logprob": -60.32450866699219,
+     "tokens": 35,
+     "text": "class Item:\n    sku: str\n    qty: int\n\n\ndef make(sku: str) -> Item:\n    return Item(sku=sku, qty=1)\n"
+    },
+    {
+     "context": 0,
+     "variant": "namedtuple",
+     "logprob": -65.40565490722656,
+     "tokens": 38,
+     "text": "class Item(NamedTuple):\n    sku: str\n    qty: int\n\n\ndef make(sku: str) -> Item:\n    return Item(sku=sku, qty=1)\n"
+    },
+    {
+     "context": 0,
+     "variant": "frozen",
+     "logprob": -63.68430709838867,
+     "tokens": 42,
+     "text": "@dataclass(frozen=True)\nclass Item:\n    sku: str\n    qty: int\n\n\ndef make(sku: str) -> Item:\n    return Item(sku=sku, qty=1)\n"
+    },
+    {
+     "context": 1,
+     "variant": "dataclass",
+     "logprob": -44.4879035949707,
+     "tokens": 42,
+     "text": "@dataclass\nclass User:\n    name: str\n    email: str\n    age: int\n\n\ndef is_adult(u: User) -> bool:\n    return u.age >= 18\n"
+    },
+    {
+     "context": 1,
+     "variant": "class",
+     "logprob": -42.56475830078125,
+     "tokens": 38,
+     "text": "class User:\n    name: str\n    email: str\n    age: int\n\n\ndef is_adult(u: User) -> bool:\n    return u.age >= 18\n"
+    },
+    {
+     "context": 1,
+     "variant": "namedtuple",
+     "logprob": -48.46609878540039,
+     "tokens": 41,
+     "text": "class User(NamedTuple):\n    name: str\n    email: str\n    age: int\n\n\ndef is_adult(u: User) -> bool:\n    return u.age >= 18\n"
+    },
+    {
+     "context": 1,
+     "variant": "frozen",
+     "logprob": -46.75680923461914,
+     "tokens": 45,
+     "text": "@dataclass(frozen=True)\nclass User:\n    name: str\n    email: str\n    age: int\n\n\ndef is_adult(u: User) -> bool:\n    return u.age >= 18\n"
+    },
+    {
+     "context": 2,
+     "variant": "dataclass",
+     "logprob": -48.9287223815918,
+     "tokens": 43,
+     "text": "@dataclass\nclass Point:\n    x: float\n    y: float\n\n\ndef shift(p: Point, dx: float) -> Point:\n    return Point(x=p.x + dx, y=p.y)\n"
+    },
+    {
+     "context": 2,
+     "variant": "class",
+     "logprob": -47.13565444946289,
+     "tokens": 39,
+     "text": "class Point:\n    x: float\n    y: float\n\n\ndef shift(p: Point, dx: float) -> Point:\n    return Point(x=p.x + dx, y=p.y)\n"
+    },
+    {
+     "context": 2,
+     "variant": "namedtuple",
+     "logprob": -50.42515182495117,
+     "tokens": 42,
+     "text": "class Point(NamedTuple):\n    x: float\n    y: float\n\n\ndef shift(p: Point, dx: float) -> Point:\n    return Point(x=p.x + dx, y=p.y)\n"
+    },
+    {
+     "context": 2,
+     "variant": "frozen",
+     "logprob": -51.0289421081543,
+     "tokens": 46,
+     "text": "@dataclass(frozen=True)\nclass Point:\n    x: float\n    y: float\n\n\ndef shift(p: Point, dx: float) -> Point:\n    return Point(x=p.x + dx, y=p.y)\n"
+    }
+   ]
+  },
+  {
+   "id": "sums",
+   "question": "Sum types: one `type` line with variant fields, or one dataclass per variant plus a union alias?",
+   "chosen": "compact",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "compact",
+     "logprob": -56.07588195800781,
+     "tokens": 61,
+     "text": "type Shape = Circle(r: float) | Rect(w: float, h: float)\n\n\ndef area(s: Shape) -> float:\n    match s:\n        case Circle(r):\n            return 3.14 * r * r\n        case Rect(w, h):\n            return w * h\n"
+    },
+    {
+     "context": 0,
+     "variant": "dataclasses",
+     "logprob": -65.67424011230469,
+     "tokens": 79,
+     "text": "@dataclass\nclass Circle:\n    r: float\n\n\n@dataclass\nclass Rect:\n    w: float\n    h: float\n\n\ntype Shape = Circle | Rect\n\n\ndef area(s: Shape) -> float:\n    match s:\n        case Circle(r):\n            return 3.14 * r * r\n        case Rect(w, h):\n            return w * h\n"
+    },
+    {
+     "context": 0,
+     "variant": "dataclasses-bare-alias",
+     "logprob": -61.42032241821289,
+     "tokens": 78,
+     "text": "@dataclass\nclass Circle:\n    r: float\n\n\n@dataclass\nclass Rect:\n    w: float\n    h: float\n\n\nShape = Circle | Rect\n\n\ndef area(s: Shape) -> float:\n    match s:\n        case Circle(r):\n            return 3.14 * r * r\n        case Rect(w, h):\n            return w * h\n"
+    },
+    {
+     "context": 1,
+     "variant": "compact",
+     "logprob": -70.4740219116211,
+     "tokens": 53,
+     "text": "type Op = Deposit(amount: int) | Withdraw(amount: int)\n\n\ndef apply(balance: int, op: Op) -> int:\n    match op:\n        case Deposit(amount):\n            return balance + amount\n        case Withdraw(amount):\n            return balance - amount\n"
+    },
+    {
+     "context": 1,
+     "variant": "dataclasses",
+     "logprob": -72.07975006103516,
+     "tokens": 70,
+     "text": "@dataclass\nclass Deposit:\n    amount: int\n\n\n@dataclass\nclass Withdraw:\n    amount: int\n\n\ntype Op = Deposit | Withdraw\n\n\ndef apply(balance: int, op: Op) -> int:\n    match op:\n        case Deposit(amount):\n            return balance + amount\n        case Withdraw(amount):\n            return balance - amount\n"
+    },
+    {
+     "context": 1,
+     "variant": "dataclasses-bare-alias",
+     "logprob": -66.96055603027344,
+     "tokens": 69,
+     "text": "@dataclass\nclass Deposit:\n    amount: int\n\n\n@dataclass\nclass Withdraw:\n    amount: int\n\n\nOp = Deposit | Withdraw\n\n\ndef apply(balance: int, op: Op) -> int:\n    match op:\n        case Deposit(amount):\n            return balance + amount\n        case Withdraw(amount):\n            return balance - amount\n"
+    },
+    {
+     "context": 2,
+     "variant": "compact",
+     "logprob": -113.07508850097656,
+     "tokens": 66,
+     "text": "type Step = Call(tool: str, input: str) | Answer(text: str) | Fail(reason: str)\n\n\ndef done(s: Step) -> bool:\n    match s:\n        case Call(tool, input):\n            return False\n        case Answer(text):\n            return True\n        case Fail(reason):\n            return True\n"
+    },
+    {
+     "context": 2,
+     "variant": "dataclasses",
+     "logprob": -118.59896087646484,
+     "tokens": 92,
+     "text": "@dataclass\nclass Call:\n    tool: str\n    input: str\n\n\n@dataclass\nclass Answer:\n    text: str\n\n\n@dataclass\nclass Fail:\n    reason: str\n\n\ntype Step = Call | Answer | Fail\n\n\ndef done(s: Step) -> bool:\n    match s:\n        case Call(tool, input):\n            return False\n        case Answer(text):\n            return True\n        case Fail(reason):\n            return True\n"
+    },
+    {
+     "context": 2,
+     "variant": "dataclasses-bare-alias",
+     "logprob": -111.9599838256836,
+     "tokens": 91,
+     "text": "@dataclass\nclass Call:\n    tool: str\n    input: str\n\n\n@dataclass\nclass Answer:\n    text: str\n\n\n@dataclass\nclass Fail:\n    reason: str\n\n\nStep = Call | Answer | Fail\n\n\ndef done(s: Step) -> bool:\n    match s:\n        case Call(tool, input):\n            return False\n        case Answer(text):\n            return True\n        case Fail(reason):\n            return True\n"
+    }
+   ]
+  },
+  {
+   "id": "try",
+   "question": "Result propagation: try_(e), e?, propagate(e), or an explicit match?",
+   "chosen": "q",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "try_",
+     "logprob": -106.27183532714844,
+     "tokens": 84,
+     "text": "def parse(s: str) -> Result[int, str]:\n    match parse_int(s):\n        case Some(n):\n            return Ok(n)\n        case None:\n            return Err(f\"not a number: {s}\")\n\n\ndef total(a: str, b: str) -> Result[int, str]:\n    x = try_(parse(a))\n    y = try_(parse(b))\n    return Ok(x + y)\n"
+    },
+    {
+     "context": 0,
+     "variant": "q",
+     "logprob": -101.7530746459961,
+     "tokens": 80,
+     "text": "def parse(s: str) -> Result[int, str]:\n    match parse_int(s):\n        case Some(n):\n            return Ok(n)\n        case None:\n            return Err(f\"not a number: {s}\")\n\n\ndef total(a: str, b: str) -> Result[int, str]:\n    x = parse(a)?\n    y = parse(b)?\n    return Ok(x + y)\n"
+    },
+    {
+     "context": 0,
+     "variant": "propagate",
+     "logprob": -110.64965057373047,
+     "tokens": 82,
+     "text": "def parse(s: str) -> Result[int, str]:\n    match parse_int(s):\n        case Some(n):\n            return Ok(n)\n        case None:\n            return Err(f\"not a number: {s}\")\n\n\ndef total(a: str, b: str) -> Result[int, str]:\n    x = propagate(parse(a))\n    y = propagate(parse(b))\n    return Ok(x + y)\n"
+    },
+    {
+     "context": 0,
+     "variant": "match",
+     "logprob": -107.33014678955078,
+     "tokens": 114,
+     "text": "def parse(s: str) -> Result[int, str]:\n    match parse_int(s):\n        case Some(n):\n            return Ok(n)\n        case None:\n            return Err(f\"not a number: {s}\")\n\n\ndef total(a: str, b: str) -> Result[int, str]:\n    match parse(a):\n        case Err(e):\n            return Err(e)\n        case Ok(x):\n            pass\n    match parse(b):\n        case Err(e):\n            return Err(e)\n        case Ok(y):\n            pass\n    return Ok(x + y)\n"
+    },
+    {
+     "context": 1,
+     "variant": "try_",
+     "logprob": -107.2075424194336,
+     "tokens": 40,
+     "text": "@effects(fs)\ndef load(path: str) -> Result[int, Error]:\n    x = try_(read_file(path))\n    y = try_(parse_config(x))\n    return Ok(len(y))\n"
+    },
+    {
+     "context": 1,
+     "variant": "q",
+     "logprob": -104.08777618408203,
+     "tokens": 36,
+     "text": "@effects(fs)\ndef load(path: str) -> Result[int, Error]:\n    x = read_file(path)?\n    y = parse_config(x)?\n    return Ok(len(y))\n"
+    },
+    {
+     "context": 1,
+     "variant": "propagate",
+     "logprob": -113.79991149902344,
+     "tokens": 38,
+     "text": "@effects(fs)\ndef load(path: str) -> Result[int, Error]:\n    x = propagate(read_file(path))\n    y = propagate(parse_config(x))\n    return Ok(len(y))\n"
+    },
+    {
+     "context": 1,
+     "variant": "match",
+     "logprob": -114.43307495117188,
+     "tokens": 70,
+     "text": "@effects(fs)\ndef load(path: str) -> Result[int, Error]:\n    match read_file(path):\n        case Err(e):\n            return Err(e)\n        case Ok(x):\n            pass\n    match parse_config(x):\n        case Err(e):\n            return Err(e)\n        case Ok(y):\n            pass\n    return Ok(len(y))\n"
+    },
+    {
+     "context": 2,
+     "variant": "try_",
+     "logprob": -113.77122497558594,
+     "tokens": 43,
+     "text": "def checkout(cart: Cart, user: User) -> Result[Receipt, str]:\n    x = try_(validate(cart))\n    y = try_(charge(user, x))\n    return Ok(Receipt(total=y))\n"
+    },
+    {
+     "context": 2,
+     "variant": "q",
+     "logprob": -111.2454833984375,
+     "tokens": 39,
+     "text": "def checkout(cart: Cart, user: User) -> Result[Receipt, str]:\n    x = validate(cart)?\n    y = charge(user, x)?\n    return Ok(Receipt(total=y))\n"
+    },
+    {
+     "context": 2,
+     "variant": "propagate",
+     "logprob": -123.97857666015625,
+     "tokens": 42,
+     "text": "def checkout(cart: Cart, user: User) -> Result[Receipt, str]:\n    x = propagate(validate(cart))\n    y = propagate(charge(user, x))\n    return Ok(Receipt(total=y))\n"
+    },
+    {
+     "context": 2,
+     "variant": "match",
+     "logprob": -121.90127563476562,
+     "tokens": 73,
+     "text": "def checkout(cart: Cart, user: User) -> Result[Receipt, str]:\n    match validate(cart):\n        case Err(e):\n            return Err(e)\n        case Ok(x):\n            pass\n    match charge(user, x):\n        case Err(e):\n            return Err(e)\n        case Ok(y):\n            pass\n    return Ok(Receipt(total=y))\n"
+    }
+   ]
+  },
+  {
+   "id": "match-form",
+   "question": "Match whose value is returned: case blocks, one-line cases, a `return match` expression, or Canon arrows?",
+   "chosen": "block",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "block",
+     "logprob": -51.70063018798828,
+     "tokens": 39,
+     "text": "def apply(balance: int, op: Op) -> int:\n    match op:\n        case Deposit(amount):\n            return balance + amount\n        case Withdraw(amount):\n            return balance - amount\n"
+    },
+    {
+     "context": 0,
+     "variant": "oneline",
+     "logprob": -54.70032501220703,
+     "tokens": 37,
+     "text": "def apply(balance: int, op: Op) -> int:\n    match op:\n        case Deposit(amount): return balance + amount\n        case Withdraw(amount): return balance - amount\n"
+    },
+    {
+     "context": 0,
+     "variant": "expr",
+     "logprob": -61.51650619506836,
+     "tokens": 36,
+     "text": "def apply(balance: int, op: Op) -> int:\n    return match op:\n        case Deposit(amount): balance + amount\n        case Withdraw(amount): balance - amount\n"
+    },
+    {
+     "context": 0,
+     "variant": "arrow",
+     "logprob": -68.42852020263672,
+     "tokens": 38,
+     "text": "def apply(balance: int, op: Op) -> int:\n    return match op {\n        Deposit(amount) => balance + amount,\n        Withdraw(amount) => balance - amount,\n    }\n"
+    },
+    {
+     "context": 1,
+     "variant": "block",
+     "logprob": -63.38020324707031,
+     "tokens": 54,
+     "text": "def describe(s: Shape) -> str:\n    match s:\n        case Circle(r):\n            return f\"circle {r}\"\n        case Rect(w, h):\n            return f\"rect {w}x{h}\"\n        case _:\n            return \"other\"\n"
+    },
+    {
+     "context": 1,
+     "variant": "oneline",
+     "logprob": -65.07731628417969,
+     "tokens": 50,
+     "text": "def describe(s: Shape) -> str:\n    match s:\n        case Circle(r): return f\"circle {r}\"\n        case Rect(w, h): return f\"rect {w}x{h}\"\n        case _: return \"other\"\n"
+    },
+    {
+     "context": 1,
+     "variant": "expr",
+     "logprob": -74.29641723632812,
+     "tokens": 48,
+     "text": "def describe(s: Shape) -> str:\n    return match s:\n        case Circle(r): f\"circle {r}\"\n        case Rect(w, h): f\"rect {w}x{h}\"\n        case _: \"other\"\n"
+    },
+    {
+     "context": 1,
+     "variant": "arrow",
+     "logprob": -75.22293853759766,
+     "tokens": 50,
+     "text": "def describe(s: Shape) -> str:\n    return match s {\n        Circle(r) => f\"circle {r}\",\n        Rect(w, h) => f\"rect {w}x{h}\",\n        _ => \"other\",\n    }\n"
+    },
+    {
+     "context": 2,
+     "variant": "block",
+     "logprob": -58.60551834106445,
+     "tokens": 35,
+     "text": "def code(r: Result[int, str]) -> int:\n    match r:\n        case Ok(n):\n            return n\n        case Err(_):\n            return -1\n"
+    },
+    {
+     "context": 2,
+     "variant": "oneline",
+     "logprob": -60.34867858886719,
+     "tokens": 33,
+     "text": "def code(r: Result[int, str]) -> int:\n    match r:\n        case Ok(n): return n\n        case Err(_): return -1\n"
+    },
+    {
+     "context": 2,
+     "variant": "expr",
+     "logprob": -66.3604965209961,
+     "tokens": 32,
+     "text": "def code(r: Result[int, str]) -> int:\n    return match r:\n        case Ok(n): n\n        case Err(_): -1\n"
+    },
+    {
+     "context": 2,
+     "variant": "arrow",
+     "logprob": -66.14168548583984,
+     "tokens": 33,
+     "text": "def code(r: Result[int, str]) -> int:\n    return match r {\n        Ok(n) => n,\n        Err(_) => -1,\n    }\n"
+    }
+   ]
+  },
+  {
+   "id": "bool-match",
+   "question": "A value chosen by a Bool: `a if c else b`, or a match on True/False?",
+   "chosen": "conditional",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "conditional",
+     "logprob": -28.114421844482422,
+     "tokens": 26,
+     "text": "def parity(n: int) -> str:\n    return \"even\" if n % 2 == 0 else \"odd\"\n"
+    },
+    {
+     "context": 0,
+     "variant": "match",
+     "logprob": -38.938663482666016,
+     "tokens": 37,
+     "text": "def parity(n: int) -> str:\n    match n % 2 == 0:\n        case True:\n            return \"even\"\n        case False:\n            return \"odd\"\n"
+    },
+    {
+     "context": 1,
+     "variant": "conditional",
+     "logprob": -54.22184371948242,
+     "tokens": 30,
+     "text": "def fee(total: float, member: bool) -> float:\n    return 0.0 if member else total * 0.05\n"
+    },
+    {
+     "context": 1,
+     "variant": "match",
+     "logprob": -60.27811050415039,
+     "tokens": 42,
+     "text": "def fee(total: float, member: bool) -> float:\n    match member:\n        case True:\n            return 0.0\n        case False:\n            return total * 0.05\n"
+    },
+    {
+     "context": 2,
+     "variant": "conditional",
+     "logprob": -26.1447696685791,
+     "tokens": 22,
+     "text": "def sign(n: int) -> int:\n    return -1 if n < 0 else 1\n"
+    },
+    {
+     "context": 2,
+     "variant": "match",
+     "logprob": -34.196659088134766,
+     "tokens": 34,
+     "text": "def sign(n: int) -> int:\n    match n < 0:\n        case True:\n            return -1\n        case False:\n            return 1\n"
+    }
+   ]
+  },
+  {
+   "id": "lambda",
+   "question": "Lambdas: `lambda x: e` or `|x| e`?",
+   "chosen": "lambda",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "lambda",
+     "logprob": -70.41827392578125,
+     "tokens": 50,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef in_stock(items: list[Item]) -> list[Item]:\n    return filter(items, lambda i: i.qty > 0)\n"
+    },
+    {
+     "context": 0,
+     "variant": "bars",
+     "logprob": -80.03111267089844,
+     "tokens": 50,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef in_stock(items: list[Item]) -> list[Item]:\n    return filter(items, |i| i.qty > 0)\n"
+    },
+    {
+     "context": 1,
+     "variant": "lambda",
+     "logprob": -39.957115173339844,
+     "tokens": 24,
+     "text": "def doubled(xs: list[int]) -> list[int]:\n    return map(xs, lambda x: x * 2)\n"
+    },
+    {
+     "context": 1,
+     "variant": "bars",
+     "logprob": -48.41211700439453,
+     "tokens": 24,
+     "text": "def doubled(xs: list[int]) -> list[int]:\n    return map(xs, |x| x * 2)\n"
+    },
+    {
+     "context": 2,
+     "variant": "lambda",
+     "logprob": -35.903282165527344,
+     "tokens": 27,
+     "text": "def total(xs: list[int]) -> int:\n    return fold(xs, 0, lambda acc, x: acc + x)\n"
+    },
+    {
+     "context": 2,
+     "variant": "bars",
+     "logprob": -42.672340393066406,
+     "tokens": 27,
+     "text": "def total(xs: list[int]) -> int:\n    return fold(xs, 0, |acc, x| acc + x)\n"
+    }
+   ]
+  },
+  {
+   "id": "pipeline",
+   "question": "Three or more chained calls: nested calls, a `|>` pipeline, or named steps?",
+   "chosen": "nested",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "nested",
+     "logprob": -116.65595245361328,
+     "tokens": 72,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef cheapest(items: list[Item], k: int) -> list[str]:\n    return map(take(sort_by(filter(items, lambda i: i.qty > 0), lambda i: i.price), k), lambda i: i.sku)\n"
+    },
+    {
+     "context": 0,
+     "variant": "pipeline",
+     "logprob": -101.63655090332031,
+     "tokens": 79,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef cheapest(items: list[Item], k: int) -> list[str]:\n    return items\n        |> filter(lambda i: i.qty > 0)\n        |> sort_by(lambda i: i.price)\n        |> take(k)\n        |> map(lambda i: i.sku)\n"
+    },
+    {
+     "context": 0,
+     "variant": "steps",
+     "logprob": -115.26455688476562,
+     "tokens": 90,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef cheapest(items: list[Item], k: int) -> list[str]:\n    in_stock = filter(items, lambda i: i.qty > 0)\n    by_price = sort_by(in_stock, lambda i: i.price)\n    top = take(by_price, k)\n    return map(top, lambda i: i.sku)\n"
+    },
+    {
+     "context": 1,
+     "variant": "nested",
+     "logprob": -40.22509002685547,
+     "tokens": 22,
+     "text": "def reverse_words(s: str) -> str:\n    return join(reverse(split(s, \" \")), \" \")\n"
+    },
+    {
+     "context": 1,
+     "variant": "pipeline",
+     "logprob": -52.677406311035156,
+     "tokens": 28,
+     "text": "def reverse_words(s: str) -> str:\n    return s\n        |> split(\" \")\n        |> reverse()\n        |> join(\" \")\n"
+    },
+    {
+     "context": 1,
+     "variant": "steps",
+     "logprob": -46.291751861572266,
+     "tokens": 32,
+     "text": "def reverse_words(s: str) -> str:\n    words = split(s, \" \")\n    backwards = reverse(words)\n    return join(backwards, \" \")\n"
+    },
+    {
+     "context": 2,
+     "variant": "nested",
+     "logprob": -63.9633674621582,
+     "tokens": 38,
+     "text": "def squares_of_evens(xs: list[int]) -> int:\n    return sum(map(filter(xs, lambda x: x % 2 == 0), lambda x: x * x))\n"
+    },
+    {
+     "context": 2,
+     "variant": "pipeline",
+     "logprob": -69.16060638427734,
+     "tokens": 45,
+     "text": "def squares_of_evens(xs: list[int]) -> int:\n    return xs\n        |> filter(lambda x: x % 2 == 0)\n        |> map(lambda x: x * x)\n        |> sum()\n"
+    },
+    {
+     "context": 2,
+     "variant": "steps",
+     "logprob": -58.79916763305664,
+     "tokens": 51,
+     "text": "def squares_of_evens(xs: list[int]) -> int:\n    evens = filter(xs, lambda x: x % 2 == 0)\n    squares = map(evens, lambda x: x * x)\n    return sum(squares)\n"
+    }
+   ]
+  },
+  {
+   "id": "bindings",
+   "question": "Local bindings: bare `x = e` (mutability inferred), `let`/`var`, or `x: Final = e` for immutables?",
+   "chosen": "bare",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "bare",
+     "logprob": -44.652278900146484,
+     "tokens": 43,
+     "text": "def mean(xs: list[float]) -> float:\n    n = to_float(len(xs))\n    total = 0.0\n    for x in xs:\n        total += x\n    return total / n\n"
+    },
+    {
+     "context": 0,
+     "variant": "letvar",
+     "logprob": -63.876686096191406,
+     "tokens": 45,
+     "text": "def mean(xs: list[float]) -> float:\n    let n = to_float(len(xs))\n    var total = 0.0\n    for x in xs:\n        total += x\n    return total / n\n"
+    },
+    {
+     "context": 0,
+     "variant": "final",
+     "logprob": -62.062835693359375,
+     "tokens": 45,
+     "text": "def mean(xs: list[float]) -> float:\n    n: Final = to_float(len(xs))\n    total = 0.0\n    for x in xs:\n        total += x\n    return total / n\n"
+    },
+    {
+     "context": 1,
+     "variant": "bare",
+     "logprob": -53.437496185302734,
+     "tokens": 46,
+     "text": "def word_count(text: str) -> int:\n    words = split(trim(text), \" \")\n    count = 0\n    for w in words:\n        if w != \"\":\n            count += 1\n    return count\n"
+    },
+    {
+     "context": 1,
+     "variant": "letvar",
+     "logprob": -74.3329086303711,
+     "tokens": 48,
+     "text": "def word_count(text: str) -> int:\n    let words = split(trim(text), \" \")\n    var count = 0\n    for w in words:\n        if w != \"\":\n            count += 1\n    return count\n"
+    },
+    {
+     "context": 1,
+     "variant": "final",
+     "logprob": -66.11312103271484,
+     "tokens": 48,
+     "text": "def word_count(text: str) -> int:\n    words: Final = split(trim(text), \" \")\n    count = 0\n    for w in words:\n        if w != \"\":\n            count += 1\n    return count\n"
+    },
+    {
+     "context": 2,
+     "variant": "bare",
+     "logprob": -34.75125503540039,
+     "tokens": 52,
+     "text": "def fib(n: int) -> int:\n    a = 0\n    b = 1\n    for i in range(0, n):\n        next = a + b\n        a = b\n        b = next\n    return a\n"
+    },
+    {
+     "context": 2,
+     "variant": "letvar",
+     "logprob": -52.17873001098633,
+     "tokens": 55,
+     "text": "def fib(n: int) -> int:\n    var a = 0\n    var b = 1\n    for i in range(0, n):\n        let next = a + b\n        a = b\n        b = next\n    return a\n"
+    },
+    {
+     "context": 2,
+     "variant": "final",
+     "logprob": -55.36536407470703,
+     "tokens": 54,
+     "text": "def fib(n: int) -> int:\n    a = 0\n    b = 1\n    for i in range(0, n):\n        next: Final = a + b\n        a = b\n        b = next\n    return a\n"
+    }
+   ]
+  },
+  {
+   "id": "augmented",
+   "question": "Updating a variable: `x += e` or `x = x + e`?",
+   "chosen": "augmented",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "augmented",
+     "logprob": -30.23463249206543,
+     "tokens": 31,
+     "text": "def total(xs: list[int]) -> int:\n    t = 0\n    for x in xs:\n        t += x\n    return t\n"
+    },
+    {
+     "context": 0,
+     "variant": "plain",
+     "logprob": -31.574565887451172,
+     "tokens": 33,
+     "text": "def total(xs: list[int]) -> int:\n    t = 0\n    for x in xs:\n        t = t + x\n    return t\n"
+    },
+    {
+     "context": 1,
+     "variant": "augmented",
+     "logprob": -48.056644439697266,
+     "tokens": 44,
+     "text": "def countdown(n: int) -> list[int]:\n    out = []\n    i = n\n    while i > 0:\n        out = append(out, i)\n        i -= 1\n    return out\n"
+    },
+    {
+     "context": 1,
+     "variant": "plain",
+     "logprob": -48.22414016723633,
+     "tokens": 46,
+     "text": "def countdown(n: int) -> list[int]:\n    out = []\n    i = n\n    while i > 0:\n        out = append(out, i)\n        i = i - 1\n    return out\n"
+    },
+    {
+     "context": 2,
+     "variant": "augmented",
+     "logprob": -42.43947982788086,
+     "tokens": 31,
+     "text": "def shout(words: list[str]) -> str:\n    s = \"\"\n    for w in words:\n        s += w + \"!\"\n    return s\n"
+    },
+    {
+     "context": 2,
+     "variant": "plain",
+     "logprob": -43.39850997924805,
+     "tokens": 33,
+     "text": "def shout(words: list[str]) -> str:\n    s = \"\"\n    for w in words:\n        s = s + w + \"!\"\n    return s\n"
+    }
+   ]
+  },
+  {
+   "id": "param-mutation",
+   "question": "Changing a parameter's value: assign to it directly, or copy it into a local first?",
+   "chosen": "direct",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "direct",
+     "logprob": -34.52021789550781,
+     "tokens": 45,
+     "text": "def digit_sum(n: int) -> int:\n    total = 0\n    while n > 0:\n        total += n % 10\n        n = n / 10\n    return total\n"
+    },
+    {
+     "context": 0,
+     "variant": "copy",
+     "logprob": -41.05470657348633,
+     "tokens": 50,
+     "text": "def digit_sum(n: int) -> int:\n    m = n\n    total = 0\n    while m > 0:\n        total += m % 10\n        m = m / 10\n    return total\n"
+    },
+    {
+     "context": 1,
+     "variant": "direct",
+     "logprob": -30.740463256835938,
+     "tokens": 66,
+     "text": "def collatz_steps(n: int) -> int:\n    steps = 0\n    while n != 1:\n        if n % 2 == 0:\n            n = n / 2\n        else:\n            n = 3 * n + 1\n        steps += 1\n    return steps\n"
+    },
+    {
+     "context": 1,
+     "variant": "copy",
+     "logprob": -38.19660568237305,
+     "tokens": 71,
+     "text": "def collatz_steps(n: int) -> int:\n    m = n\n    steps = 0\n    while m != 1:\n        if m % 2 == 0:\n            m = m / 2\n        else:\n            m = 3 * m + 1\n        steps += 1\n    return steps\n"
+    },
+    {
+     "context": 2,
+     "variant": "direct",
+     "logprob": -34.27538299560547,
+     "tokens": 46,
+     "text": "def gcd(a: int, b: int) -> int:\n    x = a\n    while b != 0:\n        t = b\n        b = x % b\n        x = t\n    return x\n"
+    },
+    {
+     "context": 2,
+     "variant": "copy",
+     "logprob": -42.62972640991211,
+     "tokens": 51,
+     "text": "def gcd(a: int, b: int) -> int:\n    m = b\n    x = a\n    while m != 0:\n        t = m\n        m = x % m\n        x = t\n    return x\n"
+    }
+   ]
+  },
+  {
+   "id": "holes",
+   "question": "A hole (\"fill this in\"): `...`, `?`, `hole()` or `todo()`?",
+   "chosen": "ellipsis",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "ellipsis",
+     "logprob": -58.92443084716797,
+     "tokens": 21,
+     "text": "def score(xs: list[int]) -> int:\n    best = ...\n    return best * 2\n"
+    },
+    {
+     "context": 0,
+     "variant": "q",
+     "logprob": -66.32747650146484,
+     "tokens": 21,
+     "text": "def score(xs: list[int]) -> int:\n    best = ?\n    return best * 2\n"
+    },
+    {
+     "context": 0,
+     "variant": "hole",
+     "logprob": -65.67333984375,
+     "tokens": 22,
+     "text": "def score(xs: list[int]) -> int:\n    best = hole()\n    return best * 2\n"
+    },
+    {
+     "context": 0,
+     "variant": "todo",
+     "logprob": -66.90213012695312,
+     "tokens": 22,
+     "text": "def score(xs: list[int]) -> int:\n    best = todo()\n    return best * 2\n"
+    },
+    {
+     "context": 1,
+     "variant": "ellipsis",
+     "logprob": -52.55740737915039,
+     "tokens": 26,
+     "text": "def label(n: int) -> str:\n    if n > 100:\n        return \"big\"\n    return ...\n"
+    },
+    {
+     "context": 1,
+     "variant": "q",
+     "logprob": -54.89543533325195,
+     "tokens": 26,
+     "text": "def label(n: int) -> str:\n    if n > 100:\n        return \"big\"\n    return ?\n"
+    },
+    {
+     "context": 1,
+     "variant": "hole",
+     "logprob": -60.933860778808594,
+     "tokens": 27,
+     "text": "def label(n: int) -> str:\n    if n > 100:\n        return \"big\"\n    return hole()\n"
+    },
+    {
+     "context": 1,
+     "variant": "todo",
+     "logprob": -59.130577087402344,
+     "tokens": 27,
+     "text": "def label(n: int) -> str:\n    if n > 100:\n        return \"big\"\n    return todo()\n"
+    },
+    {
+     "context": 2,
+     "variant": "ellipsis",
+     "logprob": -98.23579406738281,
+     "tokens": 54,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef pick(items: list[Item]) -> Option[Item]:\n    in_stock = filter(items, lambda i: i.qty > 0)\n    return ...\n"
+    },
+    {
+     "context": 2,
+     "variant": "q",
+     "logprob": -100.72425842285156,
+     "tokens": 54,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef pick(items: list[Item]) -> Option[Item]:\n    in_stock = filter(items, lambda i: i.qty > 0)\n    return ?\n"
+    },
+    {
+     "context": 2,
+     "variant": "hole",
+     "logprob": -105.04972839355469,
+     "tokens": 55,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef pick(items: list[Item]) -> Option[Item]:\n    in_stock = filter(items, lambda i: i.qty > 0)\n    return hole()\n"
+    },
+    {
+     "context": 2,
+     "variant": "todo",
+     "logprob": -102.76885223388672,
+     "tokens": 55,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef pick(items: list[Item]) -> Option[Item]:\n    in_stock = filter(items, lambda i: i.qty > 0)\n    return todo()\n"
+    }
+   ]
+  },
+  {
+   "id": "type-names",
+   "question": "Type names: Python's (int, str, list[T], dict[K, V], None) or Canon's (Int, String, List[T], Map[K, V], Unit)?",
+   "chosen": "python",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "python",
+     "logprob": -75.84966278076172,
+     "tokens": 44,
+     "text": "def mean(xs: list[float]) -> float:\n    return sum_float(xs) / to_float(len(xs))\n\n\ndef label(n: int, unit: str) -> str:\n    return f\"{n} {unit}\"\n"
+    },
+    {
+     "context": 0,
+     "variant": "canon",
+     "logprob": -82.30829620361328,
+     "tokens": 45,
+     "text": "def mean(xs: List[Float]) -> Float:\n    return sum_float(xs) / to_float(len(xs))\n\n\ndef label(n: Int, unit: String) -> String:\n    return f\"{n} {unit}\"\n"
+    },
+    {
+     "context": 1,
+     "variant": "python",
+     "logprob": -66.08641052246094,
+     "tokens": 28,
+     "text": "@effects(io)\ndef report(names: list[str], verbose: bool) -> None:\n    for n in names:\n        print(n)\n"
+    },
+    {
+     "context": 1,
+     "variant": "canon",
+     "logprob": -71.94108581542969,
+     "tokens": 28,
+     "text": "@effects(io)\ndef report(names: List[String], verbose: Bool) -> Unit:\n    for n in names:\n        print(n)\n"
+    },
+    {
+     "context": 2,
+     "variant": "python",
+     "logprob": -89.90160369873047,
+     "tokens": 53,
+     "text": "def index(words: list[str]) -> dict[str, int]:\n    return map_from(zip(words, range(0, len(words))))\n\n\ndef lookup(m: dict[str, int], k: str) -> Option[int]:\n    return map_get(m, k)\n"
+    },
+    {
+     "context": 2,
+     "variant": "canon",
+     "logprob": -86.69631958007812,
+     "tokens": 53,
+     "text": "def index(words: List[String]) -> Map[String, Int]:\n    return map_from(zip(words, range(0, len(words))))\n\n\ndef lookup(m: Map[String, Int], k: String) -> Option[Int]:\n    return map_get(m, k)\n"
+    }
+   ]
+  },
+  {
+   "id": "fn-types",
+   "question": "Function types: `Callable[[A], B]` or `fn(A) -> B`?",
+   "chosen": "callable",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "callable",
+     "logprob": -32.14525604248047,
+     "tokens": 25,
+     "text": "def apply_twice(f: Callable[[int], int], x: int) -> int:\n    return f(f(x))\n"
+    },
+    {
+     "context": 0,
+     "variant": "fn",
+     "logprob": -42.37512969970703,
+     "tokens": 25,
+     "text": "def apply_twice(f: fn(int) -> int, x: int) -> int:\n    return f(f(x))\n"
+    },
+    {
+     "context": 1,
+     "variant": "callable",
+     "logprob": -52.58583450317383,
+     "tokens": 26,
+     "text": "def keep(xs: list[str], pred: Callable[[str], bool]) -> list[str]:\n    return filter(xs, pred)\n"
+    },
+    {
+     "context": 1,
+     "variant": "fn",
+     "logprob": -54.39408874511719,
+     "tokens": 26,
+     "text": "def keep(xs: list[str], pred: fn(str) -> bool) -> list[str]:\n    return filter(xs, pred)\n"
+    },
+    {
+     "context": 2,
+     "variant": "callable",
+     "logprob": -44.73133850097656,
+     "tokens": 30,
+     "text": "def combine(xs: list[int], f: Callable[[int, int], int]) -> int:\n    return fold(xs, 0, f)\n"
+    },
+    {
+     "context": 2,
+     "variant": "fn",
+     "logprob": -52.736568450927734,
+     "tokens": 30,
+     "text": "def combine(xs: list[int], f: fn(int, int) -> int) -> int:\n    return fold(xs, 0, f)\n"
+    }
+   ]
+  },
+  {
+   "id": "strings",
+   "question": "Building strings: f-strings, `+` with to_string, or `+` with str()?",
+   "chosen": "fstring",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "fstring",
+     "logprob": -42.18663024902344,
+     "tokens": 28,
+     "text": "def greet(name: str, n: int) -> str:\n    return f\"hello {name}, you have {n} messages\"\n"
+    },
+    {
+     "context": 0,
+     "variant": "plus",
+     "logprob": -52.67746353149414,
+     "tokens": 34,
+     "text": "def greet(name: str, n: int) -> str:\n    return \"hello \" + name + \", you have \" + to_string(n) + \" messages\"\n"
+    },
+    {
+     "context": 0,
+     "variant": "plus-str",
+     "logprob": -43.28512191772461,
+     "tokens": 33,
+     "text": "def greet(name: str, n: int) -> str:\n    return \"hello \" + name + \", you have \" + str(n) + \" messages\"\n"
+    },
+    {
+     "context": 1,
+     "variant": "fstring",
+     "logprob": -67.78237915039062,
+     "tokens": 48,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef row(item: Item) -> str:\n    return f\"{item.sku}: {item.qty} x {item.price}\"\n"
+    },
+    {
+     "context": 1,
+     "variant": "plus",
+     "logprob": -81.6796646118164,
+     "tokens": 55,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef row(item: Item) -> str:\n    return item.sku + \": \" + to_string(item.qty) + \" x \" + to_string(item.price)\n"
+    },
+    {
+     "context": 1,
+     "variant": "plus-str",
+     "logprob": -73.50590515136719,
+     "tokens": 53,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef row(item: Item) -> str:\n    return item.sku + \": \" + str(item.qty) + \" x \" + str(item.price)\n"
+    },
+    {
+     "context": 2,
+     "variant": "fstring",
+     "logprob": -43.98428726196289,
+     "tokens": 23,
+     "text": "def progress(done: int, total: int) -> str:\n    return f\"{done}/{total} done\"\n"
+    },
+    {
+     "context": 2,
+     "variant": "plus",
+     "logprob": -55.30897521972656,
+     "tokens": 30,
+     "text": "def progress(done: int, total: int) -> str:\n    return to_string(done) + \"/\" + to_string(total) + \" done\"\n"
+    },
+    {
+     "context": 2,
+     "variant": "plus-str",
+     "logprob": -47.04648971557617,
+     "tokens": 28,
+     "text": "def progress(done: int, total: int) -> str:\n    return str(done) + \"/\" + str(total) + \" done\"\n"
+    }
+   ]
+  },
+  {
+   "id": "tests",
+   "question": "Test blocks: `def test_name() -> None:` (pytest), `@test(\"name\")` on a def, or `test \"name\":`?",
+   "chosen": "pytest",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "pytest",
+     "logprob": -33.72118377685547,
+     "tokens": 42,
+     "text": "def add(a: int, b: int) -> int:\n    return a + b\n\n\ndef test_adds_two_numbers() -> None:\n    assert add(2, 3) == 5\n"
+    },
+    {
+     "context": 0,
+     "variant": "decorator",
+     "logprob": -47.20945739746094,
+     "tokens": 44,
+     "text": "def add(a: int, b: int) -> int:\n    return a + b\n\n\n@test(\"adds two numbers\")\ndef _() -> None:\n    assert add(2, 3) == 5\n"
+    },
+    {
+     "context": 0,
+     "variant": "canon",
+     "logprob": -45.695594787597656,
+     "tokens": 38,
+     "text": "def add(a: int, b: int) -> int:\n    return a + b\n\n\ntest \"adds two numbers\":\n    assert add(2, 3) == 5\n"
+    },
+    {
+     "context": 1,
+     "variant": "pytest",
+     "logprob": -43.56706237792969,
+     "tokens": 44,
+     "text": "def is_even(n: int) -> bool:\n    return n % 2 == 0\n\n\ndef test_even_and_odd() -> None:\n    assert is_even(4)\n    assert not is_even(7)\n"
+    },
+    {
+     "context": 1,
+     "variant": "decorator",
+     "logprob": -58.60441589355469,
+     "tokens": 47,
+     "text": "def is_even(n: int) -> bool:\n    return n % 2 == 0\n\n\n@test(\"even and odd\")\ndef _() -> None:\n    assert is_even(4)\n    assert not is_even(7)\n"
+    },
+    {
+     "context": 1,
+     "variant": "canon",
+     "logprob": -54.450904846191406,
+     "tokens": 41,
+     "text": "def is_even(n: int) -> bool:\n    return n % 2 == 0\n\n\ntest \"even and odd\":\n    assert is_even(4)\n    assert not is_even(7)\n"
+    },
+    {
+     "context": 2,
+     "variant": "pytest",
+     "logprob": -61.247188568115234,
+     "tokens": 73,
+     "text": "def clamp(x: int, lo: int, hi: int) -> int:\n    return max(lo, min(x, hi))\n\n\ndef test_clamps_to_range() -> None:\n    assert clamp(15, 0, 10) == 10\n    assert clamp(-3, 0, 10) == 0\n"
+    },
+    {
+     "context": 2,
+     "variant": "decorator",
+     "logprob": -72.11386108398438,
+     "tokens": 76,
+     "text": "def clamp(x: int, lo: int, hi: int) -> int:\n    return max(lo, min(x, hi))\n\n\n@test(\"clamps to range\")\ndef _() -> None:\n    assert clamp(15, 0, 10) == 10\n    assert clamp(-3, 0, 10) == 0\n"
+    },
+    {
+     "context": 2,
+     "variant": "canon",
+     "logprob": -72.3143081665039,
+     "tokens": 70,
+     "text": "def clamp(x: int, lo: int, hi: int) -> int:\n    return max(lo, min(x, hi))\n\n\ntest \"clamps to range\":\n    assert clamp(15, 0, 10) == 10\n    assert clamp(-3, 0, 10) == 0\n"
+    }
+   ]
+  },
+  {
+   "id": "membership",
+   "question": "Membership: `x in xs` or `contains(xs, x)`?",
+   "chosen": "in",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "in",
+     "logprob": -39.64919662475586,
+     "tokens": 20,
+     "text": "def allowed(user: str, admins: list[str]) -> bool:\n    return user in admins\n"
+    },
+    {
+     "context": 0,
+     "variant": "contains",
+     "logprob": -53.35606384277344,
+     "tokens": 22,
+     "text": "def allowed(user: str, admins: list[str]) -> bool:\n    return contains(admins, user)\n"
+    },
+    {
+     "context": 1,
+     "variant": "in",
+     "logprob": -79.51679992675781,
+     "tokens": 69,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef banned_count(items: list[Item], banned: list[str]) -> int:\n    n = 0\n    for i in items:\n        if i.sku in banned:\n            n += 1\n    return n\n"
+    },
+    {
+     "context": 1,
+     "variant": "contains",
+     "logprob": -90.97616577148438,
+     "tokens": 71,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef banned_count(items: list[Item], banned: list[str]) -> int:\n    n = 0\n    for i in items:\n        if contains(banned, i.sku):\n            n += 1\n    return n\n"
+    },
+    {
+     "context": 2,
+     "variant": "in",
+     "logprob": -49.575233459472656,
+     "tokens": 41,
+     "text": "def dedupe(xs: list[int]) -> list[int]:\n    out = []\n    for x in xs:\n        if not x in out:\n            out = append(out, x)\n    return out\n"
+    },
+    {
+     "context": 2,
+     "variant": "contains",
+     "logprob": -50.92559814453125,
+     "tokens": 42,
+     "text": "def dedupe(xs: list[int]) -> list[int]:\n    out = []\n    for x in xs:\n        if not contains(out, x):\n            out = append(out, x)\n    return out\n"
+    }
+   ]
+  },
+  {
+   "id": "tuple-slots",
+   "question": "Tuple slots: `t[0]` or `t.0`?",
+   "chosen": "index",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "index",
+     "logprob": -41.99492645263672,
+     "tokens": 26,
+     "text": "def swap(p: tuple[int, str]) -> tuple[str, int]:\n    return (p[1], p[0])\n"
+    },
+    {
+     "context": 0,
+     "variant": "dot",
+     "logprob": -53.383758544921875,
+     "tokens": 26,
+     "text": "def swap(p: tuple[int, str]) -> tuple[str, int]:\n    return (p.1, p.0)\n"
+    },
+    {
+     "context": 1,
+     "variant": "index",
+     "logprob": -53.680076599121094,
+     "tokens": 50,
+     "text": "def best(scores: list[tuple[str, int]]) -> str:\n    top = (\"\", 0)\n    for s in scores:\n        if s[1] > top[1]:\n            top = s\n    return top[0]\n"
+    },
+    {
+     "context": 1,
+     "variant": "dot",
+     "logprob": -65.8077163696289,
+     "tokens": 49,
+     "text": "def best(scores: list[tuple[str, int]]) -> str:\n    top = (\"\", 0)\n    for s in scores:\n        if s.1 > top.1:\n            top = s\n    return top.0\n"
+    },
+    {
+     "context": 2,
+     "variant": "index",
+     "logprob": -41.80322265625,
+     "tokens": 40,
+     "text": "def total(pairs: list[tuple[str, float]]) -> float:\n    t = 0.0\n    for p in pairs:\n        t += p[1]\n    return t\n"
+    },
+    {
+     "context": 2,
+     "variant": "dot",
+     "logprob": -53.35873794555664,
+     "tokens": 40,
+     "text": "def total(pairs: list[tuple[str, float]]) -> float:\n    t = 0.0\n    for p in pairs:\n        t += p.1\n    return t\n"
+    }
+   ]
+  },
+  {
+   "id": "bool-literals",
+   "question": "Boolean literals: True/False or true/false?",
+   "chosen": "python",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "python",
+     "logprob": -32.53659439086914,
+     "tokens": 32,
+     "text": "def any_negative(xs: list[int]) -> bool:\n    for x in xs:\n        if x < 0:\n            return True\n    return False\n"
+    },
+    {
+     "context": 0,
+     "variant": "lower",
+     "logprob": -39.97313690185547,
+     "tokens": 32,
+     "text": "def any_negative(xs: list[int]) -> bool:\n    for x in xs:\n        if x < 0:\n            return true\n    return false\n"
+    },
+    {
+     "context": 1,
+     "variant": "python",
+     "logprob": -57.39445495605469,
+     "tokens": 33,
+     "text": "@effects(io)\ndef main() -> None:\n    done = False\n    while not done:\n        line = read_line()\n        done = line is None\n"
+    },
+    {
+     "context": 1,
+     "variant": "lower",
+     "logprob": -61.256797790527344,
+     "tokens": 33,
+     "text": "@effects(io)\ndef main() -> None:\n    done = false\n    while not done:\n        line = read_line()\n        done = line is None\n"
+    },
+    {
+     "context": 2,
+     "variant": "python",
+     "logprob": -50.32050323486328,
+     "tokens": 23,
+     "text": "def flags(n: int) -> list[bool]:\n    return [n > 0, True, False]\n"
+    },
+    {
+     "context": 2,
+     "variant": "lower",
+     "logprob": -55.534027099609375,
+     "tokens": 23,
+     "text": "def flags(n: int) -> list[bool]:\n    return [n > 0, true, false]\n"
+    }
+   ]
+  },
+  {
+   "id": "none-test",
+   "question": "Testing for None: `x is None` or `x == None`?",
+   "chosen": "is",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "is",
+     "logprob": -42.799095153808594,
+     "tokens": 17,
+     "text": "def has_name(name: Option[str]) -> bool:\n    return name is None\n"
+    },
+    {
+     "context": 0,
+     "variant": "eq",
+     "logprob": -42.94911575317383,
+     "tokens": 17,
+     "text": "def has_name(name: Option[str]) -> bool:\n    return name == None\n"
+    },
+    {
+     "context": 1,
+     "variant": "is",
+     "logprob": -79.65877532958984,
+     "tokens": 37,
+     "text": "@effects(io)\ndef echo() -> None:\n    line = read_line()\n    while line is not None:\n        print(unwrap_or(line, \"\"))\n        line = read_line()\n"
+    },
+    {
+     "context": 1,
+     "variant": "eq",
+     "logprob": -80.96307373046875,
+     "tokens": 36,
+     "text": "@effects(io)\ndef echo() -> None:\n    line = read_line()\n    while line != None:\n        print(unwrap_or(line, \"\"))\n        line = read_line()\n"
+    },
+    {
+     "context": 2,
+     "variant": "is",
+     "logprob": -70.33033752441406,
+     "tokens": 38,
+     "text": "def first_or_zero(xs: list[int]) -> int:\n    f = first(xs)\n    if f is None:\n        return 0\n    return unwrap_or(f, 0)\n"
+    },
+    {
+     "context": 2,
+     "variant": "eq",
+     "logprob": -72.3988037109375,
+     "tokens": 38,
+     "text": "def first_or_zero(xs: list[int]) -> int:\n    f = first(xs)\n    if f == None:\n        return 0\n    return unwrap_or(f, 0)\n"
+    }
+   ]
+  },
+  {
+   "id": "indent-width",
+   "question": "Indentation: 4 spaces or 2?",
+   "chosen": "four",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "four",
+     "logprob": -85.99932098388672,
+     "tokens": 76,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef count_ok(items: list[Item], banned: list[str]) -> int:\n    count = 0\n    for i in items:\n        if i.qty > 0 and i.sku not in banned:\n            count += 1\n    return count\n"
+    },
+    {
+     "context": 0,
+     "variant": "two",
+     "logprob": -88.92753601074219,
+     "tokens": 76,
+     "text": "@dataclass\nclass Item:\n  sku: str\n  qty: int\n  price: float\n\n\ndef count_ok(items: list[Item], banned: list[str]) -> int:\n  count = 0\n  for i in items:\n    if i.qty > 0 and i.sku not in banned:\n      count += 1\n  return count\n"
+    },
+    {
+     "context": 1,
+     "variant": "four",
+     "logprob": -33.949493408203125,
+     "tokens": 44,
+     "text": "def isqrt(n: int) -> int:\n    r = 0\n    while (r + 1) * (r + 1) <= n:\n        r += 1\n    return r\n"
+    },
+    {
+     "context": 1,
+     "variant": "two",
+     "logprob": -38.1143798828125,
+     "tokens": 44,
+     "text": "def isqrt(n: int) -> int:\n  r = 0\n  while (r + 1) * (r + 1) <= n:\n    r += 1\n  return r\n"
+    },
+    {
+     "context": 2,
+     "variant": "four",
+     "logprob": -51.70063018798828,
+     "tokens": 39,
+     "text": "def apply(balance: int, op: Op) -> int:\n    match op:\n        case Deposit(amount):\n            return balance + amount\n        case Withdraw(amount):\n            return balance - amount\n"
+    },
+    {
+     "context": 2,
+     "variant": "two",
+     "logprob": -54.964019775390625,
+     "tokens": 39,
+     "text": "def apply(balance: int, op: Op) -> int:\n  match op:\n    case Deposit(amount):\n      return balance + amount\n    case Withdraw(amount):\n      return balance - amount\n"
+    }
+   ]
+  },
+  {
+   "id": "blocks-retest",
+   "question": "Re-test in a Python-shaped program: colon + indentation, or braces?",
+   "chosen": "indent",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "indent",
+     "logprob": -85.99932098388672,
+     "tokens": 76,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef count_ok(items: list[Item], banned: list[str]) -> int:\n    count = 0\n    for i in items:\n        if i.qty > 0 and i.sku not in banned:\n            count += 1\n    return count\n"
+    },
+    {
+     "context": 0,
+     "variant": "braces",
+     "logprob": -116.64369201660156,
+     "tokens": 82,
+     "text": "@dataclass\nclass Item {\n    sku: str\n    qty: int\n    price: float\n\n\n}\ndef count_ok(items: list[Item], banned: list[str]) -> int {\n    count = 0\n    for i in items {\n        if i.qty > 0 and i.sku not in banned {\n            count += 1\n        }\n    }\n    return count\n}\n"
+    },
+    {
+     "context": 1,
+     "variant": "indent",
+     "logprob": -33.949493408203125,
+     "tokens": 44,
+     "text": "def isqrt(n: int) -> int:\n    r = 0\n    while (r + 1) * (r + 1) <= n:\n        r += 1\n    return r\n"
+    },
+    {
+     "context": 1,
+     "variant": "braces",
+     "logprob": -49.87830352783203,
+     "tokens": 47,
+     "text": "def isqrt(n: int) -> int {\n    r = 0\n    while (r + 1) * (r + 1) <= n {\n        r += 1\n    }\n    return r\n}\n"
+    },
+    {
+     "context": 2,
+     "variant": "indent",
+     "logprob": -51.70063018798828,
+     "tokens": 39,
+     "text": "def apply(balance: int, op: Op) -> int:\n    match op:\n        case Deposit(amount):\n            return balance + amount\n        case Withdraw(amount):\n            return balance - amount\n"
+    },
+    {
+     "context": 2,
+     "variant": "braces",
+     "logprob": -77.67506408691406,
+     "tokens": 48,
+     "text": "def apply(balance: int, op: Op) -> int {\n    match op {\n        case Deposit(amount) {\n            return balance + amount\n        }\n        case Withdraw(amount) {\n            return balance - amount\n        }\n    }\n}\n"
+    }
+   ]
+  },
+  {
+   "id": "def-retest",
+   "question": "Re-test in a Python-shaped program: `def` or `fn`?",
+   "chosen": "def",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "def",
+     "logprob": -85.99932098388672,
+     "tokens": 76,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef count_ok(items: list[Item], banned: list[str]) -> int:\n    count = 0\n    for i in items:\n        if i.qty > 0 and i.sku not in banned:\n            count += 1\n    return count\n"
+    },
+    {
+     "context": 0,
+     "variant": "fn",
+     "logprob": -97.97645568847656,
+     "tokens": 76,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\nfn count_ok(items: list[Item], banned: list[str]) -> int:\n    count = 0\n    for i in items:\n        if i.qty > 0 and i.sku not in banned:\n            count += 1\n    return count\n"
+    },
+    {
+     "context": 1,
+     "variant": "def",
+     "logprob": -33.949493408203125,
+     "tokens": 44,
+     "text": "def isqrt(n: int) -> int:\n    r = 0\n    while (r + 1) * (r + 1) <= n:\n        r += 1\n    return r\n"
+    },
+    {
+     "context": 1,
+     "variant": "fn",
+     "logprob": -42.187644958496094,
+     "tokens": 44,
+     "text": "fn isqrt(n: int) -> int:\n    r = 0\n    while (r + 1) * (r + 1) <= n:\n        r += 1\n    return r\n"
+    },
+    {
+     "context": 2,
+     "variant": "def",
+     "logprob": -51.70063018798828,
+     "tokens": 39,
+     "text": "def apply(balance: int, op: Op) -> int:\n    match op:\n        case Deposit(amount):\n            return balance + amount\n        case Withdraw(amount):\n            return balance - amount\n"
+    },
+    {
+     "context": 2,
+     "variant": "fn",
+     "logprob": -63.940067291259766,
+     "tokens": 39,
+     "text": "fn apply(balance: int, op: Op) -> int:\n    match op:\n        case Deposit(amount):\n            return balance + amount\n        case Withdraw(amount):\n            return balance - amount\n"
+    }
+   ]
+  },
+  {
+   "id": "blank-lines",
+   "question": "Blank lines between top-level definitions: two (PEP 8) or one?",
+   "chosen": "two",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "two",
+     "logprob": -81.79615783691406,
+     "tokens": 46,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\n\ndef total(items: list[Item]) -> float:\n    return sum_float(map(items, lambda i: i.price))\n"
+    },
+    {
+     "context": 0,
+     "variant": "one",
+     "logprob": -81.1545639038086,
+     "tokens": 46,
+     "text": "@dataclass\nclass Item:\n    sku: str\n    qty: int\n    price: float\n\ndef total(items: list[Item]) -> float:\n    return sum_float(map(items, lambda i: i.price))\n"
+    },
+    {
+     "context": 1,
+     "variant": "two",
+     "logprob": -31.038463592529297,
+     "tokens": 35,
+     "text": "def add(a: int, b: int) -> int:\n    return a + b\n\n\ndef double(x: int) -> int:\n    return add(x, x)\n"
+    },
+    {
+     "context": 1,
+     "variant": "one",
+     "logprob": -29.955738067626953,
+     "tokens": 35,
+     "text": "def add(a: int, b: int) -> int:\n    return a + b\n\ndef double(x: int) -> int:\n    return add(x, x)\n"
+    },
+    {
+     "context": 2,
+     "variant": "two",
+     "logprob": -88.17002868652344,
+     "tokens": 48,
+     "text": "def make(sku: str) -> Item:\n    return Item(sku=sku, qty=1, price=0.0)\n\n\ndef make_two() -> list[Item]:\n    return [make(\"a\"), make(\"b\")]\n"
+    },
+    {
+     "context": 2,
+     "variant": "one",
+     "logprob": -87.26425170898438,
+     "tokens": 48,
+     "text": "def make(sku: str) -> Item:\n    return Item(sku=sku, qty=1, price=0.0)\n\ndef make_two() -> list[Item]:\n    return [make(\"a\"), make(\"b\")]\n"
+    }
+   ]
+  },
+  {
+   "id": "option-type",
+   "question": "Option type (values stay Some(x)/None): `Option[T]` or `T | None`?",
+   "chosen": "option",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "option",
+     "logprob": -39.520774841308594,
+     "tokens": 37,
+     "text": "def first_even(xs: list[int]) -> Option[int]:\n    for x in xs:\n        if x % 2 == 0:\n            return Some(x)\n    return None\n"
+    },
+    {
+     "context": 0,
+     "variant": "union",
+     "logprob": -45.126346588134766,
+     "tokens": 38,
+     "text": "def first_even(xs: list[int]) -> int | None:\n    for x in xs:\n        if x % 2 == 0:\n            return Some(x)\n    return None\n"
+    },
+    {
+     "context": 1,
+     "variant": "option",
+     "logprob": -49.457279205322266,
+     "tokens": 36,
+     "text": "def find(users: list[str], name: str) -> Option[str]:\n    for u in users:\n        if u == name:\n            return Some(u)\n    return None\n"
+    },
+    {
+     "context": 1,
+     "variant": "union",
+     "logprob": -55.815345764160156,
+     "tokens": 37,
+     "text": "def find(users: list[str], name: str) -> str | None:\n    for u in users:\n        if u == name:\n            return Some(u)\n    return None\n"
+    },
+    {
+     "context": 2,
+     "variant": "option",
+     "logprob": -56.80570983886719,
+     "tokens": 18,
+     "text": "def parse_age(s: str) -> Option[int]:\n    return parse_int(trim(s))\n"
+    },
+    {
+     "context": 2,
+     "variant": "union",
+     "logprob": -52.84632110595703,
+     "tokens": 19,
+     "text": "def parse_age(s: str) -> int | None:\n    return parse_int(trim(s))\n"
+    }
+   ]
+  }
+ ]
+}
