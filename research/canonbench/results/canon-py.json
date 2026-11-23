@@ -2,26 +2,26 @@
  "write|canon (brace)": {
   "family": "write",
   "arm": "canon (brace)",
-  "seeds": 10,
-  "runs": 20,
+  "seeds": 24,
+  "runs": 34,
   "pass": 0,
   "firstCheck": 0,
-  "parseRuns": 18,
+  "parseRuns": 30,
   "parseFixed": 0,
-  "topCodes": "P001 (20)",
-  "unchangedResubmissions": 17
+  "topCodes": "P001 (32), P004 (1), P005 (1)",
+  "unchangedResubmissions": 27
  },
  "write|canon-py": {
   "family": "write",
   "arm": "canon-py",
-  "seeds": 10,
-  "runs": 19,
+  "seeds": 24,
+  "runs": 60,
   "pass": 0,
   "firstCheck": 0,
-  "parseRuns": 16,
+  "parseRuns": 54,
   "parseFixed": 0,
-  "topCodes": "P001 (19)",
-  "unchangedResubmissions": 12
+  "topCodes": "P001 (59), T002 (1), T001 (1)",
+  "unchangedResubmissions": 36
  },
  "rustisms": {
   "brace": {
@@ -90,7 +90,7 @@
    ]
   },
   "canonPy": {
-   "drafts": 19,
+   "drafts": 60,
    "counts": [
     {
      "name": "let mut",
@@ -106,9 +106,9 @@
     },
     {
      "name": ".method() call",
-     "draftsWithIt": 14,
-     "share": 0.7368421052631579,
-     "occurrences": 64
+     "draftsWithIt": 48,
+     "share": 0.8,
+     "occurrences": 167
     },
     {
      "name": "format!",
@@ -118,9 +118,9 @@
     },
     {
      "name": "char literal",
-     "draftsWithIt": 3,
-     "share": 0.15789473684210525,
-     "occurrences": 11
+     "draftsWithIt": 7,
+     "share": 0.11666666666666667,
+     "occurrences": 37
     },
     {
      "name": "null",
@@ -130,26 +130,26 @@
     },
     {
      "name": "+=",
-     "draftsWithIt": 11,
-     "share": 0.5789473684210527,
-     "occurrences": 20
+     "draftsWithIt": 26,
+     "share": 0.43333333333333335,
+     "occurrences": 74
     },
     {
      "name": "dict/set literal",
-     "draftsWithIt": 5,
-     "share": 0.2631578947368421,
-     "occurrences": 5
+     "draftsWithIt": 17,
+     "share": 0.2833333333333333,
+     "occurrences": 17
     },
     {
      "name": "slice x[a:b]",
-     "draftsWithIt": 7,
-     "share": 0.3684210526315789,
-     "occurrences": 15
+     "draftsWithIt": 14,
+     "share": 0.23333333333333334,
+     "occurrences": 30
     },
     {
      "name": "import / from",
      "draftsWithIt": 1,
-     "share": 0.05263157894736842,
+     "share": 0.016666666666666666,
      "occurrences": 1
     }
    ]
