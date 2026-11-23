@@ -131,7 +131,14 @@ export class Printer {
         // v0.2: match may appear in any expression position (S001 retired)
         const lines = [`match ${this.ex(e.subject, 1, indent)} {`];
         for (const [pat, val] of e.arms) {
-          lines.push(`${indent}${INDENT}${this.pat(pat)} => ${this.ex(val, 0, indent + INDENT)},`);
+          const prefix = `${indent}${INDENT}${this.pat(pat)} => `;
+          let text = prefix + this.ex(val, 0, indent + INDENT);
+          // v0.5: an arm that is too long breaks at its value's outermost bracket, like a statement
+          if (this.noise === null && features().wrap && text.split("\n").some((l) => pyLen(l) + 1 > MAX_LINE)) {
+            const w = this.wrapped(val, indent + INDENT, prefix);
+            if (w !== null) text = prefix + w;
+          }
+          lines.push(`${text},`);
         }
         lines.push(`${indent}}`);
         // As a whole statement value it stands alone; anywhere else it is parenthesized as an

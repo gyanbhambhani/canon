@@ -377,3 +377,24 @@ print(json.dumps([to_ints(["1", "x", "3"]), strip_x(["a", "x", "x"]), strip_x([]
     expect(() => generateFastapi(p)).toThrow(TargetError);
   });
 });
+
+describe("models with forward references, and a project with no tables (found by FS-1 task authors)", () => {
+  it("an Option or List of a type declared later imports, validates and passes mypy --strict", async () => {
+    const { checkProject, fmt, generateFastapi } = await import("@canon/compiler");
+    const { mkdirSync, mkdtempSync, writeFileSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const src = fmt("type Order {\n  id: Int,\n  status: Option[Status],\n  history: List[Status],\n}\n\ntype Status =\n  | Open\n  | Paid(receipt: String)\n");
+    const p = checkProject([{ name: "m", path: "canon/m.cn", src }]);
+    expect(p.ok).toBe(true);
+    const dir = mkdtempSync(join(tmpdir(), "canon-fwd-"));
+    mkdirSync(join(dir, "canon_generated"));
+    for (const f of generateFastapi(p)) if (!f.userOwned) writeFileSync(join(dir, "canon_generated", f.path), f.text);
+    expect(py(dir, `
+import json
+from canon_generated.models import Order, Paid
+print(json.dumps(Order(id=1, status=Paid(receipt="r"), history=[]).model_dump()))
+`)).toEqual({ id: 1, status: { kind: "Paid", receipt: "r" }, history: [] });
+    const types = run("mypy", ["--strict", "canon_generated"], dir);
+    expect(types.code, types.out).toBe(0);
+  }, 120_000);
+});

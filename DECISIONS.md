@@ -2,6 +2,18 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-23 — fixes from the FS-1 task authors
+Decision: a model field that mentions a type defined further down is one quoted annotation (`"Status | None"`); store.py is always generated, even with no tables; a match arm over 100 characters breaks at its value's outermost bracket, like a statement.
+Reason: `"Status" | None` raised TypeError when models.py was imported, although canon check passed. Without store.py, mypy --strict failed on every table-less project, because runtime.table() imports it. A long record literal in a match arm was L001 with no fix.
+
+Decision: not changed, and recorded as language findings for the FS-1 and CanonBench reports:
+- an api fn's requires cannot look at characters (a digit rule) or at each element of a list (no all/any and no lambdas in the portable subset);
+- variant names are unique across a project, so two error types cannot share a kind;
+- `return` is not allowed inside a match arm (arms are expressions);
+- a `#` comment between a record's fields is P002;
+- a pipeline inside a larger expression prints on one line.
+Reason: each is a design question, not a defect, and changing the language during the experiment would move the target. The task authors adapted specs where Canon could not express a rule; those tasks are marked so the analysis can be run with and without them.
+
 ## 2026-11-23 — CB-1 (found by CanonBench): no hoisting out of lambdas or loop conditions
 Decision: `unwrap_or` whose arguments are not names, literals or fields is generated as the runtime helper `unwrap_or(value, fallback)`, which evaluates both once and eagerly, as Canon does. A match or try that would need statements inside a lambda, a comprehension or a while condition is G002 instead of code.
 Reason: the generator hoisted a temporary before the statement, which inside a comprehension referred to the loop variable before it existed (NameError), and in a while condition was computed once before the loop (a wrong result or an infinite loop). canon check and the JavaScript runtime were right, so only the Python target was wrong. 4 of Experiment 1's 60 Canon references hit it.
