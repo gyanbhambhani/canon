@@ -1,0 +1,167 @@
+{
+ "write|canon (brace)": {
+  "family": "write",
+  "arm": "canon (brace)",
+  "seeds": 4,
+  "runs": 8,
+  "pass": 0,
+  "firstCheck": 0,
+  "parseRuns": 8,
+  "parseFixed": 0,
+  "topCodes": "P001 (8)"
+ },
+ "write|canon-py": {
+  "family": "write",
+  "arm": "canon-py",
+  "seeds": 4,
+  "runs": 4,
+  "pass": 0,
+  "firstCheck": 0,
+  "parseRuns": 4,
+  "parseFixed": 0,
+  "topCodes": "P001 (4)"
+ },
+ "rustisms": {
+  "brace": {
+   "drafts": 61,
+   "counts": [
+    {
+     "name": "let mut",
+     "draftsWithIt": 38,
+     "share": 0.6229508196721312,
+     "occurrences": 98
+    },
+    {
+     "name": "& borrow",
+     "draftsWithIt": 10,
+     "share": 0.16393442622950818,
+     "occurrences": 15
+    },
+    {
+     "name": ".method() call",
+     "draftsWithIt": 39,
+     "share": 0.639344262295082,
+     "occurrences": 246
+    },
+    {
+     "name": "format!",
+     "draftsWithIt": 10,
+     "share": 0.16393442622950818,
+     "occurrences": 19
+    },
+    {
+     "name": "char literal",
+     "draftsWithIt": 16,
+     "share": 0.26229508196721313,
+     "occurrences": 74
+    },
+    {
+     "name": "null",
+     "draftsWithIt": 3,
+     "share": 0.04918032786885246,
+     "occurrences": 11
+    },
+    {
+     "name": "+=",
+     "draftsWithIt": 10,
+     "share": 0.16393442622950818,
+     "occurrences": 23
+    }
+   ]
+  },
+  "canonPy": {
+   "drafts": 4,
+   "counts": [
+    {
+     "name": "let mut",
+     "draftsWithIt": 0,
+     "share": 0,
+     "occurrences": 0
+    },
+    {
+     "name": "& borrow",
+     "draftsWithIt": 0,
+     "share": 0,
+     "occurrences": 0
+    },
+    {
+     "name": ".method() call",
+     "draftsWithIt": 3,
+     "share": 0.75,
+     "occurrences": 4
+    },
+    {
+     "name": "format!",
+     "draftsWithIt": 0,
+     "share": 0,
+     "occurrences": 0
+    },
+    {
+     "name": "char literal",
+     "draftsWithIt": 1,
+     "share": 0.25,
+     "occurrences": 4
+    },
+    {
+     "name": "null",
+     "draftsWithIt": 0,
+     "share": 0,
+     "occurrences": 0
+    },
+    {
+     "name": "+=",
+     "draftsWithIt": 1,
+     "share": 0.25,
+     "occurrences": 1
+    }
+   ]
+  },
+  "python": {
+   "drafts": 10,
+   "counts": [
+    {
+     "name": "let mut",
+     "draftsWithIt": 0,
+     "share": 0,
+     "occurrences": 0
+    },
+    {
+     "name": "& borrow",
+     "draftsWithIt": 0,
+     "share": 0,
+     "occurrences": 0
+    },
+    {
+     "name": ".method() call",
+     "draftsWithIt": 8,
+     "share": 0.8,
+     "occurrences": 42
+    },
+    {
+     "name": "format!",
+     "draftsWithIt": 0,
+     "share": 0,
+     "occurrences": 0
+    },
+    {
+     "name": "char literal",
+     "draftsWithIt": 3,
+     "share": 0.3,
+     "occurrences": 18
+    },
+    {
+     "name": "null",
+     "draftsWithIt": 0,
+     "share": 0,
+     "occurrences": 0
+    },
+    {
+     "name": "+=",
+     "draftsWithIt": 5,
+     "share": 0.5,
+     "occurrences": 6
+    }
+   ]
+  }
+ }
+}
