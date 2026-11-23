@@ -1,0 +1,10 @@
+{
+  "id": "stock-optional",
+  "kind": "change",
+  "title": "A product's stock becomes optional (null means unknown)",
+  "features": [
+    { "module": "frontend/src/features/addProduct.ts", "signature": "addProduct(baseUrl: string, product: Product): Promise<Outcome<Product>>, where Product.stock is number | null" },
+    { "module": "frontend/src/features/listProducts.ts", "signature": "listProducts(baseUrl: string, tag: string | null, page: number, perPage: number): Promise<Outcome<Product[]>>" }
+  ],
+  "supersedes": ["test_product_validation"]
+}

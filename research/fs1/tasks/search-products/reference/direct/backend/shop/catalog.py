@@ -96,7 +96,9 @@ def search_products(q: str) -> list[Product]:
     if not 2 <= len(q) <= 50:
         raise InvalidRequest("q has 2 to 50 characters")
     # SQLite's LIKE ignores the case of ASCII letters; escape its wildcards in q
-    pattern = "%" + q.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
+    pattern = (
+        "%" + q.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
+    )
     with transaction() as conn:
         rows = conn.execute(
             "SELECT * FROM products WHERE name LIKE ? ESCAPE '\\' ORDER BY sku",

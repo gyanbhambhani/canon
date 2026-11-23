@@ -1,0 +1,6 @@
+{
+  "id": "product-count-by-tag",
+  "kind": "feature",
+  "title": "Count the products that have each tag",
+  "features": [{ "module": "frontend/src/features/productCountByTag.ts", "signature": "productCountByTag(baseUrl: string): Promise<Outcome<TagCount[]>>, where TagCount is { tag: string; count: number }" }]
+}

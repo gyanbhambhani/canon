@@ -1,0 +1,13 @@
+{
+  "id": "products-in-price-range",
+  "kind": "feature",
+  "title": "List the products in a price range (min and max cents, validated)",
+  "features": [{ "module": "frontend/src/features/productsInPriceRange.ts", "signature": "productsInPriceRange(baseUrl: string, minCents: number, maxCents: number): Promise<Outcome<Product[]>>" }],
+  "validation": [
+    {
+      "feature": "productsInPriceRange",
+      "args": [{ "name": "minCents", "gen": "int" }, { "name": "maxCents", "gen": "int" }],
+      "request": { "method": "GET", "path": "/price-range", "query": { "min_cents": "$minCents", "max_cents": "$maxCents" } }
+    }
+  ]
+}

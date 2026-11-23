@@ -103,7 +103,9 @@ def search_products(
     """Products whose name contains q, ignoring the case of A to Z."""
     needle = q.translate(ASCII_LOWER)
     with transaction() as conn:
-        found = [p for p in all_products(conn) if needle in p.name.translate(ASCII_LOWER)]
+        found = [
+            p for p in all_products(conn) if needle in p.name.translate(ASCII_LOWER)
+        ]
     return sorted(found, key=lambda p: p.sku)
 
 

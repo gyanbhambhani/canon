@@ -1,0 +1,6 @@
+{
+  "id": "related-products",
+  "kind": "feature",
+  "title": "Related products, by shared tags",
+  "features": [{ "module": "frontend/src/features/relatedProducts.ts", "signature": "relatedProducts(baseUrl: string, sku: string): Promise<Outcome<Product[]>>" }]
+}

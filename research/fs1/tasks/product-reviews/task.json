@@ -1,0 +1,16 @@
+{
+  "id": "product-reviews",
+  "kind": "feature",
+  "title": "Product reviews: a new table with a validated rating and text",
+  "features": [
+    { "module": "frontend/src/features/addReview.ts", "signature": "addReview(baseUrl: string, sku: string, rating: number, text: string): Promise<Outcome<Review>>" },
+    { "module": "frontend/src/features/listReviews.ts", "signature": "listReviews(baseUrl: string, sku: string): Promise<Outcome<Review[]>>" }
+  ],
+  "validation": [
+    {
+      "feature": "addReview",
+      "args": [{ "name": "sku", "gen": "sku" }, { "name": "rating", "gen": "small" }, { "name": "text", "gen": "string" }],
+      "request": { "method": "POST", "path": "/products/$sku/reviews", "body": { "rating": "$rating", "text": "$text" } }
+    }
+  ]
+}
