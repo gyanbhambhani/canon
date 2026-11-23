@@ -6,9 +6,10 @@ import { fileURLToPath } from "node:url";
 export const BENCH = join(dirname(fileURLToPath(import.meta.url)), "..");
 export const ROOT = join(BENCH, "..", "..");
 
-export type Lang = "canon" | "py" | "ts";
+/** "cpy" is the exploratory Canon-Py arm (amendment 2): Canon in its Python-shaped surface. */
+export type Lang = "canon" | "py" | "ts" | "cpy";
 export const LANGS: Lang[] = ["canon", "py", "ts"];
-export const EXT: Record<Lang, string> = { canon: "cn", py: "py", ts: "ts" };
+export const EXT: Record<Lang, string> = { canon: "cn", py: "py", ts: "ts", cpy: "cn" };
 
 export interface Case {
   args: unknown[];

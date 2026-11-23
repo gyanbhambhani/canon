@@ -223,3 +223,33 @@ Committed before the first Qwen2.5-Coder-32B call. Nothing above is changed.
      runner/run.ts d0b34bb1b19046f801c3c894a1f5371e0b3a6cfbeb3cdbf318f72c4042f93b2f.
 4. **Local servers:** 7B on port 8091 and 32B on port 8092 only; the FS-1 agent uses these rather
    than its own server.
+
+## Amendment 2 (2026-11-23, about 01:55 PST; owner's request, relayed by the coordinator)
+
+Committed before the first Canon-Py call. Nothing above is changed.
+
+1. **Exploratory arm `canon-py` (key `cpy`), on Qwen 7B only.** Canon in its Canon-Py surface: the
+   system prompt carries the Canon-Py reference (apps/web/content/docs/for-agents-py.mdx, the text
+   served at /llms-py.txt) instead of the brace reference; the toolchain is the same compiler with
+   the py surface on (`canon check --syntax py`, `--fix`, contract fuzzing); declarations and the
+   signature are printed in Canon-Py (PyPrinter on the same syntax tree). THINK compiles Canon-Py to
+   Python with the same generator. FIX mutants and CHANGE starting programs are the brace Canon
+   ones, printed in Canon-Py (the same programs). All 60 Canon references, printed in Canon-Py, pass
+   `canon check --syntax py` and every hidden test on the JS runtime and after compiling to Python
+   (scripts/validate-cpy.ts).
+2. **Never part of the scoreboard verdicts, the Holm families or the win rule.** Reported as
+   exploratory: per family pass rate, first-draft check rate, whether feedback rounds ever fix a
+   parse error, the most common remaining error codes, and the "Rust-ism" counts in first drafts
+   (brace vs Canon-Py): `let mut`, `&` borrows, `.method()` calls, `format!`, char literals,
+   `null`, `+=`.
+3. **What runs (scripts/cpy-qwen.sh), in order, alongside the main run, until 06:45 PST:** WRITE
+   (and so THINK) on the 10 pilot seeds x 3 runs; then WRITE on the 20 subset seeds of amendment 1
+   x 3 runs; then FIX and CHANGE on the pilot seeds x 1 run. Results go to results/*-qwen7b-cpy.jsonl.
+   Same sampling as Qwen 7B everywhere else.
+4. Changed files (additive branches for `cpy`; the pre-registered arms' behaviour is unchanged):
+   arms/prompts.ts 819af154..., arms/check.ts 451b72bf..., arms/props.ts c5f70742...,
+   adapters/exec.ts 4cb19a50..., runner/run.ts 71ccce90..., analysis/think.ts 07039dc1...,
+   lib/seed.ts de4e528c..., scripts/cpy-qwen.sh e883d069... (full hashes in MANIFEST.sha256 at
+   this commit). One change also touches the main arms' code path without changing behaviour:
+   the Canon check now passes an explicit empty options object (`check(code, "main.cn", {})`),
+   identical to the default.

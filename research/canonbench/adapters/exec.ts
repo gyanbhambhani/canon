@@ -18,7 +18,9 @@ import { checkProject, compileJs, generateFastapi, type TypeExpr } from "@canon/
 import { BENCH, ROOT, type Case } from "../lib/seed.js";
 import { typeOf } from "../lib/types.js";
 
-export type ExecLang = "canon" | "ts" | "py" | "canonpy";
+export type ExecLang = "canon" | "ts" | "py" | "canonpy" | "cpy" | "cpypy";
+/** Canon-Py (the exploratory arm): the same compiler with the py surface switched on */
+export const PY_SURFACE = { features: { py: true } } as const;
 export interface CallResult {
   ok: boolean;
   v?: unknown;
@@ -94,8 +96,8 @@ export interface Compiled {
 
 export function compile(lang: ExecLang, code: string): Compiled {
   try {
-    if (lang === "canon") {
-      const c = compileJs(code, "main.cn");
+    if (lang === "canon" || lang === "cpy") {
+      const c = compileJs(code, "main.cn", lang === "cpy" ? PY_SURFACE : {});
       return c.js ? { ok: true, artifact: c.js } : { ok: false, error: "does not check" };
     }
     if (lang === "ts") {
@@ -111,7 +113,7 @@ export function compile(lang: ExecLang, code: string): Compiled {
       writeFileSync(join(dir, "main.py"), code);
       return { ok: true, artifact: dir };
     }
-    const project = checkProject([{ name: "main", path: "canon/main.cn", src: code }]);
+    const project = checkProject([{ name: "main", path: "canon/main.cn", src: code }], lang === "cpypy" ? PY_SURFACE : {});
     const errors = project.modules.flatMap((m) => m.result.diagnostics.filter((d) => d.severity === "error"));
     if (errors.length) return { ok: false, error: `does not check: ${errors[0].code}` };
     const files = generateFastapi(project);
@@ -141,12 +143,12 @@ export function execute(lang: ExecLang, code: string, sig: SigInfo, calls: unkno
   const ret = typeOf(sig.ret);
   let raw: string;
   let stderr = "";
-  if (lang === "canon" || lang === "ts") {
+  if (lang === "canon" || lang === "ts" || lang === "cpy") {
     const payload = {
-      mode: lang,
+      mode: lang === "cpy" ? "canon" : lang,
       js: c.artifact,
       name: sig.fn,
-      calls: lang === "canon" ? calls.map((args) => args.map((a, i) => toCanon(a, paramTypes[i], sig))) : calls,
+      calls: lang === "canon" || lang === "cpy" ? calls.map((args) => args.map((a, i) => toCanon(a, paramTypes[i], sig))) : calls,
       timeoutMs: perCall,
     };
     const r = spawnSync(process.execPath, ["--max-old-space-size=768", "--stack-size=4000", JS_RUNNER], {
@@ -160,7 +162,7 @@ export function execute(lang: ExecLang, code: string, sig: SigInfo, calls: unkno
     stderr = (r.stderr || (r.error ? String(r.error) : "")).slice(-300);
   } else {
     const payload = {
-      mode: lang,
+      mode: lang === "cpypy" ? "canonpy" : lang,
       path: c.artifact,
       name: sig.fn,
       calls,
@@ -186,7 +188,7 @@ export function execute(lang: ExecLang, code: string, sig: SigInfo, calls: unkno
   } catch {
     return calls.map(() => ({ ok: false, e: `sandbox: ${stderr || "no output"}` }));
   }
-  if (lang === "canon") return results.map((r) => (r.ok ? { ok: true, v: fromCanon(r.v, ret, sig) } : r));
+  if (lang === "canon" || lang === "cpy") return results.map((r) => (r.ok ? { ok: true, v: fromCanon(r.v, ret, sig) } : r));
   return results;
 }
 

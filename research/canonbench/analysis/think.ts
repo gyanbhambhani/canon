@@ -27,23 +27,24 @@ for (const model of ["qwen7b", "opus", "gpt"]) {
     const r = JSON.parse(l);
     if (r.arm === "py") {
       out.push(JSON.stringify({ ...r, key: r.key.replace("|write|", "|think|"), family: "think", arm: "py", thinkPass: r.pass, final: undefined, initial: undefined }));
-    } else if (r.arm === "canon") {
+    } else if (r.arm === "canon" || r.arm === "cpy") {
+      const target = r.arm === "cpy" ? "cpypy" : "canonpy";
       const seed = loadSeed(r.seed);
       let thinkPass = false;
       let note = "";
       if (r.tests) {
-        const c = compile("canonpy", r.final);
+        const c = compile(target, r.final);
         if (!c.ok) {
           note = c.error ?? "build failed";
           buildRefused++;
         } else {
-          const t = runTests("canonpy", r.final, seed, loadTests(r.seed), { compiled: c });
+          const t = runTests(target, r.final, seed, loadTests(r.seed), { compiled: c });
           thinkPass = t.passed === t.total;
           note = `${t.passed}/${t.total}`;
         }
         if (r.pass && !thinkPass) jsPassPyFail++;
       } else note = "never checked clean";
-      out.push(JSON.stringify({ ...r, key: r.key.replace("|write|", "|think|").replace("|canon|", "|canon->py|"), family: "think", arm: "canon->py", thinkPass, thinkNote: note, initial: undefined }));
+      out.push(JSON.stringify({ ...r, key: r.key.replace("|write|", "|think|").replace(`|${r.arm}|`, `|${r.arm === "cpy" ? "canon-py->py" : "canon->py"}|`), family: "think", arm: r.arm === "cpy" ? "canon-py->py" : "canon->py", thinkPass, thinkNote: note, initial: undefined }));
     }
   }
   writeFileSync(join(BENCH, "results", `think-${model}${tag === "main" ? "" : "-" + tag}.jsonl`), out.join("\n") + "\n");

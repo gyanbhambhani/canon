@@ -7,24 +7,32 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ROOT, type Case, type Lang } from "../lib/seed.js";
-import { canonSignature, pyDecls, pySignature, tsSignature, type SigLike } from "../lib/types.js";
+import { parse, PyPrinter } from "@canon/compiler";
+import { canonSignature, pyDecls, pySignature, tsSignature, typeOf, type SigLike } from "../lib/types.js";
 
 export const CANON_REFERENCE = readFileSync(join(ROOT, "apps/web/content/docs/for-agents.mdx"), "utf8")
   .replace(/^---\n[\s\S]*?\n---\n/, "")
   .trim();
 
-export const LANG_NAME: Record<Lang, string> = { canon: "Canon", py: "Python", ts: "TypeScript" };
-export const FENCE: Record<Lang, string> = { canon: "canon", py: "python", ts: "ts" };
+/** The Canon-Py reference (served raw at /llms-py.txt), for the exploratory canon-py arm (amendment 2). */
+export const CANON_PY_REFERENCE = readFileSync(join(ROOT, "apps/web/content/docs/for-agents-py.mdx"), "utf8")
+  .replace(/^---\n[\s\S]*?\n---\n/, "")
+  .trim();
+
+export const LANG_NAME: Record<Lang, string> = { canon: "Canon", py: "Python", ts: "TypeScript", cpy: "Canon" };
+export const FENCE: Record<Lang, string> = { canon: "canon", py: "python", ts: "ts", cpy: "canon" };
 
 const CHECKER: Record<Lang, string> = {
   canon: "Your program is checked with `canon check` (automatic fixes applied first) and `canon test` contract fuzzing.",
   py: "Your program is checked with `mypy --strict` (after `ruff check --fix`) and Hypothesis property tests on functions that assert.",
   ts: "Your program is checked with `tsc --strict` (after `eslint --fix`) and random property tests when it asserts.",
+  cpy: "Your program is checked with `canon check --syntax py` (automatic fixes applied first) and `canon test --syntax py` contract fuzzing.",
 };
 
 export function systemPrompt(lang: Lang): string {
   const fb = " Checker errors come back as JSON; an entry that has a `fix` carries a unified-diff patch, and applying that patch fixes it.";
   if (lang === "canon") return "You write programs in Canon, a small programming language. Below is its complete reference; it is all you need." + fb + "\n\n" + CANON_REFERENCE;
+  if (lang === "cpy") return "You write programs in Canon, a small programming language, in its Canon-Py syntax. Below is its complete reference; it is all you need." + fb + "\n\n" + CANON_PY_REFERENCE;
   if (lang === "py") return "You write Python 3.11+ with full type annotations that pass `mypy --strict`. Use only the standard library; no I/O." + fb;
   return "You write TypeScript in strict mode (ES2022, no DOM, no Node APIs, no imports)." + fb;
 }
@@ -37,13 +45,23 @@ export function readSystemPrompt(lang: Lang | "canon-stripped"): string {
 
 const OUTPUT_RULE = (lang: Lang) => `Reply with the complete program in one \`\`\`${FENCE[lang]} code block, plus at most three lines of rationale.`;
 
+/** Brace-syntax Canon printed in Canon-Py (the same program: one syntax tree, two surfaces). */
+export function toCanonPy(braceSource: string): string {
+  return new PyPrinter().program(parse(braceSource)).trim();
+}
+
 function decls(lang: Lang, s: SigLike): string {
   if (lang === "canon") return s.decls?.canon ?? "";
+  if (lang === "cpy") return s.decls?.canon ? toCanonPy(s.decls.canon) : "";
   if (lang === "ts") return s.decls?.ts ?? "";
   return pyDecls(s).trim();
 }
 
 function signature(lang: Lang, s: SigLike): string {
+  if (lang === "cpy") {
+    const pr = new PyPrinter();
+    return `def ${s.fn}(${s.params.map(([n, t]) => `${n}: ${pr.ty(typeOf(t))}`).join(", ")}) -> ${pr.ty(typeOf(s.ret))}:`;
+  }
   return lang === "canon" ? canonSignature(s) : lang === "py" ? pySignature(s) : tsSignature(s);
 }
 
@@ -96,7 +114,7 @@ export function readPrompt(lang: Lang | "canon-stripped", program: string, quest
 }
 
 export function extractCode(text: string, lang: Lang): string {
-  const alts = lang === "canon" ? "canon|cn" : lang === "py" ? "python|py" : "ts|typescript";
+  const alts = lang === "canon" ? "canon|cn" : lang === "cpy" ? "canon|cn|python|py" : lang === "py" ? "python|py" : "ts|typescript";
   const re = new RegExp("```(?:" + alts + ")?[^\\n]*\\n([\\s\\S]*?)```", "g");
   let m: RegExpExecArray | null;
   let best = "";

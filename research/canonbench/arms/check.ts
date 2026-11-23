@@ -16,7 +16,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import ts from "typescript";
 import { check as canonCheck, fix as canonFix, pySplitlines, unifiedDiff } from "@canon/compiler";
-import { VENV } from "../adapters/exec.js";
+import { PY_SURFACE, VENV } from "../adapters/exec.js";
 import type { Lang } from "../lib/seed.js";
 
 export interface Diag {
@@ -40,8 +40,8 @@ const errorCount = (ds: Diag[]) => ds.filter((d) => d.severity === "error").leng
 
 // ---------------------------------------------------------------- Canon
 
-function canonDiags(code: string): Diag[] {
-  return canonCheck(code, "main.cn").diagnostics as Diag[];
+function canonDiags(code: string, surfacePy = false): Diag[] {
+  return canonCheck(code, "main.cn", surfacePy ? PY_SURFACE : {}).diagnostics as Diag[];
 }
 
 // ---------------------------------------------------------------- Python
@@ -221,13 +221,13 @@ async function eslintFix(code: string): Promise<string> {
 
 /** The checker alone (no automatic fixes): used to verify references and mutants. */
 export function checkCode(lang: Lang, code: string): CheckOutcome {
-  const ds = lang === "canon" ? canonDiags(code) : lang === "py" ? pyDiags(code) : tsDiags(code);
+  const ds = lang === "canon" || lang === "cpy" ? canonDiags(code, lang === "cpy") : lang === "py" ? pyDiags(code) : tsDiags(code);
   return outcome(lang, ds);
 }
 
 function outcome(lang: Lang, ds: Diag[]): CheckOutcome {
   const errors = errorCount(ds);
-  const head = lang === "canon" ? "canon check main.cn --json" : lang === "py" ? "mypy --strict main.py --json (with patches)" : "tsc --strict main.ts --json (with patches)";
+  const head = lang === "canon" ? "canon check main.cn --json" : lang === "cpy" ? "canon check --syntax py main.cn --json" : lang === "py" ? "mypy --strict main.py --json (with patches)" : "tsc --strict main.ts --json (with patches)";
   return { ok: errors === 0, feedback: errors ? `${head}\n${JSON.stringify(ds, null, 2)}` : "", codes: ds.filter((d) => d.severity === "error").map((d) => d.code), errors };
 }
 
@@ -242,9 +242,9 @@ export interface ToolchainOutcome extends CheckOutcome {
 
 /** Automatic fixes, then the checker. */
 export async function toolchain(lang: Lang, code: string): Promise<ToolchainOutcome> {
-  if (lang === "canon") {
-    const before = errorCount(canonDiags(code));
-    const f = canonFix(code, "main.cn");
+  if (lang === "canon" || lang === "cpy") {
+    const before = errorCount(canonDiags(code, lang === "cpy"));
+    const f = canonFix(code, "main.cn", lang === "cpy" ? PY_SURFACE : {});
     const o = outcome(lang, f.result.diagnostics as Diag[]);
     return { ...o, code: f.source, errorsBefore: before, autoFixed: f.applied.length > 0 };
   }

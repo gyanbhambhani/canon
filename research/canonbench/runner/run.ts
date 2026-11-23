@@ -13,7 +13,7 @@ import { join } from "node:path";
 import { approxEqual, runTests, type TestOutcome } from "../adapters/exec.js";
 import { toolchain } from "../arms/check.js";
 import { propertyTest } from "../arms/props.js";
-import { changePrompt, extractCode, feedbackPrompt, fixPrompt, readPrompt, readSystemPrompt, systemPrompt, writePrompt } from "../arms/prompts.js";
+import { changePrompt, toCanonPy, extractCode, feedbackPrompt, fixPrompt, readPrompt, readSystemPrompt, systemPrompt, writePrompt } from "../arms/prompts.js";
 import type { ReadArm, ReadItem } from "../generators/read.js";
 import type { FixItem } from "../generators/fix.js";
 import { BENCH, EXT, loadRef, loadSeed, loadTests, type Case, type Lang } from "../lib/seed.js";
@@ -169,7 +169,8 @@ function changeJob(lang: Lang, id: string, run: number): Job {
     async exec(model) {
       const item: ChangeItem = JSON.parse(readFileSync(join(BENCH, "change", `${id}.json`), "utf8"));
       const t = JSON.parse(readFileSync(join(BENCH, "change", "tests", `${id}.json`), "utf8")) as { cases: Case[]; regression: Case[] };
-      const l = await loop(model, lang, changePrompt(lang, item, loadRef(lang, id)!, item.requirement), item, []);
+      const original = lang === "cpy" ? toCanonPy(loadRef("canon", id)!) + "\n" : loadRef(lang, id)!;
+      const l = await loop(model, lang, changePrompt(lang, item, original, item.requirement), item, []);
       const tests = l.checkerOk ? runTests(lang, l.code, item, t.cases) : null;
       const regression = l.checkerOk ? runTests(lang, l.code, item, t.regression) : null;
       return { ...l, final: l.code, tests, regression, pass: !!tests && !!regression && tests.passed === tests.total && regression.passed === regression.total };
@@ -307,7 +308,11 @@ async function main() {
     for (let run = 0; run < runs; run++) for (const l of langs) for (const id of ids.filter(inSeeds)) mk(writeJob(l as Lang, id, run));
   } else if (family === "fix") {
     const items: FixItem[] = readFileSync(join(BENCH, "items", "fix.jsonl"), "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
-    for (let run = 0; run < runs; run++) for (const it of items.filter((x) => inSeeds(x.seed) && langs.includes(x.lang))) mk(fixJob(it, run));
+    // the exploratory Canon-Py arm gets the Canon mutants, printed in Canon-Py (the same programs)
+    const cpyItems = langs.includes("cpy")
+      ? items.filter((x) => x.lang === "canon").map((x) => ({ ...x, lang: "cpy" as Lang, fid: x.fid.replace(/\.canon$/, ".cpy"), broken: toCanonPy(x.broken) + "\n" }))
+      : [];
+    for (let run = 0; run < runs; run++) for (const it of [...items, ...cpyItems].filter((x) => inSeeds(x.seed) && langs.includes(x.lang))) mk(fixJob(it, run));
   } else if (family === "change") {
     const ids = readFileSync(join(BENCH, "items", "change.txt"), "utf8").split("\n").filter(Boolean);
     for (let run = 0; run < runs; run++) for (const l of langs) for (const id of ids.filter(inSeeds)) mk(changeJob(l as Lang, id, run));

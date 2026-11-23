@@ -27,9 +27,9 @@ const NONE: PropOutcome = { ok: true, feedback: "", ran: false };
 
 export function propertyTest(lang: Lang, code: string, sig: SigInfo & { decls?: { canon: string; ts: string } }, examples: Case[]): PropOutcome {
   try {
-    if (lang === "canon") {
-      if (!/^\s*(requires|ensures):/m.test(code)) return NONE;
-      const c = compile("canon", code);
+    if (lang === "canon" || lang === "cpy") {
+      if (!(lang === "canon" ? /^\s*(requires|ensures):/m : /^\s*@(requires|ensures)\b/m).test(code)) return NONE;
+      const c = compile(lang, code);
       if (!c.ok) return NONE;
       const r = spawnSync(process.execPath, ["--max-old-space-size=768", join(BENCH, "sandbox", "js-runner.mjs")], {
         input: JSON.stringify({ mode: "fuzz", js: c.artifact, tries: 100 }),
