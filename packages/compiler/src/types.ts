@@ -4,11 +4,11 @@
  * the type they need. See SPEC.md "Runtime semantics" for the rules.
  */
 import type * as A from "./ast.js";
-import { walkStmts } from "./ast.js";
+import { walkExprs, walkStmts } from "./ast.js";
 import { diag, type Diagnostic } from "./diagnostics.js";
 import { features } from "./features.js";
 import { parse } from "./parser.js";
-import { PRELUDE } from "./prelude.js";
+import { PRELUDE, STORE_BUILTINS } from "./prelude.js";
 import { Printer } from "./printer.js";
 import { PyPrinter, testIdent } from "./pyprinter.js";
 
@@ -188,6 +188,8 @@ const PRIMS: PrimDecl[] = [
   { kind: "prim", name: "Unit", arity: 0 },
   { kind: "prim", name: "List", arity: 1 },
   { kind: "prim", name: "Map", arity: 2 },
+  // v0.5: a table of rows T keyed by K; only table declarations make values of it
+  { kind: "prim", name: "Table", arity: 2 },
 ];
 
 interface Prelude {
@@ -243,7 +245,9 @@ export interface TypeInfo {
   /** How each call's callee resolved. */
   calls: Map<A.Call, CallKind>;
   /** How each bare name resolved (a function used as a value, or a local). */
-  names: Map<A.Name, "local" | "user" | "builtin">;
+  names: Map<A.Name, "local" | "user" | "builtin" | "table">;
+  /** v0.5: every table in the program (declared or imported), by name. */
+  tables: Map<string, A.Table>;
   /** Lambdas that receive one n-tuple and unpack it into n parameters. */
   unpack: Set<A.Lambda>;
   ctors: Map<string, CtorInfo>;
@@ -370,7 +374,11 @@ export function checkTypes(prog: A.Program, opts: CheckTypesOptions = {}): TypeR
     records,
     userFns,
     valueCallEffects: new Map(),
+    tables: new Map(),
   };
+  // v0.5: the std.store built-ins exist only in a program with a table
+  const hasTables = prog.items.some((it) => it.k === "Table");
+  const preFn = (name: string): FnSig | undefined => (!hasTables && STORE_BUILTINS.has(name) ? undefined : pre.fns.get(name));
 
   const err = (code: string, message: string, pos: A.Pos) => {
     const d = diag(code, message, pos.line, pos.col);
@@ -427,8 +435,8 @@ export function checkTypes(prog: A.Program, opts: CheckTypesOptions = {}): TypeR
   }
   for (const it of prog.items) {
     if (it.k !== "Fn") continue;
-    if (pre.fns.has(it.name)) {
-      err("T001", `fn ${it.name} is a built-in; choose another name`, it);
+    if (preFn(it.name)) {
+      err("T001", `fn ${it.name} is a built-in${STORE_BUILTINS.has(it.name) ? " in a program with tables" : ""}; choose another name`, it);
       continue;
     }
     if (userFns.has(it.name)) {
@@ -436,6 +444,18 @@ export function checkTypes(prog: A.Program, opts: CheckTypesOptions = {}): TypeR
       continue;
     }
     userFns.set(it.name, { name: it.name, tparams: it.tparams, params: it.params, ret: it.ret, effects: it.effects, builtin: false, node: it });
+  }
+
+  // -- v0.5: tables, `table todos: Todo key id`
+  const tableDecls: A.Table[] = [];
+  for (const it of prog.items) {
+    if (it.k !== "Table") continue;
+    if (info.tables.has(it.name) || userFns.has(it.name) || preFn(it.name)) {
+      err("T001", `${it.name} is already defined; a table needs its own name`, it);
+      continue;
+    }
+    info.tables.set(it.name, it);
+    tableDecls.push(it);
   }
 
   // -- type expressions
@@ -476,6 +496,46 @@ export function checkTypes(prog: A.Program, opts: CheckTypesOptions = {}): TypeR
       const scope = new Map(it.params.map((p) => [p, { t: "rigid", name: p } as Type]));
       if (it.k === "RecordType") for (const [, t] of it.fields) toType(t, scope);
       else for (const [, fs] of it.variants) for (const [, t] of fs) toType(t, scope);
+    }
+  }
+
+  const tableTypes = new Map<string, Type>();
+  for (const t of tableDecls) {
+    const row = records.get(t.row);
+    if (!row || pre.types.has(t.row)) {
+      err(types.has(t.row) ? "T001" : "T002", types.has(t.row)
+        ? `table ${t.name}: rows must be a record type, and ${t.row} is not one`
+        : `table ${t.name}: unknown type ${t.row}`, t);
+      continue;
+    }
+    if (row.params.length) {
+      err("T001", `table ${t.name}: the row type ${t.row} cannot be generic`, t);
+      continue;
+    }
+    const field = row.fields.find(([f]) => f === t.key);
+    if (!field) {
+      err("T008", `table ${t.name}: ${t.row} has no field ${t.key}; the key is one of its fields (${row.fields.map(([f]) => f).join(", ")})`, t);
+      continue;
+    }
+    const kt = field[1];
+    if (!(kt.k === "TName" && (kt.name === "Int" || kt.name === "String") && kt.args.length === 0)) {
+      err("T001", `table ${t.name}: the key ${t.row}.${t.key} must be Int or String`, t);
+      continue;
+    }
+    tableTypes.set(t.name, con("Table", [con(t.row), con(kt.name)]));
+  }
+  // a table is named only as the first argument of a std.store built-in (A004), so every
+  // access to it is visible to the effect checker as store(<table>)
+  const tableArgs = new Set<A.Expr>();
+  if (hasTables) {
+    for (const it of prog.items) {
+      if (it.k !== "Fn" && it.k !== "Test") continue;
+      for (const e of [...walkExprs(it.body), ...(it.k === "Fn" ? [...walkExprs(it.requires), ...walkExprs(it.ensures)] : [])]) {
+        if (e.k === "Call" && e.callee.k === "Name" && e.callee.path.length === 1 && STORE_BUILTINS.has(e.callee.path[0]) &&
+            e.args.length > 0 && !userFns.has(e.callee.path[0])) {
+          tableArgs.add(e.args[0]);
+        }
+      }
     }
   }
 
@@ -706,7 +766,16 @@ export function checkTypes(prog: A.Program, opts: CheckTypesOptions = {}): TypeR
           fitEffects(b.type, expected, e, name);
           return expectType(pos, expected, b.type, what, e);
         }
-        const sig = userFns.get(name) ?? pre.fns.get(name);
+        const table = tableTypes.get(name);
+        if (table) {
+          info.names.set(e, "table");
+          if (!tableArgs.has(e)) {
+            err("A004", `table ${name} can only be the first argument of get, scan, insert, save, delete, next_id or count`, e);
+          }
+          return expectType(pos, expected, table, what, e);
+        }
+        if (info.tables.has(name)) return expected ?? fresh(); // a table whose declaration has an error
+        const sig = userFns.get(name) ?? preFn(name);
         if (sig) {
           info.names.set(e, sig.builtin ? "builtin" : "user");
           const inst = instantiateSig(sig);
@@ -922,7 +991,7 @@ export function checkTypes(prog: A.Program, opts: CheckTypesOptions = {}): TypeR
       noteEffects(ft.effects, name, true);
       return callFn(e, ft.params, ft.ret, name, expected);
     }
-    const sig = userFns.get(name) ?? pre.fns.get(name);
+    const sig = userFns.get(name) ?? preFn(name);
     if (!sig) {
       err("T002", `unknown function ${name}`, callee);
       for (const a of e.args) expr(a, null);

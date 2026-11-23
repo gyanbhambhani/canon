@@ -1,0 +1,15 @@
+fn main() -> Unit
+  effects: io, rand
+{
+  let id = uuid()
+  print(to_string(str_len(id)) + " " + to_string(str_len(uuid()) == 36 && uuid() != uuid()))
+  let hash = hash_password("hunter2")
+  let right = verify_password("hunter2", hash)
+  print(to_string(right) + " " + to_string(verify_password("hunter3", hash)))
+  print(to_string(hash_password("x") != hash_password("x")))
+  print(to_string(verify_password("hunter2", "not a hash")))
+  let good = is_email("ada@example.com")
+  let bad = is_email("ada@example") || is_email("a da@x.io")
+  print(to_string(good) + " " + to_string(bad))
+  print(to_string(is_some(Some(1))) + " " + to_string(is_some(parse_int("x"))))
+}

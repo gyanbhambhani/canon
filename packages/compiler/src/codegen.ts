@@ -97,8 +97,21 @@ export function generate(prog: A.Program, info: TypeInfo): string {
   };
 
   // ---- expressions
+  /** v0.5: the hosts the function being generated declares, as net(host) effects (null: any host). */
+  let hosts: string[] | null = null;
+  const hostsFor = (effects: string[]): string[] | null => {
+    if (effects.includes("net")) return null;
+    const hs = effects.flatMap((e) => (e.startsWith("net(") ? [e.slice(4, -1)] : []));
+    return hs.length ? hs : null;
+  };
+  const NET_CALLS = new Set(["http_get", "http_post"]);
+
   const builtinValue = (name: string, pos: { line: number; col: number }): string => {
     // a built-in used as a value: wrap it so it receives its position arguments
+    if (NET_CALLS.has(name) && hosts) {
+      const n = name === "http_get" ? 1 : 2;
+      return `((...a) => $rt.std.${name}(${pos.line}, ${pos.col}, ...a.slice(0, ${n}), ${JSON.stringify(hosts)}))`;
+    }
     return `((...a) => $rt.std.${name}(${pos.line}, ${pos.col}, ...a))`;
   };
 
@@ -119,6 +132,7 @@ export function generate(prog: A.Program, info: TypeInfo): string {
         const local = lookup(name);
         if (local) return local.js;
         const how = info.names.get(e);
+        if (how === "table") return JSON.stringify(name); // v0.5: a table value is its name
         if (how === "builtin") return builtinValue(name, e);
         return `f_${name}`;
       }
@@ -203,6 +217,7 @@ export function generate(prog: A.Program, info: TypeInfo): string {
         const td = t ? typeToTD(resolve(t)) : "?";
         return `$rt.std.to_string(${e.line}, ${e.col}, ${args[0]}, ${JSON.stringify(td)})`;
       }
+      if (NET_CALLS.has(name) && hosts) args.push(JSON.stringify(hosts));
       return `$rt.std.${name}(${[String(e.line), String(e.col), ...args].join(", ")})`;
     }
     return `($rt.at(${e.line}, ${e.col}), f_${name}(${args.join(", ")}))`;
@@ -348,6 +363,7 @@ export function generate(prog: A.Program, info: TypeInfo): string {
   for (const it of prog.items) {
     if (it.k !== "Fn" || info.userFns.get(it.name)?.node !== it) continue;
     fnNames.push(it.name);
+    hosts = hostsFor(it.effects);
     withScope(() => {
       const params = it.params.map(([n]) => declare(n));
       const lines: string[] = [`function f_${it.name}(${params.join(", ")}) {`];
@@ -380,6 +396,7 @@ export function generate(prog: A.Program, info: TypeInfo): string {
   const tests: string[] = [];
   for (const it of prog.items) {
     if (it.k !== "Test") continue;
+    hosts = hostsFor(it.effects);
     withScope(() => {
       const body = stmts(it.body, "    ");
       tests.push(`  [${JSON.stringify(JSON.parse(it.name))}, () => {\n    $rt.enter(${JSON.stringify(`test ${it.name}`)}, ${it.line}, ${it.col});\n    try {\n${body.map((l) => "  " + l).join("\n")}\n    } finally { $rt.leave(); }\n  }, ${JSON.stringify(it.effects)}]`);
@@ -408,7 +425,7 @@ export function generate(prog: A.Program, info: TypeInfo): string {
       return skip ? { name: f.name, params: [], skip } : { name: f.name, params: f.params.map(([pn, t]) => [pn, typeExprToTD(t, [])]) };
     });
   out.push(
-    `return {\n  fns: { ${fnNames.map((n) => `${JSON.stringify(n)}: f_${n}`).join(", ")} },\n  main: ${main ? "f_main" : "undefined"},\n  mainRet: ${JSON.stringify(mainRet)},\n  mainEffects: ${JSON.stringify(mainEffects)},\n  fuzz: ${JSON.stringify(fuzz)},\n${features().py ? "  py: true,\n" : ""}  tests: [\n${tests.join(",\n")}\n  ],\n  types: ${JSON.stringify(table)},\n};`,
+    `return {\n  fns: { ${fnNames.map((n) => `${JSON.stringify(n)}: f_${n}`).join(", ")} },\n  main: ${main ? "f_main" : "undefined"},\n  mainRet: ${JSON.stringify(mainRet)},\n  mainEffects: ${JSON.stringify(mainEffects)},\n  fuzz: ${JSON.stringify(fuzz)},\n${features().py ? "  py: true,\n" : ""}${info.tables.size ? `  tables: ${JSON.stringify(Object.fromEntries([...info.tables].map(([n, t]) => [n, t.key])))},\n` : ""}  tests: [\n${tests.join(",\n")}\n  ],\n  types: ${JSON.stringify(table)},\n};`,
   );
   return out.join("\n\n") + "\n";
 }

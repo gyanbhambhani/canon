@@ -1,0 +1,9 @@
+1 2 3
+3
+True False 2
+4
+a,c
+A A,c
+Some(Note(id=3, text="c"))
+None
+Some(User(email="ada@example.com", name="Ada"))

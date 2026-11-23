@@ -1,0 +1,13 @@
+@effects(io, rand)
+def main() -> None:
+    id = uuid()
+    print(f"{str_len(id)} {str_len(uuid()) == 36 and uuid() != uuid()}")
+    hash = hash_password("hunter2")
+    right = verify_password("hunter2", hash)
+    print(f"{right} {verify_password("hunter3", hash)}")
+    print(to_string(hash_password("x") != hash_password("x")))
+    print(to_string(verify_password("hunter2", "not a hash")))
+    good = is_email("ada@example.com")
+    bad = is_email("ada@example") or is_email("a da@x.io")
+    print(f"{good} {bad}")
+    print(f"{is_some(Some(1))} {is_some(parse_int("x"))}")

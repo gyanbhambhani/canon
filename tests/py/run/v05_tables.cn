@@ -1,0 +1,33 @@
+users = table(User, key="email")
+
+notes = table(Note, key="id")
+
+class User:
+    email: str
+    name: str
+
+class Note:
+    id: int
+    text: str
+
+@effects("store(notes)")
+def add_note(text: str) -> int:
+    id = next_id(notes)
+    insert(notes, Note(id=id, text=text))
+    return id
+
+@effects(io, "store(notes)", "store(users)")
+def main() -> None:
+    print(f"{add_note("a")} {add_note("b")} {add_note("c")}")
+    print(to_string(count(notes)))
+    removed = delete(notes, 2)
+    print(f"{removed} {delete(notes, 2)} {count(notes)}")
+    print(to_string(next_id(notes)))
+    texts = map(scan(notes), lambda n: n.text)
+    print(join(texts, ","))
+    edited = save(notes, Note(id=1, text="A"))
+    print(edited.text + " " + join(map(scan(notes), lambda n: n.text), ","))
+    print(to_string(get(notes, 3)))
+    print(to_string(get(notes, 9)))
+    insert(users, User(email="ada@example.com", name="Ada"))
+    print(to_string(get(users, "ada@example.com")))

@@ -55,6 +55,16 @@ fn map_set[K, V](m: Map[K, V], k: K, v: V) -> Map[K, V] {}
 fn keys[K, V](m: Map[K, V]) -> List[K] {}
 fn values[K, V](m: Map[K, V]) -> List[V] {}
 fn assert(cond: Bool) -> Unit {}
+fn is_some[T](o: Option[T]) -> Bool {}
+fn is_email(s: String) -> Bool {}
+fn verify_password(p: String, hash: String) -> Bool {}
+fn get[T, K](t: Table[T, K], key: K) -> Option[T] {}
+fn scan[T, K](t: Table[T, K]) -> List[T] {}
+fn insert[T, K](t: Table[T, K], row: T) -> Unit {}
+fn save[T, K](t: Table[T, K], row: T) -> T {}
+fn delete[T, K](t: Table[T, K], key: K) -> Bool {}
+fn next_id[T](t: Table[T, Int]) -> Int {}
+fn count[T, K](t: Table[T, K]) -> Int {}
 
 fn print(s: String) -> Unit
   effects: io
@@ -95,4 +105,19 @@ fn random() -> Float
 fn random_int(lo: Int, hi: Int) -> Int
   effects: rand
 {}
+
+fn uuid() -> String
+  effects: rand
+{}
+
+fn hash_password(p: String) -> String
+  effects: rand
+{}
 `;
+
+/**
+ * v0.5: the std.store built-ins. They exist only in a program that declares or imports a table,
+ * so programs written before v0.5 may still name their own functions get, save or count. Each
+ * call's effect is store(<its first argument>), which check.ts computes.
+ */
+export const STORE_BUILTINS = new Set(["get", "scan", "insert", "save", "delete", "next_id", "count"]);

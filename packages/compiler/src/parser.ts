@@ -257,12 +257,16 @@ export class Parser {
   private effectName(): string {
     const name = this.expect("name", undefined, "effect name");
     if (!this.atOp("(") || this.tok.line !== name.line) return name.text;
-    this.advance();
+    let end = this.advance().col + 1;
     let arg = "";
     while (!this.atOp(")")) {
       if (this.at("eof") || this.tok.line !== name.line) this.error("')' closing the effect's argument");
-      arg += this.advance().text;
+      if (this.tok.col !== end) this.fail(`an effect's argument has no spaces: ${name.text}(${arg}${this.tok.text}...)`);
+      const t = this.advance();
+      arg += t.text;
+      end = t.col + Array.from(t.text).length;
     }
+    if (this.tok.col !== end) this.fail(`an effect's argument has no spaces: ${name.text}(${arg})`);
     this.advance();
     if (arg === "") this.fail(`effect ${name.text}() needs an argument, like store(todos) or net(api.example.com)`);
     return `${name.text}(${arg})`;

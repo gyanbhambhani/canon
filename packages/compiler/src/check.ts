@@ -13,6 +13,8 @@ import { pyNormalize } from "./pynormalize.js";
 import { PyPrinter, testIdent } from "./pyprinter.js";
 import { pyLen, pySplitlines } from "./py.js";
 import { builtinEffects, checkTypes, pureBuiltins, type TypeInfo } from "./types.js";
+import { STORE_BUILTINS } from "./prelude.js";
+import { checkApi } from "./api.js";
 
 export const SNAKE = /^[a-z_][a-z0-9_]*$/;
 export const PASCAL = /^[A-Z][A-Za-z0-9]*$/;
@@ -75,6 +77,7 @@ export function makePatch(before: string, after: string, path: string): Fix {
 
 export function checkNames(prog: A.Program): Diagnostic[] {
   const diags: Diagnostic[] = [];
+  const tableNames = new Set(prog.items.flatMap((it) => (it.k === "Table" ? [it.name] : [])));
   const bad = (kind: string, name: string, want: string, node: A.Pos) =>
     diags.push(diag("N001", `${kind} '${name}' must be ${want}`, node.line, node.col));
   for (const it of prog.items) {
@@ -91,16 +94,14 @@ export function checkNames(prog: A.Program): Diagnostic[] {
       if (!SNAKE.test(it.name)) bad("function", it.name, "snake_case", it);
       for (const [n] of it.params) if (!SNAKE.test(n)) bad("parameter", n, "snake_case", it);
       for (const e of it.effects) {
-        if (!EFFECT_SET.has(e)) {
-          diags.push(diag("E100", `unknown effect '${e}'; the effects are ${EFFECTS.join(", ")}`, it.line, it.col));
-        }
+        const msg = effectProblem(e, tableNames);
+        if (msg) diags.push(diag("E100", msg, it.line, it.col));
       }
     }
     if (it.k === "Test") {
       for (const e of it.effects) {
-        if (!EFFECT_SET.has(e)) {
-          diags.push(diag("E100", `unknown effect '${e}'; the effects are ${EFFECTS.join(", ")}`, it.line, it.col));
-        }
+        const msg = effectProblem(e, tableNames);
+        if (msg) diags.push(diag("E100", msg, it.line, it.col));
       }
     }
     if (it.k === "Fn" || it.k === "Test") {
@@ -109,6 +110,38 @@ export function checkNames(prog: A.Program): Diagnostic[] {
   }
   return diags;
 }
+
+/** v0.5: a host in net(host): lower-case DNS labels, optionally with a port. */
+export const HOST_RE = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*(:[0-9]+)?$/;
+
+/** Why an effect name is not valid, or null. v0.5 adds store(<table>) and net(<host>). */
+export function effectProblem(e: string, tableNames: Set<string>): string | null {
+  if (EFFECT_SET.has(e)) return null;
+  const m = /^([a-z_]+)\((.*)\)$/.exec(e);
+  if (m && m[1] === "store") {
+    if (tableNames.has(m[2])) return null;
+    return `unknown table '${m[2]}' in store(${m[2]})${tableNames.size ? `; the tables are ${[...tableNames].sort(cmpStr).join(", ")}` : "; declare it with table " + m[2] + ": Row key id"}`;
+  }
+  if (m && m[1] === "net") {
+    if (HOST_RE.test(m[2])) return null;
+    return `net(${m[2]}) needs a host name, like net(api.example.com)`;
+  }
+  if (e === "store") return "store needs the table it touches: store(todos)";
+  return `unknown effect '${e}'; the effects are ${EFFECTS.join(", ")}`; // the oracle's text
+}
+
+/** v0.5: the host of a literal URL, `"https://api.stripe.com/v1"` gives api.stripe.com. */
+export function urlHost(raw: string): string | null {
+  if (raw.includes("\\")) return null;
+  const m = /^"[a-zA-Z][a-zA-Z0-9+.-]*:\/\/([^/:?#"]+)/.exec(raw);
+  return m ? m[1].toLowerCase() : null;
+}
+
+const NET_CALLS = new Set(["http_get", "http_post"]);
+/** Uses a computed URL: satisfied by any declared net effect. */
+const NET_ANY = "net(*)";
+const isNet = (e: string) => e === "net" || e.startsWith("net(");
+const effectBase = (e: string) => e.replace(/\(.*$/, "");
 
 /** Effect lists are exact. Patches are relative to the original source. */
 export function checkEffects(
@@ -124,6 +157,7 @@ export function checkEffects(
   const diags: Diagnostic[] = [];
   const user = new Map<string, Set<string>>();
   for (const it of prog.items) if (it.k === "Fn") user.set(it.name, new Set(it.effects));
+  const tableNames = new Set(prog.items.flatMap((x) => (x.k === "Table" ? [x.name] : [])));
   prog.items.forEach((it, idx) => {
     if (it.k !== "Fn" && !(it.k === "Test" && features().sealedEffects)) return;
     if (isExtern(it)) return;
@@ -135,7 +169,8 @@ export function checkEffects(
       for (const e of all) {
         if (e.k !== "Name" || callees.has(e) || e.path.length !== 1) continue;
         const n: string = e.path[0];
-        const effs = Object.hasOwn(tables.effects, n) ? tables.effects[n] : user.get(n) ?? [];
+        const effs = NET_CALLS.has(n) && !user.has(n) ? [NET_ANY]
+          : Object.hasOwn(tables.effects, n) ? tables.effects[n] : user.get(n) ?? [];
         for (const ef of effs) if (!used.has(ef)) used.set(ef, `${n} as a value`);
       }
     }
@@ -147,7 +182,13 @@ export function checkEffects(
       }
       const name: string = e.callee.path[0];
       let effs: Iterable<string>;
-      if (Object.hasOwn(tables.effects, name)) effs = tables.effects[name];
+      const first = e.args[0];
+      if (STORE_BUILTINS.has(name) && !user.has(name) && first?.k === "Name" && tableNames.has(first.path[0])) {
+        effs = [`store(${first.path[0]})`]; // v0.5
+      } else if (countValues && NET_CALLS.has(name) && !user.has(name)) {
+        const host = first?.k === "Str" ? urlHost(first.raw) : null;
+        effs = [host ? `net(${host})` : NET_ANY]; // v0.5: hosts
+      } else if (Object.hasOwn(tables.effects, name)) effs = tables.effects[name];
       else if (user.has(name)) effs = user.get(name)!;
       else if (tables.pure.has(name)) effs = [];
       else {
@@ -158,23 +199,37 @@ export function checkEffects(
     }
     for (const [ef, via] of valueCalls?.get(it) ?? []) if (!used.has(ef)) used.set(ef, via);
     if (it.k === "Test") {
-      // only fs and net are real inside a test; the rest are virtual and never declared
-      for (const k of [...used.keys()]) if (!TEST_REAL_EFFECTS.has(k)) used.delete(k);
+      // only fs and net are real inside a test; the rest (and store) are virtual and never declared
+      for (const k of [...used.keys()]) if (!TEST_REAL_EFFECTS.has(effectBase(k))) used.delete(k);
       allKnown = true;
     }
     const label = itemLabel(it);
     const declared = new Set(it.effects);
-    const missing = [...used.keys()].filter((x) => !declared.has(x)).sort(cmpStr);
-    const extra = allKnown ? [...declared].filter((x) => !used.has(x)).sort(cmpStr) : [];
+    const declaredNet = [...declared].filter(isNet);
+    // v0.5: plain net covers every host; a computed URL (net(*)) is covered by any net effect
+    const covers = (d: string, u: string) =>
+      d === u || (d === "net" && u.startsWith("net(")) || (u === NET_ANY && isNet(d));
+    const uncovered = [...used.keys()].filter((u) => ![...declared].some((d) => covers(d, u)));
+    const badHosts = uncovered.filter((u) => u !== NET_ANY && u.startsWith("net(") && declaredNet.length > 0);
+    const missing = [...new Set(uncovered.filter((u) => !badHosts.includes(u)).map((u) => (u === NET_ANY ? "net" : u)))].sort(cmpStr);
+    const extra = allKnown ? [...declared].filter((d) => ![...used.keys()].some((u) => covers(d, u))).sort(cmpStr) : [];
     let fix: Fix | undefined;
     if (missing.length || extra.length) {
       const fixed = [...prog.items];
-      const all = new Set([...used.keys(), ...(allKnown ? [] : declared)]);
+      const keep = [...declared].filter((d) => !extra.includes(d));
+      const all = new Set([...keep, ...missing]);
       fixed[idx] = { ...it, effects: [...all].sort(cmpStr) };
       fix = makePatch(src, programText({ k: "Program", items: fixed }), path);
     }
+    for (const u of badHosts) {
+      const fixed = [...prog.items];
+      fixed[idx] = { ...it, effects: [...new Set([...it.effects, u])].sort(cmpStr) };
+      diags.push(diag("E104",
+        `${label} calls host ${u.slice(4, -1)} (via ${used.get(u)}), but declares only ${declaredNet.join(", ")}; add ${u}, or declare plain net for any host`,
+        it.line, it.col, { fix: makePatch(src, programText({ k: "Program", items: fixed }), path), data: { host: u.slice(4, -1) } }));
+    }
     if (missing.length) {
-      const via = missing.map((m) => `${m} (via ${used.get(m)})`).join(", ");
+      const via = missing.map((m) => `${m} (via ${used.get(m) ?? used.get(NET_ANY)})`).join(", ");
       diags.push(diag("E101", `${label} uses effects it does not declare: ${via}`, it.line, it.col,
         { fix, data: { missing } }));
     }
@@ -197,6 +252,7 @@ export function checkContractPurity(prog: A.Program, tables: EffectTables): Diag
   const diags: Diagnostic[] = [];
   const user = new Map<string, string[]>();
   for (const it of prog.items) if (it.k === "Fn") user.set(it.name, it.effects);
+  const tableNames = new Set(prog.items.flatMap((x) => (x.k === "Table" ? [x.name] : [])));
   const effectsOfName = (n: string) => (Object.hasOwn(tables.effects, n) ? tables.effects[n] : user.get(n) ?? []);
   for (const it of prog.items) {
     if (it.k !== "Fn" || it.extern) continue;
@@ -212,6 +268,11 @@ export function checkContractPurity(prog: A.Program, tables: EffectTables): Diag
       for (const x of walkExprs(e)) {
         const n = x.k === "Call" && x.callee.k === "Name" ? x.callee.path[0] : x.k === "Name" && x.path.length === 1 ? x.path[0] : null;
         if (n === null) continue;
+        if (x.k === "Call" && STORE_BUILTINS.has(n) && !user.has(n) && x.args[0]?.k === "Name" && tableNames.has(x.args[0].path[0])) {
+          const ef = `store(${x.args[0].path[0]})`; // v0.5
+          if (!found.has(ef)) found.set(ef, n);
+          continue;
+        }
         for (const ef of effectsOf(n)) if (!found.has(ef)) found.set(ef, n);
       }
       if (found.size) {
@@ -395,6 +456,7 @@ function analyzeInner(src: string, path: string, link?: ModuleLink): Analysis {
     ...typeDiags.filter((d) => d.code === "M001"),
     ...effectDiags,
     ...(features().sealedEffects ? checkContractPurity(prog, tables) : []),
+    ...checkApi(prog),
     ...typeDiags.filter((d) => d.code !== "M001"),
     ...holes,
   ];

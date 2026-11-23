@@ -268,6 +268,22 @@ console.log(fns.double(21)); // 42
 
 `--json` prints `{ ok, out, module, bytes }`, or `{ ok: false, diagnostics }` when the file does not check.
 
+## canon manifest
+
+`canon manifest [FILE]` lists every endpoint (api fn): method, path, function, effects (tables and hosts) and validation rules. It is the permission list to read before the code runs. In a project it needs no file. `--json` gives `{ ok, endpoints, warnings }`, each endpoint with `method`, `path`, `function`, `module`, `effects`, `tables`, `hosts` (`"*"` for any host) and `checks`.
+
+```text
+POST /todos                 create_todo     store(todos)   checks: str_len(trim(input.title)) > 0
+POST /todos/{id}/complete   complete_todo   store(todos)
+GET  /todos                 list_todos      store(todos)   checks: page >= 1 && per_page >= 1 && per_page <= 100
+```
+
+An endpoint that declares plain `net` may call any host; the manifest flags it with warning W010.
+
+## Projects
+
+A folder with canon.toml is a project. In it, `canon check`, `canon test` and `canon manifest` need no file: they work on every module under the source folder (`src`, default `canon/`), and `check --fix --write` applies patches in every module. A file inside the source folder is checked with its imports.
+
 ## --watch
 
 ```bash

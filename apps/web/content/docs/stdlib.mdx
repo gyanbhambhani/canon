@@ -503,6 +503,22 @@ test "str_len" {
 }
 ```
 
+### is_email
+
+```text
+is_email(s: String) -> Bool
+```
+
+Pure. One simple rule, the same in Canon, the generated Python and the generated TypeScript: some text without spaces or `@`, an `@`, then text with a dot in it. Allowed in an api fn's validation.
+
+```canon
+test "is_email" {
+  assert(is_email("ada@example.com"))
+  assert(!is_email("ada@example"))
+  assert(!is_email("a da@example.com"))
+}
+```
+
 ## Options
 
 ### unwrap_or
@@ -517,6 +533,21 @@ Pure. The value inside `Some`, or `fallback` for `None`.
 test "unwrap_or" {
   assert(unwrap_or(parse_int("7"), 0) == 7)
   assert(unwrap_or(parse_int("x"), 0) == 0)
+}
+```
+
+### is_some
+
+```text
+is_some[T](o: Option[T]) -> Bool
+```
+
+Pure. True for `Some`, false for `None`. Allowed in an api fn's validation.
+
+```canon
+test "is_some" {
+  assert(is_some(parse_int("7")))
+  assert(!is_some(parse_int("x")))
 }
 ```
 
@@ -793,5 +824,85 @@ fn roll() -> Int
   effects: rand
 {
   return random_int(1, 7)
+}
+```
+
+## Accounts
+
+### uuid
+
+```text
+uuid() -> String                                            effects: rand
+```
+
+A random version-4 UUID, 36 characters. Reproducible under `canon test`, whose random source is seeded.
+
+```canon
+fn new_token() -> String
+  effects: rand
+{
+  return uuid()
+}
+```
+
+### hash_password
+
+```text
+hash_password(p: String) -> String                          effects: rand
+```
+
+A salted PBKDF2-SHA256 hash in the format `pbkdf2_sha256$<iterations>$<salt>$<hash>`. Hashes made by the JavaScript runtime and by the generated Python verify on either side.
+
+### verify_password
+
+```text
+verify_password(p: String, hash: String) -> Bool
+```
+
+Pure. True when `p` is the password `hash` was made from. A malformed hash gives false.
+
+```canon
+fn check_login(p: String) -> Bool
+  effects: rand
+{
+  return verify_password(p, hash_password("hunter2"))
+}
+```
+
+## Tables (std.store)
+
+A table holds records keyed by one field of type Int or String: `table todos: Todo key id` (in Canon-Py, `todos = table(Todo, key="id")`). These built-ins exist only in a program that declares or imports a table, and each needs the effect `store(<table>)`. A table is named only as their first argument (A004). Tables live in memory under `canon run` and `canon test` (empty for every test); the generated Python stores them in SQLite.
+
+```text
+get(t, key) -> Option[T]       the row with that key, if any
+scan(t) -> List[T]             all rows, in insertion order
+insert(t, row) -> Unit         adds a row; a duplicate key traps with R007
+save(t, row) -> T              inserts or replaces by key, and returns the row
+delete(t, key) -> Bool         removes the row; true if one existed
+next_id(t) -> Int              one more than the largest Int key, or 1 for an empty table
+count(t) -> Int                the number of rows
+```
+
+```canon
+table notes: Note key id
+
+type Note {
+  id: Int,
+  text: String,
+}
+
+fn add(text: String) -> Note
+  effects: store(notes)
+{
+  return save(notes, Note { id: next_id(notes), text: text })
+}
+
+test "notes" {
+  let a = add("a")
+  insert(notes, Note { id: 7, text: "b" })
+  assert(count(notes) == 2 && next_id(notes) == 8)
+  assert(get(notes, a.id) == Some(a))
+  assert(delete(notes, 7) && !delete(notes, 7))
+  assert(len(scan(notes)) == 1)
 }
 ```

@@ -1,0 +1,54 @@
+table users: User key email
+
+table notes: Note key id
+
+type User {
+  email: String,
+  name: String,
+}
+
+type Note {
+  id: Int,
+  text: String,
+}
+
+fn add_note(text: String) -> Int
+  effects: store(notes)
+{
+  let id = next_id(notes)
+  insert(notes, Note { id: id, text: text })
+  return id
+}
+
+fn main() -> Unit
+  effects: io, store(notes), store(users)
+{
+  print(to_string(add_note("a")) + " " + to_string(add_note("b")) + " " + to_string(add_note("c")))
+  notes
+    |> count()
+    |> to_string()
+    |> print()
+  let removed = delete(notes, 2)
+  print(to_string(removed) + " " + to_string(delete(notes, 2)) + " " + to_string(count(notes)))
+  notes
+    |> next_id()
+    |> to_string()
+    |> print()
+  let texts = map(scan(notes), |n| n.text)
+  print(join(texts, ","))
+  let edited = save(notes, Note { id: 1, text: "A" })
+  print(edited.text + " " + (notes |> scan() |> map(|n| n.text) |> join(",")))
+  notes
+    |> get(3)
+    |> to_string()
+    |> print()
+  notes
+    |> get(9)
+    |> to_string()
+    |> print()
+  insert(users, User { email: "ada@example.com", name: "Ada" })
+  users
+    |> get("ada@example.com")
+    |> to_string()
+    |> print()
+}

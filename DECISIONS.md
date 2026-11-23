@@ -2,6 +2,43 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — v0.5 M2: api fn, tables, effects with arguments, manifest
+Decision: the std.store built-ins (get, scan, insert, save, delete, next_id, count) exist only in a program that declares or imports a table.
+Reason: existing programs, including docs pages and benchmark tasks, define their own `save`, `count`, `get`, `insert` and `delete`, and a user function may not share a built-in's name (T001).
+
+Decision: a table is a value of type `Table[Row, Key]`, named only as the first argument of a store built-in (new code A004). Its effect is `store(<that argument>)`.
+Reason: the spec gives store built-ins the signature `(t, ...)`; restricting where a table may appear keeps every access visible to the effect checker, so `store(todos)` stays exact and per table.
+
+Decision: Canon-Py spells a table `todos = table(Todo, key="id")`.
+Reason: the spec gives every other v0.5 form a Canon-Py spelling but not tables; this reads as a Python module-level assignment and maps one-to-one onto `table todos: Todo key id`.
+
+Decision: an `http_get`/`http_post` on a literal URL uses `net(<host>)`; on a computed URL it uses any declared net effect. When a function declares other hosts but not the literal one, that is E104 with a patch adding the host. E104 is not in `--fix`'s mechanical set. When a function declares no net effect at all, E101's patch adds `net(<host>)` for a literal URL and plain `net` for a computed one.
+Reason: a host is a permission decision, so an agent should not widen a declared host list silently. The E101 patch was already automatic, and naming the host is the narrowest permission that works.
+
+Decision: the run-time guard checks hosts per function. Codegen passes the calling function's declared hosts to `http_get`/`http_post`, which trap with R006 on any other host. The entry point's guard also checks `net(<host>)` and `store(<table>)`; tests may use every table.
+Reason: the spec's guard must stop a computed URL to an undeclared host. Checking only the entry point's list would let an inner function reach any host its caller declared.
+
+Decision: an effect's argument is written without spaces (`net(not a host)` is P001); in Canon-Py the quoted form drops whitespace, so `"store( todos )"` is `store(todos)`.
+Reason: the brace parser joins tokens, and silently turning `not a host` into `notahost` would be wrong. The Canon-Py fuzzer showed that quoted effects need the lenient reading every other Canon-Py form gets.
+
+Decision: validation rules (the manifest's `checks`, and later the 422 `rule`) are printed in canonical brace syntax whatever the source surface.
+Reason: the rule is part of the wire contract between server and client, so it must not change when a project switches surface.
+
+Decision: W010 appears only in `canon manifest`, not in `canon check`.
+Reason: the spec says the manifest flags plain net. A warning in check would change the output of every existing program that uses `net`.
+
+Decision: wire field and api parameter names may not be Python keywords or start with `model_` (A001). A variant may not have a field named `kind` (A001). `Option[Option[T]]` and `Option[Unit]` are not wire types.
+Reason: field names are identical in Canon, JSON, Python and TypeScript, so a name Python cannot spell cannot be generated, and `model_` names collide with Pydantic's methods. The wire format uses `kind` for a variant's name. In JSON, null cannot tell the two Nones apart.
+
+Decision: `hash_password` uses PBKDF2-HMAC-SHA256 in Django's format, implemented in pure JavaScript with 10,000 iterations in the Canon runtime. The generated Python will use hashlib with more iterations, and verification reads the count from the hash.
+Reason: the runtime has no dependencies and must run in the browser, so it cannot call node:crypto. With a shared format, a hash made on either side verifies on the other.
+
+Decision: `is_email` is `^[^@ \t\n\r\v\f]+@[^@ ...]+\.[^@ ...]+$`, with the whitespace class spelled out.
+Reason: `\s` means different things in JavaScript and Python, and the rule must give the same answer in the server, the client and the parity suite.
+
+Decision: the agent references (llms.txt and the Canon-Py reference) do not list the v0.5 built-ins and codes yet. The full-stack addendum (M7) will.
+Reason: the core reference has a 4,000-token budget, and the spec puts full-stack material in a separate addendum of at most 1,500 tokens. The docs pages (diagnostics, standard library, CLI) document them now.
+
 ## 2026-11-22 — v0.5 M1: projects and modules
 Decision: top-level names (types, variants, functions, tables) are unique across a project; a second definition is M004.
 Reason: the spec's TypeScript output is one flat types.ts and one createClient object for the whole project, so two modules defining `Todo` or `create_todo` could not both be generated. It also lets codegen link a project by concatenating its modules, and keeps every name greppable across Canon, Python and TypeScript.

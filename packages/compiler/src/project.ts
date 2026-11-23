@@ -11,6 +11,7 @@
 import type * as A from "./ast.js";
 import { walkExprs } from "./ast.js";
 import { analyze, makePatch, parseCanonical, programText, type Analysis, type CheckResult } from "./check.js";
+import { routeKey } from "./api.js";
 import { CanonError, diag, type Diagnostic } from "./diagnostics.js";
 import { withFeatures, type CompileOptions } from "./features.js";
 import { cmpStr, normalize } from "./normalize.js";
@@ -123,6 +124,20 @@ function checkProjectInner(sources: ModuleSource[], opts: CompileOptions): Proje
           }
         }
       }
+    }
+  }
+
+  // -- v0.5: two endpoints with one method and path in different modules (A002)
+  const routes = new Map<string, { module: string; fn: A.Fn }>();
+  for (const m of sorted) {
+    for (const it of progs.get(m.name)?.items ?? []) {
+      if (it.k !== "Fn" || !it.route) continue;
+      const key = routeKey(it.route);
+      const prev = routes.get(key);
+      if (prev && prev.module !== m.name) {
+        report(m.name, diag("A002", `api fn ${it.name}: ${it.route.method} ${it.route.path} is already the route of api fn ${prev.fn.name} in module ${prev.module}`,
+          it.line, it.col));
+      } else if (!prev) routes.set(key, { module: m.name, fn: it });
     }
   }
 

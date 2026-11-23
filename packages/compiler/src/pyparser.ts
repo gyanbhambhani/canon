@@ -230,7 +230,8 @@ export class PyParser {
         this.expect("op", "(");
         while (!this.atOp(")")) {
           // v0.5: an effect with an argument is a string, @effects("store(todos)")
-          if (this.at("str")) effects.push(this.advance().text.slice(1, -1));
+          // (whitespace inside is dropped: "store( todos )" is store(todos))
+          if (this.at("str")) effects.push(this.advance().text.slice(1, -1).replace(/\s+/g, ""));
           else effects.push(this.expect("name", undefined, "effect name").text);
           if (!this.eatOp(",")) break;
         }

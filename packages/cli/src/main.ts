@@ -8,9 +8,9 @@ import {
 } from "node:fs";
 import { basename, dirname, relative, resolve } from "node:path";
 import {
-  CanonError, applyPatch, check, checkProject, compileJs, fix, flagName, fmt, linkProject, programText, readSource,
+  CanonError, analyze, applyPatch, check, manifest, manifestText, checkProject, compileJs, fix, flagName, fmt, linkProject, programText, readSource,
   withFeatures, FEATURE_NAMES, MECHANICAL_CODES, V02, V03, VERSION,
-  type CheckResult, type CompileOptions, type Diagnostic, type FeatureName, type Features, type ProjectResult,
+  type CheckResult, type CompileOptions, type Diagnostic, type Program, type FeatureName, type Features, type ProjectResult,
 } from "@canon/compiler";
 import { findProjectRoot, loadProject, projectOfFile, ProjectError, type Project } from "./project.js";
 import { fuzzContracts, runMain, runTests, testHost, type Effect, type Host, type TrapJson } from "@canon/runtime";
@@ -25,7 +25,7 @@ const EFFECTS: Effect[] = ["fs", "io", "net", "rand", "time"];
 
 export const USAGE = `canon ${VERSION}: a programming language for AI agents
 
-usage:
+usage (in a project with canon.toml, check, test and manifest need no FILE):
   canon check FILE... [--fix [--write]]
                                  check files; print diagnostics (with patches)
   canon fmt FILE... [--write]    print the canonical form, or rewrite files in place
@@ -33,6 +33,8 @@ usage:
                                  check, then run fn main()
   canon test FILE...             run the test blocks (deterministic time and rand),
                                  then fuzz every pure function that has a contract
+  canon manifest [FILE]          list every endpoint (api fn) with its route, effects
+                                 and validation rules
   canon build FILE [-o OUT] [--module] [--deny EFFECTS] [--no-contracts]
                                  check, then write a standalone JavaScript file that
                                  runs with plain node (default OUT: FILE.js; with
@@ -62,7 +64,7 @@ exit codes: 0 success, 1 diagnostics / failed tests / traps, 2 usage error
 class UsageError extends Error {}
 
 /** Commands that take no file inside a project (v0.5). */
-const PROJECT_CMDS = new Set(["check", "test"]);
+const PROJECT_CMDS = new Set(["check", "test", "manifest"]);
 
 interface Args {
   cmd: string;
@@ -90,6 +92,7 @@ const ALLOWED: Record<string, string[]> = {
   run: ["--json", "--deny", "--no-contracts", "--no-capability-guard", "--watch", ...LANG_FLAGS],
   test: ["--json", "--no-capability-guard", "--no-contract-fuzz", "--watch", ...LANG_FLAGS],
   build: ["--json", "--deny", "--no-contracts", "--no-capability-guard", "--module", "-o", "--watch", ...LANG_FLAGS],
+  manifest: ["--json", ...LANG_FLAGS],
 };
 
 function parseArgs(argv: string[]): Args {
@@ -340,6 +343,34 @@ function compileProject(a: Args, scope: Scope, io: CliIO): string | null {
   const c = compileJs(text, scope.project.config.project.name, opts(a));
   if (!c.js) throw new Error(`internal error: the linked project does not compile: ${JSON.stringify(c.check.diagnostics.slice(0, 3))}`);
   return c.js;
+}
+
+/** v0.5: `canon manifest`, the endpoints of a project or file. */
+function cmdManifest(a: Args, io: CliIO): Outcome {
+  const scope = projectScope(a);
+  let mods: { module: string | null; prog: Program }[];
+  if (scope) {
+    const r = checkScope(scope, a);
+    if (!r.ok) {
+      compileProject(a, scope, io); // reports the diagnostics
+      return { code: 1, summary: "does not check" };
+    }
+    mods = r.modules.map((m) => ({ module: m.name, prog: m.analysis.prog! }));
+  } else {
+    if (a.files.length !== 1) throw new UsageError("canon manifest takes one file, or none in a project");
+    const path = a.files[0];
+    const an = analyze(readFile(path), path, opts(a));
+    if (!an.result.ok || !an.prog) {
+      if (a.json) io.stdout(JSON.stringify({ ok: false, diagnostics: an.result.diagnostics }, null, 2) + "\n");
+      else report(path, an.result, io, "stderr");
+      return { code: 1, summary: "does not check" };
+    }
+    mods = [{ module: null, prog: an.prog }];
+  }
+  const m = manifest(mods);
+  if (a.json) io.stdout(JSON.stringify({ ok: true, ...m }, null, 2) + "\n");
+  else io.stdout(manifestText(m));
+  return { code: 0, summary: `${m.endpoints.length} endpoints` };
 }
 
 function cmdFmt(a: Args, io: CliIO): number {
@@ -626,6 +657,8 @@ export async function main(argv: string[], io: CliIO): Promise<number> {
           return cmdRun(a, io);
         case "build":
           return cmdBuild(a, io);
+        case "manifest":
+          return cmdManifest(a, io);
         default:
           return cmdTest(a, io);
       }

@@ -16,6 +16,9 @@ export { generate, compileJs, asModule, typeToTD, type CompileResult } from "./c
 export { applyPatch } from "./patch.js";
 export * from "./project.js";
 export * from "./config.js";
+export * from "./api.js";
+export * from "./manifest.js";
+export { STORE_BUILTINS } from "./prelude.js";
 export { isExtern } from "./ast.js";
 export * from "./fuzz.js";
 export { pyParse, isPySource } from "./pyparser.js";

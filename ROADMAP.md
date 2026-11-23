@@ -107,11 +107,11 @@ Copied from the Milestones section of docs/v0.5-fullstack.md. M3 and M4 may run 
 
 ## v0.5 M2: API functions, tables and effects with arguments
 
-- [ ] api fn with route: parses in both surfaces and type-checks; A001 to A003 each have at least three failing-program tests.
-- [ ] Tables and the std.store built-ins work in the JavaScript runtime, in memory; R007 has a test.
-- [ ] store(table) and net(host) effects follow the exact-effects rules; E104 and W010 have tests; the capability guard traps a computed URL to an undeclared host with R006.
-- [ ] canon manifest prints the worked example's manifest exactly, in text and JSON.
-- [ ] canon test can call api fns directly, with tables empty for each test.
+- [x] api fn with route: parses in both surfaces and type-checks; A001 to A003 each have at least three failing-program tests.
+- [x] Tables and the std.store built-ins work in the JavaScript runtime, in memory; R007 has a test.
+- [x] store(table) and net(host) effects follow the exact-effects rules; E104 and W010 have tests; the capability guard traps a computed URL to an undeclared host with R006.
+- [x] canon manifest prints the worked example's manifest exactly, in text and JSON.
+- [x] canon test can call api fns directly, with tables empty for each test.
 
 ## v0.5 M3: Python backend
 

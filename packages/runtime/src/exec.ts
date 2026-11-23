@@ -3,6 +3,7 @@
  * contracts, the Canon-level call stack, and the effect host.
  */
 import { type Effect, type Host } from "./host.js";
+import { EMAIL_RE, hashPassword, uuid4, verifyPassword } from "./crypto.js";
 import { Early, type Frame, Trap, type TrapJson } from "./trap.js";
 import {
   cmpKey, cmpStr, eq, err, errorRecord, NONE, ok, setPyStyle, show, some, type Tagged, type TD, type TypeTable,
@@ -29,9 +30,49 @@ export class Runtime {
   readonly Early = Early;
   readonly eq = eq;
 
-  /** Effects the entry point may perform (null: no guard). */
-  allowed: Set<Effect> | null = null;
+  /**
+   * Effects the entry point may perform (null: no guard). v0.5: also store(<table>) and
+   * net(<host>); plain net allows every host, and store(*) every table (tests).
+   */
+  allowed: Set<string> | null = null;
   allowedBy = "";
+
+  /** v0.5: the key field of each table, from the compiled module. */
+  tableKeys: Record<string, string> = {};
+  /** v0.5: rows of each table, by key, in insertion order (in memory under canon run and test). */
+  readonly tables = new Map<string, Map<unknown, Tagged>>();
+  /** v0.5: empty every table (before each test). */
+  resetTables() {
+    this.tables.clear();
+  }
+  private rows(t: string): Map<unknown, Tagged> {
+    let m = this.tables.get(t);
+    if (!m) this.tables.set(t, (m = new Map()));
+    return m;
+  }
+  private allows(e: string): boolean {
+    const a = this.allowed;
+    if (a === null || a.has(e)) return true;
+    if (e.startsWith("net(") && a.has("net")) return true;
+    return e.startsWith("store(") && a.has("store(*)");
+  }
+  private store(t: string, fn: string, line: number, col: number): Map<unknown, Tagged> {
+    const e = `store(${t})`;
+    if (!this.allows(e)) this.trap("R006", `effect ${e} denied (${fn}): ${this.allowedBy} does not declare it`, line, col);
+    return this.rows(t);
+  }
+  /** v0.5: net(<host>) for a URL; `hosts` are the calling function's declared hosts (absent: any). */
+  private net(url: string, hosts: string[] | undefined, fn: string, line: number, col: number) {
+    const m = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\/([^/:?#]+)/.exec(url);
+    const host = m ? m[1].toLowerCase() : null;
+    if (hosts && (host === null || !hosts.includes(host))) {
+      this.trap("R006", `effect net(${host ?? url}) denied (${fn}): the calling function declares only ${hosts.map((h) => `net(${h})`).join(", ")}`, line, col);
+    }
+    if (host !== null && !this.allows(`net(${host})`)) {
+      this.trap("R006", `effect net(${host}) denied (${fn}): ${this.allowedBy} does not declare it`, line, col);
+    }
+    this.effect("net", fn, line, col);
+  }
 
   constructor(readonly host: Host, opts: RunOptions = {}) {
     this.contracts = opts.contracts !== false;
@@ -91,7 +132,8 @@ export class Runtime {
   }
 
   private effect(e: Effect, fn: string, line: number, col: number) {
-    if (this.allowed !== null && !this.allowed.has(e)) {
+    const declaredHost = e === "net" && this.allowed !== null && [...this.allowed].some((x) => x.startsWith("net("));
+    if (this.allowed !== null && !this.allowed.has(e) && !declaredHost) {
       this.trap("R006", `effect ${e} denied (${fn}): ${this.allowedBy} does not declare it`, line, col);
     }
     if (this.host.denied.has(e)) {
@@ -226,14 +268,49 @@ export class Runtime {
       this.effect("fs", "write_file", l, c);
       return this.result(this.host.writeFile(path, text), () => undefined);
     },
-    http_get: (l: number, c: number, url: string) => {
-      this.effect("net", "http_get", l, c);
+    http_get: (l: number, c: number, url: string, hosts?: string[]) => {
+      this.net(url, hosts, "http_get", l, c);
       return this.result(this.host.httpGet(url), (v) => v);
     },
-    http_post: (l: number, c: number, url: string, body: string) => {
-      this.effect("net", "http_post", l, c);
+    http_post: (l: number, c: number, url: string, body: string, hosts?: string[]) => {
+      this.net(url, hosts, "http_post", l, c);
       return this.result(this.host.httpPost(url, body), (v) => v);
     },
+    // v0.5
+    is_some: (_l: number, _c: number, o: Tagged) => o.$t === "Some",
+    is_email: (_l: number, _c: number, s: string) => EMAIL_RE.test(s),
+    verify_password: (_l: number, _c: number, p: string, hash: string) => verifyPassword(p, hash),
+    uuid: (l: number, c: number) => {
+      this.effect("rand", "uuid", l, c);
+      return uuid4(() => this.host.random());
+    },
+    hash_password: (l: number, c: number, p: string) => {
+      this.effect("rand", "hash_password", l, c);
+      return hashPassword(p, () => this.host.random());
+    },
+    // v0.5: std.store; a table value is its name
+    get: (l: number, c: number, t: string, key: unknown) => {
+      const rows = this.store(t, "get", l, c);
+      return rows.has(key) ? some(rows.get(key)) : NONE;
+    },
+    scan: (l: number, c: number, t: string) => [...this.store(t, "scan", l, c).values()],
+    insert: (l: number, c: number, t: string, row: Tagged) => {
+      const rows = this.store(t, "insert", l, c);
+      const key = row[this.tableKeys[t]];
+      if (rows.has(key)) this.trap("R007", `duplicate key ${typeof key === "string" ? JSON.stringify(key) : String(key)} in table ${t}`, l, c);
+      rows.set(key, row);
+    },
+    save: (l: number, c: number, t: string, row: Tagged) => {
+      this.store(t, "save", l, c).set(row[this.tableKeys[t]], row);
+      return row;
+    },
+    delete: (l: number, c: number, t: string, key: unknown) => this.store(t, "delete", l, c).delete(key),
+    next_id: (l: number, c: number, t: string) => {
+      let max = 0;
+      for (const k of this.store(t, "next_id", l, c).keys()) if ((k as number) > max) max = k as number;
+      return this.ck(max + 1, l, c);
+    },
+    count: (l: number, c: number, t: string) => this.store(t, "count", l, c).size,
     now: (l: number, c: number) => {
       this.effect("time", "now", l, c);
       return Math.floor(this.host.now());
@@ -271,6 +348,8 @@ export interface CanonModule {
   fuzz?: { name: string; params: [string, TD][]; skip?: string }[];
   /** v0.4: compiled from Canon-Py, so values print in Python spelling. */
   py?: boolean;
+  /** v0.5: each table's key field. */
+  tables?: Record<string, string>;
   /** Descriptor of main's return type, used to print an Err. */
   mainRet?: TD;
 }
@@ -279,6 +358,7 @@ export interface CanonModule {
 export function load(js: string, rt: Runtime): CanonModule {
   const mod = new Function("$rt", js)(rt) as CanonModule;
   rt.types = mod.types;
+  rt.tableKeys = mod.tables ?? {};
   setPyStyle(mod.py === true);
   return mod;
 }
@@ -303,7 +383,7 @@ export function runMain(js: string, host: Host, opts: RunOptions = {}): MainResu
   const rt = new Runtime(host, opts);
   const mod = load(js, rt);
   if (opts.capabilityGuard !== false && mod.mainEffects) {
-    rt.allowed = new Set(mod.mainEffects as Effect[]);
+    rt.allowed = new Set(mod.mainEffects);
     rt.allowedBy = "fn main";
   }
   if (!mod.main) {
@@ -334,9 +414,10 @@ export function runTests(js: string, host: Host, opts: RunOptions = {}): TestOut
   const mod = load(js, rt);
   for (const [name, fn, effects] of mod.tests) {
     if (opts.capabilityGuard !== false && effects) {
-      rt.allowed = new Set<Effect>(["io", "rand", "time", ...(effects as Effect[])]);
+      rt.allowed = new Set(["io", "rand", "time", "store(*)", ...effects]);
       rt.allowedBy = `test ${JSON.stringify(name)}`;
     }
+    rt.resetTables(); // v0.5: every test starts with empty tables
     try {
       fn();
       out.push({ name, passed: true });
