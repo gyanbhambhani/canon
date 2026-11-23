@@ -1,0 +1,6 @@
+{
+  "id": "cancel-order",
+  "kind": "feature",
+  "title": "Order cancellation",
+  "features": [{ "module": "frontend/src/features/cancelOrder.ts", "signature": "cancelOrder(baseUrl: string, orderId: number): Promise<Outcome<Order>>" }]
+}

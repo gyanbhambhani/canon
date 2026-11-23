@@ -1,0 +1,46 @@
+table todos: Todo key id
+
+type Todo {
+  id: Int,
+  title: String,
+  done: Bool,
+}
+
+type NewTodo {
+  title: String,
+}
+
+type TodoError =
+  | NotFound(id: Int)
+
+api fn create_todo(input: NewTodo) -> Todo
+  route: POST "/todos"
+  effects: store(todos)
+  requires: str_len(trim(input.title)) > 0
+{
+  let todo = Todo { id: next_id(todos), title: trim(input.title), done: false }
+  insert(todos, todo)
+  return todo
+}
+
+api fn complete_todo(id: Int) -> Result[Todo, TodoError]
+  route: POST "/todos/{id}/complete"
+  effects: store(todos)
+{
+  return match get(todos, id) {
+    Some(t) => Ok(save(todos, Todo { id: t.id, title: t.title, done: true })),
+    None => Err(NotFound(id)),
+  }
+}
+
+api fn list_todos(page: Int, per_page: Int) -> List[Todo]
+  route: GET "/todos"
+  effects: store(todos)
+  requires: page >= 1 && per_page >= 1 && per_page <= 100
+{
+  return todos
+    |> scan()
+    |> sort_by(|t| t.id)
+    |> drop((page - 1) * per_page)
+    |> take(per_page)
+}

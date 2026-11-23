@@ -129,21 +129,21 @@ Copied from the Milestones section of docs/v0.5-fullstack.md. M3 and M4 may run 
 
 ## v0.5 M5: Parity, drift and build
 
-- [ ] The semantic parity suite (2,000 random portable expressions, three evaluators) passes in CI.
-- [ ] Hand-editing a generated file makes canon check report G001 and makes canon build refuse without `--force`.
-- [ ] canon build and canon dev work from canon.toml; main.py is created once and never overwritten.
+- [x] The semantic parity suite (2,000 random portable expressions, three evaluators) passes in CI.
+- [x] Hand-editing a generated file makes canon check report G001 and makes canon build refuse without `--force`.
+- [x] canon build and canon dev work from canon.toml; main.py is created once and never overwritten.
 
 ## v0.5 M6: Example apps
 
-- [ ] examples/todos/: the worked example, with a small React UI that uses the generated client.
-- [ ] examples/shop/: users, products and orders across three modules, with signup, pagination and an outbound call to one declared host (mocked in tests).
-- [ ] Playwright tests drive both UIs end to end.
+- [x] examples/todos/: the worked example, with a small React UI that uses the generated client.
+- [x] examples/shop/: users, products and orders across three modules, with signup, pagination and an outbound call to one declared host (mocked in tests).
+- [x] Playwright tests drive both UIs end to end.
 
 ## v0.5 M7: Agent reference and docs
 
-- [ ] A full-stack addendum to the agent reference, at most 1,500 tokens, served at /llms-fullstack.txt. The core reference stays under 4,000 tokens.
-- [ ] Docs pages: Full-stack quickstart, API functions, Tables, Generated code, canon.toml and the new commands. Every Canon code block passes canon check.
-- [ ] The landing page's claims stay limited to what the tests show; nothing about agent results until FS-1 reports.
+- [x] A full-stack addendum to the agent reference, at most 1,500 tokens, served at /llms-fullstack.txt. The core reference stays under 4,000 tokens.
+- [x] Docs pages: Full-stack quickstart, API functions, Tables, Generated code, canon.toml and the new commands. Every Canon code block passes canon check.
+- [x] The landing page's claims stay limited to what the tests show; nothing about agent results until FS-1 reports.
 
 ## v0.5 M8: Experiment FS-1, ready to run
 

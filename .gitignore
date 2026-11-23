@@ -23,3 +23,5 @@ research/**/.venv/
 research/**/__pycache__/
 .claude/worktrees/
 .venv/
+*.db
+examples/*/frontend/dist/

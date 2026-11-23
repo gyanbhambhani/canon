@@ -232,6 +232,21 @@ export class Printer {
     return changed ? headS + "\n" + inner + parts.join("\n" + inner) : null;
   }
 
+  /**
+   * v0.5: a contract clause. When it is longer than MAX_LINE and is an && or || chain, it breaks
+   * one operand per line, each continuation starting with the operator.
+   */
+  private clause(kw: string, e: A.Expr): string {
+    const flat = `${INDENT}${kw}: ${this.ex(e, 1)}`;
+    if (this.noise !== null || !features().wrap || pyLen(flat) <= MAX_LINE) return flat;
+    if (e.k !== "Binary" || (e.op !== "and" && e.op !== "or")) return flat;
+    const operands = chainOperands(e, e.op);
+    const p = PREC[e.op];
+    const cont = INDENT + INDENT;
+    const parts = operands.map((x, i) => this.ex(x, i === 0 ? p : p + 1, cont));
+    return [`${INDENT}${kw}: ${parts[0]}`, ...parts.slice(1).map((x) => `${cont}${opText(e.op)} ${x}`)].join("\n");
+  }
+
   private wrapped(e: A.Expr, indent: string, prefix = ""): string | null {
     const inner = indent + INDENT;
     const lines = (xs: string[]) => xs.map((x) => `${inner}${x},`).join("\n");
@@ -323,8 +338,8 @@ export class Printer {
         const clauses: string[] = [];
         if (it.route) clauses.push(`${INDENT}route: ${it.route.method} "${it.route.path}"`);
         if (it.effects.length) clauses.push(`${INDENT}effects: ${it.effects.join(", ")}`);
-        if (it.requires !== null) clauses.push(`${INDENT}requires: ${this.ex(it.requires, 1)}`);
-        if (it.ensures !== null) clauses.push(`${INDENT}ensures: ${this.ex(it.ensures, 1)}`);
+        if (it.requires !== null) clauses.push(this.clause("requires", it.requires));
+        if (it.ensures !== null) clauses.push(this.clause("ensures", it.ensures));
         const body = this.block(it.body, "");
         if (clauses.length) return [head, ...clauses, body].join("\n");
         return `${head} ${body}`;
@@ -350,4 +365,9 @@ export class Printer {
     }
     return out.length ? out.join("") + "\n" : "";
   }
+}
+
+/** The operands of a left-nested chain of one operator: ((a && b) && c) gives a, b, c. */
+export function chainOperands(e: A.Expr, op: string): A.Expr[] {
+  return e.k === "Binary" && e.op === op ? [...chainOperands(e.left, op), e.right] : [e];
 }

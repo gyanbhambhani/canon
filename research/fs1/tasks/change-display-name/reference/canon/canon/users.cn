@@ -1,0 +1,80 @@
+table users: User key email
+
+type User {
+  email: String,
+  name: String,
+  password_hash: String,
+  id: String,
+}
+
+type Signup {
+  email: String,
+  name: String,
+  password: String,
+}
+
+type Profile {
+  email: String,
+  name: String,
+}
+
+type UserError =
+  | Taken(email: String)
+  | BadLogin
+  | NoSuchUser(email: String)
+
+type NewName {
+  name: String,
+}
+
+api fn signup(input: Signup) -> Result[Profile, UserError]
+  route: POST "/users"
+  effects: rand, store(users)
+  requires: is_email(input.email) && str_len(trim(input.name)) > 0 && str_len(input.password) >= 8
+{
+  if is_some(get(users, input.email)) {
+    return Err(Taken(input.email))
+  }
+  let user = User {
+    email: input.email,
+    name: trim(input.name),
+    password_hash: hash_password(input.password),
+    id: uuid(),
+  }
+  insert(users, user)
+  return Ok(profile(user))
+}
+
+fn profile(u: User) -> Profile {
+  return Profile { email: u.email, name: u.name }
+}
+
+api fn login(input: Signup) -> Result[Profile, UserError]
+  route: POST "/login"
+  effects: store(users)
+{
+  return match get(users, input.email) {
+    Some(u) => match verify_password(input.password, u.password_hash) {
+      true => Ok(profile(u)),
+      false => Err(BadLogin),
+    },
+    None => Err(BadLogin),
+  }
+}
+
+api fn change_name(email: String, input: NewName) -> Result[Profile, UserError]
+  route: PATCH "/users/{email}"
+  effects: store(users)
+  requires: str_len(trim(input.name)) > 0 && str_len(trim(input.name)) <= 40
+{
+  return match get(users, email) {
+    Some(u) => Ok(profile(save(users, renamed(u, trim(input.name))))),
+    None => Err(NoSuchUser(email)),
+  }
+}
+
+fn renamed(u: User, name: String) -> User {
+  var out = u
+  out.name = name
+  return out
+}

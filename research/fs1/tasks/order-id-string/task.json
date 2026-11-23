@@ -1,0 +1,10 @@
+{
+  "id": "order-id-string",
+  "kind": "change",
+  "title": "Change an order's id from a number to a string",
+  "features": [
+    { "module": "frontend/src/features/payOrder.ts", "signature": "payOrder(baseUrl: string, orderId: string): Promise<Outcome<Order>>" },
+    { "module": "frontend/src/features/placeOrder.ts", "signature": "placeOrder(baseUrl: string, email: string, lines: Line[]): Promise<Outcome<Order>> (its order id is now a string)" }
+  ],
+  "supersedes": ["test_orders", "order-and-pay-probe"]
+}

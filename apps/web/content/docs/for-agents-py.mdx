@@ -101,7 +101,7 @@ def cheapest(items: list[Item]) -> list[str]:
 
 ## Canonical form and the fix loop
 
-`check` rejects any file `fmt` would change (C001, with the patch). fmt fixes spacing, indentation, blank lines, parentheses, commas, quotes, `else: if` to `elif`, `x = x + e` to `x += e`, `"a" + to_string(n)` to an f-string, `contains(xs, x)` to `x in xs`, `== None` to `is None`, `== True`, and effect and decorator order; it breaks a statement over 100 characters at its brackets, one item per line with trailing commas.
+`check` rejects any file `fmt` would change (C001, with the patch). fmt fixes spacing, indentation, blank lines, parentheses, commas, quotes, `else: if` to `elif`, `x = x + e` to `x += e`, `"a" + to_string(n)` to an f-string, `contains(xs, x)` to `x in xs`, `== None` to `is None`, `== True`, and effect and decorator order; it breaks a statement over 100 characters at its brackets, one item per line with trailing commas, and a long `@requires`/`@ensures` before each `and` or `or`.
 
 Run `canon check --syntax py --fix --write --json FILE`. It applies every C001, E101, E102 and T009 patch until none is left and returns only what needs you. T001 may list candidate patches in `data.suggestions` (`to_string(e)`, `unwrap_or(e, ...)`, `Some(e)`, ...): apply the one you mean. T004's patch adds missing cases as holes; apply it, then fill them. Repeat until `"ok": true`.
 

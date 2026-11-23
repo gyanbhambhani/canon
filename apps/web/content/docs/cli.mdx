@@ -280,6 +280,20 @@ GET  /todos                 list_todos      store(todos)   checks: page >= 1 && 
 
 An endpoint that declares plain `net` may call any host; the manifest flags it with warning W010.
 
+## canon build in a project
+
+In a folder with canon.toml, `canon build` (no file) checks the whole project and generates the FastAPI backend into `[backend] out` and the TypeScript client into `[frontend] out`. `--target fastapi` or `--target ts-client` builds one side, and `--json` reports what was written, left unchanged and removed. A build is all or nothing: if any file can't be written, none are.
+
+- Every generated file starts with a header naming its Canon source, plus a hash of its contents. `canon check` reports a hand-edited generated file as G001, naming the Canon source to change instead. `canon build` refuses to overwrite it (or any file in an output folder that Canon did not write) unless you pass `--force`.
+- `backend/main.py`, which creates the FastAPI app, is written once if missing and never overwritten.
+- A generated file that no module produces any more is removed.
+- Constructs the Python target cannot express yet are G002, naming the function.
+- `--watch` rebuilds on every save of a .cn file.
+
+## canon dev
+
+`canon dev [--port 8000]` builds, rebuilds on every save, and serves the backend with `uvicorn --reload` from the backend folder. It runs uvicorn with `$CANON_PYTHON` (default `python3`), which needs FastAPI and uvicorn installed.
+
 ## Projects
 
 A folder with canon.toml is a project. In it, `canon check`, `canon test` and `canon manifest` need no file: they work on every module under the source folder (`src`, default `canon/`), and `check --fix --write` applies patches in every module. A file inside the source folder is checked with its imports.

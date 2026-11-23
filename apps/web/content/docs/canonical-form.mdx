@@ -55,7 +55,7 @@ The parser is loose, so every layout of a program parses to the same tree. The f
 
 ## Long statements
 
-A line is at most 100 characters. When a statement is longer, the formatter breaks its outermost bracket (a list, a tuple of two or more items, a record literal or a call's arguments) one item per line, each item ending with a comma. This is the form models already write by hand, and it makes a long line a mechanical fix rather than a rewrite:
+A line is at most 100 characters. When a statement is longer, the formatter breaks its outermost bracket (a list, a tuple of two or more items, a record literal or a call's arguments) one item per line, each item ending with a comma. This is the form models already write by hand, and it makes a long line a mechanical fix rather than a rewrite: A contract clause (`requires:`, `ensures:`) that is too long and is a chain of `&&` or `||` breaks before each operator instead, one operand per line (in Canon-Py, inside the decorator's parentheses).
 
 ```canon
 # expect: C001

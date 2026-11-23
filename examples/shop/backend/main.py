@@ -1,0 +1,25 @@
+"""The FastAPI app. canon build writes this file once and never changes it again: it is yours."""
+
+import os
+
+from fastapi import FastAPI
+
+from canon_generated.api import router
+from canon_generated.net import Http, http
+from canon_generated.runtime import Error, Ok, Result, install
+
+app = FastAPI()
+install(app)
+app.include_router(router)
+
+
+class FakePayments(Http):
+    """Approves every charge without calling the payment provider (tests and demos)."""
+
+    def post(self, url: str, body: str) -> Result[str, Error]:
+        return Ok(f"test-receipt-{body}")
+
+
+if os.environ.get("CANON_FAKE_PAYMENTS") == "1":
+    payments = "payments.example.com"
+    app.dependency_overrides[http(payments)] = lambda: FakePayments(payments)

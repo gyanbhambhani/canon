@@ -2,6 +2,39 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-23 — v0.5 M8 (from FS-1): long contracts, and ruff width
+Decision: canonical form breaks a contract clause longer than 100 characters that is an && or || chain before each operator, one operand per line (Canon-Py: inside the decorator's parentheses, before each `and`/`or`). Only with the v0.3+ `wrap` switch, so the oracle's v0.2 mode is unchanged.
+Reason: FS-1's harness found that a long validation rule was L001 with no patch, so an agent's only way out was to shorten its names. Validation rules are long by nature.
+
+Decision: the Python formatter measures display width as ruff does (wide characters 2, zero-width and control characters 0); invisible characters in string literals are escaped (\u200b, \ufeff, NEL, line separators); `not (a == b)` is generated as `a != b` and `not contains(xs, x)` as `x not in xs`; `-(-x)` is generated as `x`. A delimiter split never recurses on a line with nothing to split, and an operator that starts a line is not a delimiter.
+Reason: the parity suite now also runs ruff on its 2,000-route backend, and these were the differences. The recursion was a real crash, reached once long contracts produced long `require(...)` lines. The suite ignores only SIM222, SIM223 and PLR0133, which flag constant conditions that random rules contain and nobody writes.
+
+## 2026-11-22 — v0.5 M6 and M7: example apps and docs
+Decision: the full-stack addendum is its own page (for-agents-fullstack.mdx), served raw at /llms-fullstack.txt (1,265 tokens; the core reference is unchanged at 2,528). Agents read the core reference plus the addendum.
+Reason: the spec keeps the core reference under 4,000 tokens and the addendum under 1,500. A separate page keeps both budgets independent.
+
+Decision: in the docs, a multi-module example is a set of code blocks marked `project=P module=M`, checked together with checkProject. The docs say "a parity suite of random rules" without the count.
+Reason: every Canon block in the docs must check, and modules only check as a project. The site's numbers test allows figures only from scripts/stats.ts.
+
+Decision: the example apps (examples/todos, examples/shop) commit their generated code; a test rebuilds each in a temporary folder and diffs. The React frontends use Vite 7 with @vitejs/plugin-react 5 (6 needs Vite 8) and call the generated client through Vite's /api proxy. examples/shop's user-owned main.py replaces the payment host with a fake when CANON_FAKE_PAYMENTS=1, which the end-to-end test sets.
+Reason: the spec's golden-files rule covers every program in examples/. Mocking at the dependency the generated code already uses keeps the outbound call's code path real.
+
+Decision: runtime.table(name, model) and net.http(host) return the same dependency object for the same arguments, so `app.dependency_overrides[http("payments.example.com")]` replaces a host (or a table) in tests.
+Reason: otherwise overriding meant digging the callable out of the Annotated alias's metadata, which mypy rejects and nobody would write by hand.
+
+Decision: the end-to-end UI tests use their own Playwright config (pnpm e2e:examples; CI runs it after the smoke test), with a fresh SQLite database per run.
+Reason: they need the Python backends and the Vite dev servers, which the static-site smoke test does not.
+
+## 2026-11-22 — v0.5 M5: parity, drift and build
+Decision: the parity suite evaluates each of 2,000 random portable expressions as an api fn's requires, on 3 random inputs, in the three places validation actually runs: the Canon JavaScript runtime (R001 means false), the generated Python route's require, and the generated TypeScript validator. Division and remainder use non-zero literal divisors, and Ints stay small.
+Reason: that is the agreement the spec cares about, the server and the client deciding the same thing. Division by zero and overflow are traps on the server, and the client cannot trap. The suite found a real bug on its first run: Float `%` in a rule used math.fmod in api.py without importing math.
+
+Decision: G001 covers every file with a Canon header in the output folders. canon build is all or nothing: an edited generated file, or a file Canon did not write at a path it would write, stops the whole build unless --force is given. A generated file that no module produces any more (a deleted module, or net.py once nothing declares a host) is removed. main.py is never touched once it exists.
+Reason: partial builds would leave the frontend and backend out of step, which is the bug class v0.5 exists to remove.
+
+Decision: canon dev runs uvicorn with $CANON_PYTHON (default python3) from the backend folder, rebuilds on every save of a .cn file under the source folder, and starts the server after the first successful build.
+Reason: the CLI cannot know which Python has FastAPI installed. uvicorn's own --reload picks up the regenerated files.
+
 ## 2026-11-22 — v0.5 M3: the FastAPI backend
 Decision: a one-module project generates logic.py (as in the spec's golden files); a project of several modules generates one Python module per Canon module (canon/billing/money.cn becomes canon_generated/billing/money.py) and no logic.py. models.py, api.py, store.py and runtime.py are shared. api.py imports a logic module under an alias (`users as users_logic`) only when a route parameter of the same name would hide it.
 Reason: the spec says "plus one module per Canon module where a project has several", and keeping the Canon module structure keeps the one-to-one mapping readable.

@@ -1,0 +1,896 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "shop",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/products": {
+      "post": {
+        "summary": "Add Product",
+        "operationId": "add_product_products_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Product"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List Products",
+        "operationId": "list_products_products_get",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Page"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Per Page"
+            }
+          },
+          {
+            "name": "tag",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tag"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  },
+                  "title": "Response List Products Products Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{sku}": {
+      "get": {
+        "summary": "Get Product",
+        "operationId": "get_product_products__sku__get",
+        "parameters": [
+          {
+            "name": "sku",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Sku"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Product",
+        "operationId": "delete_product_products__sku__delete",
+        "parameters": [
+          {
+            "name": "sku",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Sku"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean",
+                  "title": "Response Delete Product Products  Sku  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{sku}/stock": {
+      "patch": {
+        "summary": "Restock",
+        "operationId": "restock_products__sku__stock_patch",
+        "parameters": [
+          {
+            "name": "sku",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Sku"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Restock"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prices": {
+      "get": {
+        "summary": "Price Table",
+        "operationId": "price_table_prices_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Price Table Prices Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/average": {
+      "get": {
+        "summary": "Average Cents",
+        "operationId": "average_cents_average_get",
+        "parameters": [
+          {
+            "name": "skus",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Skus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "title": "Response Average Cents Average Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "summary": "Signup",
+        "operationId": "signup_users_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Signup"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "Login",
+        "operationId": "login_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Signup"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders": {
+      "post": {
+        "summary": "Place Order",
+        "operationId": "place_order_orders_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewOrder"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/{id}/pay": {
+      "post": {
+        "summary": "Pay",
+        "operationId": "pay_orders__id__pay_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/summaries": {
+      "get": {
+        "summary": "Summaries",
+        "operationId": "summaries_summaries_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Summary"
+                  },
+                  "type": "array",
+                  "title": "Response Summaries Summaries Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/open": {
+      "get": {
+        "summary": "Open Count",
+        "operationId": "open_count_orders_open_get",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "title": "Response Open Count Orders Open Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/customers": {
+      "get": {
+        "summary": "Customers",
+        "operationId": "customers_customers_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "prefixItems": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "integer"
+                      }
+                    ],
+                    "type": "array",
+                    "maxItems": 2,
+                    "minItems": 2
+                  },
+                  "type": "array",
+                  "title": "Response Customers Customers Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/first": {
+      "get": {
+        "summary": "First Email",
+        "operationId": "first_email_orders_first_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response First Email Orders First Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Cancelled": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "Cancelled",
+            "title": "Kind",
+            "default": "Cancelled"
+          }
+        },
+        "type": "object",
+        "title": "Cancelled"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Line": {
+        "properties": {
+          "sku": {
+            "type": "string",
+            "title": "Sku"
+          },
+          "quantity": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": -9007199254740991.0,
+            "title": "Quantity"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sku",
+          "quantity"
+        ],
+        "title": "Line"
+      },
+      "NewOrder": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/Line"
+            },
+            "type": "array",
+            "title": "Lines"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "lines"
+        ],
+        "title": "NewOrder"
+      },
+      "Open": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "Open",
+            "title": "Kind",
+            "default": "Open"
+          }
+        },
+        "type": "object",
+        "title": "Open"
+      },
+      "Order": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": -9007199254740991.0,
+            "title": "Id"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/Line"
+            },
+            "type": "array",
+            "title": "Lines"
+          },
+          "total": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": -9007199254740991.0,
+            "title": "Total"
+          },
+          "status": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Open"
+              },
+              {
+                "$ref": "#/components/schemas/Paid"
+              },
+              {
+                "$ref": "#/components/schemas/Cancelled"
+              }
+            ],
+            "title": "Status",
+            "discriminator": {
+              "propertyName": "kind",
+              "mapping": {
+                "Cancelled": "#/components/schemas/Cancelled",
+                "Open": "#/components/schemas/Open",
+                "Paid": "#/components/schemas/Paid"
+              }
+            }
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "lines",
+          "total",
+          "status"
+        ],
+        "title": "Order"
+      },
+      "Paid": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "Paid",
+            "title": "Kind",
+            "default": "Paid"
+          },
+          "receipt": {
+            "type": "string",
+            "title": "Receipt"
+          }
+        },
+        "type": "object",
+        "required": [
+          "receipt"
+        ],
+        "title": "Paid"
+      },
+      "Product": {
+        "properties": {
+          "sku": {
+            "type": "string",
+            "title": "Sku"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "cents": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": -9007199254740991.0,
+            "title": "Cents"
+          },
+          "stock": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": -9007199254740991.0,
+            "title": "Stock"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sku",
+          "name",
+          "cents",
+          "stock",
+          "tags"
+        ],
+        "title": "Product"
+      },
+      "Profile": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "name"
+        ],
+        "title": "Profile"
+      },
+      "Restock": {
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": -9007199254740991.0,
+            "title": "Amount"
+          }
+        },
+        "type": "object",
+        "required": [
+          "amount"
+        ],
+        "title": "Restock"
+      },
+      "Signup": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "name",
+          "password"
+        ],
+        "title": "Signup"
+      },
+      "Summary": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "orders": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": -9007199254740991.0,
+            "title": "Orders"
+          },
+          "spent": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": -9007199254740991.0,
+            "title": "Spent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "orders",
+          "spent"
+        ],
+        "title": "Summary"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

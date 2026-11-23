@@ -17,7 +17,8 @@
     "stats": "tsx --conditions=source scripts/stats.ts",
     "e2e": "playwright test",
     "pyenv": "node scripts/pyenv.mjs",
-    "embed-py": "node scripts/embed-py.mjs"
+    "embed-py": "node scripts/embed-py.mjs",
+    "e2e:examples": "playwright test -c playwright.examples.config.ts"
   },
   "devDependencies": {
     "@canon/compiler": "workspace:*",

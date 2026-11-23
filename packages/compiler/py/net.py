@@ -34,6 +34,12 @@ class Http:
             return Err(Error(message=str(e)))
 
 
+_clients: dict[str | None, Callable[[], Http]] = {}
+
+
 def http(host: str | None) -> Callable[[], Http]:
-    """A FastAPI dependency that hands a route a client for one host."""
-    return lambda: Http(host)
+    """A FastAPI dependency that hands a route a client for one host. The same host gives the
+    same dependency, so app.dependency_overrides[http(host)] replaces it (in tests, say)."""
+    if host not in _clients:
+        _clients[host] = lambda: Http(host)
+    return _clients[host]

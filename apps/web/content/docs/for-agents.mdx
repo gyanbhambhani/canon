@@ -101,7 +101,7 @@ fn cheapest(items: List[Item]) -> List[String] {
 
 ## Canonical form and the fix loop
 
-`check` rejects any file `fmt` would change (C001, with the patch). fmt fixes spacing, parentheses, commas, `else { if }`, `== true`/`== false`, `!!`, numbers, `use`, effect and clause order, pipeline versus nesting, and old spellings (`and`/`or`/`not`, `set`); it breaks a statement over 100 characters at its outermost list, tuple, record or call brackets, one item per line with trailing commas.
+`check` rejects any file `fmt` would change (C001, with the patch). fmt fixes spacing, parentheses, commas, `else { if }`, `== true`/`== false`, `!!`, numbers, `use`, effect and clause order, pipeline versus nesting, and old spellings (`and`/`or`/`not`, `set`); it breaks a statement over 100 characters at its outermost list, tuple, record or call brackets, one item per line with trailing commas, and a long `requires`/`ensures` before each `&&` or `||`.
 
 Run `canon check --fix --write --json FILE`. It applies every C001, E101, E102 and T009 patch until none is left and returns only what needs you. T001 may list candidate patches in `data.suggestions` (`to_string(e)`, `unwrap_or(e, ?)`, `Some(e)`, ...): apply the one you mean. T004's patch adds missing arms as holes; apply it, then fill them. Repeat until `"ok": true`.
 

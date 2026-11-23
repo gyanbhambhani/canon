@@ -230,12 +230,16 @@ class Table(Generic[M]):
         raise NotImplementedError
 
 
+_tables: dict[str, Any] = {}
+
+
 def table(name: str, model: type[M]) -> Callable[[], Iterator[Table[M]]]:
-    """A FastAPI dependency that hands a route one table."""
+    """A FastAPI dependency that hands a route one table (the same one for the same name)."""
 
     def dependency() -> Iterator[Table[M]]:
         from .store import open_table
 
         yield open_table(name, model)
 
-    return dependency
+    found: Callable[[], Iterator[Table[M]]] = _tables.setdefault(name, dependency)
+    return found

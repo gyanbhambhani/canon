@@ -1,0 +1,101 @@
+---
+title: Agent reference, full stack
+description: The Canon v0.5 full-stack addendum to the agent reference (projects, api fn, tables, effects with arguments, canon build). The same text is served raw at /llms-fullstack.txt.
+---
+
+# Canon full-stack addendum (v0.5)
+
+Read this together with the core reference (/llms.txt). Canon-Py spellings are given in brackets.
+
+## Projects
+
+A project is a folder with canon.toml: `[project] name = "todos"` (and `src`, default "canon"), `[backend] out = "backend/canon_generated"`, `[frontend] out = "frontend/src/canon"`. The file canon/billing/money.cn is the module `billing.money`. To import, name what you take: `use billing.money.{Money, add}` [`from billing.money import Money, add`]. There are no wildcards, no renames and no cycles. Importing a sum type brings its variants. Top-level names are unique across a project.
+
+## API functions
+
+```canon
+table todos: Todo key id
+
+type Todo {
+  id: Int,
+  title: String,
+  done: Bool,
+}
+
+type NewTodo {
+  title: String,
+}
+
+type TodoError =
+  | NotFound(id: Int)
+
+api fn create_todo(input: NewTodo) -> Todo
+  route: POST "/todos"
+  effects: store(todos)
+  requires: str_len(trim(input.title)) > 0
+{
+  let todo = Todo { id: next_id(todos), title: trim(input.title), done: false }
+  insert(todos, todo)
+  return todo
+}
+
+api fn complete_todo(id: Int) -> Result[Todo, TodoError]
+  route: POST "/todos/{id}/complete"
+  effects: store(todos)
+{
+  return match get(todos, id) {
+    Some(t) => Ok(save(todos, Todo { id: t.id, title: t.title, done: true })),
+    None => Err(NotFound(id)),
+  }
+}
+```
+
+`route:` is the first clause [`@api("POST", "/todos")`, above `@effects`].
+- **Path:** `{name}` binds an Int or String parameter.
+- **GET and DELETE:** every other parameter is a query parameter: Int, Float, Bool, String, or an Option of one.
+- **POST, PUT and PATCH:** at most one other parameter, a record, which is the JSON body.
+- **Return type:** a wire type, or `Result[T, E]` with E a sum type. A wire type is anything except a function, a table, `Option[Option[T]]`, or a Map with non-String keys.
+
+**HTTP:**
+- A value or `Ok(v)` is 200.
+- `Err(e)` is 400 with `{"error": e}`; `e.kind` names the variant.
+- A failed requires, or a malformed body, is 422 with `{"error": {"kind": "ValidationError", "rule": "<clause>"}}`.
+- A trap is 500.
+
+An api fn's `requires` is the request validation, run both by the server and by the generated client before it sends. It may use only comparisons, arithmetic, `&&`, `||`, `!`, fields, literals, `str_len`, `trim`, `contains`, `len`, `is_email` and `is_some`.
+
+## Tables
+
+`table todos: Todo key id` [`todos = table(Todo, key="id")`] holds records of one type, keyed by an Int or String field. The built-ins, which exist only in a program with a table:
+- `get(t, key) -> Option[T]`
+- `scan(t) -> List[T]`, in insertion order
+- `insert(t, row)`; a duplicate key traps with R007
+- `save(t, row) -> T`, which inserts or replaces
+- `delete(t, key) -> Bool`
+- `next_id(t) -> Int`
+- `count(t) -> Int`
+
+A table is only ever the first argument of these. Every test starts with empty tables.
+
+## Effects with arguments
+
+- `store(todos)` names each table a function touches.
+- `net(api.stripe.com)` names each host it may call. A literal URL must use a declared host (E104); a computed URL is checked at run time (R006).
+- Plain `net` allows any host (`canon manifest` warns, W010).
+- [`@effects("store(todos)", "net(api.stripe.com)")`]
+
+New built-ins: `is_email(s) -> Bool`, `is_some(o) -> Bool` and `verify_password(p, hash) -> Bool`; and, with the effect rand, `uuid() -> String` and `hash_password(p) -> String`.
+
+## The loop
+
+After every edit, run `canon check --json` (in a project, no file is needed). Apply every `fix.diff` and repeat until `"ok": true`, then run `canon build`. Never edit generated files; change the Canon source (G001). `canon manifest` lists every endpoint with its effects and rules.
+
+`canon build` writes:
+- `backend/canon_generated`: Pydantic models, plain logic functions that receive their tables and hosts as parameters, FastAPI routes, and SQLite storage.
+- `frontend/src/canon`: types, validators, and `createClient(baseUrl)`, whose camelCase methods return `Result` and never throw.
+
+Field names are identical in Canon, JSON, Python and TypeScript.
+
+## Codes
+
+A001 api fn shape · A002 route conflict · A003 non-portable requires · A004 table used as a value · M002 import cycle · M003 unknown or unimported name (the patch adds the import) · M004 name defined in two modules · E104 undeclared host · G001 generated file edited · G002 not expressible in Python yet · R007 duplicate key · W010 any-host network

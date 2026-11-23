@@ -1,0 +1,25 @@
+{
+  "id": "rename-product-cents",
+  "kind": "change",
+  "title": "Rename a product's cents field to price_cents",
+  "features": [
+    {
+      "module": "frontend/src/features/addProduct.ts",
+      "signature": "addProduct(baseUrl: string, product: Product): Promise<Outcome<Product>>, where Product now has price_cents"
+    }
+  ],
+  "supersedes": [
+    "test_add_and_get_product",
+    "test_duplicate_product_is_invalid",
+    "test_product_validation",
+    "test_list_products_pages_and_tags",
+    "test_restock",
+    "test_prices_average_and_delete",
+    "test_orders",
+    "test_reports",
+    "addProduct-probe",
+    "addProduct-errors",
+    "listProducts-probe",
+    "order-and-pay-probe"
+  ]
+}

@@ -1,0 +1,62 @@
+---
+title: canon.toml and commands
+description: The canon.toml file, module names, and the project commands check, test, manifest, build and dev.
+---
+
+# canon.toml and commands
+
+## canon.toml
+
+```toml
+[project]
+name = "shop"        # required
+src = "canon"        # the source folder (default canon)
+
+[backend]
+target = "fastapi"   # the only backend in v0.5 (default)
+out = "backend/canon_generated"
+
+[frontend]
+target = "ts-client" # the only frontend in v0.5 (default)
+out = "frontend/src/canon"
+```
+
+Only `[project]`, `[backend]` and `[frontend]` exist, and an unknown section or key is an error that names the line. Without `[backend]` or `[frontend]`, `canon build` skips that side.
+
+## Modules
+
+Every `.cn` file under the source folder is a module named by its path: `canon/billing/money.cn` is `billing.money`. A module takes items from another by name:
+
+```canon project=shop module=billing.money
+type Money {
+  cents: Int,
+}
+
+fn add(a: Money, b: Money) -> Money {
+  return Money { cents: a.cents + b.cents }
+}
+```
+
+```canon project=shop module=orders
+use billing.money.{Money, add}
+
+fn total(xs: List[Money]) -> Money {
+  return fold(xs, Money { cents: 0 }, add)
+}
+```
+
+In Canon-Py: `from billing.money import Money, add`. There are no wildcards, no renaming and no cycles (M002). An unknown or unimported name is M003, and the patch adds it to the import. Importing a sum type brings its variants. Top-level names are unique across a project (M004), because the generated TypeScript is one flat set of types and one client. A single file with no canon.toml is still a program, as before.
+
+## Commands
+
+In a folder with canon.toml (or below one), these need no file:
+
+| Command | What it does |
+| --- | --- |
+| `canon check [--fix [--write]] [--json]` | checks every module, imports, api fn shapes, effects, validation portability, and hand-edited generated files (G001) |
+| `canon test` | runs the test blocks of every module, with empty tables for each test |
+| `canon manifest [--json]` | lists every endpoint: method, path, function, effects (tables and hosts) and validation rules; W010 flags plain net |
+| `canon build [--target fastapi\|ts-client] [--force] [--watch] [--json]` | generates both sides; refuses to overwrite hand-edited generated files without `--force`; writes nothing unless it can write everything |
+| `canon dev [--port 8000]` | builds, rebuilds on every save, and serves the backend with `uvicorn --reload` using `$CANON_PYTHON` |
+
+The [CLI page](/docs/cli) covers every flag. The agent loop is one command after each edit: run `canon check --json`, apply every `fix.diff` until `"ok": true`, then run `canon build`.
