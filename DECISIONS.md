@@ -2,6 +2,23 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — v0.4: canon build, --watch and --syntax
+Decision: `canon build` writes a script that inlines the runtime. The CLI's build step bundles `packages/cli/src/standalone.ts` (runtime plus Node host) with esbuild into `dist/runtime-standalone.js`, an IIFE that defines `__canonRuntime`. The built file is that bundle, the compiled program as a string, and a call to `runMain` with the Node host. `--deny`, `--no-contracts` and `--no-capability-guard` are baked in only when given at build time. Trap and Err output is written exactly as `canon run` writes it.
+Reason: the brief asks for a file that runs with plain `node` and no installed dependencies. The bundle is read from the CLI's own dist directory at build time, so the CLI stays one package and the runtime is not duplicated in its source.
+
+Decision: the script form is CommonJS-compatible (an IIFE that uses `require` for Node built-ins). `--module` emits an ES module that defines `require` with `createRequire`, loads the program and exports `fns` (and `default`). Without `-o`, the default output is `FILE.js`, or `FILE.mjs` with `--module`.
+Reason: a `.js` file runs as CommonJS under plain `node` unless a `package.json` above it says `"type": "module"`. A module needs `.mjs` to import as ESM anywhere. In a `"type": "module"` package, name a built script `.cjs` with `-o`.
+
+Decision: `--watch` watches the file's directory and filters events by file name, then debounces by 100 ms and reruns only when the file's text changed since the last run. After each run it prints one status line, `[HH:MM:SS] CMD FILE: summary`, and it clears the screen first only when stdout is a terminal. check, test and build rerun in-process. run starts a child process (`canon run` with the same flags) and kills the previous child on each new save. SIGINT closes the watcher, kills any child, and exits with 130.
+Reason:
+- Editors often replace a file instead of writing it in place, and watching the directory survives that.
+- Comparing text both ignores duplicate events and makes `check --watch --fix --write` immune to its own writes: the watcher records the text it just wrote as already seen.
+- Status lines stay greppable when output is piped, which is how the tests read them.
+- 130 is the conventional exit status after Ctrl-C.
+
+Decision: `--syntax brace|py` picks the surface; `--v0.3` selects the v0.3 language (no effects on function types, brace printer); `--no-fn-effects` turns off v0.4's one language switch. A Canon-Py file checked without `--syntax py` gets C001 with a message saying to pass `--syntax py` or apply the patch to convert it.
+Reason: the owner's plan keeps brace syntax the default everywhere, including for files written in Canon-Py, so design law 1 is checked against the selected surface. The message turns a confusing C001 into one instruction.
+
 ## 2026-11-22 — v0.4: effects on function types (fnEffects)
 Decision: function types carry effects: `fn(String) -> Unit effects: io` in brace syntax and `Callable[[str], None, io]` in Canon-Py. Calling a function value performs its type's effects, so the caller's signature must declare them (E101, with the usual patch). An effectful function used where the expected function type does not allow its effects is a new error, T011. The change is behind the `fnEffects` switch (`--no-fn-effects`; off in `--v0.3` and `--v0.2`).
 Reason: the owner asked for the per-function guarantee. Before this, `fn apply(f: fn(String) -> Unit, s: String)` was pure in its signature yet performed io when given `print`, so the guarantee held only for the whole program. Effect types make every signature exact. We chose them over the interim rule (no effectful function values at all) because the type checker already infers function types, so the check is local: a function value's effects come from its declaration, a lambda's from the calls in its body, and a parameter's or field's from its annotation.

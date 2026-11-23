@@ -34,7 +34,7 @@
     ".": "./dist/index.js"
   },
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --target=node20 --conditions=source --outfile=dist/index.js --banner:js=\"#!/usr/bin/env node\"",
+    "build": "esbuild src/standalone.ts --bundle --platform=node --format=iife --global-name=__canonRuntime --target=node20 --conditions=source --outfile=dist/runtime-standalone.js && esbuild src/index.ts --bundle --platform=node --format=esm --target=node20 --conditions=source --outfile=dist/index.js --banner:js=\"#!/usr/bin/env node\"",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {

@@ -243,6 +243,25 @@ describe("v0.3 flags", () => {
     }
   });
 
+  it("v0.4: --syntax py prints Canon-Py, the default prints braces, and both read either surface", () => {
+    const py = canon(["fmt", "examples/hello.cn", "--syntax", "py"]);
+    expect(py).toEqual({ code: 0, out: '@effects(io)\ndef main() -> None:\n    print("hello, canon")\n', err: "" });
+    const f = tmp("hello_py.cn", py.out);
+    expect(canon(["fmt", f]).out).toBe(readFileSync(join(root, "examples", "hello.cn"), "utf8"));
+    expect(canon(["check", f, "--syntax=py"]).code).toBe(0);
+    expect(canon(["run", f, "--syntax", "py"])).toEqual({ code: 0, out: "hello, canon\n", err: "" });
+    // brace syntax is the default: a Canon-Py file is not canonical there, and C001 says what to do
+    const brace = canon(["check", f]);
+    expect(brace.code).toBe(1);
+    expect(brace.out).toContain("pass --syntax py");
+    expect(canon(["fmt", f, "--syntax", "braces"]).code).toBe(2);
+    expect(canon(["fmt", f, "--syntax", "brace"]).out).toContain("fn main() -> Unit");
+    for (const flag of ["--v0.3", "--no-fn-effects"]) expect(canon(["check", "examples/hello.cn", flag]).code, flag).toBe(0);
+    const ho = tmp("ho.cn", "fn apply(f: fn(String) -> Unit, s: String) -> Unit {\n  f(s)\n}\n\nfn main() -> Unit\n  effects: io\n{\n  apply(print, \"x\")\n}\n");
+    expect(canon(["check", ho]).out).toContain("T011");
+    expect(canon(["check", ho, "--v0.3"]).code).toBe(0);
+  });
+
   it("canon test fuzzes contracts, and --no-contract-fuzz turns it off", () => {
     const f = tmp("fz.cn", "fn abs_diff(a: Int, b: Int) -> Int\n  ensures: result >= 0\n{\n  return a - b\n}\n");
     const r = canon(["test", f]);

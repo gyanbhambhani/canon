@@ -8,6 +8,7 @@ import { cmpStr, normalize } from "./normalize.js";
 import { parse } from "./parser.js";
 import { applyPatch } from "./patch.js";
 import { MAX_LINE, Printer } from "./printer.js";
+import { isPySource } from "./pyparser.js";
 import { pyNormalize } from "./pynormalize.js";
 import { PyPrinter, testIdent } from "./pyprinter.js";
 import { pyLen, pySplitlines } from "./py.js";
@@ -291,8 +292,14 @@ export function formDiagnostics(src: string, canonical: string, path: string): D
         break;
       }
     }
+    const py = isPySource(src);
+    const note = py && !features().py
+      ? "; this file is Canon-Py: pass --syntax py to check it as Canon-Py, or apply the patch to convert it to brace syntax"
+      : !py && features().py && src.trim() !== ""
+        ? "; this file is in brace syntax: apply the patch to convert it to Canon-Py, or drop --syntax py"
+        : "";
     diags.push(diag("C001",
-      "source is not in canonical form; apply the patch (Canon accepts exactly one text per program)",
+      `source is not in canonical form; apply the patch (Canon accepts exactly one text per program)${note}`,
       line, 1, { fix: makePatch(src, canonical, path) }));
   }
   pySplitlines(canonical).forEach((l, i) => {

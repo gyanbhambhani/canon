@@ -1,10 +1,12 @@
 /**
- * The `canon` command: check, fmt, run, test. Exit codes: 0 success; 1 diagnostics, failed
+ * The `canon` command: check, fmt, run, test, build. Exit codes: 0 success; 1 diagnostics, failed
  * tests or traps; 2 usage errors (unknown command or flag, missing or unreadable file).
  */
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { spawn, type ChildProcess } from "node:child_process";
+import { chmodSync, existsSync, readFileSync, watch as fsWatch, writeFileSync, type FSWatcher } from "node:fs";
+import { basename, dirname, resolve } from "node:path";
 import {
-  CanonError, check, compileJs, fix, flagName, fmt, readSource, FEATURE_NAMES, V02, VERSION,
+  CanonError, check, compileJs, fix, flagName, fmt, readSource, FEATURE_NAMES, V02, V03, VERSION,
   type CheckResult, type CompileOptions, type Diagnostic, type FeatureName, type Features,
 } from "@canon/compiler";
 import { fuzzContracts, runMain, runTests, testHost, type Effect, type Host, type TrapJson } from "@canon/runtime";
@@ -27,18 +29,27 @@ usage:
                                  check, then run fn main()
   canon test FILE...             run the test blocks (deterministic time and rand),
                                  then fuzz every pure function that has a contract
+  canon build FILE [-o OUT] [--module] [--deny EFFECTS] [--no-contracts]
+                                 check, then write a standalone JavaScript file that
+                                 runs with plain node (default OUT: FILE.js; with
+                                 --module, an ES module exporting fns: FILE.mjs)
 
 options:
   --json                         machine-readable output (every command)
+  --watch                        rerun on every save of FILE until Ctrl-C (check, test, run, build)
   --fix                          apply every mechanical patch (C001, E101, E102, T009) until
                                  none is left; report only what needs judgment (check)
   --write                        with fmt or check --fix: rewrite the files
-  --deny fs,net                  make calls to those effects trap with R006 (run)
-  --no-contracts                 skip requires/ensures checks (run)
+  --deny fs,net                  make calls to those effects trap with R006 (run, build)
+  --no-contracts                 skip requires/ensures checks (run, build)
+  --syntax brace|py              the surface fmt prints and diagnostics use (default: brace);
+                                 both surfaces are always read, so fmt converts either way
   --help, --version
 
-v0.3 switches (each turns one v0.3 change off, for experiments; --v0.2 turns all off):
+language versions and switches (for experiments):
+  --v0.3, --v0.2                 the v0.3 or v0.2 language
   --no-wrap --no-break --no-destructure --no-symbols --no-sealed-effects --no-suggestions
+  --no-fn-effects                each turns one v0.3 or v0.4 change off
   --no-capability-guard (run, test)    --no-contract-fuzz (test)
 
 exit codes: 0 success, 1 diagnostics / failed tests / traps, 2 usage error
@@ -56,26 +67,43 @@ interface Args {
   fix: boolean;
   guard: boolean;
   fuzz: boolean;
+  watch: boolean;
+  module: boolean;
+  out: string | null;
   features: Partial<Features>;
+  /** argv without --watch (a watched run starts the CLI again with these). */
+  passthrough: string[];
 }
 
-const LANG_FLAGS = ["--v0.2", ...FEATURE_NAMES.map((f) => `--no-${flagName(f)}`)];
+const LANG_FLAGS = ["--v0.2", "--v0.3", "--syntax", ...FEATURE_NAMES.map((f) => `--no-${flagName(f)}`)];
 
 const ALLOWED: Record<string, string[]> = {
-  check: ["--json", "--fix", "--write", ...LANG_FLAGS],
+  check: ["--json", "--fix", "--write", "--watch", ...LANG_FLAGS],
   fmt: ["--json", "--write", ...LANG_FLAGS],
-  run: ["--json", "--deny", "--no-contracts", "--no-capability-guard", ...LANG_FLAGS],
-  test: ["--json", "--no-capability-guard", "--no-contract-fuzz", ...LANG_FLAGS],
+  run: ["--json", "--deny", "--no-contracts", "--no-capability-guard", "--watch", ...LANG_FLAGS],
+  test: ["--json", "--no-capability-guard", "--no-contract-fuzz", "--watch", ...LANG_FLAGS],
+  build: ["--json", "--deny", "--no-contracts", "--no-capability-guard", "--module", "-o", "--watch", ...LANG_FLAGS],
 };
 
 function parseArgs(argv: string[]): Args {
   const [cmd, ...rest] = argv;
   if (!cmd || !(cmd in ALLOWED)) throw new UsageError(cmd ? `unknown command '${cmd}'` : "missing command");
   const a: Args = {
-    cmd, files: [], json: false, write: false, deny: [], contracts: true, fix: false, guard: true, fuzz: true, features: {},
+    cmd, files: [], json: false, write: false, deny: [], contracts: true, fix: false, guard: true, fuzz: true,
+    watch: false, module: false, out: null, features: {}, passthrough: [],
   };
+  let syntax: boolean | null = null;
   for (let i = 0; i < rest.length; i++) {
     const x = rest[i];
+    if (x !== "--watch") a.passthrough.push(x);
+    if (x === "-o") {
+      if (!ALLOWED[cmd].includes("-o")) throw new UsageError(`unknown option '-o' for canon ${cmd}`);
+      const v = rest[++i];
+      if (!v) throw new UsageError("-o needs an output file");
+      a.passthrough.push(v);
+      a.out = v;
+      continue;
+    }
     if (!x.startsWith("--")) {
       a.files.push(x);
       continue;
@@ -86,15 +114,23 @@ function parseArgs(argv: string[]): Args {
     else if (flag === "--write") a.write = true;
     else if (flag === "--no-contracts") a.contracts = false;
     else if (flag === "--fix") a.fix = true;
+    else if (flag === "--watch") a.watch = true;
+    else if (flag === "--module") a.module = true;
     else if (flag === "--no-capability-guard") a.guard = false;
     else if (flag === "--no-contract-fuzz") a.fuzz = false;
     else if (flag === "--v0.2") a.features = { ...V02 };
-    else if (flag.startsWith("--no-")) {
+    else if (flag === "--v0.3") a.features = { ...V03 };
+    else if (flag === "--syntax") {
+      const v = inline ?? rest[++i];
+      if (inline === undefined && v !== undefined) a.passthrough.push(v);
+      if (v !== "py" && v !== "brace") throw new UsageError("--syntax takes brace or py");
+      syntax = v === "py";
+    } else if (flag.startsWith("--no-")) {
       const f = FEATURE_NAMES.find((n) => `--no-${flagName(n)}` === flag) as FeatureName;
       a.features[f] = false;
-    }
-    else if (flag === "--deny") {
+    } else if (flag === "--deny") {
       const v = inline ?? rest[++i];
+      if (inline === undefined && v !== undefined) a.passthrough.push(v);
       if (!v) throw new UsageError("--deny needs a list of effects, like --deny net,fs");
       for (const e of v.split(",").map((s) => s.trim()).filter(Boolean)) {
         if (!EFFECTS.includes(e as Effect)) throw new UsageError(`unknown effect '${e}'; the effects are ${EFFECTS.join(", ")}`);
@@ -102,8 +138,10 @@ function parseArgs(argv: string[]): Args {
       }
     }
   }
+  if (syntax !== null) a.features.py = syntax;
   if (a.files.length === 0) throw new UsageError(`canon ${cmd} needs a file`);
-  if (cmd === "run" && a.files.length > 1) throw new UsageError("canon run takes one file");
+  if ((cmd === "run" || cmd === "build") && a.files.length > 1) throw new UsageError(`canon ${cmd} takes one file`);
+  if (a.watch && a.files.length > 1) throw new UsageError("--watch takes one file");
   if (cmd === "check" && a.write && !a.fix) throw new UsageError("--write needs --fix (canon check --fix --write)");
   return a;
 }
@@ -127,10 +165,11 @@ export function formatDiagnostic(path: string, d: Diagnostic): string {
   return s;
 }
 
+const problems = (n: number) => (n ? `${n} problem${n === 1 ? "" : "s"}` : "ok");
+
 function report(path: string, r: CheckResult, io: CliIO, to: "stdout" | "stderr" = "stdout") {
   for (const d of r.diagnostics) io[to](formatDiagnostic(path, d));
-  const n = r.diagnostics.length;
-  io[to](n ? `${path}: ${n} problem${n === 1 ? "" : "s"}\n` : `${path}: ok\n`);
+  io[to](`${path}: ${problems(r.diagnostics.length)}\n`);
 }
 
 function trapText(t: TrapJson): string {
@@ -139,7 +178,21 @@ function trapText(t: TrapJson): string {
 
 const opts = (a: Args): CompileOptions => ({ features: a.features });
 
-function cmdCheck(a: Args, io: CliIO): number {
+/** What one run of a command did, for the watch-mode status line. */
+interface Outcome {
+  code: number;
+  summary: string;
+}
+
+/** Files this process wrote (check --fix --write), so a watcher can ignore its own saves. */
+const ownWrites = new Map<string, string>();
+
+function writeOwn(path: string, text: string) {
+  ownWrites.set(resolve(path), text);
+  writeFileSync(path, text);
+}
+
+function cmdCheck(a: Args, io: CliIO): Outcome {
   if (a.fix) return cmdFix(a, io);
   const results = a.files.map((f) => ({ path: f, result: check(readFile(f), f, opts(a)) }));
   if (a.json) {
@@ -148,15 +201,16 @@ function cmdCheck(a: Args, io: CliIO): number {
   } else {
     for (const r of results) report(r.path, r.result, io);
   }
-  return results.every((r) => r.result.ok) ? 0 : 1;
+  const n = results.reduce((s, r) => s + r.result.diagnostics.length, 0);
+  return { code: results.every((r) => r.result.ok) ? 0 : 1, summary: problems(n) };
 }
 
 /** `check --fix`: the self-healing loop. Only diagnostics that need judgment are reported. */
-function cmdFix(a: Args, io: CliIO): number {
+function cmdFix(a: Args, io: CliIO): Outcome {
   const results = a.files.map((f) => {
     const src = readFile(f);
     const r = fix(src, f, opts(a));
-    if (a.write && r.source !== src) writeFileSync(f, r.source);
+    if (a.write && r.source !== src) writeOwn(f, r.source);
     return { path: f, ...r };
   });
   if (a.json) {
@@ -169,7 +223,8 @@ function cmdFix(a: Args, io: CliIO): number {
       report(r.path, r.result, io);
     }
   }
-  return results.every((r) => r.result.ok) ? 0 : 1;
+  const n = results.reduce((s, r) => s + r.result.diagnostics.length, 0);
+  return { code: results.every((r) => r.result.ok) ? 0 : 1, summary: problems(n) };
 }
 
 function cmdFmt(a: Args, io: CliIO): number {
@@ -203,10 +258,10 @@ function compileFor(a: Args, path: string, io: CliIO): string | null {
   return null;
 }
 
-function cmdRun(a: Args, io: CliIO): number {
+function cmdRun(a: Args, io: CliIO): Outcome {
   const path = a.files[0];
   const js = compileFor(a, path, io);
-  if (js === null) return 1;
+  if (js === null) return { code: 1, summary: "does not check" };
   let captured = "";
   const host = nodeHost({ deny: a.deny, write: a.json ? (s) => (captured += s) : (s) => io.stdout(s) });
   const r = runMain(js, host, { contracts: a.contracts, capabilityGuard: a.guard });
@@ -215,14 +270,14 @@ function cmdRun(a: Args, io: CliIO): number {
     if (r.trap) out.trap = r.trap;
     if (r.error) out.error = r.error;
     io.stdout(JSON.stringify(out, null, 2) + "\n");
-    return r.status;
+  } else {
+    if (r.trap) io.stderr(trapText(r.trap));
+    if (r.error) io.stderr(`error: ${r.error}\n`);
   }
-  if (r.trap) io.stderr(trapText(r.trap));
-  if (r.error) io.stderr(`error: ${r.error}\n`);
-  return r.status;
+  return { code: r.status, summary: `exit ${r.status}` };
 }
 
-function cmdTest(a: Args, io: CliIO): number {
+function cmdTest(a: Args, io: CliIO): Outcome {
   let passed = 0;
   let failed = 0;
   let broken = 0;
@@ -262,12 +317,160 @@ function cmdTest(a: Args, io: CliIO): number {
     }
   }
   const ok = failed === 0 && broken === 0;
+  const summary = `${passed} passed, ${failed} failed${broken ? `, ${broken} file${broken === 1 ? "" : "s"} with errors` : ""}`;
   if (a.json) {
     io.stdout(JSON.stringify({ ok, passed, failed, files_with_errors: broken, tests, stdout }, null, 2) + "\n");
   } else {
-    io.stdout(`${passed} passed, ${failed} failed${broken ? `, ${broken} file${broken === 1 ? "" : "s"} with errors` : ""}\n`);
+    io.stdout(summary + "\n");
   }
-  return ok ? 0 : 1;
+  return { code: ok ? 0 : 1, summary };
+}
+
+// ---------------------------------------------------------------------------------- build
+
+/** The runtime bundle (dist/runtime-standalone.js), built next to the CLI by `pnpm build`. */
+function runtimeBundle(): string {
+  for (const rel of ["./runtime-standalone.js", "../dist/runtime-standalone.js"]) {
+    const url = new URL(rel, import.meta.url);
+    if (existsSync(url)) return readFileSync(url, "utf8");
+  }
+  throw new Error("canon build: the runtime bundle (dist/runtime-standalone.js) is missing; run pnpm build");
+}
+
+function standaloneScript(js: string, a: Args, from: string): string {
+  return [
+    "#!/usr/bin/env node",
+    `// Built by canon ${VERSION} from ${basename(from)}. Runs with plain node; needs no installed packages.`,
+    runtimeBundle().trimEnd(),
+    "(function () {",
+    "  const rt = __canonRuntime;",
+    `  const program = ${JSON.stringify(js)};`,
+    `  const host = rt.nodeHost({ deny: ${JSON.stringify(a.deny)} });`,
+    `  const r = rt.runMain(program, host, { contracts: ${a.contracts}, capabilityGuard: ${a.guard} });`,
+    '  if (r.trap) process.stderr.write(JSON.stringify(r.trap) + "\\n");',
+    '  if (r.error) process.stderr.write("error: " + r.error + "\\n");',
+    "  process.exitCode = r.status;",
+    "})();",
+    "",
+  ].join("\n");
+}
+
+function moduleText(js: string, a: Args, from: string): string {
+  return [
+    `// Built by canon ${VERSION} from ${basename(from)}: an ES module exporting the program's functions as fns.`,
+    'import { createRequire as __canonCreateRequire } from "node:module";',
+    "const require = __canonCreateRequire(import.meta.url);",
+    runtimeBundle().trimEnd(),
+    `const __canonRt = new __canonRuntime.Runtime(__canonRuntime.nodeHost({ deny: ${JSON.stringify(a.deny)} }), { contracts: ${a.contracts} });`,
+    `const __canonModule = __canonRuntime.load(${JSON.stringify(js)}, __canonRt);`,
+    "export const fns = __canonModule.fns;",
+    "export default fns;",
+    "",
+  ].join("\n");
+}
+
+function cmdBuild(a: Args, io: CliIO): Outcome {
+  const path = a.files[0];
+  const js = compileFor(a, path, io);
+  if (js === null) return { code: 1, summary: "does not check" };
+  const out = a.out ?? path.replace(/\.cn$/, "") + (a.module ? ".mjs" : ".js");
+  const text = a.module ? moduleText(js, a, path) : standaloneScript(js, a, path);
+  writeFileSync(out, text);
+  if (!a.module) chmodSync(out, 0o755);
+  if (a.json) io.stdout(JSON.stringify({ ok: true, out, module: a.module, bytes: Buffer.byteLength(text) }, null, 2) + "\n");
+  else io.stdout(`${path}: wrote ${out}\n`);
+  return { code: 0, summary: `wrote ${out}` };
+}
+
+// ---------------------------------------------------------------------------------- watch
+
+const clock = () => new Date().toTimeString().slice(0, 8);
+
+/**
+ * `--watch`: run once, then rerun on every save of the file (debounced by 100 ms) until SIGINT.
+ * check, test and build run in this process; run starts a child process per save, so a new save
+ * can stop a program that is still running (or looping forever). A save that leaves the file's
+ * text unchanged (including the file check --fix --write just wrote) is ignored.
+ */
+function watchFile(a: Args, io: CliIO, once: () => Outcome): Promise<number> {
+  const path = a.files[0];
+  readFile(path); // usage error now if missing
+  const full = resolve(path);
+  let last: string | null = null;
+  let child: ChildProcess | null = null;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+
+  const status = (s: string) => io.stdout(`[${clock()}] ${a.cmd} ${path}: ${s}\n`);
+  const clear = () => {
+    if (process.stdout.isTTY) io.stdout("\x1b[2J\x1b[H");
+  };
+
+  const rerun = () => {
+    let text: string;
+    try {
+      text = readFileSync(full, "utf8");
+    } catch {
+      status("file is missing; waiting for it");
+      return;
+    }
+    if (text === last) return;
+    last = text;
+    clear();
+    if (a.cmd === "run") {
+      if (child) {
+        child.removeAllListeners("exit");
+        child.kill("SIGKILL");
+      }
+      status("started");
+      const c = spawn(process.execPath, [process.argv[1], a.cmd, ...a.passthrough], { stdio: ["ignore", "pipe", "pipe"] });
+      child = c;
+      c.stdout!.on("data", (b: Buffer) => io.stdout(b.toString("utf8")));
+      c.stderr!.on("data", (b: Buffer) => io.stderr(b.toString("utf8")));
+      c.on("exit", (code) => {
+        if (child === c) {
+          child = null;
+          status(`exit ${code ?? "killed"}`);
+        }
+      });
+      return;
+    }
+    try {
+      const summary = once().summary;
+      // the command may have written the file (check --fix --write): that text is already handled
+      const own = ownWrites.get(full);
+      if (own !== undefined) {
+        ownWrites.delete(full);
+        last = own;
+      }
+      status(summary);
+    } catch (e) {
+      if (e instanceof UsageError) status(e.message);
+      else throw e;
+    }
+  };
+
+  return new Promise((done) => {
+
+    const schedule = (_ev?: string, name?: string | Buffer | null) => {
+      if (name && name.toString() !== basename(full)) return;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        timer = null;
+        rerun();
+      }, 100);
+    };
+    rerun();
+    const watcher: FSWatcher = fsWatch(dirname(full), schedule);
+    process.once("SIGINT", () => {
+      watcher.close();
+      if (timer) clearTimeout(timer);
+      if (child) {
+        child.removeAllListeners("exit");
+        child.kill("SIGKILL");
+      }
+      done(130);
+    });
+  });
 }
 
 export async function main(argv: string[], io: CliIO): Promise<number> {
@@ -281,16 +484,21 @@ export async function main(argv: string[], io: CliIO): Promise<number> {
   }
   try {
     const a = parseArgs(argv);
-    switch (a.cmd) {
-      case "check":
-        return cmdCheck(a, io);
-      case "fmt":
-        return cmdFmt(a, io);
-      case "run":
-        return cmdRun(a, io);
-      default:
-        return cmdTest(a, io);
-    }
+    const once = (): Outcome => {
+      switch (a.cmd) {
+        case "check":
+          return cmdCheck(a, io);
+        case "run":
+          return cmdRun(a, io);
+        case "build":
+          return cmdBuild(a, io);
+        default:
+          return cmdTest(a, io);
+      }
+    };
+    if (a.cmd === "fmt") return cmdFmt(a, io);
+    if (a.watch) return await watchFile(a, io, once);
+    return once().code;
   } catch (e) {
     if (e instanceof UsageError) {
       io.stderr(`canon: ${e.message}\n\n${USAGE}`);
