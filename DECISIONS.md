@@ -2,6 +2,25 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — Language v0.3: what the evidence decided
+Decision: the v0.3 objective is total surprisal of a correct program under local Qwen2.5-Coder 1.5B and 7B (research/v0.3/surprisal), with tokens per program and nats per token reported beside it. It is used as a proxy for "the language an agent has to think least about", not as a measure of agent accuracy.
+Reason: the owner's brief; and in the v0.2 benchmark about 80% of Claude's Canon output was reasoning, not code (research/v0.3/tokens), so length alone cannot be the objective.
+
+Decision: Canon-Py (Canon's rules in a strict subset of typed Python syntax) is recommended as the v0.4 direction, staged behind Experiment D of research/v0.3/PREREGISTRATION-draft.md, and not built in v0.3.
+Reason: it is the largest measured effect (14 to 17 nats per program lower than Canon even with each language's documentation, within 2 nats of typed Python), but the measurement is a base-model proxy on hand-written programs, and building it means a new front end, semantic choices (unbounded int, `/`) and a migration. The brief allows staging when a full redesign cannot be made solid.
+
+Decision: rejected `fn f() -> T = e`, implicit final return, dropping `let`, indentation in Canon's syntax, `continue`, and a `find` library function.
+Reason: each terse edit raises surprisal (bare: +0.7 to +5 nats per program; all together +5 to +9) and the v0.3 likelihood study prefers the v0.2 form; `continue` loses to the guard form in every context; `find` would be a second way to do what `return` from a loop does.
+
+Decision: adopted `&&`/`||`/`!` although its surprisal gain is small (about -0.2 nats per program on average, -1.4 to -2 per program it touches, Claude's programs only).
+Reason: two likelihood studies prefer symbols (v0: 0.39x and 0.83x for words, 3/3 contexts; v0.3: 0.15x and 0.41x), it is token-neutral (research/v0.3/tokens/V03_DELTA.md), fmt migrates it, and it is the spelling of every language the models know. Against the model's preference: none.
+
+Decision: kept the effects clause on its own line, against a weak model preference for inline placement (0.2 to 1.7 nats) and a strong one for a short `with io` suffix.
+Reason: the `with` margin is mostly length, the inline margin is within noise on 7B, and moving the clause would rewrite every effectful function in every corpus for little gain; Canon-Py's decorator is the place to revisit it.
+
+Decision: kept braces, `fn`, `let` and explicit `return`.
+Reason: the v0.3 likelihood study prefers each within Canon's syntax (braces 9.3x and 1.2x, `fn` 3.7x and 36x, `let` 90x and 2x, block-with-return over `= e` 2.7x and 15x), and the surprisal study finds each alternative raises surprisal.
+
 ## 2026-11-22 — Language v0.3: implementation
 Decision: v0.3 ships eight changes, each behind a switch in `packages/compiler/src/features.ts` (language: `wrap`, `break`, `destructure`, `symbols`, `sealedEffects`, `suggestions`) or in the CLI/runtime (`--fix`, `--no-capability-guard`, `--no-contract-fuzz`). With every switch off (`--v0.2`, or `features: V02`) the compiler is v0.2 byte for byte on the conformance corpus.
 Reason: the owner's brief requires each v0.3 feature to be ablatable, so a future experiment can attribute any effect to one change. docs/v0.3-proposal.md has the evidence and ranking for each change.
