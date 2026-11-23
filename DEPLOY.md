@@ -138,3 +138,47 @@ cd packages/cli
 pnpm pack --pack-destination /tmp      # writes /tmp/canon-lang-0.4.1.tgz with workspace:* rewritten
 npm publish /tmp/canon-lang-0.4.1.tgz --access public --auth-type=web
 ```
+
+## 11. Publish canon-lang 0.5.0 (v0.5, full-stack)
+
+0.5.0 adds project modules, `api fn`, tables, `store(...)` and `net(...)` effects, the FastAPI and
+TypeScript-client generators, `canon build` from canon.toml, `canon dev`, `canon manifest` and drift
+protection (G001). It also fixes the problems the benchmarks found in the Python target (CB-1, CB-2,
+forward-referenced model fields, a function named like its module). The language and the checks for
+single files are unchanged; see the changelog page for what to watch when upgrading (the `get`,
+`save`, `count`, `insert`, `delete`, `scan` and `next_id` built-ins exist only in programs with a
+table; `use` takes names; canonical form now breaks long contracts, so `canon fmt --write` may change
+a file that has a contract over 100 characters).
+
+Before publishing, from a clean checkout of main, in order:
+
+```bash
+cd ~/Desktop/canon
+pnpm install --frozen-lockfile
+pnpm pyenv                            # the pinned Python tools the generated-code tests use
+pnpm test && pnpm lint && pnpm typecheck
+pnpm --filter web build && pnpm e2e && pnpm e2e:examples
+```
+
+Then, in this order (the site and the package should go out together, since the docs now describe 0.5):
+
+1. Push main: `git push origin main`, and tag it: `git tag v0.5.0 && git push origin v0.5.0`.
+2. Publish the package (the packed tarball was already installed in an empty folder and run:
+   `canon --version`, `check`, `build` into 11 files, `manifest`):
+
+   ```bash
+   cd ~/Desktop/canon
+   pnpm build
+   cd packages/cli
+   pnpm pack --pack-destination /tmp      # writes /tmp/canon-lang-0.5.0.tgz with workspace:* rewritten
+   npm publish /tmp/canon-lang-0.5.0.tgz --access public --auth-type=web
+   ```
+
+3. Let Vercel redeploy `apps/web` from the pushed main (it also serves `/changelog`,
+   `/llms-fullstack.txt` and the new docs pages).
+4. In the changelog page's source, flip the version label from "0.5.0, unreleased" to "0.5.0".
+5. Check: `npx canon-lang@0.5.0 --version` prints `canon 0.5.0`.
+
+What is not part of the release: the frontier-model reruns for CanonBench, Experiment FS-1 and
+Experiment VA-1 (the API accounts ran out of credit). Their reports say what is missing; the
+changelog says so too.

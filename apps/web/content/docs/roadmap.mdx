@@ -1,9 +1,9 @@
 ---
 title: Roadmap
-description: What Canon v0.4 ships, what comes next (the benchmark that decides the default syntax, a fuller standard library, a strict grammar), and the questions still open.
+description: What Canon v0.5 ships, what the experiments found, what comes next (the frontier reruns, the Unicode follow-up, the benchmark that decides the default syntax), and the questions still open.
 ---
 
-This page lists what Canon does today and what comes next. The current language is v0.4, which reads like this (in its default brace syntax):
+This page lists what Canon does today and what comes next. The current language is v0.5, which reads like this (in its default brace syntax):
 
 ```canon
 fn halvings(n: Int) -> Int {
@@ -31,12 +31,16 @@ The full checklist, with every milestone and its tests, is [ROADMAP.md on GitHub
 
 - **Language v0.4.** Effects on function types (`fn(String) -> Unit effects: io`, T011), so every function's own signature bounds what it can do. [Canon-Py](/docs/guide/canon-py), an opt-in Python-shaped syntax for the same language, with its own [agent reference](/docs/for-agents-py). `canon build` (a standalone JavaScript file, or an ES module) and `--watch`. [Design notes](/docs/design-notes#v04-what-building-canon-py-showed) say what the measurements showed.
 
+- **Language v0.5, full-stack.** Project modules with named imports; `api fn` endpoints with routes, typed inputs and outputs and typed errors; validation written once as `requires`, enforced on the server and checked in the client; tables with `store(table)` effects and `net(host)` effects. `canon build` generates a FastAPI backend and a dependency-free TypeScript client that read as hand-written, `canon manifest` lists every endpoint with its effects, and generated files are read-only (G001). See the [full-stack quickstart](/docs/fullstack/quickstart) and the [changelog](/changelog). The experiments on it are in [Research](/research): most results are at the ceiling for frontier models, and the small local model loses at writing Canon.
+
 ## Next
 
-1. **Experiment 1.** Agents with and without Canon's compiler loop on the hard tasks, against Python and TypeScript, and Canon in both syntaxes, each with its own reference. It also measures v0.3's changes, which have not been benchmarked. Canon-Py becomes the default only if it is at least as correct as brace syntax at lower cost.
-2. **Effect polymorphism.** Higher-order standard library functions (`map`, `filter`, ...) take only pure functions today, so an effect per item needs a `for` loop. Letting them pass a function's effects through would need effect variables in the checker.
-3. **A fuller standard library.** Most of the length gap between Canon and Python programs is missing capability, not syntax: indexing, character tests, string repetition, counting. Each addition costs reference space and needs its own evidence.
-4. **A strict grammar.** The formatter's one layout, written in a form that constrained-decoding engines accept, so a model cannot emit a file the formatter would change.
+1. **The frontier reruns.** CanonBench, Experiment FS-1 and Experiment VA-1 ran out of API credit for Claude Opus 5.5 and GPT-6.2 Sol before finishing. Their reports say exactly which cells are missing and how to resume.
+2. **Validation under Unicode and independent authors.** VA-1 found that careful hand-written clients agree with their servers on ASCII-edge inputs; JavaScript and Python are known to differ on characters such as NEL and U+001C, and the references were written from one template. Both are untested.
+3. **Experiment 1.** Agents with and without Canon's compiler loop on the hard tasks, against Python and TypeScript, and Canon in both syntaxes, each with its own reference. It also measures v0.3's changes, which have not been benchmarked. Canon-Py becomes the default only if it is at least as correct as brace syntax at lower cost.
+4. **Effect polymorphism.** Higher-order standard library functions (`map`, `filter`, ...) take only pure functions today, so an effect per item needs a `for` loop. Letting them pass a function's effects through would need effect variables in the checker.
+5. **A fuller standard library.** Most of the length gap between Canon and Python programs is missing capability, not syntax: indexing, character tests, string repetition, counting. Each addition costs reference space and needs its own evidence.
+6. **A strict grammar.** The formatter's one layout, written in a form that constrained-decoding engines accept, so a model cannot emit a file the formatter would change.
 
 ## Later
 

@@ -8,7 +8,7 @@ This page lists every `canon` command, flag and exit code, with output produced 
 ```text
 canon 0.5.0: a programming language for AI agents
 
-usage:
+usage (in a project with canon.toml, check, test and manifest need no FILE):
   canon check FILE... [--fix [--write]]
                                  check files; print diagnostics (with patches)
   canon fmt FILE... [--write]    print the canonical form, or rewrite files in place
@@ -16,6 +16,14 @@ usage:
                                  check, then run fn main()
   canon test FILE...             run the test blocks (deterministic time and rand),
                                  then fuzz every pure function that has a contract
+  canon manifest [FILE]          list every endpoint (api fn) with its route, effects
+                                 and validation rules
+  canon build [--target fastapi|ts-client] [--force] [--watch]
+                                 in a project: generate the FastAPI backend and the
+                                 TypeScript client into the folders canon.toml names;
+                                 refuses to overwrite hand-edited files without --force
+  canon dev [--port 8000]        in a project: build on every save, and serve the
+                                 backend with uvicorn --reload ($CANON_PYTHON)
   canon build FILE [-o OUT] [--module] [--deny EFFECTS] [--no-contracts]
                                  check, then write a standalone JavaScript file that
                                  runs with plain node (default OUT: FILE.js; with

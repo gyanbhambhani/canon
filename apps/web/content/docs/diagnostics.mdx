@@ -476,7 +476,7 @@ They are choices, not fixes: each changes what the program means, so `--fix` nev
 
 ### T002
 
-Unknown name: a variable, function, type or variant that does not exist. A call through a module path (`json.stringify(s)`, or a method-style `xs.len()`) is also T002, because module functions arrive in v1.
+Unknown name: a variable, function, type or variant that does not exist. A call through a module path (`json.stringify(s)`, or a method-style `xs.len()`) is also T002, because functions are called by their plain name: in a project, import one with `use module.{name}` (see M003).
 
 ```canon
 # expect: T002
