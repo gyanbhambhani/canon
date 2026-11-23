@@ -27,6 +27,7 @@ const COLUMNS: { title: string; links: (L | null)[] }[] = [
       githubUrl ? { label: "GitHub", href: githubUrl } : null,
       { label: "npm", href: npmUrl },
       { label: "Benchmark", href: "/research" },
+      { label: "Changelog", href: "/changelog" },
       { label: "Roadmap", href: "/docs/roadmap" },
     ],
   },
