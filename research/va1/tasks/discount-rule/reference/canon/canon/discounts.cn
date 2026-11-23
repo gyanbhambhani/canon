@@ -1,0 +1,18 @@
+type DiscountRule {
+  percent: Int,
+  fixed_cents: Int,
+  name: String,
+}
+
+api fn create_discount(r: DiscountRule) -> DiscountRule
+  route: POST "/discounts"
+  requires: r.percent >= 0
+    && r.percent <= 100
+    && r.fixed_cents >= 0
+    && r.fixed_cents <= 100000
+    && str_len(r.name) >= 1
+    && str_len(r.name) <= 30
+    && (r.percent > 0) != (r.fixed_cents > 0)
+{
+  return r
+}

@@ -1,0 +1,20 @@
+type Invoice {
+  number: String,
+  subtotal: Int,
+  tax: Int,
+  shipping: Int,
+  total: Int,
+}
+
+api fn submit_invoice(invoice: Invoice) -> Invoice
+  route: POST "/invoices"
+  requires: str_len(invoice.number) >= 1
+    && str_len(invoice.number) <= 20
+    && invoice.subtotal >= 0
+    && invoice.tax >= 0
+    && invoice.shipping >= 0
+    && invoice.total >= 0
+    && invoice.subtotal + invoice.tax + invoice.shipping == invoice.total
+{
+  return invoice
+}

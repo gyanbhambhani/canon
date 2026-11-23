@@ -1,0 +1,16 @@
+{
+  "id": "rectangle",
+  "set": 2,
+  "title": "Create a rectangle",
+  "adapted": null,
+  "route": {"method": "POST", "path": "/rectangles"},
+  "feature": {"module": "createRectangle", "fn": "createRectangle"},
+  "base": {"width": "=int(1, 100)", "height": "=int(1, 100)", "label": "=alnum(int(0, 20))"},
+  "random": {"width": "=int(-5, 400)", "height": "=int(-5, 400)", "label": "=pick(['', 'box', rep('l', int(15, 25))])"},
+  "rules": [
+    {"id": "width_min", "kind": "single", "desc": "width is at least 1", "inside": [{"set": {"width": 1}}], "outside": [{"set": {"width": 0}}, {"set": {"width": -1}}, {"set": {"width": -100}}]},
+    {"id": "height_min", "kind": "single", "desc": "height is at least 1", "inside": [{"set": {"height": 1}}], "outside": [{"set": {"height": 0}}, {"set": {"height": -1}}, {"set": {"height": -100}}]},
+    {"id": "area_max", "kind": "cross", "desc": "width * height is at most 10000", "inside": [{"set": {"width": 100, "height": 100}}, {"set": {"width": 1, "height": 10000}}, {"set": {"width": 10000, "height": 1}}], "outside": [{"set": {"width": 100, "height": 101}}, {"set": {"width": 101, "height": 100}}, {"set": {"width": 1, "height": 10001}}, {"set": {"width": 2, "height": 5001}}]},
+    {"id": "label_length", "kind": "single", "desc": "label has at most 20 characters (may be empty)", "inside": [{"set": {"label": ""}}, {"set": {"label": "=rep('a', 20)"}}, {"set": {"label": "=emoji(20)"}}], "outside": [{"set": {"label": "=rep('a', 21)"}}, {"set": {"label": "=emoji(21)"}}, {"set": {"label": "=rep('a', 40)"}}]}
+  ]
+}

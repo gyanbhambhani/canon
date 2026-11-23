@@ -1,0 +1,28 @@
+type CouponRequest {
+  code: String,
+  subtotal: Int,
+  discount: Int,
+}
+
+type Coupon {
+  code: String,
+  subtotal: Int,
+  discount: Int,
+  payable: Int,
+}
+
+api fn apply_coupon(r: CouponRequest) -> Coupon
+  route: POST "/coupons/apply"
+  requires: str_len(r.code) >= 3
+    && str_len(r.code) <= 20
+    && r.subtotal >= 1
+    && r.discount >= 0
+    && r.discount <= r.subtotal
+{
+  return Coupon {
+    code: r.code,
+    subtotal: r.subtotal,
+    discount: r.discount,
+    payable: r.subtotal - r.discount,
+  }
+}

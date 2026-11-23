@@ -1,0 +1,18 @@
+{
+  "id": "donate",
+  "set": 1,
+  "title": "Make a donation",
+  "adapted": null,
+  "route": { "method": "POST", "path": "/donations" },
+  "feature": { "module": "donate", "fn": "donate" },
+  "base": { "amount": "=float(1, 5000)", "currency": "=pick(['USD', 'EUR'])", "anonymous": "=chance(0.5)" },
+  "random": { "amount": "=float(-50, 6000)", "currency": "=pick(['USD', 'EUR', 'GBP', 'usd', ''])", "anonymous": "=chance(0.5)" },
+  "rules": [
+    { "id": "amount_range", "kind": "single", "desc": "amount is 1.00 to 5000.00",
+      "inside": [{ "set": { "amount": 1 } }, { "set": { "amount": 5000 } }, { "set": { "amount": 1.01 } }, { "set": { "amount": 4999.99 } }],
+      "outside": [{ "set": { "amount": 0.99 } }, { "set": { "amount": 5000.01 } }, { "set": { "amount": 0 } }, { "set": { "amount": -1 } }] },
+    { "id": "currency_enum", "kind": "single", "desc": "currency is USD or EUR",
+      "inside": [{ "set": { "currency": "USD" } }, { "set": { "currency": "EUR" } }],
+      "outside": [{ "set": { "currency": "usd" } }, { "set": { "currency": "GBP" } }, { "set": { "currency": "EUR " } }, { "set": { "currency": "" } }] }
+  ]
+}

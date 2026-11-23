@@ -1,0 +1,21 @@
+{
+  "id": "report-bug",
+  "set": 1,
+  "title": "Report a bug",
+  "adapted": null,
+  "route": { "method": "POST", "path": "/bugs" },
+  "feature": { "module": "reportBug", "fn": "reportBug" },
+  "base": { "title": "=alnum(int(5, 100))", "severity": "=int(1, 4)", "steps": "=Array.from({ length: int(0, 10) }, () => alnum(int(1, 12)))" },
+  "random": { "title": "=alnum(int(0, 120))", "severity": "=int(-1, 6)", "steps": "=Array.from({ length: int(0, 14) }, () => alnum(int(0, 6)))" },
+  "rules": [
+    { "id": "title_length", "kind": "single", "desc": "title has 5 to 100 characters",
+      "inside": [{ "set": { "title": "=rep('a', 5)" } }, { "set": { "title": "=rep('a', 100)" } }, { "set": { "title": "=emoji(5)" } }, { "set": { "title": "=emoji(100)" } }],
+      "outside": [{ "set": { "title": "=rep('a', 4)" } }, { "set": { "title": "=rep('a', 101)" } }, { "set": { "title": "" } }, { "set": { "title": "=emoji(4)" } }] },
+    { "id": "severity_range", "kind": "single", "desc": "severity is 1 to 4",
+      "inside": [{ "set": { "severity": 1 } }, { "set": { "severity": 4 } }],
+      "outside": [{ "set": { "severity": 0 } }, { "set": { "severity": 5 } }, { "set": { "severity": -1 } }, { "set": { "severity": 100 } }] },
+    { "id": "steps_count", "kind": "single", "desc": "steps has at most 10 entries",
+      "inside": [{ "set": { "steps": [] } }, { "set": { "steps": "=Array.from({ length: 10 }, () => 'x')" } }],
+      "outside": [{ "set": { "steps": "=Array.from({ length: 11 }, () => 'x')" } }, { "set": { "steps": "=Array.from({ length: 12 }, () => 'x')" } }, { "set": { "steps": "=Array.from({ length: 30 }, () => 'x')" } }] }
+  ]
+}

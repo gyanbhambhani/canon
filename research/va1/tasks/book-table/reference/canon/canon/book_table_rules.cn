@@ -1,0 +1,14 @@
+type TableBooking {
+  party_size: Int,
+  name: String,
+}
+
+api fn book_table(r: TableBooking) -> TableBooking
+  route: POST "/tables/book"
+  requires: r.party_size >= 1
+    && r.party_size <= 12
+    && str_len(trim(r.name)) > 0
+    && str_len(r.name) <= 40
+{
+  return r
+}

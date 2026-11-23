@@ -1,0 +1,16 @@
+type Contact {
+  name: String,
+  email: String,
+  phone: String,
+}
+
+api fn add_contact(c: Contact) -> Contact
+  route: POST "/contacts"
+  requires: str_len(c.name) >= 1
+    && str_len(c.name) <= 40
+    && (str_len(c.email) == 0 || is_email(c.email))
+    && (str_len(c.phone) == 0 || str_len(c.phone) >= 7 && str_len(c.phone) <= 15)
+    && (str_len(c.email) > 0 || str_len(c.phone) > 0)
+{
+  return c
+}

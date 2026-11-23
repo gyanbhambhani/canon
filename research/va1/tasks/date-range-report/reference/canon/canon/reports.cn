@@ -1,0 +1,18 @@
+type ReportRange {
+  from_day: Int,
+  to_day: Int,
+  granularity: String,
+}
+
+api fn request_report(r: ReportRange) -> ReportRange
+  route: POST "/reports/range"
+  requires: r.from_day >= 1
+    && r.from_day <= 31
+    && r.to_day >= 1
+    && r.to_day <= 31
+    && contains(["day", "week"], r.granularity)
+    && r.to_day >= r.from_day
+    && (r.to_day - r.from_day <= 14 || r.granularity == "week")
+{
+  return r
+}

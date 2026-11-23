@@ -1,0 +1,24 @@
+{
+  "id": "temperature-band",
+  "set": 2,
+  "title": "Create a temperature band",
+  "adapted": null,
+  "route": { "method": "POST", "path": "/bands" },
+  "feature": { "module": "createBand", "fn": "createBand" },
+  "base": { "low": "=int(-49, 48)", "high": "=int($low + 2, 50)", "label": "=alnum(int(0, 20))" },
+  "random": { "low": "=int(-60, 60)", "high": "=int(-60, 60)", "label": "=pick(['', 'mild', rep('a', int(15, 25))])" },
+  "rules": [
+    { "id": "low_range", "kind": "single", "desc": "low is -50 to 50",
+      "inside": [{ "set": { "low": -50, "high": -48 } }, { "set": { "low": -50, "high": 50 } }],
+      "outside": [{ "set": { "low": -51, "high": -49 } }, { "set": { "low": -51, "high": 0 } }, { "set": { "low": -60, "high": 0 } }] },
+    { "id": "high_range", "kind": "single", "desc": "high is -50 to 50",
+      "inside": [{ "set": { "low": 48, "high": 50 } }, { "set": { "low": 0, "high": 50 } }],
+      "outside": [{ "set": { "low": 0, "high": 51 } }, { "set": { "low": 0, "high": 60 } }, { "set": { "low": 48, "high": 51 } }] },
+    { "id": "gap_min", "kind": "cross", "desc": "high - low is at least 2",
+      "inside": [{ "set": { "high": "=$low + 2" } }, { "set": { "low": 48, "high": 50 } }, { "set": { "low": -50, "high": -48 } }],
+      "outside": [{ "set": { "high": "=$low + 1" } }, { "set": { "high": "=$low" } }, { "set": { "high": "=$low - 1" } }, { "set": { "low": 0, "high": -10 } }] },
+    { "id": "label_length", "kind": "single", "desc": "label has at most 20 characters",
+      "inside": [{ "set": { "label": "" } }, { "set": { "label": "=rep('a', 20)" } }, { "set": { "label": "=emoji(20)" } }],
+      "outside": [{ "set": { "label": "=rep('a', 21)" } }, { "set": { "label": "=emoji(21)" } }, { "set": { "label": "=rep('a', 40)" } }] }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "shipment",
+  "set": 2,
+  "title": "Create a shipment",
+  "adapted": null,
+  "route": {"method": "POST", "path": "/shipments"},
+  "feature": {"module": "createShipment", "fn": "createShipment"},
+  "base": {"weight_g": "=int(1, 30000)", "length": "=int(1, 100)", "width": "=int(1, 50)", "height": "=int(1, 50)"},
+  "random": {"weight_g": "=int(-5, 30100)", "length": "=int(-5, 210)", "width": "=int(-5, 110)", "height": "=int(-5, 110)"},
+  "rules": [
+    {"id": "weight_range", "kind": "single", "desc": "weight_g is 1 to 30000", "inside": [{"set": {"weight_g": 1}}, {"set": {"weight_g": 30000}}], "outside": [{"set": {"weight_g": 0}}, {"set": {"weight_g": 30001}}, {"set": {"weight_g": -1}}]},
+    {"id": "length_range", "kind": "single", "desc": "length is 1 to 200", "inside": [{"set": {"length": 1}}, {"set": {"length": 200, "width": 1, "height": 1}}], "outside": [{"set": {"length": 0}}, {"set": {"length": 201, "width": 1, "height": 1}}, {"set": {"length": -1}}]},
+    {"id": "width_range", "kind": "single", "desc": "width is 1 to 100", "inside": [{"set": {"width": 1}}, {"set": {"width": 100, "height": 1, "length": 1}}], "outside": [{"set": {"width": 0}}, {"set": {"width": 101, "height": 1, "length": 1}}, {"set": {"width": -1}}]},
+    {"id": "height_range", "kind": "single", "desc": "height is 1 to 100", "inside": [{"set": {"height": 1}}, {"set": {"height": 100, "width": 1, "length": 1}}], "outside": [{"set": {"height": 0}}, {"set": {"height": 101, "width": 1, "length": 1}}, {"set": {"height": -1}}]},
+    {"id": "girth_limit", "kind": "cross", "desc": "length + 2 * (width + height) is at most 300", "inside": [{"set": {"length": 100, "width": 50, "height": 50}}, {"set": {"length": 200, "width": 25, "height": 25}}, {"set": {"length": 2, "width": 100, "height": 49}}], "outside": [{"set": {"length": 101, "width": 50, "height": 50}}, {"set": {"length": 200, "width": 26, "height": 25}}, {"set": {"length": 2, "width": 100, "height": 50}}, {"set": {"length": 1, "width": 100, "height": 100}}]}
+  ]
+}

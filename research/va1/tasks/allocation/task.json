@@ -1,0 +1,27 @@
+{
+  "id": "allocation",
+  "set": 2,
+  "title": "Set a budget allocation",
+  "adapted": null,
+  "route": { "method": "POST", "path": "/allocations" },
+  "feature": { "module": "setAllocation", "fn": "setAllocation" },
+  "base": { "ads": "=int(0, 100)", "dev": "=int(0, 100 - $ads)", "ops": "=100 - $ads - $dev", "project": "=alnum(int(1, 30))" },
+  "random": { "ads": "=int(-5, 105)", "dev": "=int(-5, 105)", "ops": "=int(-5, 105)", "project": "=pick(['', 'Apollo', rep('a', int(25, 35))])" },
+  "rules": [
+    { "id": "ads_range", "kind": "single", "desc": "ads is 0 to 100 (the upper bound is also implied by the sum rule)",
+      "inside": [{ "set": { "ads": 100, "dev": 0, "ops": 0 } }, { "set": { "ads": 0, "dev": 50, "ops": 50 } }],
+      "outside": [{ "set": { "ads": -1, "dev": 51, "ops": 50 } }, { "set": { "ads": -5, "dev": 55, "ops": 50 } }, { "set": { "ads": -1, "dev": 100, "ops": 1 } }] },
+    { "id": "dev_range", "kind": "single", "desc": "dev is 0 to 100 (the upper bound is also implied by the sum rule)",
+      "inside": [{ "set": { "ads": 0, "dev": 100, "ops": 0 } }, { "set": { "ads": 50, "dev": 0, "ops": 50 } }],
+      "outside": [{ "set": { "ads": 50, "dev": -1, "ops": 51 } }, { "set": { "ads": 55, "dev": -5, "ops": 50 } }, { "set": { "ads": 100, "dev": -1, "ops": 1 } }] },
+    { "id": "ops_range", "kind": "single", "desc": "ops is 0 to 100 (the upper bound is also implied by the sum rule)",
+      "inside": [{ "set": { "ads": 0, "dev": 0, "ops": 100 } }, { "set": { "ads": 50, "dev": 50, "ops": 0 } }],
+      "outside": [{ "set": { "ads": 50, "dev": 51, "ops": -1 } }, { "set": { "ads": 55, "dev": 50, "ops": -5 } }, { "set": { "ads": 100, "dev": 1, "ops": -1 } }] },
+    { "id": "sum_100", "kind": "cross", "desc": "ads + dev + ops is exactly 100",
+      "inside": [{ "set": { "ads": 34, "dev": 33, "ops": 33 } }, { "set": { "ads": 1, "dev": 1, "ops": 98 } }],
+      "outside": [{ "set": { "ads": 33, "dev": 33, "ops": 33 } }, { "set": { "ads": 34, "dev": 34, "ops": 33 } }, { "set": { "ads": 0, "dev": 0, "ops": 0 } }, { "set": { "ads": 100, "dev": 100, "ops": 100 } }] },
+    { "id": "project_length", "kind": "single", "desc": "project has 1 to 30 characters",
+      "inside": [{ "set": { "project": "a" } }, { "set": { "project": "=rep('a', 30)" } }, { "set": { "project": "=emoji(30)" } }],
+      "outside": [{ "set": { "project": "" } }, { "set": { "project": "=rep('a', 31)" } }, { "set": { "project": "=emoji(31)" } }] }
+  ]
+}

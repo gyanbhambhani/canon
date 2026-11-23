@@ -1,0 +1,10 @@
+type Comment {
+  body: String,
+}
+
+api fn add_comment(comment: Comment) -> Comment
+  route: POST "/comments"
+  requires: str_len(trim(comment.body)) > 0 && str_len(comment.body) <= 500
+{
+  return comment
+}

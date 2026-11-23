@@ -1,0 +1,18 @@
+{
+  "id": "set-reminder",
+  "set": 1,
+  "title": "Set a reminder",
+  "adapted": null,
+  "route": { "method": "POST", "path": "/reminders" },
+  "feature": { "module": "setReminder", "fn": "setReminder" },
+  "base": { "minutes_before": "=int(5, 1440)", "channel": "=pick(['email', 'sms', 'push'])" },
+  "random": { "minutes_before": "=int(-30, 1600)", "channel": "=pick(['email', 'sms', 'push', 'Email', 'pager', ''])" },
+  "rules": [
+    { "id": "minutes_range", "kind": "single", "desc": "minutes_before is 5 to 1440",
+      "inside": [{ "set": { "minutes_before": 5 } }, { "set": { "minutes_before": 1440 } }, { "set": { "minutes_before": 6 } }, { "set": { "minutes_before": 1439 } }],
+      "outside": [{ "set": { "minutes_before": 4 } }, { "set": { "minutes_before": 1441 } }, { "set": { "minutes_before": 0 } }, { "set": { "minutes_before": -5 } }] },
+    { "id": "channel_enum", "kind": "single", "desc": "channel is email, sms or push",
+      "inside": [{ "set": { "channel": "email" } }, { "set": { "channel": "sms" } }, { "set": { "channel": "push" } }],
+      "outside": [{ "set": { "channel": "Email" } }, { "set": { "channel": "pager" } }, { "set": { "channel": "sms " } }, { "set": { "channel": "" } }] }
+  ]
+}

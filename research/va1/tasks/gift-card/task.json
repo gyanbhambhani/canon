@@ -1,0 +1,21 @@
+{
+  "id": "gift-card",
+  "set": 1,
+  "title": "Register a gift card",
+  "adapted": { "for": "canon", "reason": "the natural rule 'code is uppercase letters or digits' is a pattern, which a portable requires cannot state; the spec keeps only the length" },
+  "route": { "method": "POST", "path": "/gift-cards" },
+  "feature": { "module": "registerGiftCard", "fn": "registerGiftCard" },
+  "base": { "code": "=alnum(int(8, 12)).toUpperCase()", "amount": "=int(5, 500)", "currency": "=pick(['USD', 'EUR', 'GBP'])" },
+  "random": { "code": "=alnum(int(0, 20))", "amount": "=int(-20, 600)", "currency": "=pick(['USD', 'EUR', 'GBP', 'JPY', 'usd', ''])" },
+  "rules": [
+    { "id": "code_length", "kind": "single", "desc": "code has 8 to 12 characters",
+      "inside": [{ "set": { "code": "=rep('A', 8)" } }, { "set": { "code": "=rep('Z', 12)" } }],
+      "outside": [{ "set": { "code": "=rep('A', 7)" } }, { "set": { "code": "=rep('A', 13)" } }, { "set": { "code": "" } }] },
+    { "id": "amount_range", "kind": "single", "desc": "amount is 5 to 500",
+      "inside": [{ "set": { "amount": 5 } }, { "set": { "amount": 500 } }],
+      "outside": [{ "set": { "amount": 4 } }, { "set": { "amount": 501 } }, { "set": { "amount": 0 } }, { "set": { "amount": -5 } }] },
+    { "id": "currency_enum", "kind": "single", "desc": "currency is USD, EUR or GBP",
+      "inside": [{ "set": { "currency": "USD" } }, { "set": { "currency": "EUR" } }, { "set": { "currency": "GBP" } }],
+      "outside": [{ "set": { "currency": "usd" } }, { "set": { "currency": "JPY" } }, { "set": { "currency": "USD " } }, { "set": { "currency": "" } }] }
+  ]
+}

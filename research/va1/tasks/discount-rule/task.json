@@ -1,0 +1,182 @@
+{
+  "id": "discount-rule",
+  "set": 2,
+  "title": "Create a discount",
+  "adapted": null,
+  "route": {
+    "method": "POST",
+    "path": "/discounts"
+  },
+  "feature": {
+    "module": "createDiscount",
+    "fn": "createDiscount"
+  },
+  "base": {
+    "percent": "=chance(0.5) ? int(1, 100) : 0",
+    "fixed_cents": "=$percent > 0 ? 0 : int(1, 100000)",
+    "name": "=alnum(int(1, 30))"
+  },
+  "random": {
+    "percent": "=int(-5, 110)",
+    "fixed_cents": "=int(-5, 110000)",
+    "name": "=pick(['', 'x', alnum(30), rep('a', 31)])"
+  },
+  "rules": [
+    {
+      "id": "percent_range",
+      "kind": "single",
+      "desc": "percent is 0 to 100",
+      "inside": [
+        {
+          "set": {
+            "percent": 100,
+            "fixed_cents": 0
+          }
+        },
+        {
+          "set": {
+            "percent": 0,
+            "fixed_cents": "=Math.max($fixed_cents, 1)"
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "percent": 101,
+            "fixed_cents": 0
+          }
+        },
+        {
+          "set": {
+            "percent": 1000,
+            "fixed_cents": 0
+          }
+        },
+        {
+          "set": {
+            "percent": -1,
+            "fixed_cents": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "fixed_range",
+      "kind": "single",
+      "desc": "fixed_cents is 0 to 100000",
+      "inside": [
+        {
+          "set": {
+            "fixed_cents": 100000,
+            "percent": 0
+          }
+        },
+        {
+          "set": {
+            "fixed_cents": 0,
+            "percent": "=Math.max($percent, 1)"
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "fixed_cents": 100001,
+            "percent": 0
+          }
+        },
+        {
+          "set": {
+            "fixed_cents": 1000000,
+            "percent": 0
+          }
+        },
+        {
+          "set": {
+            "fixed_cents": -1,
+            "percent": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "name_length",
+      "kind": "single",
+      "desc": "name has 1 to 30 characters",
+      "inside": [
+        {
+          "set": {
+            "name": "a"
+          }
+        },
+        {
+          "set": {
+            "name": "=rep('a', 30)"
+          }
+        },
+        {
+          "set": {
+            "name": "=emoji(30)"
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "name": ""
+          }
+        },
+        {
+          "set": {
+            "name": "=rep('a', 31)"
+          }
+        },
+        {
+          "set": {
+            "name": "=emoji(31)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "exactly_one_positive",
+      "kind": "cross",
+      "desc": "exactly one of percent and fixed_cents is greater than 0",
+      "inside": [
+        {
+          "set": {
+            "percent": 10,
+            "fixed_cents": 0
+          }
+        },
+        {
+          "set": {
+            "percent": 0,
+            "fixed_cents": 10
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "percent": 0,
+            "fixed_cents": 0
+          }
+        },
+        {
+          "set": {
+            "percent": 10,
+            "fixed_cents": 500
+          }
+        },
+        {
+          "set": {
+            "percent": 100,
+            "fixed_cents": 100000
+          }
+        }
+      ]
+    }
+  ]
+}

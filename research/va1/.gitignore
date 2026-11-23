@@ -1,0 +1,9 @@
+node_modules/
+.venv/
+.work/
+.scratch/
+__pycache__/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+*.log

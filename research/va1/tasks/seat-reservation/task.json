@@ -1,0 +1,164 @@
+{
+  "id": "seat-reservation",
+  "set": 2,
+  "title": "Reserve seats",
+  "adapted": null,
+  "route": {
+    "method": "POST",
+    "path": "/seats/reserve"
+  },
+  "feature": {
+    "module": "reserveSeats",
+    "fn": "reserveSeats"
+  },
+  "base": {
+    "seats": "=int(1, 10)",
+    "row": "=int(1, 30)",
+    "first_seat": "=int(1, 21 - $seats)"
+  },
+  "random": {
+    "seats": "=int(-2, 13)",
+    "row": "=int(-2, 33)",
+    "first_seat": "=int(-2, 24)"
+  },
+  "rules": [
+    {
+      "id": "seats_range",
+      "kind": "single",
+      "desc": "seats is 1 to 10",
+      "inside": [
+        {
+          "set": {
+            "seats": 1
+          }
+        },
+        {
+          "set": {
+            "seats": 10,
+            "first_seat": "=Math.min($first_seat, 11)"
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "seats": 0
+          }
+        },
+        {
+          "set": {
+            "seats": -1
+          }
+        },
+        {
+          "set": {
+            "seats": 11,
+            "first_seat": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "row_range",
+      "kind": "single",
+      "desc": "row is 1 to 30",
+      "inside": [
+        {
+          "set": {
+            "row": 1
+          }
+        },
+        {
+          "set": {
+            "row": 30
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "row": 0
+          }
+        },
+        {
+          "set": {
+            "row": 31
+          }
+        },
+        {
+          "set": {
+            "row": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "first_seat_range",
+      "kind": "single",
+      "desc": "first_seat is 1 to 20 (the upper bound is implied by the fit rule)",
+      "inside": [
+        {
+          "set": {
+            "first_seat": 1
+          }
+        },
+        {
+          "set": {
+            "first_seat": 20,
+            "seats": 1
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "first_seat": 0
+          }
+        },
+        {
+          "set": {
+            "first_seat": -1
+          }
+        }
+      ]
+    },
+    {
+      "id": "block_fits_row",
+      "kind": "cross",
+      "desc": "first_seat + seats - 1 <= 20",
+      "inside": [
+        {
+          "set": {
+            "first_seat": "=21 - $seats"
+          }
+        },
+        {
+          "set": {
+            "seats": 10,
+            "first_seat": 11
+          }
+        }
+      ],
+      "outside": [
+        {
+          "set": {
+            "seats": 10,
+            "first_seat": 12
+          }
+        },
+        {
+          "set": {
+            "seats": 5,
+            "first_seat": 17
+          }
+        },
+        {
+          "set": {
+            "seats": 2,
+            "first_seat": 20
+          }
+        }
+      ]
+    }
+  ]
+}

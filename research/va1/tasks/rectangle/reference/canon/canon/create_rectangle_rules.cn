@@ -1,0 +1,19 @@
+type RectangleRequest {
+  width: Int,
+  height: Int,
+  label: String,
+}
+
+type Rectangle {
+  width: Int,
+  height: Int,
+  label: String,
+  area: Int,
+}
+
+api fn create_rectangle(r: RectangleRequest) -> Rectangle
+  route: POST "/rectangles"
+  requires: r.width >= 1 && r.height >= 1 && r.width * r.height <= 10000 && str_len(r.label) <= 20
+{
+  return Rectangle { width: r.width, height: r.height, label: r.label, area: r.width * r.height }
+}

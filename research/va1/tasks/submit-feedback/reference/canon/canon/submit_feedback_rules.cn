@@ -1,0 +1,16 @@
+type Feedback {
+  email: String,
+  message: String,
+  score: Int,
+}
+
+api fn submit_feedback(r: Feedback) -> Feedback
+  route: POST "/feedback"
+  requires: is_email(r.email)
+    && str_len(r.message) >= 10
+    && str_len(r.message) <= 1000
+    && r.score >= 0
+    && r.score <= 10
+{
+  return r
+}

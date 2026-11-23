@@ -1,0 +1,18 @@
+{
+  "id": "set-thermostat",
+  "set": 1,
+  "title": "Set the thermostat",
+  "adapted": null,
+  "route": { "method": "POST", "path": "/thermostat" },
+  "feature": { "module": "setThermostat", "fn": "setThermostat" },
+  "base": { "temperature": "=int(10, 30)", "mode": "=pick(['eco', 'comfort', 'away'])" },
+  "random": { "temperature": "=int(-5, 45)", "mode": "=pick(['eco', 'comfort', 'away', 'Eco', 'boost', 'night', ''])" },
+  "rules": [
+    { "id": "temperature_range", "kind": "single", "desc": "temperature is 10 to 30",
+      "inside": [{ "set": { "temperature": 10 } }, { "set": { "temperature": 30 } }],
+      "outside": [{ "set": { "temperature": 9 } }, { "set": { "temperature": 31 } }, { "set": { "temperature": 0 } }, { "set": { "temperature": -10 } }] },
+    { "id": "mode_enum", "kind": "single", "desc": "mode is eco, comfort or away",
+      "inside": [{ "set": { "mode": "eco" } }, { "set": { "mode": "comfort" } }, { "set": { "mode": "away" } }],
+      "outside": [{ "set": { "mode": "Eco" } }, { "set": { "mode": "eco " } }, { "set": { "mode": "boost" } }, { "set": { "mode": "" } }] }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "invoice",
+  "set": 2,
+  "title": "Submit an invoice",
+  "adapted": { "for": "canon", "reason": "the natural rule sums the line items of a list, which a portable requires cannot state; the spec keeps a fixed set of amount fields and a sum over them" },
+  "route": { "method": "POST", "path": "/invoices" },
+  "feature": { "module": "submitInvoice", "fn": "submitInvoice" },
+  "base": { "number": "=alnum(int(1, 20))", "subtotal": "=int(0, 100000)", "tax": "=int(1, 10000)", "shipping": "=int(1, 5000)", "total": "=$subtotal + $tax + $shipping" },
+  "random": { "number": "=pick(['', 'INV-1', alnum(int(15, 26))])", "subtotal": "=int(-50, 100000)", "tax": "=int(-50, 10000)", "shipping": "=int(-50, 5000)", "total": "=int(-50, 115000)" },
+  "rules": [
+    { "id": "number_length", "kind": "single", "desc": "number has 1 to 20 characters",
+      "inside": [{ "set": { "number": "n" } }, { "set": { "number": "=rep('n', 20)" } }, { "set": { "number": "=emoji(20)" } }],
+      "outside": [{ "set": { "number": "" } }, { "set": { "number": "=rep('n', 21)" } }, { "set": { "number": "=emoji(21)" } }] },
+    { "id": "subtotal_min", "kind": "single", "desc": "subtotal is at least 0",
+      "inside": [{ "set": { "subtotal": 0, "total": "=$tax + $shipping" } }],
+      "outside": [{ "set": { "subtotal": -1, "total": "=$tax + $shipping - 1" } }, { "set": { "subtotal": -100, "total": "=$tax + $shipping - 100" } }] },
+    { "id": "tax_min", "kind": "single", "desc": "tax is at least 0",
+      "inside": [{ "set": { "tax": 0, "total": "=$subtotal + $shipping" } }],
+      "outside": [{ "set": { "tax": -1, "total": "=$subtotal + $shipping - 1" } }] },
+    { "id": "shipping_min", "kind": "single", "desc": "shipping is at least 0",
+      "inside": [{ "set": { "shipping": 0, "total": "=$subtotal + $tax" } }],
+      "outside": [{ "set": { "shipping": -1, "total": "=$subtotal + $tax - 1" } }] },
+    { "id": "total_min", "kind": "single", "desc": "total is at least 0 (a negative total also breaks the sum rule: it cannot be isolated)",
+      "inside": [{ "set": { "subtotal": 0, "tax": 0, "shipping": 0, "total": 0 } }],
+      "outside": [{ "set": { "total": -1 } }, { "set": { "total": -100 } }] },
+    { "id": "total_is_sum", "kind": "cross", "desc": "subtotal + tax + shipping equals total",
+      "inside": [{ "set": { "total": "=$subtotal + $tax + $shipping" } }, { "set": { "subtotal": 1000000, "tax": 0, "shipping": 0, "total": 1000000 } }],
+      "outside": [{ "set": { "total": "=$subtotal + $tax + $shipping + 1" } }, { "set": { "total": "=$subtotal + $tax + $shipping - 1" } }, { "set": { "subtotal": "=$subtotal + 1" } }, { "set": { "tax": "=$tax + 1" } }, { "set": { "shipping": "=$shipping + 1" } }] }
+  ]
+}

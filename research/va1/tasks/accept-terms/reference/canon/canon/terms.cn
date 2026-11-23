@@ -1,0 +1,11 @@
+type Terms {
+  email: String,
+  accepted: Bool,
+}
+
+api fn accept_terms(t: Terms) -> Terms
+  route: POST "/terms"
+  requires: is_email(t.email) && t.accepted
+{
+  return t
+}

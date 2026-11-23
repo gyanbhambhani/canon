@@ -1,0 +1,21 @@
+{
+  "id": "signup-password",
+  "set": 2,
+  "title": "Sign up with a password",
+  "adapted": { "for": "canon", "reason": "the natural rule 'password does not contain the email's local part' needs substring tests, which a portable requires cannot state; the spec keeps only 'password differs from the email'" },
+  "route": { "method": "POST", "path": "/signup" },
+  "feature": { "module": "signUp", "fn": "signUp" },
+  "base": { "email": "=alnum(int(3, 10)) + '@' + alnum(int(2, 8)) + '.' + alnum(int(2, 3))", "password": "=alnum(int(8, 30))" },
+  "random": { "email": "=pick(['', 'a@b.c', 'ab', 'a@b', alnum(5) + '@' + alnum(4) + '.com'])", "password": "=pick(['', 'short', 'longenough1', alnum(int(0, 14))])" },
+  "rules": [
+    { "id": "email_format", "kind": "single", "desc": "email is an email address",
+      "inside": [{ "set": { "email": "a@b.c", "password": "=$password" } }, { "set": { "email": "a@b.c.d" } }],
+      "outside": [{ "set": { "email": "ab.c" } }, { "set": { "email": "a@b" } }, { "set": { "email": "@b.c" } }, { "set": { "email": "a b@c.d" } }] },
+    { "id": "password_length", "kind": "single", "desc": "password has at least 8 characters",
+      "inside": [{ "set": { "password": "=rep('p', 8)" } }, { "set": { "password": "=emoji(8)" } }, { "set": { "password": "=rep('p', 100)" } }],
+      "outside": [{ "set": { "password": "=rep('p', 7)" } }, { "set": { "password": "" } }, { "set": { "password": "=emoji(7)" } }] },
+    { "id": "password_differs_from_email", "kind": "cross", "desc": "password is not equal to email",
+      "inside": [{ "set": { "password": "=$email + '.'" } }, { "set": { "password": "=$email.slice(1)" } }, { "set": { "password": "=$email.toUpperCase() + 'x'" } }],
+      "outside": [{ "set": { "password": "=$email" } }, { "set": { "email": "abcd1234@example.com", "password": "abcd1234@example.com" } }, { "set": { "email": "a@b.c.d.e.f", "password": "a@b.c.d.e.f" } }] }
+  ]
+}

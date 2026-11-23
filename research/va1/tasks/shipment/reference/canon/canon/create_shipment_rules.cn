@@ -1,0 +1,21 @@
+type Shipment {
+  weight_g: Int,
+  length: Int,
+  width: Int,
+  height: Int,
+}
+
+api fn create_shipment(r: Shipment) -> Shipment
+  route: POST "/shipments"
+  requires: r.weight_g >= 1
+    && r.weight_g <= 30000
+    && r.length >= 1
+    && r.length <= 200
+    && r.width >= 1
+    && r.width <= 100
+    && r.height >= 1
+    && r.height <= 100
+    && r.length + 2 * (r.width + r.height) <= 300
+{
+  return r
+}

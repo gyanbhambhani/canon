@@ -1,0 +1,18 @@
+{
+  "id": "accept-terms",
+  "set": 1,
+  "title": "Accept the terms",
+  "adapted": null,
+  "route": { "method": "POST", "path": "/terms" },
+  "feature": { "module": "acceptTerms", "fn": "acceptTerms" },
+  "base": { "email": "=alnum(int(1, 8)) + '@' + alnum(int(1, 8)) + '.' + alnum(int(2, 3))", "accepted": true },
+  "random": { "email": "=pick(['', 'plain', 'a@b', 'a@b.c', alnum(int(1, 6)) + '@' + alnum(int(1, 6)) + '.' + alnum(int(1, 3)), 'a b@c.d'])", "accepted": "=chance(0.5)" },
+  "rules": [
+    { "id": "email_format", "kind": "single", "desc": "email is a valid address",
+      "inside": [{ "set": { "email": "a@b.c" } }, { "set": { "email": "first.last+tag@sub.example.org" } }, { "set": { "email": "a@b.c.d" } }],
+      "outside": [{ "set": { "email": "" } }, { "set": { "email": "plain" } }, { "set": { "email": "a@b" } }, { "set": { "email": "a@b." } }, { "set": { "email": "a b@c.d" } }] },
+    { "id": "accepted_true", "kind": "single", "desc": "accepted is true",
+      "inside": [{ "set": { "accepted": true } }],
+      "outside": [{ "set": { "accepted": false } }] }
+  ]
+}

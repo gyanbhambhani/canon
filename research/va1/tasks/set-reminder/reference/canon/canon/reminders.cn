@@ -1,0 +1,13 @@
+type Reminder {
+  minutes_before: Int,
+  channel: String,
+}
+
+api fn set_reminder(r: Reminder) -> Reminder
+  route: POST "/reminders"
+  requires: r.minutes_before >= 5
+    && r.minutes_before <= 1440
+    && contains(["email", "sms", "push"], r.channel)
+{
+  return r
+}

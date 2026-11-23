@@ -1,0 +1,1507 @@
+{
+ "note": "Phase 1, references only; summary from analysis/analyze.ts",
+ "summary": {
+  "set1.hand": {
+   "tasks": 20,
+   "runs": 20,
+   "completed": 20,
+   "agreement": 1,
+   "agreementZero": 1,
+   "bounce": 0,
+   "block": 0
+  },
+  "set1.schema": {
+   "tasks": 20,
+   "runs": 20,
+   "completed": 20,
+   "agreement": 1,
+   "agreementZero": 1,
+   "bounce": 0,
+   "block": 0
+  },
+  "set1.canon": {
+   "tasks": 20,
+   "runs": 20,
+   "completed": 20,
+   "agreement": 1,
+   "agreementZero": 1,
+   "bounce": 0,
+   "block": 0
+  },
+  "set2.hand": {
+   "tasks": 20,
+   "runs": 20,
+   "completed": 20,
+   "agreement": 1,
+   "agreementZero": 1,
+   "bounce": 0,
+   "block": 0
+  },
+  "set2.schema": {
+   "tasks": 20,
+   "runs": 20,
+   "completed": 20,
+   "agreement": 1,
+   "agreementZero": 1,
+   "bounce": 0,
+   "block": 0
+  },
+  "set2.canon": {
+   "tasks": 20,
+   "runs": 20,
+   "completed": 20,
+   "agreement": 1,
+   "agreementZero": 1,
+   "bounce": 0,
+   "block": 0
+  },
+  "set1.canon-schema": {
+   "all": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 20
+   },
+   "withoutAdapted": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 19
+   },
+   "zero": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 20
+   },
+   "verdict": "non-inferior"
+  },
+  "set1.canon-hand": {
+   "all": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 20
+   },
+   "withoutAdapted": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 19
+   },
+   "zero": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 20
+   },
+   "verdict": "non-inferior"
+  },
+  "set1.schema-hand": {
+   "all": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 20
+   },
+   "withoutAdapted": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 19
+   },
+   "zero": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 20
+   },
+   "verdict": "non-inferior"
+  },
+  "set2.canon-schema": {
+   "all": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 20
+   },
+   "withoutAdapted": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 17
+   },
+   "zero": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 20
+   },
+   "verdict": "non-inferior"
+  },
+  "set2.canon-hand": {
+   "all": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 20
+   },
+   "withoutAdapted": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 17
+   },
+   "zero": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 20
+   },
+   "verdict": "non-inferior"
+  },
+  "set2.schema-hand": {
+   "all": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 20
+   },
+   "withoutAdapted": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 17
+   },
+   "zero": {
+    "mean": 0,
+    "lo": 0,
+    "hi": 0,
+    "n": 20
+   },
+   "verdict": "non-inferior"
+  }
+ },
+ "perTask": [
+  {
+   "task": "add-comment",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "accept-terms",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "add-comment",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "accept-terms",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "accept-terms",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "age-range",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "age-range",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "age-range",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "add-comment",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "allocation",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "book-table",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "allocation",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "book-table",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "allocation",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "book-table",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "booking",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "contact-method",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "booking",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "booking",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "contact-method",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "coupon",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "contact-method",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "coupon",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "coupon",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "create-poll",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "create-poll",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "create-tag",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "create-tag",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "create-poll",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "create-tag",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "date-range-report",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "date-range-report",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "discount-rule",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "date-range-report",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "discount-rule",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "donate",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "donate",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "donate",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "discount-rule",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "gift-card",
+   "set": 1,
+   "adapted": true,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "gift-card",
+   "set": 1,
+   "adapted": true,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "inventory-adjust",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "inventory-adjust",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "gift-card",
+   "set": 1,
+   "adapted": true,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "inventory-adjust",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "invoice",
+   "set": 2,
+   "adapted": true,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "invoice",
+   "set": 2,
+   "adapted": true,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "invoice",
+   "set": 2,
+   "adapted": true,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "loan",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "loan",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "meeting",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "loan",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "meeting",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "meeting",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "newsletter-signup",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "order-note",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "newsletter-signup",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "order-note",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "newsletter-signup",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "order-note",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "product-review",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "password-change",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "password-change",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "password-change",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "product-review",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "product-review",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "range-filter",
+   "set": 2,
+   "adapted": true,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "range-filter",
+   "set": 2,
+   "adapted": true,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "range-filter",
+   "set": 2,
+   "adapted": true,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "rectangle",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "rectangle",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "recurring-event",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "recurring-event",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "rectangle",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "recurring-event",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "report-bug",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "rename-project",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "rename-project",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "rename-project",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "report-bug",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "seat-reservation",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "seat-reservation",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "seat-reservation",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "report-bug",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "set-limits",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "set-page-size",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "set-page-size",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "set-limits",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "set-limits",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "set-page-size",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "set-thermostat",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "set-reminder",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "set-reminder",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "set-reminder",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "set-thermostat",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "set-volume",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "set-volume",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "set-thermostat",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "set-volume",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "shipment",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "signup-password",
+   "set": 2,
+   "adapted": true,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "signup-password",
+   "set": 2,
+   "adapted": true,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "shipment",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "shipment",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "signup-password",
+   "set": 2,
+   "adapted": true,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "submit-feedback",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "temperature-band",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "submit-feedback",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "submit-feedback",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "temperature-band",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "tip-amount",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "tip-amount",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "tip-amount",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "temperature-band",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "transfer",
+   "set": 2,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "transfer",
+   "set": 2,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "upload-meta",
+   "set": 1,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "upload-meta",
+   "set": 1,
+   "adapted": false,
+   "arm": "hand",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "transfer",
+   "set": 2,
+   "adapted": false,
+   "arm": "schema",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  },
+  {
+   "task": "upload-meta",
+   "set": 1,
+   "adapted": false,
+   "arm": "canon",
+   "verified": true,
+   "agreement": 1,
+   "bounce": 0,
+   "block": 0,
+   "samples": 1000
+  }
+ ]
+}

@@ -1,0 +1,9 @@
+type Pong {
+  ok: Bool,
+}
+
+api fn ping() -> Pong
+  route: GET "/ping"
+{
+  return Pong { ok: true }
+}

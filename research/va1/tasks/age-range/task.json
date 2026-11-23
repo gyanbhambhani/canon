@@ -1,0 +1,17 @@
+{
+  "id": "age-range",
+  "set": 2,
+  "title": "Set an age range",
+  "adapted": null,
+  "route": {"method": "POST", "path": "/events/ages"},
+  "feature": {"module": "setAgeRange", "fn": "setAgeRange"},
+  "base": {"min_age": "=int(0, 100)", "max_age": "=Math.min(120, $min_age + int(0, 20))", "title": "=alnum(int(1, 60))"},
+  "random": {"min_age": "=int(-3, 125)", "max_age": "=int(-3, 125)", "title": "=pick(['', ' ', 'Teens', rep('t', int(55, 65))])"},
+  "rules": [
+    {"id": "min_age_range", "kind": "single", "desc": "min_age is 0 to 120", "inside": [{"set": {"min_age": 0}}, {"set": {"min_age": 120, "max_age": 120}}], "outside": [{"set": {"min_age": -1}}, {"set": {"min_age": -10}}, {"set": {"min_age": 121, "max_age": 121}}]},
+    {"id": "max_age_range", "kind": "single", "desc": "max_age is 0 to 120", "inside": [{"set": {"min_age": 0, "max_age": 0}}, {"set": {"max_age": 120}}], "outside": [{"set": {"max_age": 121}}, {"set": {"max_age": 150}}, {"set": {"min_age": 0, "max_age": -1}}]},
+    {"id": "age_order", "kind": "cross", "desc": "min_age is at most max_age", "inside": [{"set": {"min_age": 50, "max_age": 50}}, {"set": {"min_age": 0, "max_age": 0}}, {"set": {"min_age": 120, "max_age": 120}}, {"set": {"min_age": 0, "max_age": 120}}], "outside": [{"set": {"min_age": 50, "max_age": 49}}, {"set": {"min_age": 120, "max_age": 119}}, {"set": {"min_age": 1, "max_age": 0}}, {"set": {"min_age": 100, "max_age": 0}}]},
+    {"id": "title_not_blank", "kind": "single", "desc": "title is not blank", "inside": [{"set": {"title": " a "}}, {"set": {"title": "a"}}], "outside": [{"set": {"title": ""}}, {"set": {"title": " "}}, {"set": {"title": "\t \r\n"}}]},
+    {"id": "title_length", "kind": "single", "desc": "title has at most 60 characters", "inside": [{"set": {"title": "=rep('a', 60)"}}, {"set": {"title": "=emoji(60)"}}], "outside": [{"set": {"title": "=rep('a', 61)"}}, {"set": {"title": "=emoji(61)"}}]}
+  ]
+}
