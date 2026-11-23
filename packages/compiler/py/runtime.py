@@ -143,7 +143,6 @@ def trim(s: str) -> str:
 
 
 def split(s: str, sep: str) -> list[str]:
-    """An empty separator splits into characters (Python's split rejects it)."""
     return list(s) if sep == "" else s.split(sep)
 
 
@@ -181,6 +180,10 @@ def power(base: int, exp: int) -> int:
             raise Trap("R004", "division by zero (0 to a negative power)")
         return 1 if base == 1 else (1 - 2 * (exp % 2) if base == -1 else 0)
     return int(base**exp)
+
+
+def unwrap_or(value: T | None, fallback: T) -> T:
+    return fallback if value is None else value
 
 
 def sum_float(xs: list[float]) -> float:

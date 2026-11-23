@@ -2,6 +2,10 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-23 — CB-1 (found by CanonBench): no hoisting out of lambdas or loop conditions
+Decision: `unwrap_or` whose arguments are not names, literals or fields is generated as the runtime helper `unwrap_or(value, fallback)`, which evaluates both once and eagerly, as Canon does. A match or try that would need statements inside a lambda, a comprehension or a while condition is G002 instead of code.
+Reason: the generator hoisted a temporary before the statement, which inside a comprehension referred to the loop variable before it existed (NameError), and in a while condition was computed once before the loop (a wrong result or an infinite loop). canon check and the JavaScript runtime were right, so only the Python target was wrong. 4 of Experiment 1's 60 Canon references hit it.
+
 ## 2026-11-23 — v0.5 M8 (from FS-1): long contracts, and ruff width
 Decision: canonical form breaks a contract clause longer than 100 characters that is an && or || chain before each operator, one operand per line (Canon-Py: inside the decorator's parentheses, before each `and`/`or`). Only with the v0.3+ `wrap` switch, so the oracle's v0.2 mode is unchanged.
 Reason: FS-1's harness found that a long validation rule was L001 with no patch, so an agent's only way out was to shorten its names. Validation rules are long by nature.

@@ -372,6 +372,17 @@ class LogicGen {
   private fn: A.Fn | null = null;
   private eff: EffectParams = { tables: [], hosts: [] };
   private resultName: string | null = null;
+  /** Inside a lambda, a comprehension or a while condition: nothing may be emitted before it (CB-1). */
+  private noHoist = 0;
+
+  private hoistable<T>(f: () => T): T {
+    this.noHoist++;
+    try {
+      return f();
+    } finally {
+      this.noHoist--;
+    }
+  }
 
   constructor(
     readonly module: ProjectModule,
@@ -570,7 +581,7 @@ class LogicGen {
       }
       case "ForWhile": {
         if (this.needsStatements(s.cond)) throw new Unsupported(s, "a while condition that needs statements (match or try)");
-        this.emit(`while ${this.ex(s.cond).code}:`);
+        this.emit(`while ${this.hoistable(() => this.ex(s.cond)).code}:`);
         this.block(() => s.body.forEach((x) => this.stmt(x)));
         return;
       }
@@ -911,11 +922,13 @@ class LogicGen {
         return atom(`${e.tname}(${e.fields.map(([n, v]) => `${n}=${this.ex(v).code}`).join(", ")})`);
       }
       case "Match": {
+        if (this.noHoist) throw new Unsupported(e, "a match inside a lambda or a while condition; bind it with let first, or use a helper function");
         const tmp = this.freshName("value");
         this.matchStmt(e, { k: "assign", py: tmp });
         return atom(tmp);
       }
       case "Try": {
+        if (this.noHoist) throw new Unsupported(e, "try inside a lambda or a while condition");
         // result = f(); if isinstance(result, Err): return result
         const base = this.freshName("result");
         this.emit(`${base} = ${this.ex(e.expr).code}`);
@@ -1048,10 +1061,10 @@ class LogicGen {
       if (this.info.unpack.has(e)) {
         const p = this.freshName("pair");
         e.params.forEach((n, i) => this.scopes[this.scopes.length - 1].set(n, `${p}[${i}]`));
-        return { code: `lambda ${p}: ${this.ex(e.body).code}`, prec: P.lambda };
+        return { code: `lambda ${p}: ${this.hoistable(() => this.ex(e.body)).code}`, prec: P.lambda };
       }
       const ps = e.params.map((n) => this.bind(n));
-      return { code: `lambda ${ps.join(", ")}: ${this.ex(e.body).code}`, prec: P.lambda };
+      return { code: `lambda ${ps.join(", ")}: ${this.hoistable(() => this.ex(e.body)).code}`, prec: P.lambda };
     });
   }
 
@@ -1067,7 +1080,7 @@ class LogicGen {
     return this.withScope(() => {
       const vars = f.params.map((n) => this.bind(n));
       const target = vars.join(", ");
-      const body = this.ex(f.body);
+      const body = this.hoistable(() => this.ex(f.body));
       if (kind === "map") return atom(`[${par(body, P.ternary)} for ${target} in ${src}]`);
       const elem = vars.length === 1 ? vars[0] : `(${target})`;
       return atom(`[${elem} for ${target} in ${src} if ${par(body, P.or)}]`);
@@ -1179,9 +1192,9 @@ class LogicGen {
         const fallback = x(1);
         const pure = (y: A.Expr) => y.k === "Name" || y.k === "Int" || y.k === "Str" || y.k === "Bool" || y.k === "Float" || y.k === "FieldGet";
         if (pure(a[0]) && pure(a[1])) return { code: `${par(o, P.or)} if ${par(o, P.cmp + 1)} is not None else ${par(fallback, P.ternary)}`, prec: P.ternary };
-        const tmp = this.freshName("found");
-        this.emit(`${tmp} = ${o.code}`);
-        return { code: `${tmp} if ${tmp} is not None else ${par(fallback, P.ternary)}`, prec: P.ternary };
+        // anything else evaluates both arguments once, eagerly, as Canon does (CB-1: never hoist a
+        // temporary, which breaks inside a lambda or a loop condition)
+        return atom(`${this.helper("unwrap_or")}(${o.code}, ${fallback.code})`);
       }
       case "is_some":
         return { code: `${par(x(0), P.cmp + 1)} is not None`, prec: P.cmp };
@@ -1194,7 +1207,7 @@ class LogicGen {
           const src = this.ex(inner.args[0]).code;
           return this.withScope(() => {
             const vars = f.params.map((n) => this.bind(n)).join(", ");
-            const [k, v] = (f.body as A.TupleLit).items.map((x) => this.ex(x).code);
+            const [k, v] = this.hoistable(() => (f.body as A.TupleLit).items.map((x) => this.ex(x).code));
             return atom(`{${k}: ${v} for ${vars} in ${src}}`);
           });
         }
