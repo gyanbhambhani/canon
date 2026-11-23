@@ -150,3 +150,27 @@ Opus stays unavailable:
 - runner/models.ts: `41949426eb5126f26ab6afc3ea1e79582075b434abea90b10e6a4c0161ef1c13`
 - harness/hidden.ts: `70fc7d4121dfb93210628cabf5859767f0c9531d3f04cbea47b65d3077517a09`
 - MANIFEST.sha256 (865 files): `37e7c7616046385c81807378a42abca0597b31fa3857312ded0710ddfb1ce189`
+
+## Amendment 1 (2026-11-23, committed before any Qwen2.5-Coder-32B call)
+
+The owner, awake, decided the following; GPT's main run was already under way, unchanged.
+
+1. **claude-opus-5-5 is off for the rest of the run.** The Anthropic account will not be refilled
+   tonight, so the probe stopped. Its 24 recorded pilot runs stay as recorded. Under "If Opus is
+   unavailable", its main-run cells are reported as **not run**, the win rule (which needs both
+   frontier models) **cannot be decided**, and gpt-6.2-sol's result is **the one frontier result**.
+2. **Qwen2.5-Coder-7B** runs on CanonBench's MLX server (port 8091), the same model and weights as in
+   the pilot, instead of a server of its own: two servers crashed one under memory pressure.
+   Unchanged otherwise (exploratory, 1 run per task).
+3. **Qwen2.5-Coder-32B-Instruct-4bit is added as an exploratory model**, not part of the win rule:
+   20 tasks × 3 arms × 1 run, on CanonBench's server (port 8092), temperature 0.2, max 6,000 tokens,
+   same scaffold and hidden tests. The 20 tasks are a fixed random subset (`analysis/subset-32b.ts`,
+   seed 2032): search-products, add-required-category, products-in-price-range,
+   change-display-name, delete-account, bulk-restock, add-line-to-order, cancel-order, order-detail,
+   top-rated-products, average-rating, discontinue-product, paginate-orders, min-price-validation,
+   tighten-password-rule, order-count-badge, rename-name-to-full-name, deactivate-user,
+   stock-on-pay, discount-codes (16 feature, 4 change; 3 adapted). It is analyzed with
+   analysis/analyze.ts like the other models; its intervals are over its 20 tasks.
+4. **The reduction rule was applied to gpt-6.2-sol** after its first 20 main-run runs: mean $0.0404 per
+   run, projected $21.83 for 540 runs plus $1.15 for the pilot = $22.99, under 90% of the $100 cap.
+   **No reduction**: 3 runs per task, as pre-registered.

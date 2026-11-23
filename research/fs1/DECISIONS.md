@@ -2,6 +2,18 @@
 
 Judgment calls made while building the harness, newest first. Each entry: date, decision, reason.
 
+## 2026-11-23 — Amendment 1: Opus off, Qwen on the shared server, Qwen-32B exploratory
+Decision: the owner's decisions, recorded as Amendment 1 in PREREGISTRATION.md before any 32B call:
+Opus off (24 pilot runs kept; main run not run; win rule undecidable); Qwen-7B on CanonBench's
+server on port 8091; Qwen2.5-Coder-32B-Instruct-4bit exploratory on a seeded 20-task subset × 3 arms
+× 1 run (port 8092, waited for, never started by FS-1). GPT's reduction check: projected $22.99, no
+reduction.
+Reason: the Anthropic account has no credit; two MLX servers at once crashed one under memory
+pressure; 32B at 60 tasks would not finish by morning.
+
+Decision: Qwen-7B's interrupted pilot resumes from its 5 recorded runs (none was an error).
+Reason: the runner skips recorded keys; the server change does not change the model or its weights.
+
 ## 2026-11-23 — FS-1 pilot, power analysis and pre-registration
 Decision: the pilot hit the ceiling for both frontier models (every arm 100% end-to-end pass), so
 the pre-registration keeps the plan's primary analysis unchanged and adds first-round pass (the
