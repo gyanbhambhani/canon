@@ -2,6 +2,44 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — v0.4: measurement, rulings, docs and release
+Decision: the default syntax stays brace syntax; Experiment 1 decides whether Canon-Py becomes the default (it must be at least as correct as v0.3 syntax, at lower cost).
+Reason: the owner's plan (docs/roadmap-to-1.0.md). Our own measurement supports waiting. On the benchmark's programs converted by fmt (same algorithm in both surfaces), Canon-Py is less surprising than brace syntax without documentation. With each surface's own agent reference, it is slightly *more* surprising, and both remain well above idiomatic typed Python (research/v0.4/surprisal/RESULTS.md). The v0.3 prototype's large advantage came mostly from Python's library and idioms, which v0.4 does not adopt (same AST, same standard library).
+
+Decision: the surprisal comparison uses the benchmark's modal Canon programs converted mechanically to Canon-Py, not newly hand-written Canon-Py.
+Reason: conversion holds the algorithm, helpers and names fixed, so the difference is the surface alone. It also means the Canon-Py texts are Canon-shaped (pipelines turned into nested calls, `to_string` turned into f-strings), and idiomatic Canon-Py written fresh might score better. We report this as a limitation rather than hand-write 50 programs that would mix style back in.
+
+Decision: nats per character and per syntax-tree node are reported beside total nats and nats per token, as the owner asked.
+- Canon's node count is its AST, which both surfaces share.
+- Python's count uses `ast` nodes with a source position.
+- TypeScript's count uses every node the compiler API visits, identifiers and keywords included, so its per-node figure is not comparable and is flagged as such.
+
+Decision: contracts stay `@requires`/`@ensures` decorators against the model's preference for `assert` lines (-12.8 nats, 0/3 contexts, 1.5B).
+Reason: a contract belongs to the signature. It is checked on every return, fuzzed by `canon test`, skipped by `--no-contracts`, and blamed with R001/R002. An `assert` before one `return` covers only that return, and reading a body's leading asserts as `requires` would silently turn existing asserts into fuzzed contracts.
+
+Decision: the other rulings follow the 1.5B study, and the 7B study is reported beside it (research/v0.4/likelihood/REPORT.md).
+- Records are a plain `class` (beat `@dataclass` by 1.5 nats); `@dataclass` is accepted and dropped.
+- There is one blank line between definitions (beat PEP 8's two by 0.9).
+- Sum types are one `type` line, a tie that we settled for semantic fidelity: variants are not types.
+- Pipelines are dropped (a three-way tie; Python has none).
+- Holes are `...` and lose their names.
+- `/` keeps Canon's truncating meaning, and `//` and `**` are rejected.
+
+Decision: the Canon-Py agent reference (for-agents-py.mdx, /llms-py.txt) mirrors the brace reference section by section, and a test keeps the section headings identical. Neither reference contains an output instruction. Experiment 1b's arm (research/v0.4/canon-py-arm.ts, outside research/exp1, which we did not edit) reuses the `canon` arm's prompt word for word except the language description: the signature and declarations shown in Canon-Py, and "def main or test functions" for "fn main or test blocks".
+Reason: the owner asked that every arm request output the same way. All 60 hard tasks' reference solutions, converted to Canon-Py, pass that arm's check and hidden tests.
+
+Decision: the docs keep brace syntax on every page except the new Canon-Py guide page and the Canon-Py agent reference. A ```canon fence marked `syntax=py` is checked as Canon-Py by the docs test. The Canon-Py guide page describes the measurements in words and links to docs/v0.4-design.md for figures.
+Reason: the owner's plan. CLAUDE.md forbids hand-typed numbers on the website, and these figures are not in scripts/stats.ts.
+
+Decision: every package moves to 0.4.0, and DEPLOY.md gains the publish step (the tarball must contain dist/runtime-standalone.js).
+Reason: since 0.3.0 the npm version tracks the language version.
+
+Decision: the corpora (examples/, tests/run, tests/types, the docs, research/exp1's references) stay in brace syntax. tests/py holds every example and tests/run program in Canon-Py, checked for identical output, test results and fmt round trips.
+Reason: the owner's plan change (Canon-Py is opt-in). Tests changed because the language changed: three programs that pass an effectful function where a pure function type is expected now carry `# mode: v0.3` (see the fnEffects entry). The guide's section on the higher-order effect leak was rewritten to show T011, because v0.4 closes the leak.
+
+Decision: `--watch` backs file-system events with a 300 ms stat poll.
+Reason: under load (the full test suite in parallel), macOS dropped an event for a save. The text comparison makes a duplicate trigger harmless.
+
 ## 2026-11-22 — v0.4: canon build, --watch and --syntax
 Decision: `canon build` writes a script that inlines the runtime. The CLI's build step bundles `packages/cli/src/standalone.ts` (runtime plus Node host) with esbuild into `dist/runtime-standalone.js`, an IIFE that defines `__canonRuntime`. The built file is that bundle, the compiled program as a string, and a call to `runMain` with the Node host. `--deny`, `--no-contracts` and `--no-capability-guard` are baked in only when given at build time. Trap and Err output is written exactly as `canon run` writes it.
 Reason: the brief asks for a file that runs with plain `node` and no installed dependencies. The bundle is read from the CLI's own dist directory at build time, so the CLI stays one package and the runtime is not duplicated in its source.

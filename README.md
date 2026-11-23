@@ -107,20 +107,22 @@ node packages/cli/dist/index.js check examples/mistakes/missing-effect.cn   # an
 node packages/cli/dist/index.js fmt examples/orders.cn                      # the one formatted text (--write to rewrite)
 node packages/cli/dist/index.js test examples/fizzbuzz.cn                   # test blocks, deterministic time and rand
 node packages/cli/dist/index.js run examples/word_count.cn --deny net,fs
+node packages/cli/dist/index.js build examples/hello.cn -o /tmp/hello.js       # one standalone file: node /tmp/hello.js
+node packages/cli/dist/index.js fmt --syntax py examples/orders.cn          # the same program in Canon-Py, the opt-in Python-shaped syntax
 ```
 
 ## What's in this repo
 
 | Path | What |
 | --- | --- |
-| [packages/compiler](packages/compiler) | Lexer, lenient parser, normalizer, canonical printer, naming, effect and hole checks, type checker, JavaScript codegen. No runtime dependencies; runs in Node and the browser. |
+| [packages/compiler](packages/compiler) | Lexers and lenient parsers for brace syntax and Canon-Py, normalizer, canonical printers, naming, effect and hole checks, type checker (with effects on function types), JavaScript codegen. No runtime dependencies; runs in Node and the browser. |
 | [packages/runtime](packages/runtime) | Standard library, traps (R001 to R006), effect hosts for Node, the browser and tests. |
-| [packages/cli](packages/cli) | The `canon` command: `check`, `fmt`, `run`, `test`, each with `--json`. |
-| [apps/web](apps/web) | The site: the landing page at `/`, docs at `/docs`, the playground at `/play`, the research results at `/research`, and `/llms.txt`. |
+| [packages/cli](packages/cli) | The `canon` command: `check`, `fmt`, `run`, `test`, `build`, each with `--json` (and `--watch`, `--syntax py`). |
+| [apps/web](apps/web) | The site: the landing page at `/`, docs at `/docs`, the playground at `/play`, the research results at `/research`, `/llms.txt` and `/llms-py.txt`. |
 | [examples](examples) | hello, fizzbuzz, word count, orders ranking, Result and try; `mistakes/` holds the playground's broken programs. |
 | [reference](reference) | The Python prototype; the TypeScript front end matches its output byte for byte. |
 | [research](research) | The pre-registered benchmark and the likelihood study, with raw data. |
-| [tests](tests) | Conformance corpus, type pass/fail programs, run programs with expected output, CLI tests. |
+| [tests](tests) | Conformance corpus, type pass/fail programs, run programs with expected output, the Canon-Py corpus (`tests/py`), CLI, build and watch tests. |
 
 ## The website
 

@@ -180,6 +180,16 @@ docs/v0.3-proposal.md has the evidence, the ranking and the planned pre-register
 
 Design law 1 holds: fmt still decides one text per program, including where long lines break. v0.2 files migrate with `canon fmt --write`, except a test block that uses `fs` or `net`, which needs `canon check --fix --write`.
 
+### Amendment: v0.4 (2026-11-22)
+
+docs/v0.4-design.md has the evidence (research/v0.4: a likelihood study in Python-shaped programs, and the surprisal and token measurement of the implemented surface) and every ruling; DECISIONS.md has each judgment call.
+
+- **Effects on function types.** A function type may carry effects: `fn(String) -> Unit effects: io`, the clause on the same line as the type. Calling a function value performs its type's effects, so the caller declares them (E101). An effectful function used where the expected function type does not allow its effects is T011 (no patch). The standard library's higher-order functions take pure functions. Every function's own signature now bounds what it can do; design law 4 holds per function, not only per program. Switch: `fnEffects` (`--no-fn-effects`).
+- **Canon-Py.** A second surface for the same language: a strict subset of typed Python syntax that parses to the same AST, with the same checker, code generator, runtime and guarantees. It is opt-in (`py`; `--syntax py`). **Brace syntax stays the default until Experiment 1 compares the two syntaxes** (docs/roadmap-to-1.0.md); Canon-Py becomes the default only if agents are at least as correct with it, at lower cost. The parser reads both surfaces in every mode (a file is Canon-Py when a top-level line starts with `def`, `class`, `@`, `import` or `from`), so fmt migrates either way. In Canon-Py mode, design law 1 holds over Canon-Py text, design law 6 (braces for constrained decoding) does not hold (blocks are indentation), and design law 5 holds with mutability inferred instead of spelled. The surface is specified by docs/v0.4-design.md and the agent reference at /llms-py.txt (apps/web/content/docs/for-agents-py.mdx).
+- **Toolchain.** `canon build FILE [-o OUT] [--module]` writes a standalone JavaScript file (the runtime inlined) or an ES module exporting `fns`. `--watch` reruns check, test, run or build on each save. `--v0.3` selects the v0.3 language.
+
+With `--v0.3` (compiler `features: V03`) or `--v0.2`, the compiler is v0.3 or v0.2 byte for byte on the conformance corpus, and the oracle stays exact for every construct those versions did not change. In the default brace syntax, v0.4 changes no layout rule; a v0.3 file is a v0.4 file unless it passes an effectful function where a pure function type is expected.
+
 ## Runtime semantics
 
 This section defines what a Canon program does when it runs. Where this section and the reference implementation are silent, the implementer decides and records the decision in DECISIONS.md.

@@ -59,7 +59,7 @@ const FEATURES: { icon: ReactNode; title: string; body: ReactNode }[] = [
   {
     icon: icons.effects,
     title: "Effects in the signature",
-    body: <>Network, files, time and randomness must be declared. Everything else is pure by default.</>,
+    body: <>Network, files, time and randomness must be declared, down to the type of every function value. Everything else is pure by default.</>,
   },
   {
     icon: icons.format,
@@ -79,7 +79,7 @@ const FEATURES: { icon: ReactNode; title: string; body: ReactNode }[] = [
   {
     icon: icons.runs,
     title: "Runs anywhere JavaScript runs",
-    body: <>Compiles to JavaScript. Use the CLI with Node 20 or run it straight in the browser.</>,
+    body: <>Compiles to JavaScript. Use the CLI with Node 20, run it straight in the browser, or build one file that runs with plain node.</>,
   },
 ];
 
