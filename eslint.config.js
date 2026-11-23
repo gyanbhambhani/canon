@@ -44,4 +44,9 @@ export default tseslint.config(
       "no-constant-condition": ["error", { checkLoops: false }],
     },
   },
+  {
+    // CanonBench's analysis scripts are pinned by hash in its pre-registration: lint must not edit them
+    files: ["research/canonbench/analysis/**"],
+    rules: { "@typescript-eslint/no-unused-vars": "off" },
+  },
 );
