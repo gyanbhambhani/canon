@@ -6,7 +6,7 @@ The owner's approval of this document comes after the fact (owner's run instruct
 
 ## 1. What is compared
 
-Canon (v0.5 brace syntax, compiler at main 0a38eba merged into this branch) against Python and
+Canon (v0.5 brace syntax, compiler at main c2cb47e merged into this branch) against Python and
 TypeScript, each with its standard toolchain (arms/check.ts, arms/props.ts):
 
 | Arm | Automatic fixes (never cost a round) | Checker feedback (JSON, with patches) | Property testing | Tests run by |
@@ -29,7 +29,7 @@ tokens count toward Canon's cost. One prompt template per family for every arm (
 
 Tool versions: Python 3.13.12, mypy 2.4.1, ruff 0.17.6, Hypothesis 6.170.17, pydantic 2.14.4,
 FastAPI 0.165.0; Node 25.8.0, TypeScript 5.9.3, ESLint 9.39.5, typescript-eslint 8.73.0;
-Canon 0.5.0 at main 0a38eba.
+Canon 0.5.0 at main c2cb47e.
 
 ## 3. Items (hashes in MANIFEST.sha256)
 
@@ -60,7 +60,18 @@ Canon 0.5.0 at main 0a38eba.
   stops a model when its ledger reaches its cap, however far it got).
 - **Cost check (pilot, >= 24 items per family per API model):**
 
-COST_TABLE
+| Model | Family | Pilot runs | Pilot USD/run | Planned runs | Projected USD |
+| --- | --- | --- | --- | --- | --- |
+| opus | read | 160 | 0.0095 | 2376 | 22.60 |
+| opus | write | 30 | 0.0275 | 540 | 14.84 |
+| opus | fix | 42 | 0.0189 | 909 | 17.22 |
+| opus | change | 24 | 0.0217 | 216 | 4.68 |
+| opus | **total** | | | | **59.33** (cap 150) |
+| gpt | read | 160 | 0.0012 | 2376 | 2.84 |
+| gpt | write | 30 | 0.0065 | 540 | 3.53 |
+| gpt | fix | 42 | 0.0063 | 909 | 5.71 |
+| gpt | change | 24 | 0.0061 | 216 | 1.31 |
+| gpt | **total** | | | | **13.39** (cap 150) |
 
 - **Reduction rule** (if a projection exceeds a cap): drop to 2 runs, then 1 run, then a random
   subset of seeds (fixed seed 7), in that order, until the projection is below 80% of the cap.
@@ -88,7 +99,63 @@ COST_TABLE
 
 ### Baselines and power analysis (pilot: 10 seeds + 4 effectful seeds, 1 run)
 
-POWER_TABLE
+| Cell | Pilot seeds | Canon | Python | TypeScript | Baseline | SD of paired difference | MDE at main-run n |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| READ qwen7b | 14 | 52.4 | 46.4 | 48.8 | ts | 0.246 | 7.9 pts |
+| READ opus | 14 | 95.2 | 95.2 | 95.2 | py | 0.000 | not estimable (no pilot variance) |
+| READ gpt | 14 | 95.2 | 89.3 | 95.2 | ts | 0.000 | not estimable (no pilot variance) |
+| READ-effects qwen7b | 4 | 37.5 | 50.0 | 50.0 | py | 0.144 | 10.1 pts |
+| READ-effects opus | 4 | 100.0 | 100.0 | 100.0 | py | 0.000 | not estimable (no pilot variance) |
+| READ-effects gpt | 4 | 100.0 | 87.5 | 100.0 | ts | 0.000 | not estimable (no pilot variance) |
+| READ-property qwen7b | 9 | 88.9 | 77.8 | 88.9 | ts | 0.000 | not estimable (no pilot variance) |
+| READ-property opus | 9 | 77.8 | 77.8 | 77.8 | py | 0.000 | not estimable (no pilot variance) |
+| READ-property gpt | 9 | 77.8 | 66.7 | 77.8 | ts | 0.000 | not estimable (no pilot variance) |
+| READ-output qwen7b | 10 | 40.0 | 25.0 | 25.0 | py | 0.412 | 14.9 pts |
+| READ-output opus | 10 | 100.0 | 100.0 | 100.0 | py | 0.000 | not estimable (no pilot variance) |
+| READ-output gpt | 10 | 100.0 | 100.0 | 100.0 | py | 0.000 | not estimable (no pilot variance) |
+| WRITE qwen7b | 10 | 0.0 | 20.0 | 30.0 | ts | 0.483 | 17.5 pts |
+| WRITE opus | 10 | 100.0 | 100.0 | 100.0 | py | 0.000 | not estimable (no pilot variance) |
+| WRITE gpt | 10 | 100.0 | 100.0 | 100.0 | py | 0.000 | not estimable (no pilot variance) |
+| FIX qwen7b | 7 | 57.1 | 78.6 | 71.4 | py | 0.267 | 10.3 pts |
+| FIX opus | 7 | 100.0 | 100.0 | 100.0 | py | 0.000 | not estimable (no pilot variance) |
+| FIX gpt | 7 | 100.0 | 100.0 | 100.0 | py | 0.000 | not estimable (no pilot variance) |
+| CHANGE qwen7b | 8 | 25.0 | 62.5 | 75.0 | ts | 0.535 | 30.6 pts |
+| CHANGE opus | 8 | 100.0 | 100.0 | 100.0 | py | 0.000 | not estimable (no pilot variance) |
+| CHANGE gpt | 8 | 100.0 | 100.0 | 100.0 | py | 0.000 | not estimable (no pilot variance) |
+| THINK qwen7b | 10 | 0.0 | 20.0 | – | py | 0.422 | 15.2 pts |
+| THINK opus | 10 | 100.0 | 100.0 | – | py | 0.000 | not estimable (no pilot variance) |
+| THINK gpt | 10 | 100.0 | 100.0 | – | py | 0.000 | not estimable (no pilot variance) |
+
+analysis/baselines.json:
+
+```json
+{
+ "READ|qwen7b": "ts",
+ "READ|opus": "py",
+ "READ|gpt": "ts",
+ "READ-effects|qwen7b": "py",
+ "READ-effects|opus": "py",
+ "READ-effects|gpt": "ts",
+ "READ-property|qwen7b": "ts",
+ "READ-property|opus": "py",
+ "READ-property|gpt": "ts",
+ "READ-output|qwen7b": "py",
+ "READ-output|opus": "py",
+ "READ-output|gpt": "py",
+ "WRITE|qwen7b": "ts",
+ "WRITE|opus": "py",
+ "WRITE|gpt": "py",
+ "FIX|qwen7b": "py",
+ "FIX|opus": "py",
+ "FIX|gpt": "py",
+ "CHANGE|qwen7b": "ts",
+ "CHANGE|opus": "py",
+ "CHANGE|gpt": "py",
+ "THINK|qwen7b": "py",
+ "THINK|opus": "py",
+ "THINK|gpt": "py"
+}
+```
 
 ## 7. Predictions (plan section 7.2, committed as written)
 
@@ -116,4 +183,15 @@ POWER_TABLE
 
 ## 9. Hashes
 
-HASHES
+Full list: MANIFEST.sha256 (every item, seed, test, reference, prompt template, arm, runner and analysis file).
+
+```text
+528 files; combined sha256 2329c18dae28f51820455fc5e1d19590bf85cab643296f3dc8cc82c9667342f4
+caddbf0c95ba7402e4a5505b23de60dd9a7ed1078b9ab463d3a2db35b2359976  items/read.jsonl
+376a060e86182274ff38e19a12de887cd4a0022153080501933a3f54162773b7  items/fix.jsonl
+b2663b09106cbc847e1b240f2bab113ada12a36ddf592b708674f150ea4ba9e2  items/write.txt
+8472a0b9e4cbfbe4dfd4eb9336450d5ab5cdc4083119e787137914fe7ee75d2c  items/change.txt
+7c7a3d7f7b3baf6f236fc251b689f9f488762f21c288e905d4bd2a596cb7f45f  arms/prompts.ts
+f5b255c50e73d07fa9050162e7e63848b8e7662fd816fa05a34761df74042a74  analysis/analyze.ts
+fbc0151da29ec036c2eef8dab01acd2f686c542d6ddb4f7bd7cc2e82380c67b5  analysis/think.ts
+```

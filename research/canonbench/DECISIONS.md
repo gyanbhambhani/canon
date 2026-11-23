@@ -46,8 +46,9 @@ made is recorded here (date, decision, reason). Approval of all of these is afte
    helper function `choose`) because the CB-1 fix makes the Python generator refuse a match inside a
    lambda (G002). The JavaScript behaviour is unchanged.
 10. **CB-1 (compiler bug) was found by this benchmark and fixed on main before the main run**
-    (COMPILER_ISSUES.md). Main was merged at 0a38eba before the pre-registration was committed, as
-    the owner's coordinator recommended.
+    (COMPILER_ISSUES.md). Main was merged at 0a38eba and again at c2cb47e (a further pygen/printer
+    change) before the pre-registration was committed; every reference, CHANGE item, FIX mutant and
+    effect seed was re-verified on c2cb47e, the pinned compiler.
 
 ## Items
 
