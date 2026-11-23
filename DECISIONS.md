@@ -38,7 +38,7 @@ Decision: the corpora (examples/, tests/run, tests/types, the docs, research/exp
 Reason: the owner's plan change (Canon-Py is opt-in). Tests changed because the language changed: three programs that pass an effectful function where a pure function type is expected now carry `# mode: v0.3` (see the fnEffects entry). The guide's section on the higher-order effect leak was rewritten to show T011, because v0.4 closes the leak.
 
 Decision: `--watch` backs file-system events with a 300 ms stat poll.
-Reason: under load (the full test suite in parallel), macOS dropped an event for a save. The text comparison makes a duplicate trigger harmless.
+Reason: a save made while the first run was still going was missed, because the watchers were registered only after that run (fixed: watchers start first). The poll is a second line of defence against dropped or coalesced events, and the text comparison makes a duplicate trigger harmless.
 
 ## 2026-11-22 — v0.4: canon build, --watch and --syntax
 Decision: `canon build` writes a script that inlines the runtime. The CLI's build step bundles `packages/cli/src/standalone.ts` (runtime plus Node host) with esbuild into `dist/runtime-standalone.js`, an IIFE that defines `__canonRuntime`. The built file is that bundle, the compiled program as a string, and a call to `runMain` with the Node host. `--deny`, `--no-contracts` and `--no-capability-guard` are baked in only when given at build time. Trap and Err output is written exactly as `canon run` writes it.

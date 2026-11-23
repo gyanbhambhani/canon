@@ -461,11 +461,12 @@ function watchFile(a: Args, io: CliIO, once: () => Outcome): Promise<number> {
         rerun();
       }, 100);
     };
-    rerun();
     const watcher: FSWatcher = fsWatch(dirname(full), schedule);
     // file-system events can be dropped or coalesced under load; a slow stat poll backs them up
     // (the text comparison in rerun makes a duplicate trigger harmless)
     pollFile(full, { interval: 300 }, () => schedule());
+    // the first run starts after the watchers, so a save made while it runs is not missed
+    rerun();
     process.once("SIGINT", () => {
       watcher.close();
       unwatchFile(full);
