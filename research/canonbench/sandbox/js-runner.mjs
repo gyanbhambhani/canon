@@ -8,7 +8,7 @@
  * stdout: [{"ok": true, "v": value} | {"ok": false, "e": message}, ...]
  */
 import vm from "node:vm";
-import { MemoryHost, Runtime, testHost } from "@canon/runtime";
+import { MemoryHost, Runtime, fuzzContracts, testHost } from "@canon/runtime";
 
 const input = JSON.parse(await new Promise((res) => {
   let s = "";
@@ -16,6 +16,20 @@ const input = JSON.parse(await new Promise((res) => {
   process.stdin.on("data", (d) => (s += d));
   process.stdin.on("end", () => res(s));
 }));
+
+if (input.mode === "fuzz") {
+  // `canon test` contract fuzzing: every pure function with a contract, on generated inputs
+  const outcomes = [];
+  try {
+    for (const z of fuzzContracts(input.js, testHost(new MemoryHost()), { capabilityGuard: true, tries: input.tries ?? 100 })) {
+      if (!z.passed && !z.skipped) outcomes.push({ name: z.name, args: z.counterexample?.args, trap: z.counterexample?.trap });
+    }
+  } catch (e) {
+    outcomes.push({ name: "fuzz", trap: { message: String(e?.message ?? e).slice(0, 300) } });
+  }
+  process.stdout.write(JSON.stringify(outcomes));
+  process.exit(0);
+}
 
 const ctx = vm.createContext({ __calls: input.calls, __out: [] });
 const timeout = input.timeoutMs ?? 2000;

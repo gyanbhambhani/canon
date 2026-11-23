@@ -100,7 +100,11 @@ export function compile(lang: ExecLang, code: string): Compiled {
     }
     if (lang === "ts") {
       const js = ts.transpileModule(code, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
-      return { ok: true, artifact: js };
+      // a top-level function of the right name counts even if the model forgot `export`
+      // (Canon and Python find the function by name too)
+      const names = [...code.matchAll(/^(?:export\s+)?function\s+([A-Za-z_$][\w$]*)/gm)].map((m) => m[1]);
+      const fallback = names.map((n) => `\nif (typeof ${n} === "function" && !module.exports.${n}) module.exports.${n} = ${n};`).join("");
+      return { ok: true, artifact: js + fallback };
     }
     const dir = mkdtempSync(join(tmpdir(), "cb-py-"));
     if (lang === "py") {

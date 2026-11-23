@@ -1,3 +1,10 @@
+fn choose(cond: Bool, a: Int, b: Int) -> Int {
+  if cond {
+    return a
+  }
+  return b
+}
+
 fn at(xs: List[Int], i: Int) -> Int {
   return xs
     |> drop(i)
@@ -24,10 +31,7 @@ fn next_permutation(xs: List[Int]) -> List[Int] {
       j = q.0
     }
   }
-  let swapped = map(enumerate(suffix), |q| (match q.0 == j {
-    true => pivot,
-    false => q.1,
-  }))
+  let swapped = map(enumerate(suffix), |q| choose(q.0 == j, pivot, q.1))
   var out = append(take(xs, pivot_at), at(suffix, j))
   for x in reverse(swapped) {
     out = append(out, x)
