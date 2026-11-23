@@ -107,13 +107,13 @@ These numbers are inputs to the design, not verdicts. `set` exists so that every
 | --- | --- | --- | --- |
 | C1 | Agents understand Canon from its reference alone | 100% correct in Canon and in TypeScript, both models | Supported |
 | C2 | They code it right, hard tasks included | 100% overall and on the hard tier | Supported |
-| C3 | One way to write it: at most half as many distinct programs per task | Canon 4.30 vs TypeScript 4.10 (Claude), 4.20 vs 3.68 (GPT-6.2 Sol) | **Not supported** |
+| C3 | One way to write it: at most half as many distinct programs per task | Canon 4.30 vs TypeScript 4.10 (Claude), 4.20 vs 3.68 (GPT-6.2 Sol); ratio 95% intervals 0.81-1.34 and 0.88-1.48 | **Not supported** |
 | C4 | At least as fast for an agent to reach working code | 1.04 vs 1.00 turns (Claude), 1.07 vs 1.00 (GPT-6.2 Sol) | Supported |
 | C5 | Programs run faster | v0 compiles to JavaScript, so not tested | Not tested |
 
 ![Distinct programs per task, Canon versus TypeScript](/research/benchmark.svg)
 
-So, honestly: agents learn Canon from a 2,800-token reference and write it correctly on the first or second try, but on this benchmark **Canon did not make their programs converge** more than TypeScript does once TypeScript is normalized by Prettier. The core bet, as measured here, does not hold yet.
+So, honestly: agents learn Canon from a 2,800-token reference and write it correctly on the first or second try, but on this benchmark **no improvement in convergence was detected**. Both intervals include a ratio of 1, so Canon was neither clearly better nor clearly worse than TypeScript once TypeScript is normalized by Prettier. The core bet, as measured here, does not hold yet.
 
 What went right: every Canon first draft that failed (5 to 7 percent of runs) failed only on canonical form or line length, never on types, and every one passed after a single round of applying the compiler's patch. Where a task fits Canon's constructs directly it converges strongly: `sum_evens` was the same program in 10 of 10 Claude runs, and `factorial` with GPT-6.2 Sol was 1 program against TypeScript's 9.
 
@@ -121,6 +121,6 @@ What went wrong, read from the programs themselves (a hypothesis, not a finding)
 
 - **Restrictions breed workarounds.** With `match` limited to `let`, `set` and `return`, and no early exit from a loop, tasks such as `apply_ops` produced 10 different Canon programs, against TypeScript's single early-return loop.
 - **Names and optional contracts multiply programs.** Identical structures differ only in a helper's name or an added `requires:` line.
-- **Cost.** The reference rides in every prompt: about 11 to 13 times the tokens per correct program, and about 1.4 to 1.7 times the wall time.
+- **Cost.** The reference rides in every prompt: about 11 to 13 times the tokens per correct program, about 1.4 to 1.7 times the wall time, and, with Claude's prompt caching on, about 1.8 times the dollar cost ($5.09 against $2.81 for 500 runs each).
 
 The next step is a pre-registered follow-up testing specific changes: `match` anywhere or an early loop exit, fewer reasons to invent helpers, and the spellings the likelihood study found far more natural (`while`, bare assignment).

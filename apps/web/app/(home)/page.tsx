@@ -148,16 +148,28 @@ export default function Home() {
             two agent runs drift apart, and reviewers chase style instead of logic.
           </p>
           <p>
-            Canon removes that freedom on purpose: one way to loop, one way to branch, one way to handle errors, one
-            textual form per program. Fewer legal programs per intent means agent runs converge, diffs stay small and
-            caches hit.
+            Our bet is that fewer legal programs per intent makes agent runs converge, so diffs stay small and caches
+            hit. Canon removes freedom on purpose: one way to loop, one way to branch, one way to handle errors, one
+            textual form per program.
           </p>
           <p>
-            It borrows the forms models already write most reliably (braces, fn, let, match, pipelines) and then removes
-            every alternative. The whole reference fits in one context window, and the compiler answers with patches, so
-            the loop closes in a turn or two.
+            We tested that bet with rules fixed before the run: 2,000 runs, two frontier models, Canon against
+            TypeScript. Agents learned Canon from its reference alone and wrote it as reliably as TypeScript, and every
+            slip was fixed in one round by applying the compiler&apos;s patch. But convergence did not improve yet.
           </p>
           <p>
+            The data shows why: removing a construct without leaving an obvious replacement pushes models into
+            improvising, and improvisations vary. Where the natural form existed, runs converged; one task came out as the
+            same program 10 times out of 10. Version 0.2 tests the fix: keep the forms models reach for, then ban the
+            alternatives.
+          </p>
+          <p className="flex flex-wrap gap-x-6 gap-y-2">
+            <Link
+              href="/docs/design-notes#benchmark-do-agents-converge-on-canon"
+              className="font-medium text-[var(--accent)] underline-offset-4 hover:underline"
+            >
+              Read the results →
+            </Link>
             <Link href="/docs/design-notes" className="font-medium text-[var(--accent)] underline-offset-4 hover:underline">
               Read the design notes →
             </Link>
