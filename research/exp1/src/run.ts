@@ -2,6 +2,7 @@
  * Experiment 1 runner: does Canon's compiler loop help weaker models? Three setups with the same
  * budget (a draft plus at most MAX_FIX_ROUNDS fixes), then the task's hidden tests:
  *   py-plain  Python, `mypy --strict` errors (the main rival)
+ *   py-patch  Python, the same errors as JSON with patches (mypy suggestions, ruff fixes)
  *   ts-plain  TypeScript, plain `tsc --strict` errors
  *   ts-patch  TypeScript, the same errors as JSON with quick-fix patches (src/ts-patches.ts)
  *   canon     Canon, `canon check` JSON with patches
@@ -18,6 +19,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { canon, extractCode, typescript, type CheckOutcome, type Language, type TestOutcome } from "../../benchmark/src/languages.js";
 import type { Task } from "../../benchmark/src/tasks.js";
+import { pyPatch } from "./py-patches.js";
 import { python } from "./python.js";
 import { checkWithPatches } from "./ts-patches.js";
 
@@ -43,7 +45,7 @@ const tsPatch: Language = {
   },
 };
 
-export const SETUPS: Record<string, Language> = { "py-plain": python, "ts-plain": typescript, "ts-patch": tsPatch, canon };
+export const SETUPS: Record<string, Language> = { "py-plain": python, "py-patch": pyPatch, "ts-plain": typescript, "ts-patch": tsPatch, canon };
 
 // ---------------------------------------------------------------- models
 
@@ -216,7 +218,7 @@ async function main() {
   const { HARD_TASKS } = await import("./tasks.js");
   const spec = arg("model", "local:Qwen2.5-Coder-7B-Instruct-8bit");
   const model = spec.startsWith("local:") ? localModel(spec.slice(6), Number(arg("port", "8081"))) : claudeModel(spec);
-  const setups = arg("setups", "py-plain,ts-plain,ts-patch,canon").split(",");
+  const setups = arg("setups", "py-plain,py-patch,ts-plain,ts-patch,canon").split(",");
   const taskArg = arg("tasks", "all");
   const tasks: Task[] = taskArg === "all" ? HARD_TASKS : HARD_TASKS.filter((t: Task) => taskArg.split(",").includes(t.id));
   const runs = Number(arg("runs", "5"));

@@ -23,8 +23,8 @@ export const MODEL_ORDER = [
   "claude-haiku-5-5",
   "claude-opus-5-5",
 ];
-export const SETUP_ORDER = ["py-plain", "ts-plain", "ts-patch", "canon"];
-const SETUP_LABEL: Record<string, string> = { "py-plain": "Python, plain errors", "ts-plain": "TypeScript, plain errors", "ts-patch": "TypeScript, errors with patches", canon: "Canon" };
+export const SETUP_ORDER = ["py-plain", "py-patch", "ts-plain", "ts-patch", "canon"];
+const SETUP_LABEL: Record<string, string> = { "py-plain": "Python, plain errors", "py-patch": "Python, errors with patches", "ts-plain": "TypeScript, plain errors", "ts-patch": "TypeScript, errors with patches", canon: "Canon" };
 const SHORT: Record<string, string> = {
   "Qwen2.5-Coder-1.5B-Instruct-8bit": "Qwen 1.5B",
   "Qwen2.5-Coder-7B-Instruct-8bit": "Qwen 7B",
@@ -128,8 +128,8 @@ const T = 30;
 const B = 60;
 const xs = (i: number) => L + ((W - L - R) * (models.length === 1 ? 0.5 : i / (models.length - 1)));
 const ys = (v: number) => T + (H - T - B) * (1 - v);
-const COLORS: Record<string, string> = { "py-plain": "#d97706", "ts-plain": "#9ca3af", "ts-patch": "#6b7280", canon: "#2563eb" };
-const DASH: Record<string, string> = { "py-plain": "2 3", "ts-plain": "4 4", "ts-patch": "", canon: "" };
+const COLORS: Record<string, string> = { "py-plain": "#d97706", "py-patch": "#92400e", "ts-plain": "#9ca3af", "ts-patch": "#6b7280", canon: "#2563eb" };
+const DASH: Record<string, string> = { "py-plain": "2 3", "py-patch": "", "ts-plain": "4 4", "ts-patch": "", canon: "" };
 const parts = [
   `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="ui-sans-serif, system-ui, sans-serif">`,
   `<rect width="100%" height="100%" fill="#ffffff"/>`,
