@@ -22,3 +22,4 @@ apps/web/lib/generated/
 research/**/.venv/
 research/**/__pycache__/
 .claude/worktrees/
+.venv/

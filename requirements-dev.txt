@@ -1,0 +1,8 @@
+# Python tools for v0.5's generated backend: `pnpm pyenv` installs them into .venv.
+# The generated code itself depends only on FastAPI, Pydantic and the standard library.
+fastapi==0.165.0
+pydantic==2.14.4
+uvicorn==0.54.0
+httpx==0.28.1
+ruff==0.17.6
+mypy==2.4.1

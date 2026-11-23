@@ -24,6 +24,9 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      - name: Python tools for the generated backend (v0.5)
+        run: pnpm pyenv
+
       - name: Oracle self-test (reference/test_canon.py)
         working-directory: reference
         run: python3 test_canon.py
