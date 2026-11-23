@@ -2,6 +2,8 @@
 
 **A programming language for AI agents: one way to write every program, effects in every signature, and a compiler that answers with patches.**
 
+**Live site:** <https://canon-lake.vercel.app> ([docs](https://canon-lake.vercel.app/docs), [playground](https://canon-lake.vercel.app/play), [llms.txt](https://canon-lake.vercel.app/llms.txt))
+
 Canon's syntax uses the forms models already write well (braces, `fn`, `let`, `match`, `|>`) and then removes every alternative. A file `canon fmt` would change is a compile error, so two programs with the same meaning are the same bytes. When an agent gets something wrong, the compiler replies with a JSON diagnostic and, wherever the fix is mechanical, a unified diff the agent applies as is.
 
 ```canon

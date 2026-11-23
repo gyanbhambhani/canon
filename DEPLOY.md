@@ -23,6 +23,8 @@ the web build and the Playwright smoke test, and must be green.
 
 ## 3. Set NEXT_PUBLIC_GITHUB_URL
 
+Done: set on the Vercel project `canon` for Production, Preview and Development.
+
 The landing page's GitHub button and the GitHub icon in the site navigation read this variable
 at build time and are hidden when it is unset. Set it in the Vercel project (next step), for
 Production and Preview:
@@ -34,6 +36,9 @@ NEXT_PUBLIC_GITHUB_URL=https://github.com/gyanbhambhani/canon
 To try it locally: `NEXT_PUBLIC_GITHUB_URL=https://github.com/gyanbhambhani/canon pnpm --filter web build`.
 
 ## 4. Import apps/web into Vercel
+
+Done: Vercel project `canon` (team "gyan"), Root Directory `apps/web`, connected to the GitHub
+repository so every push to `main` deploys. Live at <https://canon-lake.vercel.app>.
 
 1. In Vercel, choose **Add New → Project** and import the GitHub repository.
 2. Set **Root Directory** to `apps/web`. Leave "Include files outside the root directory" on
