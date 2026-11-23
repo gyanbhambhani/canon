@@ -1,0 +1,14 @@
+{
+  "id": "signup-age",
+  "kind": "change",
+  "title": "Add a required age to signup, with a validation rule",
+  "features": [{ "module": "frontend/src/features/signup.ts", "signature": "signup(baseUrl: string, email: string, name: string, password: string, age: number): Promise<Outcome<Profile>>" }],
+  "supersedes": ["test_signup_and_login", "test_signup_validation", "test_reports", "signup-probe"],
+  "validation": [
+    {
+      "feature": "signup",
+      "args": [{ "name": "email", "gen": "email" }, { "name": "name", "gen": "name" }, { "name": "password", "gen": "password" }, { "name": "age", "gen": "int" }],
+      "request": { "method": "POST", "path": "/users", "body": { "email": "$email", "name": "$name", "password": "$password", "age": "$age" } }
+    }
+  ]
+}

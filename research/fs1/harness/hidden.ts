@@ -7,7 +7,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync } from "node:fs";
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 import { FS1, PY } from "./arms";
 
 export interface TaskInfo {
@@ -45,7 +45,9 @@ export function loadTask(id: string): TaskInfo {
 function pytest(backend: string, files: string[], deselect: string[]): TestResult[] {
   const xml = join(mkdtempSync(join(tmpdir(), "fs1-junit-")), "out.xml");
   const args = ["-q", "-p", "no:cacheprovider", "--import-mode=importlib", `--junitxml=${xml}`, ...files];
-  for (const d of deselect) for (const f of files) args.push("--deselect", `${f}::${d}`);
+  // superseded tests are regression tests (files[0]); node ids are relative to the root, and
+  // (--deselect matches node-id prefixes: no regression test name may prefix another)
+  for (const d of deselect) args.push("--deselect", `${relative(FS1, files[0])}::${d}`);
   spawnSync(join(PY, "pytest"), args, { cwd: FS1, encoding: "utf8", env: { ...process.env, FS1_BACKEND: backend }, timeout: 600_000 });
   if (!existsSync(xml)) return [{ id: "pytest", tags: ["http"], passed: false, error: "pytest did not run" }];
   const text = readFileSync(xml, "utf8");
