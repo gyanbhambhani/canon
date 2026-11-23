@@ -128,6 +128,9 @@ async function visibleTests(dir: string): Promise<string> {
 
 // ---------------------------------------------------------------- one run
 
+/** The provider account has no credit: an infrastructure failure, never recorded. */
+export class CreditError extends Error {}
+
 export interface RunRecord {
   key: string;
   task: string;
@@ -156,6 +159,8 @@ export interface RunRecord {
   wallMs: number;
   error?: string;
   failures: string[];
+  /** the hidden suite's verdict on the state after the first edit round (null: no edit round) */
+  firstRound: { pass: boolean; mismatch: boolean } | null;
   transcript: string;
 }
 
@@ -167,6 +172,7 @@ export async function runOne(model: Model, taskId: string, arm: Arm, run: number
   const turns: Turn[] = [{ role: "user", content: firstMessage(arm, dir, readFileSync(join(FS1, "tasks", taskId, "task.md"), "utf8")) }];
   const usage: Usage = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
   let editRounds = 0;
+  let firstRound: RunRecord["firstRound"] = null;
   let finished: RunRecord["finished"] = "turns";
   let error: string | undefined;
   const log: string[] = [];
@@ -203,7 +209,13 @@ export async function runOne(model: Model, taskId: string, arm: Arm, run: number
       }
       if (wrote) {
         editRounds++;
-        feedback.push((await checkReport(arm, dir)).text, await visibleTests(dir));
+        const report = await checkReport(arm, dir);
+        if (editRounds === 1) {
+          // first-round pass: the hidden verdict on the first edit round's state (after its build)
+          const h1 = await runHidden(dir, task);
+          firstRound = { pass: h1.pass, mismatch: h1.mismatch };
+        }
+        feedback.push(report.text, await visibleTests(dir));
         feedback.push(`(${MAX_EDIT_ROUNDS - editRounds} edit rounds left)`);
       }
       if (done) {
@@ -220,8 +232,11 @@ export async function runOne(model: Model, taskId: string, arm: Arm, run: number
       log.push(`--- harness\n${clip(msg, 4000)}`);
     }
   } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    // the account is out of credit: no run happened; record nothing, so it resumes cleanly
+    if (/credit balance is too low/i.test(message)) throw new CreditError(message);
     finished = "error";
-    error = e instanceof Error ? e.message : String(e);
+    error = message;
   }
   // the verdict: build, the arm's checks, the hidden suite
   const b = build(arm, dir);
@@ -251,6 +266,7 @@ export async function runOne(model: Model, taskId: string, arm: Arm, run: number
     wallMs: Date.now() - started,
     ...(error ? { error } : {}),
     failures: h.results.filter((r) => !r.passed).map((r) => `${r.id}: ${(r.error ?? "").slice(0, 300)}`),
+    firstRound,
     transcript: log.join("\n").slice(0, 200_000),
   };
 }
@@ -274,7 +290,9 @@ if (process.argv[1]?.endsWith("run.ts")) {
   mkdirSync(dirname(out), { recursive: true });
   const read = (f: string): RunRecord[] =>
     existsSync(f) ? readFileSync(f, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l) as RunRecord) : [];
-  const done = new Set(read(out).map((rec) => rec.key));
+  // an infrastructure failure (the model API failed, not a refusal) is not done: it is rerun
+  const infra = (rec: RunRecord) => rec.finished === "error" && !!rec.error && !/^refusal/.test(rec.error);
+  const done = new Set(read(out).filter((rec) => !infra(rec)).map((rec) => rec.key));
   const spent = () => spentFiles.flatMap(read).filter((rec) => rec.model === model.id).reduce((a, rec) => a + (rec.dollars ?? 0), 0);
   const jobs: { t: string; arm: Arm; r: number }[] = [];
   for (let r = firstRun; r < firstRun + runs; r++) for (const t of tasks) for (const arm of arms) jobs.push({ t, arm, r });
@@ -290,7 +308,15 @@ if (process.argv[1]?.endsWith("run.ts")) {
         console.log(`STOP: ${model.id} reached the cap of $${cap}`);
         break;
       }
-      const rec = await runOne(model, t, arm, r);
+      let rec: RunRecord;
+      try {
+        rec = await runOne(model, t, arm, r);
+      } catch (e) {
+        if (!(e instanceof CreditError)) throw e;
+        stopped = true;
+        console.log(`STOP: ${model.id}: the provider account is out of credit (nothing recorded for ${key})`);
+        break;
+      }
       appendFileSync(out, JSON.stringify(rec) + "\n");
       console.log(`${rec.pass ? "PASS" : "FAIL"} ${key}: rounds ${rec.editRounds}, turns ${rec.turns}, ${rec.finished}, checks ${rec.checksOk ? "ok" : "failed"}` +
         `${rec.mismatch ? ", MISMATCH" : ""}, tokens ${rec.usage.input + rec.usage.cacheRead + rec.usage.cacheWrite}/${rec.usage.output}` +

@@ -2,6 +2,41 @@
 
 Judgment calls made while building the harness, newest first. Each entry: date, decision, reason.
 
+## 2026-11-23 — FS-1 pilot, power analysis and pre-registration
+Decision: the pilot hit the ceiling for both frontier models (every arm 100% end-to-end pass), so
+the pre-registration keeps the plan's primary analysis unchanged and adds first-round pass (the
+hidden verdict right after the first edit round, recorded by the runner) as a secondary measure.
+Reason: the difficulty check asks for tasks that are neither trivial nor impossible everywhere, and
+there is no time overnight to author harder tasks. First-round pass varied in the pilot (Opus 50% to
+88%, GPT 70% to 90% by arm), so it can still separate the arms. It cannot change the win rule.
+
+Decision: margin 10 percentage points (the pre-set floor, because the pilot's paired differences have
+no variance at the ceiling); runs per task 3 for gpt-6.2-sol and 2 for claude-opus-5-5 (the largest
+R ≤ 3 whose projected cost stays within 90% of the $100 cap); Qwen 1 run per task if exploratory.
+Reason: the power analysis rule in analysis/power.ts, applied to the pilot.
+
+Decision: the baseline is openapi for both frontier models (both A and B scored 100% in the pilot;
+a tie goes to B).
+Reason: the plan calls B the arm that matters; the pre-registration fixed the tie rule before the
+pilot was read.
+
+Decision: GPT-6.2 Sol is priced at $2 / $10 per million input / output tokens, cached input $0.10,
+from the CanonBench run's lookup (research/canonbench/runner/models.ts, 2026-11-22), and runs at
+reasoning effort medium like CanonBench.
+Reason: FS-1 needs a price for the $100 cap, and FS-1 and CanonBench should describe the same model
+the same way.
+
+Decision: when the provider account is out of credit, the runner records nothing for that run and
+stops the model; the six Opus pilot runs that failed that way were removed from
+results/pilot-claude.jsonl. A probe calls Opus about every 15 minutes and resumes it under the same
+pre-registration if credit returns.
+Reason: these are infrastructure failures, never wrong answers, and the main thread asked for them
+to resume cleanly.
+
+Decision: the runner gained `--concurrency` (several runs at once per model, each in its own working
+copy) and `--cap` (stop launching runs at a model's recorded dollars across the pilot and main files).
+Reason: 540 GPT runs one at a time would take about six hours.
+
 ## 2026-11-23 — The runner
 Decision: one text protocol for every model (`<read/>`, `<write>`, `<run>check|test</run>`,
 `<done/>`), not native tool calling. An edit round is a reply that writes files; after it the

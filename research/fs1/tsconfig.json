@@ -6,5 +6,5 @@
     "lib": ["ES2022", "DOM"],
     "allowImportingTsExtensions": false
   },
-  "include": ["harness/**/*.ts", "runner/**/*.ts", "tasks/*/hidden/*.ts"]
+  "include": ["harness/**/*.ts", "runner/**/*.ts", "analysis/**/*.ts", "tasks/*/hidden/*.ts"]
 }
