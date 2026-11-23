@@ -341,3 +341,22 @@ describe("canon test and api fns", () => {
     expect(t.trap?.code).toBe("R001");
   });
 });
+
+describe("long contracts break before each && or || (found by FS-1)", () => {
+  const long = 'type S {\n  email: String,\n  display_name: String,\n  password: String,\n  age: Int,\n}\n\napi fn signup(input: S) -> Int\n  route: POST "/users"\n  requires: is_email(input.email) && str_len(trim(input.display_name)) > 0 && str_len(input.password) >= 12 && input.age >= 13\n{\n  return input.age\n}\n';
+  it("brace syntax: one operand per line, canonical and clean", () => {
+    const f = fmt(long);
+    expect(f).toContain("  requires: is_email(input.email)\n    && str_len(trim(input.display_name)) > 0\n    && str_len(input.password) >= 12\n    && input.age >= 13\n{");
+    expect(fmt(f)).toBe(f);
+    expect(check(f, "m.cn").diagnostics).toEqual([]);
+  });
+  it("Canon-Py: inside the decorator's parentheses, and back", () => {
+    const p = fmt(fmt(long), py);
+    expect(p).toContain('@requires(\n    is_email(input.email)\n    and str_len(trim(input.display_name)) > 0\n    and str_len(input.password) >= 12\n    and input.age >= 13\n)\ndef signup');
+    expect(check(p, "m.cn", py).diagnostics).toEqual([]);
+    expect(fmt(p)).toBe(fmt(long));
+  });
+  it("a short contract stays on one line", () => {
+    expect(fmt('fn f(n: Int) -> Int\n  requires: n > 0 && n < 9\n{\n  return n\n}\n')).toContain("requires: n > 0 && n < 9\n");
+  });
+});

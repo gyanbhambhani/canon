@@ -7,7 +7,7 @@ import type * as A from "./ast.js";
 import { isExtern } from "./ast.js";
 import { CanonError, diag } from "./diagnostics.js";
 import { features } from "./features.js";
-import { MAX_LINE, floatText } from "./printer.js";
+import { MAX_LINE, chainOperands, floatText } from "./printer.js";
 import { pyLen } from "./py.js";
 import { sameNode } from "./pyparser.js";
 
@@ -306,6 +306,19 @@ export class PyPrinter {
     return text;
   }
 
+  /**
+   * v0.5: a contract decorator. When it is longer than MAX_LINE and is an `and` or `or` chain, its
+   * parentheses hold one operand per line, each continuation starting with the operator.
+   */
+  private contract(kw: string, e: A.Expr): string {
+    const flat = `@${kw}(${this.ex(e)})`;
+    if (!features().wrap || pyLen(flat) <= MAX_LINE) return flat;
+    if (e.k !== "Binary" || (e.op !== "and" && e.op !== "or")) return flat;
+    const p = e.op === "and" ? P.and : P.or;
+    const parts = chainOperands(e, e.op).map((x, i) => this.ex(x, i === 0 ? p : p + 1));
+    return [`@${kw}(`, `${PY_INDENT}${parts[0]}`, ...parts.slice(1).map((x) => `${PY_INDENT}${e.op} ${x}`), ")"].join("\n");
+  }
+
   item(it: A.Item): string {
     switch (it.k) {
       case "Comment":
@@ -330,8 +343,8 @@ export class PyPrinter {
         const deco: string[] = [];
         if (it.route) deco.push(`@api("${it.route.method}", "${it.route.path}")`);
         if (it.effects.length) deco.push(`@effects(${pyEffects(it.effects)})`);
-        if (it.requires !== null) deco.push(`@requires(${this.ex(it.requires)})`);
-        if (it.ensures !== null) deco.push(`@ensures(${this.ex(it.ensures)})`);
+        if (it.requires !== null) deco.push(this.contract("requires", it.requires));
+        if (it.ensures !== null) deco.push(this.contract("ensures", it.ensures));
         const tp = it.tparams.length ? `[${it.tparams.join(", ")}]` : "";
         const ps = it.params.map(([n, t]) => `${n}: ${this.ty(t)}`);
         let head = `def ${it.name}${tp}(${ps.join(", ")}) -> ${this.ty(it.ret)}:`;

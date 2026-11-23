@@ -13,7 +13,7 @@ import ts from "typescript";
 import { beforeAll, describe, expect, it } from "vitest";
 import { checkProject, compileJs, fmt, generateTsClient, walkExprs, type ProjectResult } from "@canon/compiler";
 import { MemoryHost, NONE, Runtime, load, some, testHost } from "@canon/runtime";
-import { buildBackend, py } from "./helpers/py";
+import { buildBackend, py, run } from "./helpers/py";
 
 const COUNT = 2000;
 const INPUTS = 3;
@@ -235,6 +235,14 @@ print(json.dumps(out))
     expect(all.filter((x) => x === false).length).toBeGreaterThan(COUNT / 4);
     expect(all.filter((x) => typeof x === "string")).toEqual([]);
   }, 600_000);
+
+  it("the generated backend, thousands of validation rules, passes ruff format and ruff check", () => {
+    const fmt = run("ruff", ["format", "--isolated", "--check", "--diff", "canon_generated"], dir);
+    expect(fmt.code, fmt.out.slice(0, 3000) + fmt.err).toBe(0);
+    // random rules contain constant conditions nobody writes (true || x, 19 == 17): those three rules aside
+    const lint = run("ruff", ["check", "--isolated", "--output-format", "concise", "--ignore", "SIM222,SIM223,PLR0133", "canon_generated"], dir);
+    expect(lint.code, lint.out.slice(0, 3000) + lint.err).toBe(0);
+  }, 120_000);
 
   it("the generated expressions cover every portable built-in and operator", () => {
     const text = exprs.join("\n");

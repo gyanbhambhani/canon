@@ -2,6 +2,13 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-23 — v0.5 M8 (from FS-1): long contracts, and ruff width
+Decision: canonical form breaks a contract clause longer than 100 characters that is an && or || chain before each operator, one operand per line (Canon-Py: inside the decorator's parentheses, before each `and`/`or`). Only with the v0.3+ `wrap` switch, so the oracle's v0.2 mode is unchanged.
+Reason: FS-1's harness found that a long validation rule was L001 with no patch, so an agent's only way out was to shorten its names. Validation rules are long by nature.
+
+Decision: the Python formatter measures display width as ruff does (wide characters 2, zero-width and control characters 0); invisible characters in string literals are escaped (\u200b, \ufeff, NEL, line separators); `not (a == b)` is generated as `a != b` and `not contains(xs, x)` as `x not in xs`; `-(-x)` is generated as `x`. A delimiter split never recurses on a line with nothing to split, and an operator that starts a line is not a delimiter.
+Reason: the parity suite now also runs ruff on its 2,000-route backend, and these were the differences. The recursion was a real crash, reached once long contracts produced long `require(...)` lines. The suite ignores only SIM222, SIM223 and PLR0133, which flag constant conditions that random rules contain and nobody writes.
+
 ## 2026-11-22 — v0.5 M6 and M7: example apps and docs
 Decision: the full-stack addendum is its own page (for-agents-fullstack.mdx), served raw at /llms-fullstack.txt (1,265 tokens; the core reference is unchanged at 2,528). Agents read the core reference plus the addendum.
 Reason: the spec keeps the core reference under 4,000 tokens and the addendum under 1,500. A separate page keeps both budgets independent.

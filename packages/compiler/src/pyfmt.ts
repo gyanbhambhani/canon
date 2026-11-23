@@ -8,6 +8,26 @@
 
 export const PY_LINE = 88;
 
+/**
+ * Display width, as ruff measures lines (unicode-width): zero for control characters, combining
+ * marks and zero-width characters; two for East Asian wide and fullwidth characters and emoji.
+ */
+export function pyWidth(text: string): number {
+  let w = 0;
+  for (const ch of text) {
+    const c = ch.codePointAt(0)!;
+    if (c < 0x20 || (c >= 0x7f && c <= 0x9f) || (c >= 0x300 && c <= 0x36f) || (c >= 0x200b && c <= 0x200f) ||
+        c === 0xfeff || (c >= 0x20d0 && c <= 0x20ff) || (c >= 0xfe00 && c <= 0xfe0f) || (c >= 0x1ab0 && c <= 0x1aff)) continue;
+    const wide = (c >= 0x1100 && c <= 0x115f) || (c >= 0x2e80 && c <= 0x303e) || (c >= 0x3000 && c <= 0x33ff) ||
+      (c >= 0x3400 && c <= 0x4dbf) || (c >= 0x4e00 && c <= 0x9fff) || (c >= 0xa000 && c <= 0xa4cf) ||
+      (c >= 0xac00 && c <= 0xd7a3) || (c >= 0xf900 && c <= 0xfaff) || (c >= 0xfe30 && c <= 0xfe4f) ||
+      (c >= 0xff00 && c <= 0xff60) || (c >= 0xffe0 && c <= 0xffe6) || (c >= 0x1f300 && c <= 0x1f64f) ||
+      (c >= 0x1f680 && c <= 0x1f6ff) || (c >= 0x1f900 && c <= 0x1f9ff) || (c >= 0x20000 && c <= 0x3fffd);
+    w += wide ? 2 : 1;
+  }
+  return w;
+}
+
 interface Tok {
   t: string;
   /** a space before this token in the flat rendering */
@@ -124,7 +144,7 @@ function delimiters(toks: Tok[]): { i: number; p: number }[] {
   return out;
 }
 
-const fits = (indent: string, toks: Tok[]) => indent.length + render(toks).length <= PY_LINE;
+const fits = (indent: string, toks: Tok[]) => indent.length + pyWidth(render(toks)) <= PY_LINE;
 
 /** Split one logical line (already indented by `indent`) into lines that fit, Black's way. */
 export function splitLine(indent: string, line: string, optionalParens = true): string[] {
@@ -225,7 +245,7 @@ function split(indent: string, toks: Tok[]): string[] {
     const innerClose = c0 - 1;
     const innerOpen = CLOSE.has(toks[innerClose].t) ? matching(toks, innerClose) : -1;
     const canOmit = ds.length === 0 || (count <= 1 && innerOpen > o0 && innerOpen < innerClose - 1 &&
-      indent.length + render(visible(toks.slice(0, innerOpen + 1))).length <= PY_LINE);
+      indent.length + pyWidth(render(visible(toks.slice(0, innerOpen + 1)))) <= PY_LINE);
     if (canOmit) return split(indent, flat);
     candidates = [candidates[0]];
   }
@@ -254,7 +274,7 @@ function splitInside(indent: string, toks: Tok[]): string[] {
   const flat = visible(toks);
   if (fits(indent, flat)) return [indent + render(flat)];
   const body = flat[flat.length - 1]?.t === "," ? flat.slice(0, -1) : flat;
-  if (delimiters(body).length) return delimiterSplit(indent, toks, false, true);
+  if (delimiters(body).some((d) => !(d.p !== 18 && d.i === 0))) return delimiterSplit(indent, toks, false, true);
   return split(indent, toks);
 }
 
@@ -265,7 +285,9 @@ function isSubscript(toks: Tok[], open: number): boolean {
 
 function delimiterSplit(indent: string, body: Tok[], subscript: boolean, inside = false): string[] {
   // a trailing comma is not a delimiter to split at
-  const ds = delimiters(body).filter((d) => !(d.p === 18 && d.i === body.length - 1));
+  // a trailing comma, and an operator that starts the line (Black records a delimiter on the token
+  // before it), are not places to split
+  const ds = delimiters(body).filter((d) => !(d.p === 18 && d.i === body.length - 1) && !(d.p !== 18 && d.i === 0));
   if (!ds.length) return split(indent, body);
   const max = Math.max(...ds.map((d) => d.p));
   const at = ds.filter((d) => d.p === max).map((d) => d.i);
@@ -283,6 +305,8 @@ function delimiterSplit(indent: string, body: Tok[], subscript: boolean, inside 
   parts.push(body.slice(from));
   const lines: string[] = [];
   const nonEmpty = parts.filter((p) => p.length);
+  // nothing to split at (a lone leading operator): fall back to a right-hand split
+  if (nonEmpty.length < 2) return split(indent, body);
   nonEmpty.forEach((p, n) => {
     let piece = p.map((x, i) => (i === 0 ? { ...x, sp: false } : x));
     const lastPart = n === nonEmpty.length - 1;
@@ -298,7 +322,7 @@ function delimiterSplit(indent: string, body: Tok[], subscript: boolean, inside 
 export function formatPy(lines: string[]): string {
   const out: string[] = [];
   for (const l of lines) {
-    if (l.trim() === "" || l.trimStart().startsWith("#") || l.length <= PY_LINE) {
+    if (l.trim() === "" || l.trimStart().startsWith("#") || pyWidth(l) <= PY_LINE) {
       out.push(l);
       continue;
     }

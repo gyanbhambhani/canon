@@ -30,3 +30,5 @@ writing `str_len(s.password) > 7`.
 
 Suggested fix: let the printer break a clause's top-level `&&`/`||` chain one operand per line,
 indented under the clause, as it breaks pipelines.
+
+**Fixed on main (2026-11-23):** `canon fmt` now breaks a long `requires:`/`ensures:` chain before each `&&`/`||` (Canon-Py: inside the decorator's parentheses), so the line is no longer L001. The signup-age reference's short parameter name is no longer needed, but it stays as written.

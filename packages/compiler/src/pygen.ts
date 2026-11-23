@@ -58,6 +58,10 @@ export function pyStr(value: string): string {
     else if (ch === "\t") out += "\\t";
     else if (ch === "\r") out += "\\r";
     else if (c < 0x20 || c === 0x7f) out += "\\x" + c.toString(16).padStart(2, "0");
+    // invisible characters are escaped, as ruff asks (PLE2515): zero-width, BOM, line separators, NEL
+    else if (c === 0x85 || (c >= 0x200b && c <= 0x200f) || c === 0x2028 || c === 0x2029 || c === 0xfeff) {
+      out += "\\u" + c.toString(16).padStart(4, "0");
+    }
     else out += ch;
   }
   return q + out + q;
@@ -880,7 +884,19 @@ class LogicGen {
       case "Binary":
         return this.binary(e);
       case "Unary": {
-        if (e.op === "not") return { code: `not ${par(this.ex(e.operand), P.not)}`, prec: P.not };
+        if (e.op === "not") {
+          // not (a == b) is a != b; not contains(xs, x) is x not in xs (the same meaning, NaN included)
+          const o = e.operand;
+          if (o.k === "Binary" && (o.op === "==" || o.op === "!=")) {
+            return this.binary({ ...o, op: o.op === "==" ? "!=" : "==" });
+          }
+          if (o.k === "Call" && o.callee.k === "Name" && o.callee.path[0] === "contains" && this.info.calls.get(o) === "builtin") {
+            return { code: `${par(this.ex(o.args[1]), P.cmp + 1)} not in ${par(this.ex(o.args[0]), P.cmp + 1)}`, prec: P.cmp };
+          }
+          return { code: `not ${par(this.ex(o), P.not)}`, prec: P.not };
+        }
+        // -(-x) is x (for Int and Float alike, -0.0 included); Python would read --x as a typo (B002)
+        if (e.operand.k === "Unary" && e.operand.op === "-") return this.ex(e.operand.operand);
         return { code: `-${par(this.ex(e.operand), P.unary)}`, prec: P.unary };
       }
       case "Lambda":
