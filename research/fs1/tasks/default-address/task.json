@@ -1,0 +1,16 @@
+{
+  "id": "default-address",
+  "kind": "feature",
+  "title": "One default shipping address per user",
+  "features": [
+    { "module": "frontend/src/features/setDefaultAddress.ts", "signature": "setDefaultAddress(baseUrl: string, email: string, street: string, city: string, postcode: string): Promise<Outcome<Address>>" },
+    { "module": "frontend/src/features/getDefaultAddress.ts", "signature": "getDefaultAddress(baseUrl: string, email: string): Promise<Outcome<Address | null>>" }
+  ],
+  "validation": [
+    {
+      "feature": "setDefaultAddress",
+      "args": [{ "name": "email", "gen": "email" }, { "name": "street", "gen": "name" }, { "name": "city", "gen": "name" }, { "name": "postcode", "gen": "string" }],
+      "request": { "method": "PUT", "path": "/users/$email/default-address", "body": { "street": "$street", "city": "$city", "postcode": "$postcode" } }
+    }
+  ]
+}

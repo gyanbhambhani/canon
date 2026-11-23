@@ -1,0 +1,13 @@
+{
+  "id": "change-password",
+  "kind": "feature",
+  "title": "Let a user change their password, checking the old one",
+  "features": [{ "module": "frontend/src/features/changePassword.ts", "signature": "changePassword(baseUrl: string, email: string, oldPassword: string, newPassword: string): Promise<Outcome<Profile>>" }],
+  "validation": [
+    {
+      "feature": "changePassword",
+      "args": [{ "name": "email", "gen": "email" }, { "name": "oldPassword", "gen": "password" }, { "name": "newPassword", "gen": "password" }],
+      "request": { "method": "POST", "path": "/users/$email/password", "body": { "old_password": "$oldPassword", "new_password": "$newPassword" } }
+    }
+  ]
+}

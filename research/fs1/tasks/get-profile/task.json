@@ -1,0 +1,6 @@
+{
+  "id": "get-profile",
+  "kind": "feature",
+  "title": "Show a user's profile",
+  "features": [{ "module": "frontend/src/features/getProfile.ts", "signature": "getProfile(baseUrl: string, email: string): Promise<Outcome<Profile>>" }]
+}

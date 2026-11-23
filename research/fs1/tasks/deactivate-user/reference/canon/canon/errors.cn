@@ -1,0 +1,9 @@
+# The shop's domain errors, one type for every endpoint: logging in and placing an order
+# both answer Deactivated, and a variant belongs to exactly one type.
+type ShopError =
+  | Missing(sku: String)
+  | Invalid(reason: String)
+  | Taken(email: String)
+  | BadLogin
+  | NoSuchUser(email: String)
+  | Deactivated(email: String)

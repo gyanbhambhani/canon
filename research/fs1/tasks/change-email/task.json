@@ -1,0 +1,13 @@
+{
+  "id": "change-email",
+  "kind": "feature",
+  "title": "Let a user change their email (unique, Taken when used)",
+  "features": [{ "module": "frontend/src/features/changeEmail.ts", "signature": "changeEmail(baseUrl: string, email: string, newEmail: string): Promise<Outcome<Profile>>" }],
+  "validation": [
+    {
+      "feature": "changeEmail",
+      "args": [{ "name": "email", "gen": "email" }, { "name": "newEmail", "gen": "email" }],
+      "request": { "method": "PATCH", "path": "/users/$email/email", "body": { "new_email": "$newEmail" } }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "password-reset-token",
+  "kind": "feature",
+  "title": "Reset a forgotten password with a one-time UUID token",
+  "features": [
+    { "module": "frontend/src/features/requestPasswordReset.ts", "signature": "requestPasswordReset(baseUrl: string, email: string): Promise<Outcome<{ token: string }>>" },
+    { "module": "frontend/src/features/resetPassword.ts", "signature": "resetPassword(baseUrl: string, token: string, newPassword: string): Promise<Outcome<Profile>>" }
+  ],
+  "validation": [
+    {
+      "feature": "resetPassword",
+      "args": [{ "name": "token", "gen": "string" }, { "name": "newPassword", "gen": "password" }],
+      "request": { "method": "POST", "path": "/password-resets", "body": { "token": "$token", "new_password": "$newPassword" } }
+    }
+  ]
+}

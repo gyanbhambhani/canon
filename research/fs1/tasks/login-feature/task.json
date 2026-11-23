@@ -1,0 +1,6 @@
+{
+  "id": "login-feature",
+  "kind": "feature",
+  "title": "A login feature module; login no longer needs a name",
+  "features": [{ "module": "frontend/src/features/login.ts", "signature": "login(baseUrl: string, email: string, password: string): Promise<Outcome<Profile>>" }]
+}

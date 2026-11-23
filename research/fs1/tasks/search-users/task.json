@@ -1,0 +1,13 @@
+{
+  "id": "search-users",
+  "kind": "feature",
+  "title": "Search users by a substring of their name",
+  "features": [{ "module": "frontend/src/features/searchUsers.ts", "signature": "searchUsers(baseUrl: string, q: string): Promise<Outcome<Profile[]>>" }],
+  "validation": [
+    {
+      "feature": "searchUsers",
+      "args": [{ "name": "q", "gen": "string" }],
+      "request": { "method": "GET", "path": "/users/search", "query": { "q": "$q" } }
+    }
+  ]
+}

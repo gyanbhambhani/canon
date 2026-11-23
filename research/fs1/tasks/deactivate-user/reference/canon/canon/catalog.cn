@@ -1,0 +1,116 @@
+use errors.{ShopError}
+
+table products: Product key sku
+
+type Product {
+  sku: String,
+  name: String,
+  cents: Int,
+  stock: Int,
+  tags: List[String],
+}
+
+type Category =
+  | Food
+  | Tool(heavy: Bool)
+
+# The price as dollars and cents.
+fn price_label(cents: Int) -> String {
+  let dollars = cents / 100
+  let rest = cents % 100
+  let pad = match rest < 10 {
+    true => "0",
+    false => "",
+  }
+  return "$" + to_string(dollars) + "." + pad + to_string(rest)
+}
+
+fn category_of(p: Product) -> Category {
+  return match contains(p.tags, "tool") {
+    true => Tool(contains(p.tags, "heavy")),
+    false => Food,
+  }
+}
+
+api fn add_product(input: Product) -> Result[Product, ShopError]
+  route: POST "/products"
+  effects: store(products)
+  requires: str_len(input.sku) >= 3 && input.cents >= 0 && input.stock >= 0
+{
+  return match get(products, input.sku) {
+    Some(p) => Err(Invalid("duplicate sku " + p.sku)),
+    None => Ok(save(products, input)),
+  }
+}
+
+api fn get_product(sku: String) -> Result[Product, ShopError]
+  route: GET "/products/{sku}"
+  effects: store(products)
+{
+  return match get(products, sku) {
+    Some(p) => Ok(p),
+    None => Err(Missing(sku)),
+  }
+}
+
+api fn list_products(tag: Option[String], page: Int, per_page: Int) -> List[Product]
+  route: GET "/products"
+  effects: store(products)
+  requires: page >= 1 && per_page >= 1 && per_page <= 50
+{
+  let all = sort_by(scan(products), |p| p.sku)
+  let tagged = match tag {
+    Some(t) => filter(all, |p| contains(p.tags, t)),
+    None => all,
+  }
+  return take(drop(tagged, (page - 1) * per_page), per_page)
+}
+
+api fn restock(sku: String, input: Restock) -> Result[Product, ShopError]
+  route: PATCH "/products/{sku}/stock"
+  effects: store(products)
+  requires: input.amount > 0
+{
+  var p = try find(sku)
+  p.stock = p.stock + input.amount
+  return Ok(save(products, p))
+}
+
+type Restock {
+  amount: Int,
+}
+
+fn find(sku: String) -> Result[Product, ShopError]
+  effects: store(products)
+{
+  return match get(products, sku) {
+    Some(p) => Ok(p),
+    None => Err(Missing(sku)),
+  }
+}
+
+api fn price_table() -> Map[String, String]
+  route: GET "/prices"
+  effects: store(products)
+{
+  return products
+    |> scan()
+    |> map(|p| (p.sku, price_label(p.cents)))
+    |> map_from()
+}
+
+api fn delete_product(sku: String) -> Bool
+  route: DELETE "/products/{sku}"
+  effects: store(products)
+{
+  return delete(products, sku)
+}
+
+api fn average_cents(skus: String) -> Int
+  route: GET "/average"
+  effects: store(products)
+{
+  let wanted = split(skus, ",")
+  let found = filter(scan(products), |p| contains(wanted, p.sku))
+  return sum(map(found, |p| p.cents)) / len(found)
+}

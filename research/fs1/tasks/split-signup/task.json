@@ -1,0 +1,10 @@
+{
+  "id": "split-signup",
+  "kind": "change",
+  "title": "Split signup into register (a pending account and a token) and confirm",
+  "features": [
+    { "module": "frontend/src/features/signup.ts", "signature": "signup(baseUrl: string, email: string, name: string, password: string): Promise<Outcome<{ email: string; token: string }>>" },
+    { "module": "frontend/src/features/confirmSignup.ts", "signature": "confirmSignup(baseUrl: string, token: string): Promise<Outcome<Profile>>" }
+  ],
+  "supersedes": ["test_signup_and_login", "signup-probe"]
+}
