@@ -1,0 +1,5 @@
+@effects(io, time)
+def main() -> None:
+    print(to_string(now()))
+    sleep(250)
+    print(to_string(now()))

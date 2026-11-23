@@ -1,0 +1,11 @@
+def zero() -> int:
+    return 0
+
+@effects(io)
+def main() -> None:
+    print(to_string(False and 1 / zero() == 1))
+    print(to_string(True or 1 / zero() == 1))
+    print(to_string(not 1 < 2))
+    print(to_string("Z" < "a"))
+    print(to_string("é" > "z"))
+    print(to_string(2.5 >= 2.5))

@@ -1,0 +1,12 @@
+def swap(t: tuple[int, str]) -> tuple[str, int]:
+    return (t[1], t[0])
+
+def noop() -> None:
+    pass
+
+@effects(io)
+def main() -> None:
+    s = swap((1, "one"))
+    print(to_string(s))
+    print(to_string(s[0] == "one"))
+    print(to_string(noop()))

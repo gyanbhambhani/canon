@@ -1,0 +1,12 @@
+def double(n: int) -> int:
+    return n * 2
+
+def twice(f: Callable[[int], int], x: int) -> int:
+    return f(f(x))
+
+@effects(io)
+def main() -> None:
+    print(to_string(map([1, 2, 3], double)))
+    print(to_string(map(["abc"], str_len)))
+    print(to_string(twice(lambda n: n + 1, 3)))
+    print(to_string(twice(double, 3)))

@@ -1,0 +1,17 @@
+class Point:
+    x: int
+    y: int
+
+def moved(p: Point) -> Point:
+    q = p
+    q.x += 10
+    return q
+
+@effects(io)
+def main() -> None:
+    a = Point(x=1, y=2)
+    b = moved(a)
+    print(to_string(a))
+    print(to_string(b))
+    print(to_string(a == b))
+    print(to_string(a == Point(x=1, y=2)))

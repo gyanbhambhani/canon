@@ -329,8 +329,12 @@ export class PyPrinter {
         if (it.requires !== null) deco.push(`@requires(${this.ex(it.requires)})`);
         if (it.ensures !== null) deco.push(`@ensures(${this.ex(it.ensures)})`);
         const tp = it.tparams.length ? `[${it.tparams.join(", ")}]` : "";
-        const params = it.params.map(([n, t]) => `${n}: ${this.ty(t)}`).join(", ");
-        const head = `def ${it.name}${tp}(${params}) -> ${this.ty(it.ret)}:`;
+        const ps = it.params.map(([n, t]) => `${n}: ${this.ty(t)}`);
+        let head = `def ${it.name}${tp}(${ps.join(", ")}) -> ${this.ty(it.ret)}:`;
+        if (features().wrap && pyLen(head) > MAX_LINE && ps.length) {
+          // Black-style: one parameter per line
+          head = `def ${it.name}${tp}(\n${ps.map((p) => `${PY_INDENT}${p},`).join("\n")}\n) -> ${this.ty(it.ret)}:`;
+        }
         return [...deco, head, this.block(it.body.slice(paramCopies(it)), "")].join("\n");
       }
       case "Test": {

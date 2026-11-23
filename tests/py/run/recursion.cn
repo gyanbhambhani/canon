@@ -1,0 +1,25 @@
+type Tree = Leaf | Node(left: Tree, value: int, right: Tree)
+
+def fact(n: int) -> int:
+    if n <= 1:
+        return 1
+    return n * fact(n - 1)
+
+def fib(n: int) -> int:
+    if n < 2:
+        return n
+    return fib(n - 1) + fib(n - 2)
+
+def total(t: Tree) -> int:
+    match t:
+        case Leaf:
+            return 0
+        case Node(l, v, r):
+            return total(l) + v + total(r)
+
+@effects(io)
+def main() -> None:
+    print(to_string(fact(10)))
+    print(to_string(fib(15)))
+    t = Node(Node(Leaf, 1, Leaf), 2, Node(Leaf, 3, Leaf))
+    print(to_string(total(t)))

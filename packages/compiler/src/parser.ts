@@ -648,5 +648,16 @@ export class Parser {
 /** Parse either surface: Canon-Py (v0.4) or brace syntax (v0 to v0.3), detected per file. */
 export function parse(src: string): A.Program {
   if (isPySource(src)) return pyParse(src);
-  return new Parser(lex(src)).program();
+  try {
+    return new Parser(lex(src)).program();
+  } catch (e) {
+    // a Canon-Py file with no def, class, decorator or import (only type declarations): if it
+    // reads as Canon-Py, it is Canon-Py; otherwise the brace parser's error stands
+    if (!(e instanceof CanonError)) throw e;
+    try {
+      return pyParse(src);
+    } catch {
+      throw e;
+    }
+  }
 }

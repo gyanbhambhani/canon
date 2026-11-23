@@ -737,7 +737,13 @@ export class PyParser {
           e = { k: "FieldGet", obj: e, name: intText(t.text), line: e.line, col: e.col };
         } else if (t.kind === "name") {
           this.advance();
-          if (this.atOp("(")) this.fail(`Canon has no methods; call ${t.text}(...) as a function with the value as its first argument`, t);
+          if (this.atOp("(")) {
+            // a module function (`json.stringify(x)`), as in the brace parser; the checker rejects
+            // method calls on values (Canon has no methods) and module calls (modules arrive in v1)
+            if (e.k !== "Name") this.fail(`Canon has no methods; call ${t.text}(...) as a function with the value as its first argument`, t);
+            e = { k: "Name", path: [...e.path, t.text], line: e.line, col: e.col };
+            continue;
+          }
           e = { k: "FieldGet", obj: e, name: t.text, line: e.line, col: e.col };
         } else {
           this.error("field name after '.'");

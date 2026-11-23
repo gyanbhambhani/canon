@@ -1,0 +1,21 @@
+class Box[T]:
+    value: T
+
+def first_or[T](xs: list[T], fallback: T) -> T:
+    match first(xs):
+        case Some(x):
+            found = x
+        case None:
+            found = fallback
+    return found
+
+def unbox[T](b: Box[T]) -> T:
+    return b.value
+
+@effects(io)
+def main() -> None:
+    print(to_string(first_or([2.5], 0.0)))
+    print(to_string(first_or([], 1.0)))
+    print(first_or(["x"], "y"))
+    print(to_string(unbox(Box(value=7))))
+    print(to_string(Box(value=1.0)))

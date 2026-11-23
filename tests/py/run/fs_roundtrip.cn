@@ -1,0 +1,21 @@
+@effects(fs)
+def roundtrip() -> Result[str, Error]:
+    write_file("notes.txt", "saved text")?
+    back = read_file("notes.txt")?
+    return Ok(back)
+
+@effects(fs, io)
+def main() -> None:
+    r = roundtrip()
+    match r:
+        case Ok(t):
+            text = t
+        case Err(e):
+            text = e.message
+    print(text)
+    match read_file("missing.txt"):
+        case Ok(_):
+            missing = "found"
+        case Err(_):
+            missing = "missing"
+    print(missing)

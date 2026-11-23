@@ -1,0 +1,29 @@
+def parse_age(s: str) -> Result[int, Error]:
+    match parse_int(s):
+        case Some(v):
+            n = v
+        case None:
+            n = -1
+    if n < 0:
+        return Err(Error(message="not an age: " + s))
+    return Ok(n)
+
+def total_age(a: str, b: str) -> Result[int, Error]:
+    x = parse_age(a)?
+    y = parse_age(b)?
+    return Ok(x + y)
+
+def describe(r: Result[int, Error]) -> str:
+    match r:
+        case Ok(n):
+            return f"total {n}"
+        case Err(e):
+            return "error: " + e.message
+
+@effects(io)
+def main() -> None:
+    print(describe(total_age("30", "12")))
+    print(describe(total_age("30", "x")))
+
+def test_try_returns_the_first_error() -> None:
+    assert total_age("x", "y") == Err(Error(message="not an age: x"))

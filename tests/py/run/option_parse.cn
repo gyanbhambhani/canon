@@ -1,0 +1,9 @@
+@effects(io)
+def main() -> None:
+    print(to_string(parse_int("42")))
+    print(to_string(parse_int("x")))
+    print(to_string(parse_float("2.5")))
+    print(to_string(parse_float("3")))
+    print(to_string(unwrap_or(parse_int("nope"), 7)))
+    print(to_string(parse_int(" 1")))
+    print(to_string(parse_int("-12")))

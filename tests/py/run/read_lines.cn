@@ -1,0 +1,14 @@
+@effects(io)
+def echo_all() -> int:
+    count = 0
+    line = read_line()
+    while line is not None:
+        count += 1
+        print("> " + unwrap_or(line, ""))
+        line = read_line()
+    return count
+
+@effects(io)
+def main() -> None:
+    n = echo_all()
+    print(f"{n} lines")

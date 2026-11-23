@@ -1,0 +1,19 @@
+# Count words and list them, most frequent first.
+def word_counts(text: str) -> list[tuple[str, int]]:
+    return sort_desc_by(
+        map(
+            group_by(filter(split(text, " "), lambda w: str_len(w) > 0), lambda w: w),
+            lambda word, ws: (word, len(ws)),
+        ),
+        lambda pair: pair[1],
+    )
+
+@effects(io)
+def main() -> None:
+    text = "the cat and the hat and the bat"
+    for pair in word_counts(text):
+        print(pair[0] + ": " + to_string(pair[1]))
+
+def test_counts_repeated_words() -> None:
+    counts = word_counts("a b a")
+    assert counts == [("a", 2), ("b", 1)]

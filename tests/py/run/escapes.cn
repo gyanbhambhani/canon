@@ -1,0 +1,6 @@
+@effects(io)
+def main() -> None:
+    print("tab\tend")
+    print("quote \"q\"")
+    print("back\\slash")
+    print(to_string(["a\"b", "c\nd"]))

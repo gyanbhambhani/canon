@@ -1,0 +1,10 @@
+@effects(io)
+def main() -> None:
+    m = map_from([("a", 1), ("b", 2)])
+    m2 = map_set(m, "c", 3)
+    m3 = map_set(m2, "a", 10)
+    print(to_string(keys(m3)))
+    print(to_string(values(m3)))
+    print(to_string(map_get(m3, "b")))
+    print(to_string(map_get(m, "c")))
+    print(to_string(m3))

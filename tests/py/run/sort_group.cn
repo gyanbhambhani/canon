@@ -1,0 +1,19 @@
+class Person:
+    name: str
+    age: int
+
+def names(ps: list[Person]) -> str:
+    return join(map(ps, lambda p: p.name), ",")
+
+@effects(io)
+def main() -> None:
+    ann = Person(name="ann", age=30)
+    bob = Person(name="bob", age=25)
+    cy = Person(name="cy", age=30)
+    dee = Person(name="dee", age=25)
+    ps = [ann, bob, cy, dee]
+    print(names(sort_by(ps, lambda p: p.age)))
+    print(names(sort_desc_by(ps, lambda p: p.age)))
+    for group in group_by(ps, lambda p: p.age):
+        print(f"{group[0]}: " + names(group[1]))
+    print(to_string(sort_by(["b", "a", "c"], lambda s: s)))

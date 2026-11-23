@@ -1,0 +1,6 @@
+@effects(io, rand)
+def main() -> None:
+    r = random_int(1, 7)
+    print(to_string(r >= 1 and r < 7))
+    f = random()
+    print(to_string(f >= 0.0 and f < 1.0))

@@ -1,0 +1,8 @@
+@requires(b != 0)
+@ensures(result * b <= a)
+def safe_div(a: int, b: int) -> int:
+    return a / b
+
+@effects(io)
+def main() -> None:
+    print(to_string(safe_div(10, 3)))

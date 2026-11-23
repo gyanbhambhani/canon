@@ -1,0 +1,35 @@
+def sign(n: int) -> str:
+    match n:
+        case -1:
+            return "minus one"
+        case 0:
+            return "zero"
+        case _:
+            return "other"
+
+def both(a: bool, b: bool) -> str:
+    match (a, b):
+        case (True, True):
+            s = "both"
+        case (True, False):
+            s = "first"
+        case (False, _):
+            s = "not first"
+    return s
+
+def greet(s: str) -> str:
+    match s:
+        case "hi":
+            return "hello"
+        case other:
+            return "? " + other
+
+@effects(io)
+def main() -> None:
+    print(sign(-1))
+    print(sign(0))
+    print(sign(5))
+    print(both(True, False))
+    print(both(False, True))
+    print(greet("hi"))
+    print(greet("yo"))

@@ -1,0 +1,38 @@
+class Order:
+    id: int
+    customer: str
+    amount: float
+
+# Highest-spending customers, best first.
+@requires(n > 0)
+@ensures(len(result) <= n)
+def top_customers(orders: list[Order], n: int) -> list[str]:
+    ranked = take(
+        sort_desc_by(
+            map(
+                group_by(orders, lambda o: o.customer),
+                lambda customer, os: (customer, sum_float(map(os, lambda o: o.amount))),
+            ),
+            lambda pair: pair[1],
+        ),
+        n,
+    )
+    return map(ranked, lambda pair: pair[0])
+
+def sample() -> list[Order]:
+    a = Order(id=1, customer="ada", amount=120.0)
+    b = Order(id=2, customer="bob", amount=80.5)
+    c = Order(id=3, customer="ada", amount=30.0)
+    d = Order(id=4, customer="cy", amount=200.0)
+    e = Order(id=5, customer="bob", amount=99.5)
+    return [a, b, c, d, e]
+
+@effects(io)
+def main() -> None:
+    orders = sample()
+    for name in top_customers(orders, 2):
+        print(name)
+    print(f"total: {sum_float(map(orders, lambda o: o.amount))}")
+
+def test_top_customer_is_cy() -> None:
+    assert top_customers(sample(), 1) == ["cy"]

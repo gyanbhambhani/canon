@@ -1,0 +1,9 @@
+@effects(io)
+def main() -> None:
+    k = 1
+    add = lambda x: x + k
+    k = 100
+    print(to_string(add(1)))
+    pairs = [("a", 1), ("b", 2)]
+    print(to_string(map(pairs, lambda name, n: name + to_string(n * 2))))
+    print(to_string(k))

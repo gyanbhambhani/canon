@@ -1,0 +1,36 @@
+{
+ "programs": 2000,
+ "checkedInBraces": 2000,
+ "converted": 1998,
+ "fixedPoint": 1998,
+ "checksInPy": 1998,
+ "sameJsShape": 1998,
+ "failures": [
+  {
+   "file": "runs-v0.2.jsonl",
+   "task": "rpn",
+   "model": "gpt-6.2-sol",
+   "stage": "convert",
+   "error": {
+    "code": "S001",
+    "severity": "error",
+    "message": "in Canon-Py a match is a statement: return its value or bind it to a name, then use the name",
+    "line": 46,
+    "col": 24
+   }
+  },
+  {
+   "file": "runs-v0.2.jsonl",
+   "task": "rpn",
+   "model": "gpt-6.2-sol",
+   "stage": "convert",
+   "error": {
+    "code": "S001",
+    "severity": "error",
+    "message": "in Canon-Py a match is a statement: return its value or bind it to a name, then use the name",
+    "line": 38,
+    "col": 24
+   }
+  }
+ ]
+}

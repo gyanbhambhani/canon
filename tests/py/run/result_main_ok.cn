@@ -1,0 +1,16 @@
+def half(n: int) -> Result[int, Error]:
+    if n % 2 == 1:
+        return Err(Error(message="odd"))
+    return Ok(n / 2)
+
+def quarter(n: int) -> Result[int, Error]:
+    h = half(n)?
+    return half(h)
+
+@effects(io)
+def main() -> Result[int, Error]:
+    print(to_string(quarter(8)))
+    print(to_string(quarter(6)))
+    q = quarter(12)?
+    print(to_string(q))
+    return Ok(q)

@@ -1,0 +1,12 @@
+@effects(io)
+def main() -> None:
+    print(to_string(1.0))
+    print(to_string(0.5))
+    print(to_string(1e+16))
+    print(to_string(1e-05))
+    print(to_string(100.0))
+    print(to_string(to_float(3)))
+    print(to_string(to_int(3.9)))
+    print(to_string(to_int(-3.9)))
+    print(to_string(sum_float([0.5, 0.25])))
+    print(to_string([1.0, 2.5]))
