@@ -61,7 +61,7 @@ node packages/cli/dist/index.js test examples/fizzbuzz.cn         # test blocks,
 node packages/cli/dist/index.js run examples/word_count.cn --deny net,fs
 ```
 
-Once `canon-lang` is published to npm, `npx canon-lang run hello.cn` does the same anywhere.
+Or skip the clone: the CLI is on npm as [`canon-lang`](https://www.npmjs.com/package/canon-lang), so `npx canon-lang run hello.cn` works anywhere with Node 20 or later (`npm i -g canon-lang` gives you the `canon` command).
 
 ## What's here
 

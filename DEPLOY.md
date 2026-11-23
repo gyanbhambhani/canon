@@ -53,6 +53,11 @@ repository so every push to `main` deploys. Live at <https://canon-lake.vercel.a
 
 ## 5. Publish canon-lang to npm
 
+Done: `canon-lang@0.1.0` is on npm (<https://www.npmjs.com/package/canon-lang>), published from the
+`gyanb` account. Accounts with a passkey publish interactively: npm prints a link to approve.
+Publish the `pnpm pack` tarball so `workspace:*` references are rewritten:
+`pnpm pack --pack-destination /tmp && npm publish /tmp/canon-lang-X.Y.Z.tgz --access public --auth-type=web`.
+
 The CLI is one self-contained bundle (`packages/cli/dist/index.js`, no runtime dependencies),
 published as `canon-lang` with the binary `canon`. The name was free on npm when this file was
 written.
