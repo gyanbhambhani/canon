@@ -42,3 +42,33 @@ References: disagreements by input category (summed over tasks; a category is `b
 | canon | random | 8000 | 8000 | 0 | 0 |
 
 Reference (task, arm) pairs below 1.000: none.
+
+## Phase 2: Qwen2.5-Coder-7B-Instruct-8bit (qwen7b.jsonl): 40 runs recorded
+
+| arm | runs | completed (gate) | checks ok | mean edit rounds | mean input tokens | referenceTokens |
+| --- | --- | --- | --- | --- | --- | --- |
+| hand | 14 | 2 | 1 | 5.000 | 18301 | 0 |
+| schema | 13 | 0 | 0 | 5.000 | 21564 | 0 |
+| canon | 13 | 0 | 0 | 5.000 | 38693 | 3811 |
+
+### Phase 2: Qwen2.5-Coder-7B-Instruct-8bit
+
+| set | arm | tasks | runs | completed | agreement (completed runs) | agreement (not completed = 0) | client-valid/server-invalid (bounce) | client-invalid/server-valid (block) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | hand | 7 | 7 | 1 | 0.753 | 0.108 | 0.247 | 0.000 |
+| 1 | schema | 6 | 6 | 0 | n/a | 0.000 | n/a | n/a |
+| 1 | canon | 6 | 6 | 0 | n/a | 0.000 | n/a | n/a |
+| 2 | hand | 7 | 7 | 1 | 0.981 | 0.140 | 0.000 | 0.019 |
+| 2 | schema | 7 | 7 | 0 | n/a | 0.000 | n/a | n/a |
+| 2 | canon | 7 | 7 | 0 | n/a | 0.000 | n/a | n/a |
+
+Paired differences in agreement (completed runs), mean over tasks with a 95% bootstrap interval:
+
+| set | comparison | all tasks | without adapted tasks | not completed = 0 |
+| --- | --- | --- | --- | --- |
+| 1 | canon - schema | n/a [n/a, n/a] (n=0) no data | n/a [n/a, n/a] (n=0) no data | +0.000 [0.000, 0.000] (n=6) non-inferior |
+| 1 | canon - hand | n/a [n/a, n/a] (n=0) no data | n/a [n/a, n/a] (n=0) no data | -0.126 [-0.377, 0.000] (n=6) inconclusive |
+| 1 | schema - hand | n/a [n/a, n/a] (n=0) no data | n/a [n/a, n/a] (n=0) no data | -0.126 [-0.377, 0.000] (n=6) inconclusive |
+| 2 | canon - schema (PRIMARY) | n/a [n/a, n/a] (n=0) no data | n/a [n/a, n/a] (n=0) no data | +0.000 [0.000, 0.000] (n=7) non-inferior |
+| 2 | canon - hand | n/a [n/a, n/a] (n=0) no data | n/a [n/a, n/a] (n=0) no data | -0.140 [-0.420, 0.000] (n=7) inconclusive |
+| 2 | schema - hand | n/a [n/a, n/a] (n=0) no data | n/a [n/a, n/a] (n=0) no data | -0.140 [-0.420, 0.000] (n=7) inconclusive |

@@ -180,5 +180,187 @@
       },
       "verdict": "non-inferior"
     }
+  },
+  "Phase 2: Qwen2.5-Coder-7B-Instruct-8bit": {
+    "set1.hand": {
+      "tasks": 7,
+      "runs": 7,
+      "completed": 1,
+      "agreement": 0.753,
+      "agreementZero": 0.10757142857142857,
+      "bounce": 0.247,
+      "block": 0
+    },
+    "set1.schema": {
+      "tasks": 6,
+      "runs": 6,
+      "completed": 0,
+      "agreement": null,
+      "agreementZero": 0,
+      "bounce": null,
+      "block": null
+    },
+    "set1.canon": {
+      "tasks": 6,
+      "runs": 6,
+      "completed": 0,
+      "agreement": null,
+      "agreementZero": 0,
+      "bounce": null,
+      "block": null
+    },
+    "set2.hand": {
+      "tasks": 7,
+      "runs": 7,
+      "completed": 1,
+      "agreement": 0.981,
+      "agreementZero": 0.14014285714285715,
+      "bounce": 0,
+      "block": 0.019
+    },
+    "set2.schema": {
+      "tasks": 7,
+      "runs": 7,
+      "completed": 0,
+      "agreement": null,
+      "agreementZero": 0,
+      "bounce": null,
+      "block": null
+    },
+    "set2.canon": {
+      "tasks": 7,
+      "runs": 7,
+      "completed": 0,
+      "agreement": null,
+      "agreementZero": 0,
+      "bounce": null,
+      "block": null
+    },
+    "set1.canon-schema": {
+      "all": {
+        "mean": null,
+        "lo": null,
+        "hi": null,
+        "n": 0
+      },
+      "withoutAdapted": {
+        "mean": null,
+        "lo": null,
+        "hi": null,
+        "n": 0
+      },
+      "zero": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 6
+      },
+      "verdict": "no data"
+    },
+    "set1.canon-hand": {
+      "all": {
+        "mean": null,
+        "lo": null,
+        "hi": null,
+        "n": 0
+      },
+      "withoutAdapted": {
+        "mean": null,
+        "lo": null,
+        "hi": null,
+        "n": 0
+      },
+      "zero": {
+        "mean": -0.1255,
+        "lo": -0.3765,
+        "hi": 0,
+        "n": 6
+      },
+      "verdict": "no data"
+    },
+    "set1.schema-hand": {
+      "all": {
+        "mean": null,
+        "lo": null,
+        "hi": null,
+        "n": 0
+      },
+      "withoutAdapted": {
+        "mean": null,
+        "lo": null,
+        "hi": null,
+        "n": 0
+      },
+      "zero": {
+        "mean": -0.1255,
+        "lo": -0.3765,
+        "hi": 0,
+        "n": 6
+      },
+      "verdict": "no data"
+    },
+    "set2.canon-schema": {
+      "all": {
+        "mean": null,
+        "lo": null,
+        "hi": null,
+        "n": 0
+      },
+      "withoutAdapted": {
+        "mean": null,
+        "lo": null,
+        "hi": null,
+        "n": 0
+      },
+      "zero": {
+        "mean": 0,
+        "lo": 0,
+        "hi": 0,
+        "n": 7
+      },
+      "verdict": "no data"
+    },
+    "set2.canon-hand": {
+      "all": {
+        "mean": null,
+        "lo": null,
+        "hi": null,
+        "n": 0
+      },
+      "withoutAdapted": {
+        "mean": null,
+        "lo": null,
+        "hi": null,
+        "n": 0
+      },
+      "zero": {
+        "mean": -0.14014285714285715,
+        "lo": -0.42042857142857143,
+        "hi": 0,
+        "n": 7
+      },
+      "verdict": "no data"
+    },
+    "set2.schema-hand": {
+      "all": {
+        "mean": null,
+        "lo": null,
+        "hi": null,
+        "n": 0
+      },
+      "withoutAdapted": {
+        "mean": null,
+        "lo": null,
+        "hi": null,
+        "n": 0
+      },
+      "zero": {
+        "mean": -0.14014285714285715,
+        "lo": -0.42042857142857143,
+        "hi": 0,
+        "n": 7
+      },
+      "verdict": "no data"
+    }
   }
 }
