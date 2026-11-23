@@ -770,6 +770,32 @@ A top-level name (type, variant, function or table) defined in two modules of a 
 canon/shop.cn:1:1: error M004: type Money is already defined in module billing.money; top-level names are unique across a project
 ```
 
+## Generated code
+
+### G001
+
+A generated file (one that starts with Canon's header) whose contents no longer match its hash: it was edited by hand. `canon check` reports it, naming the Canon source to change instead, and `canon build` refuses to overwrite it unless given `--force`, which discards the edit. A file at a path `canon build` writes, but which Canon did not write, is refused the same way.
+
+```text
+backend/canon_generated/logic.py:1:1: error G001: backend/canon_generated/logic.py was edited by hand, but it is generated from canon/todos.cn: make the change in the Canon source and run canon build (canon build --force discards the edit)
+```
+
+### G002
+
+Something the Python target cannot express yet: an Option of an Option (even an inferred one, like `first` of a `List[Option[Int]]`), `to_string` of a value that is not an Int, Float, String or Bool, `read_line`, `read_file` or `write_file`, or a computed URL in a function that declares several hosts. `canon build` reports it, naming the function, and writes nothing. The program still runs under `canon run`.
+
+```text
+canon/todos.cn:3:10: error G002: the Python target cannot express an Option of an Option (or of Unit): the Python target writes Option[T] as T | None, which cannot nest (fn nested)
+```
+
+### W010
+
+A warning from `canon manifest`, not from `canon check`: an endpoint that declares plain `net` may call any host. Name the hosts instead, as `net(api.example.com)`.
+
+```text
+warning W010: api fn ping may call any host (effects: net); name the hosts it calls, like net(api.example.com)
+```
+
 ## Runtime traps
 
 A runtime error stops the program and prints one JSON object on stderr, with the code, message, line, col, and a Canon-level stack listing frames innermost first. `canon run` then exits with status 1. Under `canon test` a trap fails that test (or, during contract fuzzing, is the counterexample) and the runner moves on. Each program below passes `canon check`; the JSON under it is what `canon run` prints.

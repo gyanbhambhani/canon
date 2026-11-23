@@ -1,0 +1,99 @@
+---
+title: API functions
+description: api fn and route:, the shapes endpoints may take, the HTTP mapping, validation written once, and the A001 to A003 checks.
+---
+
+# API functions
+
+An `api fn` is an ordinary function plus a `route:` clause. Other Canon code can call it, and `canon test` can test it like any function. The clause order is route, effects, requires, ensures. In Canon-Py, the route is a decorator above the others: `@api("GET", "/todos")`.
+
+## Inputs
+
+- A `{name}` segment of the path binds the parameter of the same name, which must be an Int or a String.
+- For GET and DELETE, every other parameter is a query parameter: Int, Float, Bool, String, or an Option of one (an Option may be left out of the request).
+- For POST, PUT and PATCH, at most one other parameter is allowed, and it must be a record type: the JSON body.
+
+```canon
+type Product {
+  sku: String,
+  cents: Int,
+}
+
+type Restock {
+  amount: Int,
+}
+
+api fn search(tag: Option[String], page: Int) -> List[Product]
+  route: GET "/products"
+  requires: page >= 1
+{
+  return []
+}
+
+api fn restock(sku: String, input: Restock) -> Product
+  route: PATCH "/products/{sku}/stock"
+  requires: input.amount > 0
+{
+  return Product { sku: sku, cents: input.amount }
+}
+```
+
+Any other shape is A001, with a message that names the allowed form:
+
+```canon
+type Query {
+  text: String,
+}
+
+# expect: A001
+api fn find(q: Query) -> List[String]
+  route: GET "/find"
+{
+  return [q.text]
+}
+```
+
+## Outputs and the HTTP mapping
+
+An api fn returns a wire type (anything but a function, a table, an Option of an Option, or a Map whose keys are not Strings), or `Result[T, E]` with E a sum type.
+
+| Canon | HTTP |
+| --- | --- |
+| a value, or `Ok(v)` | 200, with v as JSON |
+| `Err(e)` | 400, `{"error": e}`; `e.kind` names the variant and its fields follow |
+| a failed requires, or a malformed body | 422, `{"error": {"kind": "ValidationError", "rule": "<the clause, in brace syntax>"}}` |
+| a trap | 500, `{"error": {"kind": "InternalError"}}`; the details go to the server log only |
+
+Two endpoints with the same method and path, in one module or across a project, are A002. Parameter names do not matter: `/todos/{id}` and `/todos/{todo_id}` are the same route.
+
+## Validation written once
+
+An api fn's `requires` is its request validation. The generated server checks it (422), and the generated client checks it before sending, with the same result. A parity suite checks random rules on all three implementations. So the rule must be portable: comparisons, arithmetic, `&&`, `||`, `!`, field access, literals, `str_len`, `trim`, `contains`, `len`, `is_email` and `is_some`. Anything else is A003:
+
+```canon
+fn short(s: String) -> Bool {
+  return str_len(s) < 20
+}
+
+# expect: A003
+api fn hello(name: String) -> String
+  route: GET "/hello"
+  requires: short(name)
+{
+  return "hi " + name
+}
+```
+
+`ensures` is checked on the server only. The `requires` of a function that is not an api fn is an ordinary contract, as before.
+
+## Effects with arguments
+
+`store(todos)` names a table the function touches, and `net(api.stripe.com)` a host it may call. Effect lists stay exact (E101, E102), per table and per host. A literal URL whose host is not declared is E104. A computed URL is checked at run time, and the call traps with R006 if the host is not one the calling function declares. Plain `net` still means any host, and `canon manifest` flags it with W010. In Canon-Py, an effect with an argument is a string: `@effects("store(todos)", "net(api.stripe.com)")`.
+
+```canon
+fn charge(amount: Int) -> Result[String, Error]
+  effects: net(api.stripe.com)
+{
+  return http_post("https://api.stripe.com/v1/charges", to_string(amount))
+}
+```

@@ -6,8 +6,9 @@ import { join } from "node:path";
  * without its frontmatter.
  * The docs page and /llms.txt share this one source, and a test keeps it under 4,000 tokens.
  */
-export function agentReference(syntax: "brace" | "py" = "brace"): string {
-  const page = syntax === "py" ? "for-agents-py.mdx" : "for-agents.mdx";
+export function agentReference(syntax: "brace" | "py" | "fullstack" = "brace"): string {
+  // v0.5: "fullstack" is the full-stack addendum (/llms-fullstack.txt), read with the core reference
+  const page = syntax === "py" ? "for-agents-py.mdx" : syntax === "fullstack" ? "for-agents-fullstack.mdx" : "for-agents.mdx";
   // the web build runs in apps/web; tests and scripts run from the repository root
   const candidates = [
     join(process.cwd(), "content", "docs", page),

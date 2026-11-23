@@ -1,0 +1,64 @@
+---
+title: Tables
+description: table declarations, the std.store built-ins, store(table) effects, and how tables behave under canon run, canon test and the generated backend.
+---
+
+# Tables
+
+A table holds records of one type, keyed by one of their fields, which must be an Int or a String:
+
+```canon name=notes
+table notes: Note key id
+
+type Note {
+  id: Int,
+  text: String,
+}
+```
+
+In Canon-Py: `notes = table(Note, key="id")`.
+
+## The built-ins
+
+| Built-in | Signature | Behavior |
+| --- | --- | --- |
+| get | `(t, key) -> Option[T]` | the row with that key, if any |
+| scan | `(t) -> List[T]` | all rows, in insertion order |
+| insert | `(t, row) -> Unit` | adds a row; a duplicate key traps with R007 |
+| save | `(t, row) -> T` | inserts or replaces by key, and returns the row |
+| delete | `(t, key) -> Bool` | removes the row; true if one existed |
+| next_id | `(t) -> Int` | one more than the largest Int key, or 1 for an empty table |
+| count | `(t) -> Int` | the number of rows |
+
+They exist only in a program that declares or imports a table, so a program without one may still name its own functions `save` or `count`. Each call needs the effect `store(<table>)`. A table can only appear as the first argument of one of these built-ins (A004), so the checker sees every access.
+
+```canon include=notes
+fn add(text: String) -> Note
+  effects: store(notes)
+{
+  return save(notes, Note { id: next_id(notes), text: text })
+}
+
+fn texts() -> List[String]
+  effects: store(notes)
+{
+  return map(scan(notes), |n| n.text)
+}
+
+test "notes" {
+  let a = add("a")
+  insert(notes, Note { id: 7, text: "b" })
+  assert(count(notes) == 2 && next_id(notes) == 8)
+  assert(get(notes, a.id) == Some(a))
+  assert(texts() == ["a", "b"])
+  assert(delete(notes, 7) && !delete(notes, 7))
+}
+```
+
+Filtering happens in memory, after `scan`. v0.5 has no indexed queries.
+
+## Where the rows live
+
+- Under `canon run` and `canon test`, tables are in memory, and every test starts with them empty. Tests use tables without declaring `store` effects, as they use io.
+- In the generated backend, each table is an SQLite table in `$CANON_DATABASE` (default `canon.db`). A row is validated whenever it is written, so a value outside Canon's 53-bit Int range fails the request (500) and nothing is saved.
+- v0.5 has no migrations. When a table's row type changes, the development table is reset.

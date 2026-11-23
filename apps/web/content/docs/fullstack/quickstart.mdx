@@ -1,0 +1,123 @@
+---
+title: Full-stack quickstart
+description: Write types, endpoints and validation once in Canon, and build a FastAPI backend and a typed TypeScript client from them.
+---
+
+# Full-stack quickstart
+
+Canon v0.5 compiles the parts of a feature where the frontend and backend must agree (data types, API endpoints, validation and the logic behind each endpoint) into a FastAPI backend and a typed TypeScript client. The UI stays in React or whatever you already use, and calls the generated client. Both sides come from one source, so a field renamed in Canon is renamed on both, and a validation rule written once runs on the server and in the client.
+
+## 1. Make a project
+
+A project is a folder with a `canon.toml` and a source folder:
+
+```text
+todos/
+  canon.toml
+  canon/
+    todos.cn
+```
+
+```toml
+[project]
+name = "todos"
+
+[backend]
+out = "backend/canon_generated"
+
+[frontend]
+out = "frontend/src/canon"
+```
+
+## 2. Write the contract and the logic
+
+`canon/todos.cn` declares a table, the types that cross the wire, and three endpoints:
+
+```canon
+table todos: Todo key id
+
+type Todo {
+  id: Int,
+  title: String,
+  done: Bool,
+}
+
+type NewTodo {
+  title: String,
+}
+
+type TodoError =
+  | NotFound(id: Int)
+
+api fn create_todo(input: NewTodo) -> Todo
+  route: POST "/todos"
+  effects: store(todos)
+  requires: str_len(trim(input.title)) > 0
+{
+  let todo = Todo { id: next_id(todos), title: trim(input.title), done: false }
+  insert(todos, todo)
+  return todo
+}
+
+api fn complete_todo(id: Int) -> Result[Todo, TodoError]
+  route: POST "/todos/{id}/complete"
+  effects: store(todos)
+{
+  return match get(todos, id) {
+    Some(t) => Ok(save(todos, Todo { id: t.id, title: t.title, done: true })),
+    None => Err(NotFound(id)),
+  }
+}
+
+api fn list_todos(page: Int, per_page: Int) -> List[Todo]
+  route: GET "/todos"
+  effects: store(todos)
+  requires: page >= 1 && per_page >= 1 && per_page <= 100
+{
+  return todos
+    |> scan()
+    |> sort_by(|t| t.id)
+    |> drop((page - 1) * per_page)
+    |> take(per_page)
+}
+```
+
+## 3. Check, test and build
+
+In the project folder, every command works on the whole project, so none needs a file:
+
+```text
+canon check --json     # every module; apply each fix.diff until "ok": true
+canon test             # test blocks across modules, with empty tables for every test
+canon manifest         # the endpoints, their effects and their validation rules
+canon build            # writes backend/canon_generated and frontend/src/canon
+```
+
+`canon manifest` prints the permission list:
+
+```text
+POST /todos                 create_todo     store(todos)   checks: str_len(trim(input.title)) > 0
+POST /todos/{id}/complete   complete_todo   store(todos)
+GET  /todos                 list_todos      store(todos)   checks: page >= 1 && per_page >= 1 && per_page <= 100
+```
+
+## 4. Run it
+
+`canon build` also writes `backend/main.py` once (it is yours to edit afterwards). Serve it with uvicorn from the backend folder, or let `canon dev` rebuild on every save and serve with `uvicorn --reload`:
+
+```text
+pip install fastapi uvicorn
+canon dev --port 8000
+```
+
+From React or any TypeScript code, call the generated client. Methods return a `Result` and never throw:
+
+```ts
+const api = createClient("/api");
+const result = await api.createTodo({ title });
+if (!result.ok) showError(result.error);
+```
+
+A request that fails the rule `str_len(trim(input.title)) > 0` never leaves the browser: the client runs the same check first and returns the same `ValidationError` the server would have.
+
+Next: [API functions](/docs/fullstack/api-functions), [Tables](/docs/fullstack/tables), [Generated code](/docs/fullstack/generated-code), [canon.toml and commands](/docs/fullstack/config).
