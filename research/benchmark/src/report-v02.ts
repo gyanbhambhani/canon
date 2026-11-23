@@ -1,9 +1,9 @@
 /**
  * Apply PREREGISTRATION-v0.2.md to results/runs-v0.2.jsonl (with results/runs.jsonl as the v0
- * baseline). Writes REPORT-v0.2.md and benchmark-v0.2.svg (copied to the docs). Deterministic:
+ * baseline). Writes REPORT-v0.2.md and benchmark-v0.2.svg. Deterministic:
  * every bootstrap uses its own generator seeded with 2026.
  */
-import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { RunRecord } from "./run.js";
@@ -11,7 +11,6 @@ import { structural } from "./structure.js";
 import { TASKS, type Task } from "./tasks.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(HERE, "..", "..", "..");
 const load = (f: string): RunRecord[] =>
   readFileSync(f.startsWith("/") ? f : join(HERE, "..", "results", f), "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
 const argIn = process.argv.includes("--in") ? process.argv[process.argv.indexOf("--in") + 1] : "runs-v0.2.jsonl";
@@ -209,7 +208,5 @@ chart.forEach((c, i) => {
 });
 parts.push("</svg>");
 writeFileSync(join(HERE, "..", "benchmark-v0.2.svg"), parts.join("\n"));
-const pub = join(ROOT, "apps", "web", "public", "research");
-mkdirSync(pub, { recursive: true });
-copyFileSync(join(HERE, "..", "benchmark-v0.2.svg"), join(pub, "benchmark-v0.2.svg"));
+// the site draws its own charts from the raw runs (scripts/stats.ts, /research)
 console.log(lines.slice(0, 22).join("\n"));

@@ -1,15 +1,14 @@
 /**
  * Apply PREREGISTRATION.md to results/runs.jsonl: write REPORT.md (metrics, criteria C1 to C5 with
- * verdicts) and benchmark.svg (also copied to the docs). Deterministic: bootstrap seed 2026.
+ * verdicts) and benchmark.svg. Deterministic: bootstrap seed 2026.
  */
-import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { RunRecord } from "./run.js";
 import { TASKS } from "./tasks.js";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(HERE, "..", "..", "..");
 const file = process.argv.includes("--in") ? process.argv[process.argv.indexOf("--in") + 1] : "runs.jsonl";
 const runs: RunRecord[] = readFileSync(join(HERE, "..", "results", file), "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
 const used = runs.filter((r) => !r.fallback);
@@ -185,7 +184,5 @@ const svg = [
   `</svg>`,
 ].join("\n");
 writeFileSync(join(HERE, "..", "benchmark.svg"), svg);
-const pub = join(ROOT, "apps", "web", "public", "research");
-mkdirSync(pub, { recursive: true });
-copyFileSync(join(HERE, "..", "benchmark.svg"), join(pub, "benchmark.svg"));
+// the site draws its own charts from the raw runs (scripts/stats.ts, /research)
 console.log(lines.slice(0, 20).join("\n"));

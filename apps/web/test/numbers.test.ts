@@ -6,7 +6,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
-import site from "../lib/generated/site.json";
+import { siteData, type SiteData } from "../../../scripts/stats";
 
 const web = join(__dirname, "..");
 // content/docs joins this list once the docs restructure moves the research figures to /research
@@ -22,10 +22,10 @@ function walk(dir: string): string[] {
 }
 
 /** distinctive printed forms: decimals, percentages with digits, thousands with commas, ranges */
-function figures(): string[] {
+function figures(site: SiteData): string[] {
   const out = new Set<string>();
   const add = (s: string) => {
-    if (/\d/.test(s) && (/[.,%–x]/.test(s) || s.length >= 4) && !["1.00", "100%", "0.1.0"].includes(s)) out.add(s);
+    if (/\d/.test(s) && (/[.,%–x]/.test(s) || s.length >= 4) && !["1.00", "100%", site.display.version].includes(s)) out.add(s);
   };
   for (const v of Object.values(site.display)) if (typeof v === "string") add(v);
   for (const m of site.benchmark.byModel) {
@@ -42,9 +42,9 @@ function figures(): string[] {
   return [...out];
 }
 
-describe("no hand-typed numbers", () => {
+describe("no hand-typed numbers", async () => {
   const files = SCANNED.flatMap((d) => walk(join(web, d)));
-  const figs = figures();
+  const figs = figures(await siteData());
 
   it("collects figures to look for", () => {
     expect(figs.length).toBeGreaterThan(15);

@@ -7,3 +7,9 @@ export const subhead = "Typed, compiled, and small enough to fit in a single pro
 
 /** The repository link comes from the environment; when it is unset, GitHub links are hidden. */
 export const githubUrl: string | undefined = process.env.NEXT_PUBLIC_GITHUB_URL || undefined;
+
+/** Source links on /research and in the docs point at the repository's files. */
+export const repoUrl = "https://github.com/gyanbhambhani/canon";
+export const blob = (path: string) => `${repoUrl}/blob/main/${path}`;
+export const tree = (path: string) => `${repoUrl}/tree/main/${path}`;
+export const commit = (sha: string) => `${repoUrl}/commit/${sha}`;

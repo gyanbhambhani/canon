@@ -8,7 +8,6 @@ of the three contexts agree on the winner.
 """
 import json
 import math
-import shutil
 from pathlib import Path
 
 import matplotlib
@@ -17,7 +16,6 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 HERE = Path(__file__).parent
-ROOT = HERE.parent.parent
 
 
 def summarize(result):
@@ -82,9 +80,6 @@ def main():
     fig.tight_layout()
     svg = HERE / "likelihood.svg"
     fig.savefig(svg)
-    public = ROOT / "apps" / "web" / "public" / "research"
-    public.mkdir(parents=True, exist_ok=True)
-    shutil.copy(svg, public / "likelihood.svg")
     print((HERE / "REPORT.md").read_text())
 
 
