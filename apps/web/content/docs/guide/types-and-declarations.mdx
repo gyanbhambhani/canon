@@ -1,7 +1,28 @@
 ---
-title: Types and declarations
+title: Types
 description: The built-in types, record and sum type declarations, type parameters, and the built-in Option, Result and Error types.
 ---
+
+This page covers Canon's types and how you declare your own. A record type lists named fields, one per line, each with a trailing comma. Build a record with a literal that names every field; read a field with `.`.
+
+```canon
+type Item {
+  sku: String,
+  qty: Int,
+  price: Float,
+}
+
+fn line_total(item: Item) -> Float {
+  return to_float(item.qty) * item.price
+}
+
+test "line total" {
+  let item = Item { sku: "a-1", qty: 3, price: 2.5 }
+  assert(line_total(item) == 7.5)
+}
+```
+
+A literal that leaves out a field, or gives one twice, is T001. Reading or writing a field the type does not have is T008.
 
 ## Built-in types
 
@@ -22,29 +43,6 @@ description: The built-in types, record and sum type declarations, type paramete
 `Error` is the built-in record `Error { message: String }`, the usual error type in a `Result`.
 
 User types may not redefine any built-in type name, and there is no `Json`, `Any` or `null` in v0.
-
-## Records
-
-A record type lists its fields, one per line, each with a trailing comma. Build a record with a literal that names every field; read a field with `.`.
-
-```canon
-type Item {
-  sku: String,
-  qty: Int,
-  price: Float,
-}
-
-fn line_total(item: Item) -> Float {
-  return to_float(item.qty) * item.price
-}
-
-test "line total" {
-  let item = Item { sku: "a-1", qty: 3, price: 2.5 }
-  assert(line_total(item) == 7.5)
-}
-```
-
-A literal that leaves out a field, or gives one twice, is T001. Reading or writing a field the type does not have is T008.
 
 ## Sum types
 

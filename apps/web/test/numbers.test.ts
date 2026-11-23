@@ -9,8 +9,7 @@ import { describe, expect, it } from "vitest";
 import { siteData, type SiteData } from "../../../scripts/stats";
 
 const web = join(__dirname, "..");
-// content/docs joins this list once the docs restructure moves the research figures to /research
-const SCANNED = ["app", "components", "lib"];
+const SCANNED = ["app", "components", "lib", "content/docs"];
 const SKIP = new Set(["lib/generated"]);
 
 function walk(dir: string): string[] {

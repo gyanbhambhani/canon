@@ -1,7 +1,9 @@
 ---
-title: Pipelines and the pipeline rule
+title: Pipelines
 description: What x |> f(y) means, and the fixed rule that decides whether a chain of calls is written as a pipeline or as nested calls.
 ---
+
+This page covers pipelines and the rule that decides when a chain of calls must be written as one.
 
 ## What a pipeline means
 
@@ -22,7 +24,7 @@ Most languages let you choose between `f(g(h(x)))` and `x |> h() |> g() |> f()`.
 - **Fewer than three** are nested calls.
 - A call whose first argument is a scalar literal (a number, string or Bool), such as `range(0, n)`, can start a pipeline but never becomes a stage.
 
-The formatter applies the rule, so writing the other form is a C001 error whose patch rewrites it.
+The formatter applies the rule, so writing the other form is a C001 error whose patch (a unified diff) rewrites it.
 
 ```canon
 fn top(xs: List[Int], k: Int) -> List[Int] {
@@ -134,4 +136,4 @@ If that line passes 100 characters (L001), bind the pipeline with `let` first.
 
 ## Why three
 
-Three stages is a judgment call: long enough that a pipeline reads better than nesting, short enough that simple calls stay simple. It is listed as an open question in the [Design notes](/docs/design-notes), to be settled by measurement.
+Three stages is a judgment call: long enough that a pipeline reads better than nesting, short enough that simple calls stay simple. It is an open question on the [Roadmap](/docs/roadmap).

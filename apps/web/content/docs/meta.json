@@ -1,17 +1,21 @@
 {
   "title": "Canon",
   "pages": [
+    "---Get started---",
     "index",
     "quickstart",
-    "---Language guide---",
+    "agents",
+    "---Learn the language---",
     "...guide",
     "---Reference---",
-    "canonical-form",
-    "diagnostics",
     "stdlib",
+    "diagnostics",
     "cli",
+    "canonical-form",
     "for-agents",
-    "---More---",
-    "design-notes"
+    "---Project---",
+    "design-notes",
+    "roadmap",
+    "[Research](/research)"
   ]
 }

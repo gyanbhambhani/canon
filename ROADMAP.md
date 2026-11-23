@@ -81,7 +81,7 @@ Build / and /play as described in the Landing page section.
 - [x] Design system: Geist, color tokens in both themes, wordmark, nav with theme toggle, footer
 - [x] Landing page: hero with the generated terminal, features, benchmark, syntax, call to action
 - [x] /research renders verdicts, chart, findings, likelihood table and costs from data
-- [ ] Docs restructured (What is Canon, Quickstart, Use Canon with your agent, shorter guide, Reference, Project)
+- [x] Docs restructured (What is Canon, Quickstart, Use Canon with your agent, shorter guide, Reference, Project)
 - [x] Playground opens on a mistake with Apply fix; Break it; tabs for Problems and Output
 - [x] README, npm metadata, CONTRIBUTING and DEPLOY updated
 

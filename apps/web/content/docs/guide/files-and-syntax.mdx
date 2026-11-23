@@ -1,9 +1,9 @@
 ---
-title: Files and syntax
+title: Basics
 description: Source files, blocks, comments, strings, literals, naming rules, and the one line break that matters to the parser.
 ---
 
-A Canon program is one `.cn` file plus the standard library. The file holds four kinds of top-level item: `use` lines, `type` declarations, `fn` declarations and `test` blocks, separated by one blank line.
+This page covers the shape of a Canon file: blocks, comments, strings, literals, names and imports. A program is one `.cn` file plus the standard library. The file holds four kinds of top-level item: `use` lines, `type` declarations, `fn` declarations and `test` blocks, separated by one blank line.
 
 ```canon
 type Point {
@@ -22,13 +22,13 @@ test "manhattan distance" {
 
 ## Blocks and lines
 
-Blocks use braces. Indentation is two spaces, and statements sit one per line. No rule in the grammar depends on indentation, so the formatter can always restore it, but the checker rejects a file whose indentation is not canonical (C001, with a patch).
+Blocks use braces. Indentation is two spaces, and statements sit one per line. No rule in the grammar depends on indentation, so the formatter can always restore it, but the checker rejects a file whose indentation differs from the formatter's output (C001). The error carries a patch, a unified diff that fixes it.
 
 Lines are at most 100 characters (L001). When a line runs long, bind a subexpression with `let`.
 
 ## The line rule for calls
 
-One line break matters to the parser: a call's `(` sits on the same line as the function name. A `(` that starts a new line starts a new statement instead. This is the rule Go and Swift use, and it stops a parenthesized line from gluing itself onto the line above as a call.
+One line break matters to the parser: a call's `(` sits on the same line as the function name. A `(` that starts a new line starts a new statement instead. It stops a parenthesized line from gluing itself onto the line above as a call.
 
 ```canon
 # expect: P004
@@ -81,7 +81,7 @@ The formatter prints every number one way: `007` becomes `7`, `1.50` becomes `1.
 
 ## Naming
 
-Values, functions, parameters, fields and effects are `snake_case`. Types and variants are `PascalCase`. A name that breaks the rule is N001.
+Values, functions, parameters, fields and side-effect names such as `io` are `snake_case`. Types and variants are `PascalCase`. A name that breaks the rule is N001.
 
 ```canon
 # expect: N001

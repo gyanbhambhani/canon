@@ -3,7 +3,7 @@ title: Holes
 description: Write ? or ?name where you are unsure, and the compiler answers with the type the hole needs and the functions in scope that return it.
 ---
 
-A hole is a question to the compiler. Instead of guessing an expression, write `?` or a named hole such as `?best`. `canon check` reports every hole as H001, with the type the hole needs and the functions in scope that return that type.
+This page covers holes. A hole is a question to the compiler. Instead of guessing an expression, write `?` or a named hole such as `?best`. `canon check` reports every hole as H001, with the type the hole needs and the functions in scope that return that type.
 
 ```canon
 # expect: H001
@@ -94,6 +94,6 @@ A candidate is a function declared in the file whose return type is exactly the 
 
 ## Holes in the agent loop
 
-The agent loop treats diagnostics three ways: apply a patch mechanically, answer a hole, or rewrite code for parse and naming errors. Holes are the middle case. An agent that is unsure of an expression writes a hole, checks, and fills it with one of the candidates or with an expression of the reported type. Patches can create holes too: the [T004](/docs/diagnostics#t004) patch adds each missing match arm with `?` as its value.
+The agent loop treats diagnostics three ways: apply a patch mechanically, answer a hole, or rewrite code for parse and naming errors. Holes are the middle case. An agent that is unsure of an expression writes a hole, checks, and fills it with one of the candidates or with an expression of the reported type. Patches (the unified diffs the compiler ships as fixes) can create holes too: the [T004](/docs/diagnostics#t004) patch adds each missing match arm with `?` as its value.
 
 A hole is an error, so a file with holes does not run. Fill every hole, then check again.

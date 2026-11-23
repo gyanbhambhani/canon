@@ -1,12 +1,12 @@
 ---
-title: CLI reference
+title: Command line
 description: Every canon command, flag and exit code, with the exact output formats in text and JSON mode.
 ---
 
-The `canon` command ships in the npm package `canon-lang`. Until it is published, run it from a clone with `node packages/cli/dist/index.js` (see [Quickstart](/docs/quickstart)).
+This page lists every `canon` command, flag and exit code. Install the command with `npm i -g canon-lang`, or run it without installing as `npx canon-lang`. `canon --help` prints:
 
 ```text
-canon 0.1.0: a programming language for AI agents
+canon 0.1.1: a programming language for AI agents
 
 usage:
   canon check FILE...            check files; print diagnostics (with patches)
@@ -32,7 +32,7 @@ exit codes: 0 success, 1 diagnostics / failed tests / traps, 2 usage error
 | 1 | Diagnostics, failed tests, a runtime trap, or an `Err` returned from `main` |
 | 2 | Usage error: unknown command, unknown or misplaced flag, unknown effect in `--deny`, missing or unreadable file, or more than one file given to `run` |
 
-A usage error prints `canon: ` and the problem on stderr, followed by the usage text.
+A usage error prints `canon: ` and the problem on stderr, then the usage text. In this output, "canonical form" means the formatter's one standard layout, and "effects" are the side effects a function declares (`fs`, `io`, `net`, `rand`, `time`).
 
 ## canon check
 
@@ -41,27 +41,13 @@ canon check FILE...
 canon check --json FILE...
 ```
 
-Runs the full checker: canonical form, line length, naming, effects, modules, types and holes. Exits 1 if any file has a diagnostic.
+Runs every check: layout (C001), line length, naming, declared side effects, modules, types and holes (`?` placeholders). Exits 1 if any file has a diagnostic.
 
-Text output prints one line per diagnostic as `path:line:col: severity CODE: message`, then the patch indented by two spaces when there is one, then a summary line per file:
-
-```text
-hi.cn:1:4: error E101: fn main uses effects it does not declare: io (via print)
-  --- a/hi.cn
-  +++ b/hi.cn
-  @@ -1,3 +1,5 @@
-  -fn main() -> Unit {
-  +fn main() -> Unit
-  +  effects: io
-  +{
-     print("hi")
-   }
-hi.cn: 1 problem
-```
+Text output prints one line per diagnostic as `path:line:col: severity CODE: message`, then the fix as a unified diff (a patch) indented by two spaces when there is one, then a summary line per file such as `hi.cn: 1 problem` ([Quickstart](/docs/quickstart) shows a full example).
 
 A clean file prints `hi.cn: ok`. For H001, the candidates follow the message, one per line under `candidates:`.
 
-`--json` prints `{ ok, canonical, diagnostics }` for one file, where `canonical` says whether the file is already in canonical form. Given several files, it prints an array with one such object per file, each with a `path` field added. The diagnostic fields are described on the [Diagnostics](/docs/diagnostics) page. The patch paths are `a/` and `b/` plus the path as given on the command line, so `patch -p1` applies them from the same directory.
+`--json` prints `{ ok, canonical, diagnostics }` for one file, where `canonical` says whether the file already has the formatter's one standard layout. Given several files, it prints an array of such objects, each with a `path` field. [Errors and fixes](/docs/diagnostics) describes the fields. Patch paths are `a/` and `b/` plus the path as given, so `patch -p1` applies them from the same directory.
 
 ## canon fmt
 
@@ -71,19 +57,11 @@ canon fmt --write FILE...
 canon fmt --json FILE...
 ```
 
-Prints the canonical form of each file on stdout. With `--write`, rewrites each file whose text changes, silently, and prints nothing. `fmt` exits 0 even when a file was not canonical; use `check` to fail on that.
+Prints each file in the formatter's standard layout (see [Formatting rules](/docs/canonical-form)) on stdout. With `--write`, it rewrites each file whose text changes and prints nothing. `fmt` exits 0 even when a file changed; use `check` to fail on that.
 
-`--json` prints `{ path, changed, formatted }` per file (an array for several files):
+`--json` prints `{ path, changed, formatted }` per file (an array for several files).
 
-```json
-{
-  "path": "m.cn",
-  "changed": true,
-  "formatted": "fn f() -> Int {\n  return 1\n}\n"
-}
-```
-
-`fmt` needs a file that parses. A parse error (P001 to P005) prints the diagnostic on stderr and exits 1; in JSON mode it is reported as `{ path, error }`. `fmt` does not check names, effects or types, so a file it formats can still fail `check`.
+`fmt` needs a file that parses. A parse error (P001 to P005) goes to stderr with exit 1; in JSON mode it is `{ path, error }`. `fmt` does not check names, side effects or types, so a formatted file can still fail `check`.
 
 ## canon run
 
@@ -96,20 +74,20 @@ canon run --json FILE
 
 Checks the file, compiles it to JavaScript, and calls `fn main()`. `run` takes exactly one file.
 
-- A file with any diagnostic does not run: the diagnostics go to stderr and the exit status is 1.
-- A file with no `main` prints `error: no fn main() -> Unit in this file` and exits 1.
-- The program's `print` output goes to stdout.
-- A runtime trap prints one JSON line on stderr and exits 1:
+- A file with any diagnostic does not run: diagnostics go to stderr, exit 1.
+- A file with no `main` prints `error: no fn main() -> Unit in this file`, exit 1.
+- `print` output goes to stdout.
+- A runtime trap prints one JSON line on stderr, exit 1:
 
 ```json
 {"code":"R005","message":"assert failed","line":5,"col":3,"stack":[{"fn":"main","line":5,"col":3}]}
 ```
 
-- If `main` returns a `Result` and it is an `Err`, `run` prints `error: ` and the error's message on stderr and exits 1.
+- An `Err` returned from `main` prints `error: ` and its message on stderr, exit 1.
 
 ### --deny EFFECTS
 
-A comma-separated list of effects (`fs`, `io`, `net`, `rand`, `time`). Any call to a built-in with a denied effect traps with R006. `--deny net,fs` and `--deny=net,fs` are both accepted. An unknown effect name is a usage error (exit 2).
+A comma-separated list of side effects. Any call to a built-in with a denied effect stops the program with a trap (R006). `--deny net,fs` and `--deny=net,fs` both work. An unknown name is a usage error (exit 2).
 
 ### --no-contracts
 
@@ -127,7 +105,7 @@ Captures the program's stdout and prints one object when it ends:
 }
 ```
 
-On a trap the object also has `trap` (the trap JSON); on an `Err` from `main` it has `error` (the message). If the file has diagnostics, it prints `{ ok: false, diagnostics }` instead.
+A trap adds `trap`; an `Err` from `main` adds `error`. A file with diagnostics prints `{ ok: false, diagnostics }` instead.
 
 ## canon test
 
@@ -146,12 +124,12 @@ PASS clock
 2 passed, 1 failed
 ```
 
-The exit status is 1 if any test failed. If a file has diagnostics, `test` prints them on stderr and exits 1 without running the tests.
+Exit 1 if any test failed. A file with diagnostics prints them on stderr and exits 1 without running tests.
 
-Tests run on the test host. The clock starts at 0 ms and advances only through `sleep`, and `random` and `random_int` are seeded with 42, so every run is reproducible. Everything else, including `print`, files and the network, goes to the real host.
+Under `canon test`, the clock starts at 0 ms and advances only through `sleep`, and `random` and `random_int` use a fixed seed, so every run is reproducible. `print`, files and the network are real.
 
 `--json` prints `{ ok, passed, failed, tests }`, where each test is `{ file, name, passed }` plus `trap` when it failed.
 
 ## --help and --version
 
-`canon --help` (also `-h` or `help`) prints the usage text above and exits 0. `canon --version` (also `-v`) prints `canon 0.1.0` and exits 0.
+`canon --help` (also `-h` or `help`) prints the usage text above. `canon --version` (also `-v`) prints the version. Both exit 0.

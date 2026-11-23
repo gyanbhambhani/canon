@@ -1,9 +1,9 @@
 ---
-title: Pattern matching
+title: Matching
 description: match as an expression anywhere; the pattern forms; top-to-bottom arms; and exhaustiveness checking with a patch.
 ---
 
-`match` picks a value by the shape of another value. It is the only way to take apart a sum type, an Option or a Result.
+This page covers `match`, which picks a value by the shape of another value. It is the only way to take apart a sum type, an Option or a Result.
 
 ```canon
 type Shape =
@@ -26,7 +26,7 @@ test "area" {
 
 `match` is an expression, and since v0.2 it may appear anywhere an expression can: as the value of a `let`, an assignment or a `return`, as an argument, as an operand, or as a lambda body. (v0 allowed it only as the whole value of a statement and reported S001 otherwise; that code is retired.)
 
-As the whole value of a `let`, an assignment or a `return`, a match stands alone. Anywhere else (an operand, an `if` condition, a lambda body) canonical form wraps it in parentheses, so `(match a { ... }) * 2` cannot be misread as part of the last arm. Arguments are the exception: inside a call's parentheses it needs none.
+As the whole value of a `let`, an assignment or a `return`, a match stands alone. Anywhere else (an operand, an `if` condition, a lambda body) the formatter wraps it in parentheses, so `(match a { ... }) * 2` cannot be misread as part of the last arm. Arguments are the exception: inside a call's parentheses it needs none.
 
 ```canon
 fn bucket(n: Int) -> Int {
@@ -80,7 +80,7 @@ fn band(item: Item) -> String {
 }
 
 test "band" {
-  assert(band(Item { sku: "a", qty: 0, price: 9.0 }) == "out")
+  assert(band(Item { sku: "a", qty: 0, price: 4.5 }) == "out")
   assert(band(Item { sku: "b", qty: 2, price: 0.0 }) == "free")
 }
 ```
@@ -127,7 +127,7 @@ test "first matching arm wins" {
 
 ## Exhaustiveness
 
-A match must cover every case, or the checker reports T004. Bool matches need both `true` and `false`; Int, Float and String matches need a final `_` or name arm. The T004 patch adds the missing arms with holes as their values:
+A match must cover every case, or the checker reports T004. Bool matches need both `true` and `false`; Int, Float and String matches need a final `_` or name arm. The T004 patch (a unified diff) adds the missing arms with holes, `?` placeholders the compiler asks you to fill, as their values:
 
 ```canon
 # expect: T004

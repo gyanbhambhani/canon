@@ -1,9 +1,13 @@
 ---
-title: Introduction
-description: Canon is a compiled programming language whose main user is an AI coding agent. One way to write every program, effects in every signature, and a compiler that answers with patches.
+title: What is Canon
+description: The programming language for AI agents. Typed, compiled, and small enough to fit in a single prompt.
 ---
 
-Canon is a programming language whose main user is an AI coding agent. Its one job is to make every intent map to as close to one valid program as possible.
+Canon is the programming language for AI agents. It is typed, compiled, and small enough to fit in a single prompt. Every compiler error ships with its fix.
+
+<HeroTerminal />
+
+Above, `main` prints without declaring it. The compiler returns a stable code (E101) and a patch, a unified diff the agent applies as is. Then the file runs:
 
 ```canon
 fn main() -> Unit
@@ -13,62 +17,17 @@ fn main() -> Unit
 }
 ```
 
-## Why a language for agents
-
-The randomness in AI-written code comes from sampling, and no language can remove that. What a language controls is how many legal programs exist for the same intent. JavaScript allows dozens of ways to write a button, so two agent runs drift apart and reviewers chase style instead of logic. Canon removes that freedom on purpose: one way to loop, one way to branch, one way to handle errors, and one textual form per program.
-
-Three bets follow from that goal:
-
-1. **Shrink the program space.** Fewer legal programs per intent means agent runs converge, diffs stay small, and caches hit.
-2. **Make the compiler a collaborator.** Errors come back as JSON with machine-applicable patches, so the write, compile, fix loop closes in one or two turns.
-3. **Fit in one context window.** The full language reference stays under 4,000 tokens, so any agent can load all of it. It is the [For agents](/docs/for-agents) page, also served raw at `/llms.txt`.
-
 ## Who it is for
 
-Canon is written by agents and read by people. The agent is the main author: it loads the reference, writes a file, runs `canon check`, applies the patches it gets back, and fills any holes it left. Humans review the result, so Canon is meant to read like clean Python or TypeScript to someone who has never seen it.
+- **Agents write it.** The whole reference fits on one page in the agent's prompt. The compiler answers in JSON, so the agent fixes its own mistakes.
+- **People read it.** Canon looks like clean TypeScript or Python. Every function lists its types and its side effects, such as printing or reading files, so a reviewer sees what code can do from its first line.
+- **Reviewers diff it.** The formatter turns any spacing or layout of a program into one standard text, so diffs between two versions show only real changes.
 
-## The native dialect
+Canon compiles to JavaScript and runs in Node and in the browser [playground](/play).
 
-Canon does not ask a model to learn anything new. Every model already has a dialect it writes most reliably inside the languages it knows: the forms it has seen millions of times and assigns high probability to. Canon's syntax borrows those familiar forms (braces, `fn`, `let`, `match`, `|>`, Python-style `and`, `or` and `not`) and then removes every alternative.
+## Where to go next
 
-A small program shows most of the language at once: a record type, a contract, a pipeline, a lambda, and a test.
-
-```canon
-type Order {
-  id: Int,
-  customer: String,
-  amount: Float,
-}
-
-# Highest-spending customers, best first.
-fn top_customers(orders: List[Order], n: Int) -> List[String]
-  requires: n > 0
-  ensures: len(result) <= n
-{
-  let ranked = orders
-    |> group_by(|o| o.customer)
-    |> map(|customer, os| (customer, sum_float(map(os, |o| o.amount))))
-    |> sort_desc_by(|pair| pair.1)
-    |> take(n)
-  return map(ranked, |pair| pair.0)
-}
-
-test "top customer" {
-  let a = Order { id: 1, customer: "ada", amount: 120.0 }
-  let b = Order { id: 2, customer: "bob", amount: 80.5 }
-  assert(top_customers([a, b], 1) == ["ada"])
-}
-```
-
-## What makes it different
-
-- **One text per program.** The formatter is part of the grammar. A file that `canon fmt` would change is a compile error (C001), and the error carries the patch. See [Canonical form](/docs/canonical-form).
-- **Effects you can see.** A function lists exactly the effects it uses (`fs`, `io`, `net`, `rand`, `time`), no more and no fewer. Pure is the default. See [Functions, effects and contracts](/docs/guide/functions-effects-contracts).
-- **Patches, not prose.** Every diagnostic has a stable code, and wherever the fix is mechanical it ships a unified diff. See [Diagnostics](/docs/diagnostics).
-- **Holes as questions.** Write `?` where you are unsure, and the compiler tells you the type it needs and the functions that return it. See [Holes](/docs/guide/holes).
-
-## What exists today
-
-Canon v0 compiles to JavaScript and runs in Node and in the browser playground. The toolchain is the `canon` command with `check`, `fmt`, `run` and `test`. A program is one file plus the standard library. A native backend, a package manager, an editor language server, concurrency and user modules are future work; see [Design notes](/docs/design-notes).
-
-Start with the [Quickstart](/docs/quickstart).
+- [Quickstart](/docs/quickstart): run a program, see an error and its fix.
+- [Use Canon with your agent](/docs/agents): give an agent the reference and the fix loop.
+- [Basics](/docs/guide/files-and-syntax): start learning the language.
+- [Research](/research): what the benchmarks found so far.

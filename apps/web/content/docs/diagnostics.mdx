@@ -1,13 +1,13 @@
 ---
-title: Diagnostics
-description: Every diagnostic code Canon reports, from parse errors to runtime traps, each with a triggering example and, where the fix is mechanical, the patch the compiler ships.
+title: Errors and fixes
+description: Every error code Canon reports, from parse errors to runtime traps, each with an example that triggers it and, where the fix is mechanical, the patch the compiler ships.
 ---
 
-Every diagnostic is JSON with a stable code, a position, and, wherever the fix is mechanical, a unified-diff patch the agent applies without rewriting the file. Prose messages are for humans; the patch is for the agent.
+This page lists every error code Canon reports, with an example that triggers each one. Every diagnostic (an error the compiler reports) has a stable code and a position. Wherever the fix is mechanical, it also carries a patch: a unified diff the agent applies as is, without rewriting the file. The message is for people; the patch is for the agent.
 
 ## The shape of a diagnostic
 
-`canon check --json FILE` prints `{ ok, canonical, diagnostics }`. A missing effect, exactly as the checker prints it for a file named `greet.cn`:
+`canon check --json FILE` prints `{ ok, canonical, diagnostics }`, where `canonical` says whether the file already has the formatter's one standard layout. A missing side effect, exactly as the checker prints it for a file named `greet.cn`:
 
 ```json
 {
@@ -167,7 +167,7 @@ example.cn:3:13: error P005: each pipeline stage must be a call, like '|> f()'
 
 ### C001
 
-The file is not in canonical form. The patch is the whole normalization: every rule on the [Canonical form](/docs/canonical-form) page, applied at once. That includes the v0 spellings `set x = e`, `for cond { }` and `concat(a, b)`, which still parse but are rewritten to `x = e`, `while cond { }` and `a + b`.
+The file is not in canonical form, the one standard layout the formatter prints. The patch applies every rule on the [Formatting rules](/docs/canonical-form) page at once. That includes the v0 spellings `set x = e`, `for cond { }` and `concat(a, b)`, which still parse but are rewritten to `x = e`, `while cond { }` and `a + b`.
 
 ```canon
 # expect: C001
@@ -226,6 +226,8 @@ example.cn:2:4: error N001: function 'getUser' must be snake_case
 ```
 
 ## Effects
+
+A function's `effects` clause lists the side effects it uses: `fs`, `io`, `net`, `rand`, `time`. The checker holds it to that list exactly.
 
 ### E100
 

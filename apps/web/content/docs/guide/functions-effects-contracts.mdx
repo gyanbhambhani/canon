@@ -1,7 +1,9 @@
 ---
-title: Functions, effects and contracts
+title: Functions and side effects
 description: Typed signatures, exact effect lists, requires and ensures contracts, the fixed clause order, and the main entry point.
 ---
+
+This page covers functions: typed signatures, the `effects` clause that lists a function's side effects, and contracts that check inputs and outputs.
 
 ## Signatures
 
@@ -59,7 +61,7 @@ The formatter puts clauses in that order, sorts effect names, and merges two `re
 
 ## Effects
 
-Pure is the default: leaving out the `effects` clause means the function performs no effects. There are five effects:
+An effect is a kind of side effect: printing, files, network, time or randomness. Pure is the default: leaving out the `effects` clause means the function has none. There are five effects:
 
 | Effect | Built-ins that use it |
 |---|---|
@@ -88,7 +90,7 @@ fn stamp(lines: List[String]) -> Int
 }
 ```
 
-The checker enforces the list both ways, and both errors carry a patch that rewrites the clause:
+The checker enforces the list both ways, and both errors carry a patch (a unified diff) that rewrites the clause:
 
 - **E101**: the function uses an effect it does not declare.
 - **E102**: the function declares an effect it never uses.
@@ -112,7 +114,7 @@ fn add(a: Int, b: Int) -> Int
 
 A lambda's calls count toward the enclosing function, so `map(names, |n| print(n))` needs `io`.
 
-Test blocks are not functions and carry no effects clause; they may call effectful built-ins directly. Under `canon test`, time and randomness are deterministic (see [CLI](/docs/cli)).
+Test blocks are not functions and carry no effects clause; they may call effectful built-ins directly. Under `canon test`, time and randomness are deterministic (see [Command line](/docs/cli)).
 
 ## Contracts
 

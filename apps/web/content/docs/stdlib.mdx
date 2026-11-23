@@ -1,9 +1,9 @@
 ---
 title: Standard library
-description: Every built-in function with its signature, its effect, a one-line description and an example.
+description: Every built-in function with its signature, its side effect, a one-line description and an example.
 ---
 
-The standard library is always in scope; there is nothing to import. Built-ins follow the same rules as user code: no overloading, no methods, and generics only through type parameters. A type parameter named `K` is a key and must be Int, Float or String (T001 otherwise). Every function is pure unless its effect is listed.
+This page lists every built-in function with its signature, its side effect if it has one, and an example. The standard library is always in scope; there is nothing to import. Built-ins follow the same rules as user code: no overloading, no methods, and generics only through type parameters. A type parameter named `K` is a key and must be Int, Float or String (T001 otherwise). A function is pure (it has no side effects) unless its effect is listed; a function that uses one must declare it in its own `effects` clause.
 
 Each pure example below is a test block, so `canon test` runs it.
 

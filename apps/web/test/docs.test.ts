@@ -16,11 +16,11 @@ import { agentReference, stripFrontmatter } from "../lib/agent-reference";
 const docs = join(__dirname, "..", "content", "docs");
 
 const TREE = [
-  "index", "quickstart",
+  "index", "quickstart", "agents",
   "guide/files-and-syntax", "guide/types-and-declarations", "guide/functions-effects-contracts",
   "guide/statements-and-mutation", "guide/expressions-and-precedence", "guide/pattern-matching",
   "guide/errors-result-try", "guide/pipelines", "guide/holes",
-  "canonical-form", "diagnostics", "stdlib", "cli", "for-agents", "design-notes",
+  "canonical-form", "diagnostics", "stdlib", "cli", "for-agents", "design-notes", "roadmap",
 ];
 
 function walk(dir: string): string[] {

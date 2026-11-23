@@ -1,7 +1,20 @@
 ---
-title: Expressions and precedence
+title: Expressions
 description: Operator precedence, arithmetic, string joining and comparison rules, calls, fields, tuple slots, lambdas, and evaluation order.
 ---
+
+This page covers expressions: operator precedence, arithmetic, strings, comparisons, calls and lambdas.
+
+```canon
+test "precedence" {
+  assert(1 + 2 * 3 == 7)
+  assert((1 + 2) * 3 == 9)
+  assert(not 1 > 2)
+  assert(false and 1 / 0 == 0 or true)
+}
+```
+
+The last line shows that `and` and `or` short-circuit: `1 / 0` is never evaluated.
 
 ## Precedence
 
@@ -21,16 +34,6 @@ Loosest first. Operators on the same level associate to the left, except compari
 
 Parentheses the precedence already implies are redundant, and the formatter removes them: `((a + 1)) > (2)` becomes `a + 1 > 2`. Because `not` binds looser than comparison, `not a > b` means `not (a > b)` and is written without the parentheses.
 
-```canon
-test "precedence" {
-  assert(1 + 2 * 3 == 7)
-  assert((1 + 2) * 3 == 9)
-  assert(not 1 > 2)
-  assert(false and 1 / 0 == 0 or true)
-}
-```
-
-The last line also shows that `and` and `or` short-circuit: `1 / 0` is never evaluated.
 
 ## Comparisons do not chain
 
@@ -51,7 +54,7 @@ fn between(a: Int) -> Bool {
 
 ## Arithmetic
 
-Int with Int gives Int, and Float with Float gives Float. Mixing them is T009, and its patch wraps the Int side in `to_float`. Int division truncates toward zero, and `%` takes the sign of the left side. Dividing by zero, or taking `%` of zero, traps with R004. An Int result outside the 53-bit safe range traps with R003.
+Int with Int gives Int, and Float with Float gives Float. Mixing them is T009, and its patch (a unified diff the compiler ships as the fix) wraps the Int side in `to_float`. Int division truncates toward zero, and `%` takes the sign of the left side. Dividing by zero, or taking `%` of zero, traps with R004. An Int result outside the 53-bit safe range traps with R003.
 
 ```canon
 test "integer arithmetic" {

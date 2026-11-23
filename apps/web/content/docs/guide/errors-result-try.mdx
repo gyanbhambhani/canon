@@ -1,9 +1,9 @@
 ---
-title: Errors with Result and try
+title: Errors
 description: Canon has one error mechanism, Result, and one way to propagate it, try. Option covers values that may be missing.
 ---
 
-Canon has no exceptions and no null. A value that may be missing is an `Option`, and an operation that may fail returns a `Result`. Both are ordinary sum types:
+This page covers error handling with `Result` and `try`. Canon has no exceptions and no null. A value that may be missing is an `Option`, and an operation that may fail returns a `Result`. Both are ordinary sum types:
 
 ```text
 type Option[T] = Some(value: T) | None
@@ -134,4 +134,4 @@ If `main` returns a `Result`, an `Err` prints `error: ` and its message on stder
 
 ## Traps are not errors
 
-Bugs the program cannot handle, such as a failed `assert`, division by zero or integer overflow, are runtime traps (R001 to R006). They stop the program with a JSON report; they cannot be caught. See [Diagnostics](/docs/diagnostics#runtime-traps).
+Bugs the program cannot handle, such as a failed `assert`, division by zero or integer overflow, are runtime traps (R001 to R006). They stop the program with a JSON report; they cannot be caught. See [Errors and fixes](/docs/diagnostics#runtime-traps).

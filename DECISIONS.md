@@ -12,6 +12,28 @@ Reason: the brief requires no Tailwind default blue anywhere on the site, and th
 Decision: README.md has two generated blocks (the hero transcript and the benchmark table) that `scripts/stats.ts --write` refreshes; `tests/readme.test.ts` fails when they are stale. "How it is checked" moved to CONTRIBUTING.md without its counts.
 Reason: the brief puts the badge and benchmark text under the same no-hand-typed-numbers rule as the site.
 
+## 2026-11-22 — Docs restructure
+Decision: the docs follow the brief's four-part sidebar (Get started, Learn the language, Reference, Project). Existing slugs stay; only titles change. Two pages are new (`agents`, `roadmap`), and Research is an external link entry in meta.json.
+Reason: external links point at the existing slugs.
+
+Decision: the M8 benchmark and likelihood tables, charts and figures leave Design notes. The page keeps the thesis as three hypotheses, the design laws, the Wasp lesson and related work, plus one paragraph that says which claims are supported (understood from the reference, correct, turns to working code) and which are not (convergence, v0.2 improving it, cost), that runtime speed is not tested, and links to /research. Open questions and the future-work list moved to the new Roadmap page. The "native dialect" claims ("Canon does not ask a model to learn anything new") are gone from every page.
+Reason: the likelihood study contradicted those claims, and the brief's rule is that a claim appears as fact only when a passing test or a SUPPORTED verdict backs it.
+
+Decision: design law 7 keeps the 4,000-token budget as a number.
+Reason: it is a rule enforced by `docs.test.ts`, not a measured figure, and it does not appear in site.json; the reference's actual size is never typed.
+
+Decision: Formatting rules (canonical-form.mdx) replaces one before/after pair per rule with a single table of rules plus four checked before/after examples (clauses, the call-parenthesis line rule, line length, v0 spellings).
+Reason: the page had to fit in 900 words; the table still lists every rule the old page described.
+
+Decision: the docs.test.ts minimum-length check stays as it was (index > 800 characters, others > 600).
+Reason: the new 250-word index is about 1,350 characters of body, so it passes without weakening the check.
+
+Decision: the Quickstart applies the compiler's patch with `canon check --json FILE | jq -r '.diagnostics[0].fix.diff' | patch -p1`.
+Reason: the CLI has no `--fix` flag; this shows the exact JSON-to-patch path an agent uses, and it was run against the CLI to confirm the output shown.
+
+Decision: a float literal `9.0` in the Matching page became `4.5`.
+Reason: `9.0` equals a generated figure in site.json, so the numbers test, which now scans content/docs, flagged it.
+
 ## 2026-11-22 — Website redesign: data, fixtures and the design canvas
 Decision: the redesign brief (landing, docs, playground, /research, README, npm metadata) is built from its written spec. The design canvas it links (a claude.ai artifact) is behind the owner's login, so layout, copy and tokens follow the brief's sections 6 and 10 exactly instead.
 Reason: CLAUDE.md says not to stop for questions; the brief gives exact copy, tokens, sizes and structure, which is enough to build from.
