@@ -16,7 +16,7 @@ import { join } from "node:path";
 import { approxEqual, execute, type CallResult } from "../adapters/exec.js";
 import { VALUE_ENCODING } from "../arms/prompts.js";
 import { InputGen, mulberry32 } from "../lib/gen.js";
-import { OVERFLOW_TRAP, valid } from "../lib/preconditions.js";
+import { OVERFLOW_TRAP, PRECONDITIONS, valid } from "../lib/preconditions.js";
 import { BENCH, LANGS, loadRef, loadSeed, loadTests, seedIds, type Seed } from "../lib/seed.js";
 
 export type ReadArm = "canon" | "canon-stripped" | "py" | "ts";
@@ -45,6 +45,12 @@ export function stripAnnotations(src: string): string {
       continue;
     }
     if (skipping && /^\s+(&&|\|\|)/.test(line)) continue;
+    // a signature whose clauses were removed takes its brace back, as canon fmt would print it
+    if (skipping && line.trim() === "{" && out.length) {
+      out[out.length - 1] += " {";
+      skipping = false;
+      continue;
+    }
     skipping = false;
     out.push(line);
   }
@@ -60,15 +66,25 @@ function programs(id: string): Record<ReadArm, string> {
   return { canon, "canon-stripped": stripAnnotations(canon), py: loadRef("py", id)!, ts: loadRef("ts", id)! };
 }
 
-function inputsFor(s: Seed, n: number, salt: number): unknown[][] {
+function inputsFor(s: Seed, n: number, salt: number, includeHidden = false): unknown[][] {
   const g = new InputGen(s, loadTests(s.id), mulberry32(104729 + salt * 7 + s.id.length));
   const hidden = new Set(loadTests(s.id).map((c) => JSON.stringify(c.args)));
   const seen = new Set<string>();
   const out: unknown[][] = [];
+  if (includeHidden) {
+    // property questions quantify over all inputs: start from the hidden tests' inputs (edge cases)
+    for (const c of loadTests(s.id)) {
+      const k = JSON.stringify(c.args);
+      if (!seen.has(k) && valid(s.id, c.args)) {
+        seen.add(k);
+        out.push(c.args);
+      }
+    }
+  }
   for (let t = 0; out.length < n && t < n * 30; t++) {
     const a = g.next();
     const k = JSON.stringify(a);
-    if (seen.has(k) || hidden.has(k) || !valid(s.id, a)) continue;
+    if (seen.has(k) || (!includeHidden && hidden.has(k)) || !valid(s.id, a)) continue;
     seen.add(k);
     out.push(a);
   }
@@ -100,7 +116,7 @@ function propsFor(s: Seed): Prop[] {
         const len = (x: unknown) => (typeof x === "string" ? [...x].length : Array.isArray(x) ? x.length : -1);
         return u !== undefined && len(u) > len(args[firstSeq]);
       },
-      text: `${ok} longer than \`${p}\``,
+      text: `${ok || " a value that is"} longer than \`${p}\` (more elements or characters)`,
     });
   }
   if (s.ret.startsWith("Result[")) {
@@ -165,7 +181,7 @@ ids.forEach((id, k) => {
   // ---------------------------------------------------------- property
   {
     const props = propsFor(s);
-    const ins = inputsFor(s, 10000, 3);
+    const ins = inputsFor(s, 10000, 3, true);
     const per = LANGS.map((l) => execute(l, loadRef(l, id)!, s, ins, { timeoutMs: 300 }));
     const decided: { p: Prop; yes: boolean }[] = [];
     for (const p of props) {
@@ -174,7 +190,9 @@ ids.forEach((id, k) => {
       const crashes = per.some((r) => r.filter((x) => !x.ok && !OVERFLOW_TRAP.test(x.e ?? "")).length > ins.length * 0.5);
       if (crashes) continue;
       if (hits.every((h) => h) && witnessAgree) decided.push({ p, yes: true });
-      else if (hits.every((h) => !h)) decided.push({ p, yes: false });
+      // a "no" is only kept when the fuzzed inputs cover the whole typed input space, i.e. the seed
+      // has no stated preconditions (the question quantifies over every value of the declared types)
+      else if (hits.every((h) => !h) && !PRECONDITIONS[id]) decided.push({ p, yes: false });
     }
     const wantNo = k % 2 === 0;
     const pick = decided.find((d) => d.yes !== wantNo) ?? decided[0];

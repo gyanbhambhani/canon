@@ -242,7 +242,7 @@ function arg(name: string, fallback: string): string {
   return i >= 0 ? process.argv[i + 1] : fallback;
 }
 
-export const PILOT_SEEDS = ["caesar_shift", "parse_duration", "stack_vm", "invoice_total", "build_order", "max_subarray", "text_editor", "parse_money", "k_most_frequent", "tic_tac_toe"];
+export const PILOT_SEEDS = ["caesar_shift", "parse_duration", "stack_vm", "invoice_total", "build_order", "max_subarray", "text_editor", "parse_money", "k_most_frequent", "tic_tac_toe", "price_fetcher", "config_cache", "backup_job", "session_tokens"];
 
 async function pool<T>(items: T[], n: number, f: (x: T) => Promise<void>) {
   let i = 0;
