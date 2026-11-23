@@ -4,8 +4,8 @@
 cd "$(dirname "$0")/.." || exit 1
 for runs in 1 2 3; do
   for fam in read write fix change; do
-    npx tsx --conditions=source runner/run.ts --family "$fam" --model qwen7b --seeds all --runs "$runs" --concurrency 8
-    npx tsx --conditions=source runner/run.ts --family "$fam" --model qwen7b --seeds all --runs "$runs" --concurrency 8
+    npx tsx --conditions=source runner/run.ts --family "$fam" --model qwen7b --seeds all --runs "$runs" --concurrency 6
+    npx tsx --conditions=source runner/run.ts --family "$fam" --model qwen7b --seeds all --runs "$runs" --concurrency 6
   done
   echo "RUN $runs COMPLETE $(date)"
 done

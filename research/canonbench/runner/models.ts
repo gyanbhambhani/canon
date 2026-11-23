@@ -60,10 +60,10 @@ export function checkCap(key: string) {
   if (total >= TOTAL_CAP_USD) throw new CapReached(`total USD ${TOTAL_CAP_USD} cap reached`);
 }
 
-function qwen(port: number, name = "Qwen2.5-Coder-7B-Instruct-8bit"): Model {
+function qwen(port: number, name = "Qwen2.5-Coder-7B-Instruct-8bit", key = "qwen7b"): Model {
   const client = new OpenAI({ baseURL: `http://127.0.0.1:${port}/v1`, apiKey: "local", maxRetries: 3, timeout: 900_000 });
   return {
-    key: "qwen7b",
+    key,
     id: `mlx-community/${name}`,
     api: false,
     async chat(system, turns, maxTokens = 2048) {
@@ -151,6 +151,8 @@ function gpt(): Model {
 export function makeModel(key: string, port = 8091): Model {
   loadEnv();
   if (key === "qwen7b") return qwen(port);
+  // exploratory (owner amendment, 2026-11-23): Qwen2.5-Coder-32B-Instruct, MLX 4-bit, same sampling
+  if (key === "qwen32b") return qwen(port, "Qwen2.5-Coder-32B-Instruct-4bit", "qwen32b");
   if (key === "opus") return opus();
   if (key === "gpt") return gpt();
   throw new Error(`unknown model ${key}`);

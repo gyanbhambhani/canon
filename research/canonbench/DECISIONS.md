@@ -134,3 +134,35 @@ made is recorded here (date, decision, reason). Approval of all of these is afte
     estimate it from.
 31. **Qwen run-major ordering and a 07:00 stop rule** so the local model cannot hold the report
     hostage; see PREREGISTRATION.md section 4.
+
+## Main run (Phase 3)
+
+32. **FS-1 is not run by CanonBench.** After the pre-registration was committed, the owner's
+    coordinator assigned FS-1's pilot, pre-registration and main run to a separate agent on main
+    (research/fs1/), with its own budget of USD 100 per API model, separate from CanonBench's caps.
+    CanonBench folds FS-1's committed results into the FULL-STACK row at the end, or marks the row
+    "pending FS-1". So PREREGISTRATION.md section 5's "USD 300 in total, CanonBench and FS-1
+    together" applies to CanonBench alone.
+33. **The main run stays on compiler c2cb47e.** Main gained further compiler fixes after the
+    pre-registration was committed (forward-referenced model fields, store.py always written, long
+    match arms). The main run had already started, and the coordinator's instruction was not to
+    switch mid-run; the pinned commit is kept for every CanonBench arm.
+34. **The Anthropic account ran out of credit at 01:18 PST** (HTTP 400 "credit balance is too
+    low"), with CanonBench's Opus ledger at USD 18.20 of its 150 cap (the key is shared with FS-1).
+    Only the owner can add credit; the coordinator was told at once. Opus had finished READ runs 0
+    and 1 and part of run 2; WRITE, FIX and CHANGE had not started. Failed calls are not recorded
+    (infrastructure failures), so a probe every 10 minutes (scripts/opus-wait-resume.sh, until 06:30)
+    resumes the run exactly where it stopped if credit returns. Whatever Opus completed is analysed
+    under the pre-registered rule (seed scores average over the runs each seed has); cells without
+    Opus data are reported as not run.
+35. **The local Qwen server crashed at 01:25 PST** ("generation thread died"; every request then
+    returned 404) after the FS-1 agent started a second 7B server on the same machine. The failed
+    calls were infrastructure failures and were not recorded. The server was restarted with
+    `--decode-concurrency 4` (was 8) and the runner with 6 concurrent requests (was 8), and the run
+    resumed where it stopped. Concurrency changes throughput only, not sampling.
+36. **Opus stopped for good (owner's decision, about 01:30 PST).** Before the decision arrived, the
+    10-minute probe found the API answering again at 01:29 and resumed READ run 2 for 109 items
+    (USD 1.20) before it was stopped on the owner's instruction; those records stay, as recorded
+    runs. Final Opus ledger: USD 19.40. See PREREGISTRATION.md amendment 1.
+37. **Exploratory Qwen2.5-Coder-32B-Instruct (MLX 4-bit)** added on the owner's instruction, on a
+    fixed random subset of 20 seeds, one run, WRITE/FIX/CHANGE first (amendment 1).

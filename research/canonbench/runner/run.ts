@@ -313,6 +313,12 @@ async function main() {
     for (let run = 0; run < runs; run++) for (const l of langs) for (const id of ids.filter(inSeeds)) mk(changeJob(l as Lang, id, run));
   }
   let todo = jobs.filter((j) => !done.has(j.key));
+  // exploratory subsets (the 32B amendment): only the listed item ids
+  const itemsFile = arg("items-file", "");
+  if (itemsFile) {
+    const keep = new Set(JSON.parse(readFileSync(join(BENCH, itemsFile), "utf8")).items as string[]);
+    todo = todo.filter((j) => keep.has(j.key.split("|")[3]));
+  }
   if (limit) todo = todo.slice(0, limit);
   console.log(`${model.id} ${family}: ${todo.length} runs to do (${done.size} already in ${out})`);
   let finished = 0;

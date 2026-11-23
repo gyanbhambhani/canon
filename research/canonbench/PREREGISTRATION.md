@@ -195,3 +195,31 @@ b2663b09106cbc847e1b240f2bab113ada12a36ddf592b708674f150ea4ba9e2  items/write.tx
 f5b255c50e73d07fa9050162e7e63848b8e7662fd816fa05a34761df74042a74  analysis/analyze.ts
 fbc0151da29ec036c2eef8dab01acd2f686c542d6ddb4f7bd7cc2e82380c67b5  analysis/think.ts
 ```
+
+## Amendment 1 (2026-11-23, about 01:35 PST; owner's decision, relayed by the coordinator)
+
+Committed before the first Qwen2.5-Coder-32B call. Nothing above is changed.
+
+1. **Claude Opus 5.5 is stopped for the rest of the run.** The Anthropic account ran out of credit
+   at 01:18 PST and will not be refilled tonight. Its recorded runs (READ runs 0 and 1 complete,
+   run 2 partial; no WRITE, FIX or CHANGE) stay as recorded and are analysed under section 4's rule.
+   The plan's win rule needs both frontier models, so it **cannot be decided** in this run;
+   GPT-6.2 Sol is reported as the one frontier result.
+2. **GPT-6.2 Sol continues as pre-registered.**
+3. **Exploratory model added: Qwen2.5-Coder-32B-Instruct, MLX 4-bit**
+   (`mlx-community/Qwen2.5-Coder-32B-Instruct-4bit`), served by mlx_lm 0.32.2 on port 8092 with
+   `--decode-concurrency 2`; sampling identical to Qwen 7B (temperature 0.2, top_p 1.0, max 2,048
+   output tokens, READ 1,024). It is **exploratory: never part of the scoreboard's verdicts, the Holm
+   families or the win rule**; its cells are reported with the same statistics, labelled exploratory.
+   - Items: a random subset of 20 of the 60 hard seeds (scripts/subset-32b.ts, fixed seed 32;
+     items/subset-32b.json, sha256 7b1653f2831973c016fe91c7d9e31b53b6b0c1f821aa11dedda9fd5c09418e6f):
+     WRITE on the 20 seeds, FIX on each seed's first matched mutant type (17 seeds, 51 items),
+     CHANGE on the 8 CHANGE items among them, then READ on the 46 questions about those seeds.
+   - Order and runs: one run per item; WRITE, then FIX, then CHANGE, then READ, until the morning
+     stop (07:00 PST). The report states exactly what ran.
+   - Runner changes for this (runner/models.ts adds the model key `qwen32b`; runner/run.ts adds an
+     `--items-file` filter) do not change any pre-registered arm. New hashes:
+     runner/models.ts c0bfcb7243c16ba2765d34f37b0c5cf5e85c0e9cf2fe5d9b8068b4acb5c3ba82,
+     runner/run.ts d0b34bb1b19046f801c3c894a1f5371e0b3a6cfbeb3cdbf318f72c4042f93b2f.
+4. **Local servers:** 7B on port 8091 and 32B on port 8092 only; the FS-1 agent uses these rather
+   than its own server.
