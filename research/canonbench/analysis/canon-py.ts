@@ -24,6 +24,10 @@ const RUSTISMS: [string, RegExp][] = [
   ["char literal", /'(?:[^'\\\n]|\\.)'/g],
   ["null", /\bnull\b/g],
   ["+=", /\+=/g],
+  // Python-isms outside Canon-Py's subset (and outside brace Canon)
+  ["dict/set literal", /[=(,:]\s*\{(?!\s*$)/g],
+  ["slice x[a:b]", /\[[^\]\n]*:[^\]\n]*\]/g],
+  ["import / from", /^\s*(import|from)\s/gm],
 ];
 
 function rustisms(drafts: string[]) {
@@ -42,7 +46,7 @@ function rustisms(drafts: string[]) {
 const out: Record<string, unknown> = {};
 const md: string[] = [];
 // ---------------------------------------------------------------- per family, brace vs Canon-Py
-md.push("| Family | Arm | Seeds | Runs | Pass % | First draft checks % | Runs with a parse error (P001) | ...fixed by feedback | Most common remaining codes |", "| --- | --- | --- | --- | --- | --- | --- | --- | --- |");
+md.push("| Family | Arm | Seeds | Runs | Pass % | First draft checks % | Runs with a parse error (P001) | ...fixed by feedback | Final program unchanged after feedback | Most common remaining codes |", "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |");
 const families = ["write", "fix", "change"];
 for (const fam of families) {
   const brace = [...load(`${fam}-qwen7b.jsonl`), ...load(`${fam}-qwen7b-pilot.jsonl`)].filter((r) => r.arm === "canon");
@@ -58,6 +62,7 @@ for (const fam of families) {
     const codes: Record<string, number> = {};
     for (const r of never) for (const c of new Set<string>(checkCode(lang(r), r.final).codes)) codes[c] = (codes[c] ?? 0) + 1;
     const top = Object.entries(codes).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([c, n]) => `${c} (${n})`).join(", ");
+    const unchanged = recs.filter((r) => r.rounds > 0 && r.final.trim() === r.initial.trim()).length;
     const row = {
       family: fam,
       arm,
@@ -68,16 +73,17 @@ for (const fam of families) {
       parseRuns: parse.length,
       parseFixed: parseFixed.length,
       topCodes: top,
+      unchangedResubmissions: unchanged,
     };
     out[`${fam}|${arm}`] = row;
-    md.push(`| ${fam} | ${arm} | ${row.seeds} | ${row.runs} | ${(100 * row.pass).toFixed(1)} | ${(100 * row.firstCheck).toFixed(1)} | ${row.parseRuns} | ${row.parseFixed} | ${top || "–"} |`);
+    md.push(`| ${fam} | ${arm} | ${row.seeds} | ${row.runs} | ${(100 * row.pass).toFixed(1)} | ${(100 * row.firstCheck).toFixed(1)} | ${row.parseRuns} | ${row.parseFixed} | ${unchanged} | ${top || "–"} |`);
   }
 }
 // THINK
 for (const [arm, f] of [["canon->py (brace)", "think-qwen7b.jsonl"], ["canon->py (brace, pilot)", "think-qwen7b-pilot.jsonl"], ["canon-py->py", "think-qwen7b-cpy.jsonl"]] as const) {
   const recs = load(f).filter((r: { arm: string }) => r.arm !== "py");
   if (!recs.length) continue;
-  md.push(`| think | ${arm} | ${new Set(recs.map((r: { seed: string }) => r.seed)).size} | ${recs.length} | ${(100 * recs.filter((r: { thinkPass: boolean }) => r.thinkPass).length / recs.length).toFixed(1)} | | | | |`);
+  md.push(`| think | ${arm} | ${new Set(recs.map((r: { seed: string }) => r.seed)).size} | ${recs.length} | ${(100 * recs.filter((r: { thinkPass: boolean }) => r.thinkPass).length / recs.length).toFixed(1)} | | | | | |`);
 }
 // ---------------------------------------------------------------- Rust-isms in first drafts
 const braceDrafts = [...load("write-qwen7b.jsonl"), ...load("write-qwen7b-pilot.jsonl")].filter((r) => r.arm === "canon").map((r) => r.initial as string);
