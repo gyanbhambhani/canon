@@ -11,13 +11,15 @@ const range = (xs: number[], f: (x: number) => string, unit = "") => {
 };
 const pct0 = (x: number) => `${Math.round(100 * x)}`;
 const dec2 = (x: number) => x.toFixed(2);
+const dec1 = (x: number) => x.toFixed(1);
 const n = (x: number) => x.toLocaleString("en-US");
 
-export function buildDisplay(stats: { referenceTokens: number; version: string }, b: Benchmark, v0: Benchmark) {
+export function buildDisplay(stats: { referenceTokens: number; version: string }, b: Benchmark, v0: Benchmark, lastStudyDate: string) {
   const c = b.byModel.map((m) => m.canon);
   const t = b.byModel.map((m) => m.typescript);
   return {
     version: stats.version,
+    lastStudyDate,
     referenceTokens: n(stats.referenceTokens),
     runs: n(b.runs),
     canonRuns: n(b.canonRuns),
@@ -33,6 +35,8 @@ export function buildDisplay(stats: { referenceTokens: number; version: string }
     turnsRange: range(c.map((x) => x.turns), dec2),
     tsTurns: range(t.map((x) => x.turns), dec2),
     canonDistinctRange: range(c.map((x) => x.distinct), dec2),
+    canonDistinct1: range(c.map((x) => x.distinct), dec1),
+    tsDistinct1: range(t.map((x) => x.distinct), dec1),
     tsDistinctRange: range(t.map((x) => x.distinct), dec2),
     tokenMultipleRange: range(b.byModel.map((m) => m.tokenMultiple), (x) => x.toFixed(1), "x"),
     timeMultipleRange: range(b.byModel.map((m) => m.timeMultiple), (x) => x.toFixed(1), "x"),
@@ -43,6 +47,11 @@ export function buildDisplay(stats: { referenceTokens: number; version: string }
       b.byModel.filter((m) => m.canon.costPerCorrect !== null).map((m) => m.canon.costPerCorrect! / m.typescript.costPerCorrect!),
       (x) => x.toFixed(1),
       "x",
+    ),
+    costMultiple: range(
+      b.byModel.filter((m) => m.canon.costPerCorrect !== null).map((m) => m.canon.costPerCorrect! / m.typescript.costPerCorrect!),
+      (x) => x.toFixed(1),
+      "×",
     ),
     outputTokensCanon: range(c.map((x) => x.outputTokens), (x) => n(Math.round(x))),
     outputTokensTs: range(t.map((x) => x.outputTokens), (x) => n(Math.round(x))),

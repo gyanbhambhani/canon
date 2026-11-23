@@ -2,6 +2,14 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — /research rewritten as a research post
+Decision: /research leads with the result (H1), then four findings, one chart, method, what we learned, what's next, data links and a collapsed appendix, using the owner's brief verbatim. Criteria codes, commit hashes and confidence intervals appear only in the appendix; a Playwright test enforces that on the rendered page.
+- The brief's REDESIGN.md is not in the repository, so its section 6 copy rules could not be checked; the page follows the design tokens in global.css and the redesign entry below.
+- Statements the copy makes about the data ("Every Canon program worked", "went up for one model and down for the other", "v0.2 adopted all three") are pinned to the data by apps/web/test/research-copy.test.ts, so a future run that changes them fails until the copy is updated.
+- The total run count is computed on the page from the two studies (not added to the generated display strings), because "4,000" also appears in the docs as the reference's token budget, and the hard-coded-number test would flag it there.
+- The chart is one image to assistive technology (role="img" with a summary aria-label), which keeps its tick labels out of the page's text; the x axis is fixed at 0 to 6.
+- The landing page's benchmark table gains a cost row, marked "✗ Not yet" with the cost multiple, under the consistency row (which is marked the same way).
+
 ## 2026-11-22 — Website redesign: version 0.1.1, charts, and tests
 Decision: every package moves to 0.1.1 together (the brief bumps the CLI; DEPLOY.md bumps all packages together). `tests/release.test.ts` and the `--version` test now expect 0.1.1; the check is unchanged, only the expected value.
 Reason: the npm listing gains its description, repository, homepage, bugs and keywords fields, and the `exports` map drops the unshipped `source` condition (nothing imported `canon-lang` through it).

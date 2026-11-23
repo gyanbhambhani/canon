@@ -9,6 +9,7 @@
  *  - terminal: the hero transcript, produced by running the real CLI on examples/mistakes/missing-effect.cn
  *  - snippets and examples: source shown on the landing page and loaded by the playground
  */
+import { execFileSync } from "node:child_process";
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -62,11 +63,27 @@ export async function siteData() {
     .map((f) => ({ id: f.replace(/\.cn$/, ""), source: readSource(read("examples", "mistakes", f)) }));
 
   const terminal = await heroTranscript(root);
-  const display = buildDisplay(stats, benchmark, benchmarkV0);
+  const display = buildDisplay(stats, benchmark, benchmarkV0, lastStudyDate());
   return { stats, display, benchmark, benchmarkV0, likelihood, terminal, ordersSnippet, examples, mistakes };
 }
 
 export type SiteData = Awaited<ReturnType<typeof siteData>>;
+
+/**
+ * The date of the latest benchmark study: the commit date of its raw runs. Builds without git
+ * history (some CI checkouts) fall back to the newest dated entry in DECISIONS.md.
+ */
+function lastStudyDate(): string {
+  let iso = "";
+  try {
+    iso = execFileSync("git", ["log", "-1", "--format=%cs", "--", "research/benchmark/results/runs-v0.2.jsonl"], { cwd: root, encoding: "utf8" }).trim();
+  } catch {
+    iso = "";
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) iso = /^## (\d{4}-\d{2}-\d{2})/m.exec(read("DECISIONS.md"))?.[1] ?? "";
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
+}
 
 const isMain = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isMain) {

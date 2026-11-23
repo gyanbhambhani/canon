@@ -106,11 +106,25 @@ const ROWS: { metric: ReactNode; canon: string; ts: string; bars?: [number, numb
     metric: (
       <>
         Distinct programs per task
-        <span className="mt-1 block text-[13px] text-faint">Lower is better. Not improved yet, in v0 or v0.2.</span>
+        <span className="mt-1 block text-[13px] text-faint">
+          <span className="text-err">✗ Not yet.</span> Lower is better; not improved in v0 or v0.2.
+        </span>
       </>
     ),
     canon: d.canonDistinctRange,
     ts: d.tsDistinctRange,
+  },
+  {
+    metric: (
+      <>
+        Cost per working program
+        <span className="mt-1 block text-[13px] text-faint">
+          <span className="text-err">✗ Not yet.</span> Canon answers are longer.
+        </span>
+      </>
+    ),
+    canon: d.costMultiple,
+    ts: "1×",
   },
 ];
 

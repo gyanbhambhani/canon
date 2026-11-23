@@ -3,12 +3,12 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { DistinctChart } from "@/components/site/distinct-chart";
 import { SiteFooter } from "@/components/site/footer";
-import { blob, commit, tree } from "@/lib/shared";
+import { blob, tree } from "@/lib/shared";
 import { fmtNumber, siteData, type SiteData } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Research",
-  description: "Does a stricter language make agents better? Pre-registered benchmark and likelihood results for Canon, including what did not hold up.",
+  description: "Agents write Canon as reliably as TypeScript. Not more consistently, yet. Two pre-registered studies, with every verdict published.",
 };
 
 const { benchmark: v02, benchmarkV0: v0, likelihood, display: d } = siteData;
@@ -16,76 +16,104 @@ type Verdict = SiteData["benchmark"]["verdicts"][number];
 
 const pct = (x: number) => `${(100 * x).toFixed(1)}%`;
 const dec = (x: number) => x.toFixed(2);
-const times = (x: number) => `${x.toFixed(1)}x`;
-/** 1/ratio as "N times less likely", two significant figures */
-const lessLikely = (ratio: number) => fmtNumber(Number((1 / ratio).toPrecision(2)));
+const WORDS = ["zero", "one", "two", "three", "four", "five"];
+const countWord = (n: number) => WORDS[n] ?? fmtNumber(n);
+const capitalized = (s: string) => s[0].toUpperCase() + s.slice(1);
+/** 1/ratio as "N× less likely", two significant figures */
+const lessLikely = (ratio: number) => `${fmtNumber(Number((1 / ratio).toPrecision(2)))}×`;
 
-/** Plain-language names for the pre-registered criteria (ids and verdicts come from the reports). */
-const QUESTION: Record<string, string> = {
-  C1: "Agents learn Canon from the reference alone",
-  C2: "Agents write correct Canon, including on hard tasks",
-  C3: "Agents converge: at most half as many distinct programs as TypeScript",
+// the examples quoted under "What we learned": the latest study, first model
+const exampleModel = v02.models[0];
+const taskDistinct = (id: string) => v02.taskRows.find((t) => t.task === id)!.distinct[exampleModel];
+const applyOps = taskDistinct("apply_ops");
+const sumEvens = taskDistinct("sum_evens");
+
+/** Plain-language spellings for the likelihood constructs (ids and verdicts come from the data). */
+const SPELLING: Record<string, { construct: string; v0: ReactNode; preferred: ReactNode }> = {
+  "while-loop": { construct: "Condition loop", v0: <C>{"for cond { }"}</C>, preferred: <C>{"while cond { }"}</C> },
+  mutation: { construct: "Mutable assignment", v0: <C>set x = ...</C>, preferred: <C>x = ...</C> },
+  "string-join": { construct: "Joining strings", v0: <C>concat(a, b)</C>, preferred: <C>a + b</C> },
+  "logic-words": {
+    construct: "Logical operators",
+    v0: (
+      <>
+        <C>and</C> / <C>or</C> / <C>not</C>
+      </>
+    ),
+    preferred: (
+      <>
+        <C>&amp;&amp;</C> / <C>||</C> / <C>!</C>
+      </>
+    ),
+  },
+  "effects-placement": { construct: "Effects clause", v0: "On its own line", preferred: <>Inline, before <C>{"{"}</C></> },
+  "trailing-comma": { construct: "Record fields", v0: "Trailing comma", preferred: "No trailing comma" },
+};
+const COMPACT = ["while-loop", "mutation", "string-join", "logic-words"];
+
+/** The pre-registered criteria as short claims (codes and verdicts come from the reports). */
+const CLAIM: Record<string, string> = {
+  C1: "Correct at least as often as TypeScript, within 5 points",
+  C2: "At least 90% correct overall and 80% on hard tasks",
+  C3: "At most half as many distinct programs as TypeScript",
   C3s: "The same, counting program structure only",
-  C4: "Agents need no more tries than in TypeScript",
-  C5: "Canon programs run faster",
-  C6: "Cost per working program within 1.5x of TypeScript",
-  D1: "v0.2 converges better than v0",
+  C4: "No more tries to working code than TypeScript, within 0.25",
+  C5: "Programs run faster",
+  C6: "Cost per working program within 1.5× of TypeScript",
+  D1: "v0.2 more consistent than v0",
   D1s: "The same, counting program structure only",
 };
 
-/** `code` spans in plain text */
-function Ticks({ text }: { text: string }) {
-  return (
-    <>
-      {text.split(/`([^`]+)`/).map((part, i) =>
-        i % 2 ? (
-          <code key={i} className="font-mono text-[13px] text-ink-strong">
-            {part}
-          </code>
-        ) : (
-          part
-        ),
-      )}
-    </>
-  );
+function C({ children }: { children: ReactNode }) {
+  return <code className="font-mono text-[0.92em] text-ink-strong">{children}</code>;
 }
 
-function Pill({ v }: { v: Verdict["verdict"] }) {
-  const cls =
-    v === "SUPPORTED" ? "border-fix/40 bg-fix-bg text-fix" : v === "NOT SUPPORTED" ? "border-err/40 bg-err-bg text-err" : "border-rule-strong bg-surface-2 text-muted";
-  return <span className={`inline-block whitespace-nowrap rounded-full border px-2.5 py-0.5 font-mono text-[12px] ${cls}`}>{v}</span>;
+function H2({ children }: { children: ReactNode }) {
+  return <h2 className="text-[28px] font-semibold leading-[1.15] tracking-[-0.03em] text-ink-strong md:text-[32px]">{children}</h2>;
 }
 
-function H2({ id, children }: { id: string; children: ReactNode }) {
-  return (
-    <h2 id={id} className="scroll-mt-24 text-[28px] font-semibold leading-[1.15] tracking-[-0.03em] text-ink-strong md:text-[34px]">
-      {children}
-    </h2>
-  );
+function H3({ children }: { children: ReactNode }) {
+  return <h3 className="mt-10 text-[18px] font-semibold leading-[1.3] tracking-[-0.01em] text-ink-strong">{children}</h3>;
 }
 
-function Block({ children, id }: { children: ReactNode; id?: string }) {
+function P({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <p className={`mt-4 text-[17px] leading-[28px] text-muted ${className}`}>{children}</p>;
+}
+
+/** A page section: a full-width rule above, content in the 720px article column (or 960px when wide). */
+function Section({ children, wide = false, id }: { children: ReactNode; wide?: boolean; id?: string }) {
   return (
     <section id={id} className="border-b border-rule">
-      <div className="frame px-6 py-16 md:py-20">
-        <div className="mx-auto max-w-[860px] [&>*]:min-w-0">{children}</div>
+      <div className="frame px-6 py-14 md:py-16">
+        <div className={`mx-auto ${wide ? "max-w-[960px]" : "max-w-[720px]"} [&>*]:min-w-0`}>{children}</div>
       </div>
     </section>
   );
 }
 
-function P({ children }: { children: ReactNode }) {
-  return <p className="mt-4 text-[16px] leading-[27px] text-muted">{children}</p>;
+function Status({ held }: { held: boolean }) {
+  return held ? (
+    <span className="font-mono text-[13px] font-medium text-fix">✓ Held up</span>
+  ) : (
+    <span className="font-mono text-[13px] font-medium text-err">✗ Not yet</span>
+  );
 }
 
-function Table({ head, rows, testId }: { head: ReactNode[]; rows: ReactNode[][]; testId?: string }) {
+function Pill({ v }: { v: Verdict["verdict"] }) {
+  const cls =
+    v === "SUPPORTED" ? "border-fix/40 bg-fix-bg text-fix" : v === "NOT SUPPORTED" ? "border-err/40 bg-err-bg text-err" : "border-rule-strong bg-surface-2 text-faint";
+  return <span className={`inline-block whitespace-nowrap rounded-full border px-2.5 py-0.5 font-mono text-[12px] ${cls}`}>{v}</span>;
+}
+
+function Table({ head, rows, numeric = [], testId, caption }: { head: ReactNode[]; rows: ReactNode[][]; numeric?: number[]; testId?: string; caption?: string }) {
   return (
-    <div className="mt-8 overflow-x-auto rounded-[14px] border border-rule-strong bg-surface">
-      <table className="w-full min-w-[560px] text-left text-[14px]" data-testid={testId}>
+    <div className="mt-5 overflow-x-auto rounded-[12px] border border-rule-strong bg-surface">
+      <table className="w-full min-w-[560px] text-left text-[14px] [font-variant-numeric:tabular-nums]" data-testid={testId}>
+        {caption ? <caption className="sr-only">{caption}</caption> : null}
         <thead>
-          <tr className="border-b border-rule font-mono text-[13px] text-faint">
+          <tr className="border-b border-rule font-mono text-[12px] text-faint">
             {head.map((h, i) => (
-              <th key={i} className="px-4 py-3 font-normal">
+              <th key={i} scope="col" className={`px-4 py-3 font-normal ${numeric.includes(i) ? "text-right" : ""}`}>
                 {h}
               </th>
             ))}
@@ -95,7 +123,7 @@ function Table({ head, rows, testId }: { head: ReactNode[]; rows: ReactNode[][];
           {rows.map((r, i) => (
             <tr key={i} className="border-b border-rule align-top last:border-none">
               {r.map((c, j) => (
-                <td key={j} className={`px-4 py-3 ${j === 0 ? "text-ink" : "text-muted"}`}>
+                <td key={j} className={`px-4 py-3 ${j === 0 ? "text-ink" : "text-muted"} ${numeric.includes(j) ? "text-right" : ""}`}>
                   {c}
                 </td>
               ))}
@@ -107,253 +135,275 @@ function Table({ head, rows, testId }: { head: ReactNode[]; rows: ReactNode[][];
   );
 }
 
-function VerdictTable({ b, testId }: { b: typeof v02; testId?: string }) {
-  return (
-    <Table
-      testId={testId}
-      head={["", "Criterion", ...b.models, "Verdict"]}
-      rows={b.verdicts.map((v) => [
-        <span key="id" className="font-mono text-faint">
-          {v.id}
-        </span>,
-        QUESTION[v.id] ?? v.name,
-        ...v.perModel.map((p, i) => (
-          <span key={i} className="font-mono text-[13px]">
-            {p.detail}
-          </span>
-        )),
-        <Pill key="v" v={v.verdict} />,
-      ])}
-    />
-  );
-}
+const FINDINGS: { held: boolean; number: string; title: string; body: ReactNode }[] = [
+  {
+    held: true,
+    number: d.canonCorrect,
+    title: "Correct",
+    body: <>Every Canon program worked, same as TypeScript, including the {d.hardTasks} hard tasks.</>,
+  },
+  {
+    held: true,
+    number: `${d.fixedInOne} of ${d.failedFirst}`,
+    title: "Self-correcting",
+    body: <>Every failed first draft passed after applying the compiler&apos;s patch once.</>,
+  },
+  {
+    held: false,
+    number: `${d.canonDistinct1} vs ${d.tsDistinct1}`,
+    title: "Consistency",
+    body: <>Agents wrote about as many different programs per task in Canon as in TypeScript. Changing the syntax in v0.2 didn&apos;t move it.</>,
+  },
+  {
+    held: false,
+    number: d.costMultiple,
+    title: "Cost",
+    body: <>A working Canon program cost more than a TypeScript one, mostly because Canon answers are longer.</>,
+  },
+];
 
-const claude = (b: typeof v02) => b.byModel.find((m) => m.canon.costPerCorrect !== null);
-const task = (b: typeof v02, id: string) => b.taskRows.find((t) => t.task === id)!;
-const firstModel = v02.models[0];
-const applyOps = task(v0, "apply_ops").distinct[firstModel];
-const sumEvens = task(v0, "sum_evens").distinct[firstModel];
-const fewerSameMore = v02.byModel.map((m) => {
-  const pairs = v02.taskRows.map((t) => t.distinct[m.model]);
-  return {
-    model: m.model,
-    fewer: pairs.filter((p) => p.canon < p.typescript).length,
-    same: pairs.filter((p) => p.canon === p.typescript).length,
-    more: pairs.filter((p) => p.canon > p.typescript).length,
-  };
-});
-const supported = v02.verdicts.filter((v) => v.verdict === "SUPPORTED").map((v) => v.id);
-const notSupported = v02.verdicts.filter((v) => v.verdict === "NOT SUPPORTED").map((v) => v.id);
-const priced = claude(v02)!;
-const pricedV0 = claude(v0)!;
+const LINKS: { label: string; desc: string; href: string }[] = [
+  { label: "Raw runs", desc: "Every run as JSON lines", href: tree("research/benchmark/results") },
+  { label: "Harness and tasks", desc: `The benchmark code and all ${d.tasks} tasks`, href: tree("research/benchmark/src") },
+  { label: "v0.2 report", desc: "Verdicts and metrics for the latest study", href: blob("research/benchmark/REPORT-v0.2.md") },
+  { label: "v0.2 pre-registration", desc: "The criteria, committed before the run", href: blob("research/benchmark/PREREGISTRATION-v0.2.md") },
+  { label: "v0 report", desc: "Verdicts and metrics for the first study", href: blob("research/benchmark/REPORT.md") },
+  { label: "v0 pre-registration", desc: "The criteria, committed before the run", href: blob("research/benchmark/PREREGISTRATION.md") },
+  { label: "Likelihood study", desc: "Method, scores and models", href: blob("research/likelihood/REPORT.md") },
+  { label: "Design notes", desc: "Why Canon is built this way", href: "/docs/design-notes" },
+];
 
 export default function Research() {
   return (
     <main className="flex flex-1 flex-col">
+      {/* 1. Header */}
       <section className="border-b border-rule">
-        <div className="frame px-6 pb-16 pt-[72px] md:pt-[104px]">
-          <div className="mx-auto max-w-[860px]">
-            <p className="mb-4 font-mono text-[13px] text-faint">Research</p>
-            <h1 className="text-[clamp(36px,5vw,56px)] font-semibold leading-[1.05] tracking-[-0.04em] text-ink-strong">
-              Does a stricter language make agents better? What we found.
+        <div className="frame px-6 pb-14 pt-[72px] md:pt-[104px]">
+          <div className="mx-auto max-w-[720px]">
+            <p className="font-mono text-[13px] text-faint">Research · Updated {d.lastStudyDate}</p>
+            <h1 className="mt-4 text-[clamp(34px,4.6vw,52px)] font-semibold leading-[1.08] tracking-[-0.04em] text-ink-strong">
+              Agents write Canon as reliably as TypeScript. Not more consistently, yet.
             </h1>
-            <p className="mt-6 text-[18px] leading-[29px] text-muted">
-              Canon removes choices a programmer would normally make, on the bet that agents then write more reliable and more consistent code. We test that bet
-              against TypeScript with success criteria{" "}
-              <a href={commit("2765a35")} className="text-ink underline underline-offset-4">
-                committed before any data existed
-              </a>{" "}
-              (and again for v0.2, in{" "}
-              <a href={commit("d55b804")} className="text-ink underline underline-offset-4">
-                d55b804
-              </a>
-              ), then publish every verdict, including the misses.
+            <p className="mt-6 text-[20px] leading-[31px] text-muted">
+              We tested Canon against TypeScript in two pre-registered studies, with the success criteria committed before any data was collected. Here&apos;s what
+              held up and what didn&apos;t.
             </p>
-            <dl className="mt-10 grid gap-px overflow-hidden rounded-[14px] border border-rule bg-rule sm:grid-cols-3">
-              {[
-                ["Runs per study", d.runs],
-                ["Tasks", `${d.tasks} (${d.hardTasks} hard)`],
-                ["Models", d.models],
-              ].map(([k, v]) => (
-                <div key={k} className="bg-bg px-5 py-4">
-                  <dt className="font-mono text-[13px] text-faint">{k}</dt>
-                  <dd className="mt-1 break-words text-[15px] text-ink-strong">{v}</dd>
-                </div>
-              ))}
-            </dl>
+            <p className="mt-6 font-mono text-[13px] text-faint" data-testid="research-meta">
+              {fmtNumber(v02.runs + v0.runs)} runs · {d.tasks} tasks · {d.modelCount} models · criteria committed before each run
+            </p>
           </div>
         </div>
       </section>
 
-      <Block id="verdicts">
-        <H2 id="verdicts-h">The verdicts.</H2>
-        <P>
-          Canon v0.2, {d.runs} runs. Supported: {supported.join(", ")}. Not supported: {notSupported.join(", ")}. Agents write Canon as correctly and in as few
-          tries as TypeScript. They do not yet write it more consistently, and it costs more.
-        </P>
-        <VerdictTable b={v02} testId="verdicts" />
-        <details className="mt-6 text-[14px] text-muted">
-          <summary className="cursor-pointer text-ink">The earlier run: Canon v0, {d.v0Runs} runs</summary>
-          <VerdictTable b={v0} />
-        </details>
-      </Block>
-
-      <Block id="consistency">
-        <H2 id="consistency-h">Consistency did not improve.</H2>
-        <P>
-          Each task ran {d.runsPerTask} times per model and language. After formatting, we counted how many different programs came out. Canon wrote about as many
-          as TypeScript in both versions, and the v0.2 changes did not move it.
-        </P>
-        <div className="mt-8 rounded-[14px] border border-rule-strong bg-surface p-5">
-          <DistinctChart v02={v02} v0={v0} />
-        </div>
-        <Table
-          head={["Model", "Language", "Correct", "Valid first try", "Tries to working code", "Distinct per task [95% CI]"]}
-          rows={v02.byModel.flatMap((m) => {
-            const old = v0.byModel.find((x) => x.model === m.model)!;
-            return (
-              [
-                ["Canon v0.2", m.canon],
-                ["Canon v0", old.canon],
-                ["TypeScript", m.typescript],
-              ] as const
-            ).map(([lang, a]) => [
-              <span key="m" className="font-mono text-[13px]">
-                {m.model}
-              </span>,
-              lang,
-              pct(a.correct),
-              pct(a.firstPass),
-              dec(a.turns),
-              <span key="d" className="font-mono text-[13px]">
-                {dec(a.distinct)} [{dec(a.distinctLo)}, {dec(a.distinctHi)}]
-              </span>,
-            ]);
-          })}
-        />
-      </Block>
-
-      <Block id="why">
-        <H2 id="why-h">Why consistency did not improve.</H2>
-        <P>These readings come from looking at the programs after the data was in, so they are hypotheses for the next study, not findings.</P>
-        <ol className="mt-6 space-y-5 text-[16px] leading-[27px] text-muted">
-          <li>
-            <strong className="font-semibold text-ink">The comparison is fair on layout.</strong> TypeScript runs were formatted with Prettier before counting, the way
-            Canon is formatted by its compiler. Canon&apos;s single layout earns no advantage here by design; what is left is program structure.
-          </li>
-          <li>
-            <strong className="font-semibold text-ink">Missing constructs push models to improvise.</strong> Canon has no <code className="font-mono text-[14px] text-ink">break</code>. On{" "}
-            <code className="font-mono text-[14px] text-ink">apply_ops</code>, which wants one, {firstModel} wrote {applyOps.canon} different Canon programs in v0
-            against {applyOps.typescript} in TypeScript: each run invented its own workaround.
-          </li>
-          <li>
-            <strong className="font-semibold text-ink">Some choices no grammar can fix.</strong> Helper function names and optional contracts multiply otherwise
-            identical programs. Most of the remaining variation is in how a model breaks a problem into functions.
-          </li>
-        </ol>
-        <P>
-          Where a task fits Canon&apos;s constructs directly, runs do converge: <code className="font-mono text-[14px] text-ink">sum_evens</code> came out as{" "}
-          {sumEvens.canon === 1 ? "the same program" : `${sumEvens.canon} programs`} in all {d.runsPerTask} {firstModel} runs, against {sumEvens.typescript} in
-          TypeScript. Across all tasks in v0.2,{" "}
-          {fewerSameMore.map((f, i) => (
-            <span key={f.model}>
-              {i > 0 ? "; " : ""}
-              {f.model} wrote fewer distinct Canon programs on {f.fewer} tasks, as many on {f.same}, and more on {f.more}
-            </span>
-          ))}
-          .
-        </P>
-      </Block>
-
-      <Block id="likelihood">
-        <H2 id="likelihood-h">What models find natural.</H2>
-        <P>
-          A second study scored equivalent spellings of the same program by how likely an open-weights code model finds them ({likelihood.models.join(" and ")}).
-          These are the constructs where every model preferred something other than Canon&apos;s original spelling, and what v0.2 changed in response.
-        </P>
-        <Table
-          testId="likelihood"
-          head={["Construct", "Canon v0", "Preferred", ...likelihood.models.map((m) => `${m.split("/").pop()}: v0 is less likely by`), "In v0.2"]}
-          rows={likelihood.rows.map((r) => [
-            <Ticks key="q" text={r.question.replace(/\s*\(open question.*\)\s*$/, "")} />,
-            <span key="c" className="font-mono text-[13px]">
-              {r.canonSpelling}
-            </span>,
-            <span key="p" className="font-mono text-[13px]">
-              {r.preferred}
-            </span>,
-            ...r.byModel.map((m) => (
-              <span key={m.model} className="font-mono text-[13px]">
-                {lessLikely(m.ratio)}x
-              </span>
-            )),
-            r.adopted ? <span key="a" className="text-fix">Adopted</span> : <span key="a">Unchanged</span>,
-          ])}
-        />
-        <P>
-          After adopting them, first-try validity{" "}
-          {v02.byModel.map((m, i) => {
-            const before = v0.byModel.find((x) => x.model === m.model)!.canon.firstPass;
-            return (
-              <span key={m.model}>
-                {i > 0 ? " and " : ""}
-                {m.canon.firstPass >= before ? "rose" : "fell"} for {m.model} ({pct(before)} to {pct(m.canon.firstPass)})
-              </span>
-            );
-          })}
-          , and consistency did not change (D1 above). &ldquo;Adopted&rdquo; is decided by the
-          formatter: the v0 spelling now formats to the preferred one.
-        </P>
-      </Block>
-
-      <Block id="cost">
-        <H2 id="cost-h">What it costs.</H2>
-        <P>
-          Canon runs carry the language reference in every prompt, and Canon answers are longer. In v0.2, a working Canon program used {d.tokenMultipleRange} the tokens
-          of a TypeScript one, took {d.timeMultipleRange} as long, and, with prompt caching, cost {times(priced.canon.costPerCorrect! / priced.typescript.costPerCorrect!)}{" "}
-          as much for {priced.model} (v0: {times(pricedV0.canon.costPerCorrect! / pricedV0.typescript.costPerCorrect!)}).
-        </P>
-        <P>
-          Trimming the reference between v0 and v0.2 saved almost nothing, because cached prompt tokens are cheap. Most of the cost is output: Canon answers averaged{" "}
-          {d.outputTokensCanon} output tokens against {d.outputTokensTs} for TypeScript. Shorter answers are the lever, not a shorter reference.
-        </P>
-      </Block>
-
-      <Block id="next">
-        <H2 id="next-h">What comes next.</H2>
-        <P>
-          Correctness and the write, check and fix loop hold up on these tasks:{" "}
-          {d.failedFirst === d.fixedInOne
-            ? `every failed first draft (${d.failedFirst} of ${d.canonRuns} in v0.2) passed after one round of applying the compiler's patch.`
-            : `${d.fixedInOne} of ${d.failedFirst} failed first drafts passed after one round of applying the compiler's patch.`}{" "}
-          Consistency and cost remain open. Canon reports the consistency bet as a hypothesis, not a result, and every
-          change aimed at it gets its own pre-registration, committed before its run.
-        </P>
-        <ul className="mt-8 grid gap-px overflow-hidden rounded-[14px] border border-rule bg-rule text-[15px] sm:grid-cols-2">
-          {[
-            ["v0.2 report", blob("research/benchmark/REPORT-v0.2.md")],
-            ["v0.2 pre-registration", blob("research/benchmark/PREREGISTRATION-v0.2.md")],
-            ["v0 report", blob("research/benchmark/REPORT.md")],
-            ["v0 pre-registration", blob("research/benchmark/PREREGISTRATION.md")],
-            ["Raw runs (JSON lines)", tree("research/benchmark/results")],
-            ["Benchmark harness and tasks", tree("research/benchmark/src")],
-            ["Likelihood study", blob("research/likelihood/REPORT.md")],
-            ["Design notes", "/docs/design-notes"],
-          ].map(([label, href]) => (
-            <li key={label} className="bg-bg">
-              {href.startsWith("/") ? (
-                <Link href={href} className="block px-5 py-4 text-ink transition-colors hover:text-ink-strong">
-                  {label} →
-                </Link>
-              ) : (
-                <a href={href} className="block px-5 py-4 text-ink transition-colors hover:text-ink-strong">
-                  {label} →
-                </a>
-              )}
+      {/* 2. Findings */}
+      <Section wide>
+        <h2 className="sr-only">Findings</h2>
+        <ul className="grid gap-px overflow-hidden rounded-[14px] border border-rule bg-rule sm:grid-cols-2 lg:grid-cols-4" data-testid="findings">
+          {FINDINGS.map((f) => (
+            <li key={f.title} className="flex flex-col bg-bg p-6">
+              <Status held={f.held} />
+              <p className="mt-4 font-mono text-[26px] font-semibold leading-none tracking-[-0.02em] text-ink-strong [font-variant-numeric:tabular-nums]">
+                {f.number}
+              </p>
+              <h3 className="mt-3 text-[16px] font-semibold text-ink-strong">{f.title}</h3>
+              <p className="mt-2 text-[15px] leading-[23px] text-muted">{f.body}</p>
             </li>
           ))}
         </ul>
-      </Block>
+      </Section>
+
+      {/* 3. The chart */}
+      <Section wide id="consistency">
+        <div className="mx-auto max-w-[720px]">
+          <H2>Consistency didn&apos;t improve.</H2>
+        </div>
+        <div className="mt-8 rounded-[14px] border border-rule-strong bg-surface p-5 md:p-7">
+          <DistinctChart v02={v02} v0={v0} />
+        </div>
+      </Section>
+
+      {/* 4. How we tested */}
+      <Section id="method">
+        <H2>How we tested.</H2>
+        <ul className="mt-6 list-disc space-y-2 pl-5 text-[17px] leading-[28px] text-muted marker:text-faint">
+          <li>
+            {d.tasks} tasks, {d.hardTasks} of them hard, each run {d.runsPerTask} times per model and language.
+          </li>
+          <li>
+            {capitalized(countWord(v02.models.length))} frontier models:{" "}
+            {v02.models.map((m, i) => (
+              <span key={m}>
+                {i > 0 ? (i === v02.models.length - 1 ? " and " : ", ") : ""}
+                <C>{m}</C>
+              </span>
+            ))}
+            .
+          </li>
+          <li>Canon prompts include the language reference; TypeScript prompts don&apos;t need one.</li>
+          <li>Two programs count as the same if they match after formatting (Canon&apos;s formatter, Prettier for TypeScript).</li>
+          <li>Success criteria were committed to the repo before each run, and every verdict is published.</li>
+        </ul>
+      </Section>
+
+      {/* 5. What we learned */}
+      <Section id="learned">
+        <H2>What we learned.</H2>
+        <P>These come from reading the programs after the runs, so they are hypotheses for the next study.</P>
+
+        <H3>Missing features make agents improvise.</H3>
+        <P>
+          Canon has no <C>break</C>. On <C>apply_ops</C>, a task that wants one, <C>{exampleModel}</C> wrote {applyOps.canon} different Canon programs against{" "}
+          {applyOps.typescript} in TypeScript; each run invented its own workaround. Where a task fits Canon directly, runs converge: <C>sum_evens</C> came out
+          identical in all {d.runsPerTask} runs, against {sumEvens.typescript} variants in TypeScript.
+        </P>
+
+        <H3>Grammar can&apos;t fix naming.</H3>
+        <P>
+          Most remaining variation is in how a model splits a problem into functions and what it names them. A stricter syntax doesn&apos;t touch either.
+        </P>
+
+        <H3>Natural syntax didn&apos;t help consistency.</H3>
+        <P>
+          A likelihood study found three spellings models strongly prefer: <C>while</C>, plain <C>x = ...</C>, and <C>a + b</C> for strings. v0.2 adopted all three.
+          First-try validity went up for one model and down for the other, and consistency didn&apos;t change.
+        </P>
+        <Table
+          testId="likelihood-compact"
+          caption="Spellings models prefer, and whether v0.2 adopted them"
+          head={["Construct", "Canon v0", "Models prefer", "In v0.2"]}
+          rows={COMPACT.map((id) => likelihood.rows.find((r) => r.id === id))
+            .filter((r): r is NonNullable<typeof r> => Boolean(r))
+            .map((r) => [
+              SPELLING[r.id].construct,
+              SPELLING[r.id].v0,
+              SPELLING[r.id].preferred,
+              r.adopted ? <span key="a" className="text-fix">Adopted</span> : <span key="a">Unchanged</span>,
+            ])}
+        />
+
+        <H3>Cost is in the output, not the prompt.</H3>
+        <P>
+          Trimming the reference saved almost nothing, because cached prompt tokens are cheap. Canon answers averaged {d.outputTokensCanon} output tokens against{" "}
+          {d.outputTokensTs} for TypeScript. Shorter answers are the lever.
+        </P>
+      </Section>
+
+      {/* 6. What's next */}
+      <Section id="next">
+        <H2>What&apos;s next.</H2>
+        <ul className="mt-6 list-disc space-y-2 pl-5 text-[17px] leading-[28px] text-muted marker:text-faint">
+          <li>
+            Add an early loop exit and test whether <C>apply_ops</C>-style tasks converge.
+          </li>
+          <li>Test whether a tighter answer format cuts output tokens and cost.</li>
+          <li>Every change gets its own pre-registration, committed before its run.</li>
+        </ul>
+      </Section>
+
+      {/* 7. Data and code */}
+      <Section id="data">
+        <H2>Data and code.</H2>
+        <ul className="mt-6 grid gap-px overflow-hidden rounded-[14px] border border-rule bg-rule sm:grid-cols-2">
+          {LINKS.map((l) => {
+            const inner = (
+              <>
+                <span className="block text-[15px] font-medium text-ink-strong">{l.label} →</span>
+                <span className="mt-1 block text-[14px] text-muted">{l.desc}</span>
+              </>
+            );
+            const cls = "block h-full px-5 py-4 transition-colors hover:bg-surface";
+            return (
+              <li key={l.label} className="bg-bg">
+                {l.href.startsWith("/") ? (
+                  <Link href={l.href} className={cls}>
+                    {inner}
+                  </Link>
+                ) : (
+                  <a href={l.href} className={cls}>
+                    {inner}
+                  </a>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </Section>
+
+      {/* 8. Appendix */}
+      <Section id="appendix">
+        <details className="group" data-testid="appendix">
+          <summary className="cursor-pointer select-none text-[17px] font-medium text-ink-strong">Full verdicts and metrics</summary>
+
+          <h3 className="mt-8 text-[16px] font-semibold text-ink-strong">Verdicts, v0.2</h3>
+          <Table
+            testId="verdicts"
+            caption="Pre-registered criteria and verdicts for the v0.2 study"
+            head={["Criterion", ...v02.models, "Verdict"]}
+            rows={v02.verdicts.map((v) => [
+              <span key="c">
+                <span className="font-mono text-faint">{v.id}</span> · {CLAIM[v.id] ?? v.name}
+              </span>,
+              ...v.perModel.map((p, i) => (
+                <span key={i} className="font-mono text-[13px]">
+                  {p.detail}
+                </span>
+              )),
+              <Pill key="v" v={v.verdict} />,
+            ])}
+          />
+
+          <h3 className="mt-10 text-[16px] font-semibold text-ink-strong">Metrics</h3>
+          <Table
+            testId="metrics"
+            caption="Metrics by model, language and version"
+            numeric={[2, 3, 4, 5]}
+            head={["Model", "Language", "Correct", "Valid first try", "Tries to working code", "Distinct per task [95% interval]"]}
+            rows={v02.byModel.flatMap((m) => {
+              const old = v0.byModel.find((x) => x.model === m.model)!;
+              return (
+                [
+                  ["Canon v0.2", m.canon],
+                  ["Canon v0", old.canon],
+                  ["TypeScript", m.typescript],
+                ] as const
+              ).map(([lang, a]) => [
+                <span key="m" className="font-mono text-[13px]">
+                  {m.model}
+                </span>,
+                lang,
+                pct(a.correct),
+                pct(a.firstPass),
+                dec(a.turns),
+                <span key="d" className="font-mono text-[13px]">
+                  {dec(a.distinct)} [{dec(a.distinctLo)}, {dec(a.distinctHi)}]
+                </span>,
+              ]);
+            })}
+          />
+
+          <h3 className="mt-10 text-[16px] font-semibold text-ink-strong">Likelihood study</h3>
+          <Table
+            testId="likelihood"
+            caption="Constructs where every model preferred another spelling, with how much less likely Canon's v0 spelling was"
+            numeric={likelihood.models.map((_, i) => 3 + i)}
+            head={["Construct", "Canon v0", "Models prefer", ...likelihood.models.map((m) => `${m.split("/").pop()}: v0 less likely by`), "In v0.2"]}
+            rows={likelihood.rows.map((r) => [
+              SPELLING[r.id]?.construct ?? r.question,
+              SPELLING[r.id]?.v0 ?? <C key="c">{r.canonSpelling}</C>,
+              SPELLING[r.id]?.preferred ?? <C key="p">{r.preferred}</C>,
+              ...r.byModel.map((m) => (
+                <span key={m.model} className="font-mono text-[13px]">
+                  {lessLikely(m.ratio)}
+                </span>
+              )),
+              r.adopted ? <span key="a" className="text-fix">Adopted</span> : <span key="a">Unchanged</span>,
+            ])}
+          />
+          <p className="mt-4 text-[14px] text-faint">
+            Scored with {likelihood.models.join(" and ")}. &ldquo;Adopted&rdquo; is decided by the formatter: the v0 spelling now formats to the preferred one.
+          </p>
+        </details>
+      </Section>
 
       <SiteFooter />
     </main>

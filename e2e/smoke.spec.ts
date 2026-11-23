@@ -114,3 +114,35 @@ test("without NEXT_PUBLIC_GITHUB_URL there is no GitHub link", async ({ page }) 
   await page.goto("/");
   await expect(page.getByRole("link", { name: "GitHub" })).toHaveCount(0);
 });
+
+test("/research leads with the result and keeps codes, hashes and intervals in the appendix", async ({ page }) => {
+  await page.goto("/research");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Agents write Canon as reliably as TypeScript. Not more consistently, yet.");
+  await expect(page.getByTestId("findings").locator("li")).toHaveCount(4);
+
+  // above the appendix (closed by default, so its text is not rendered)
+  await expect(page.getByTestId("appendix")).not.toHaveAttribute("open", "");
+  const text = await page.locator("main").innerText();
+  expect(text).not.toMatch(/\b(C[1-6]s?|D1s?)\b/);
+  expect(text).not.toMatch(/\b[0-9a-f]{7}\b/);
+  expect(text).not.toMatch(/95%|\[\d+\.\d+, \d+\.\d+\]/);
+
+  // the chart is one image to assistive technology; its tick labels stay out of the text
+  const chart = page.getByTestId("distinct-chart").getByRole("img");
+  await expect(chart).toHaveAttribute("aria-label", /Distinct programs per task/);
+  const snapshot = await page.locator("main").ariaSnapshot();
+  expect(snapshot).not.toMatch(/text: "?0"?\s*\n\s*- text: "?1"?/);
+  expect(snapshot).not.toMatch(/- text: "?[0-6]"?$/m);
+
+  // the appendix opens to the full verdicts and metrics
+  await page.getByText("Full verdicts and metrics").click();
+  await expect(page.getByTestId("verdicts")).toContainText("C3");
+  await expect(page.getByTestId("metrics")).toBeVisible();
+});
+
+test("landing benchmark has the cost row marked Not yet", async ({ page }) => {
+  await page.goto("/");
+  const table = page.getByTestId("benchmark-table");
+  await expect(table).toContainText("Cost per working program");
+  await expect(table.getByText("✗ Not yet.")).toHaveCount(2);
+});
