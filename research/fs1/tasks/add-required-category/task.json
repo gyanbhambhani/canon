@@ -25,5 +25,9 @@
     "addProduct-errors",
     "listProducts-probe",
     "order-and-pay-probe"
-  ]
+  ],
+  "adapted": {
+    "for": "canon",
+    "reason": "the rule is \"not blank\", not \"one of food, drink, tool\": the enum rule was L001 with no fix when the task was written"
+  }
 }

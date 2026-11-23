@@ -2,5 +2,14 @@
   "id": "bulk-restock",
   "kind": "feature",
   "title": "Restock several SKUs in one request, all or nothing",
-  "features": [{ "module": "frontend/src/features/bulkRestock.ts", "signature": "bulkRestock(baseUrl: string, items: { sku: string; amount: number }[]): Promise<Outcome<Product[]>>" }]
+  "features": [
+    {
+      "module": "frontend/src/features/bulkRestock.ts",
+      "signature": "bulkRestock(baseUrl: string, items: { sku: string; amount: number }[]): Promise<Outcome<Product[]>>"
+    }
+  ],
+  "adapted": {
+    "for": "canon",
+    "reason": "an amount of 0 or less is a typed 400 (Invalid), not a 422: Canon's portable requires cannot check each element of a list"
+  }
 }

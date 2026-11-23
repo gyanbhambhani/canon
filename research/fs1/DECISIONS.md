@@ -94,3 +94,7 @@ show it: the hand-written arms score 0.07 to 0.60, and Canon 1.0.
 ## 2026-11-23 — Separate Python environment
 Decision: research/fs1/.venv (requirements.txt: the root pins plus pytest 8.4.2).
 Reason: the root requirements-dev.txt has no pytest, and the brief limits edits to research/fs1.
+
+## 2026-11-23 — the task suite: 60 tasks (39 feature, 21 change), 10 adapted
+Decision: the suite has 39 feature tasks and 21 change tasks rather than the plan's 40 and 20, because the first six tasks were split three and three. Ten tasks carry an `adapted` tag: their spec was narrowed so that a Canon reference could exist. The analysis reports every result with and without them.
+Reason: rewriting a verified task only to restore an exact 40/20 split would add risk and no information. The adapted tasks document real expressiveness limits of Canon's portable validation subset: characters, list elements, values inside an Option, and long rules before the line-breaking fix.

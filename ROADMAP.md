@@ -147,7 +147,7 @@ Copied from the Milestones section of docs/v0.5-fullstack.md. M3 and M4 may run 
 
 ## v0.5 M8: Experiment FS-1, ready to run
 
-- [ ] The three starter apps and the task suite are built as described in Experiment FS-1, and every task's reference solution passes its hidden tests in all three arms.
+- [x] The three starter apps and the task suite are built as described in Experiment FS-1, and every task's reference solution passes its hidden tests in all three arms.
 - [ ] A 10-task pilot has run in every arm with every model.
 - [ ] The power analysis and pre-registration are committed before the main run starts.
 
