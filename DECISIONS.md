@@ -2,6 +2,16 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — v0.5 M5: parity, drift and build
+Decision: the parity suite evaluates each of 2,000 random portable expressions as an api fn's requires, on 3 random inputs, in the three places validation actually runs: the Canon JavaScript runtime (R001 means false), the generated Python route's require, and the generated TypeScript validator. Division and remainder use non-zero literal divisors, and Ints stay small.
+Reason: that is the agreement the spec cares about, the server and the client deciding the same thing. Division by zero and overflow are traps on the server, and the client cannot trap. The suite found a real bug on its first run: Float `%` in a rule used math.fmod in api.py without importing math.
+
+Decision: G001 covers every file with a Canon header in the output folders. canon build is all or nothing: an edited generated file, or a file Canon did not write at a path it would write, stops the whole build unless --force is given. A generated file that no module produces any more (a deleted module, or net.py once nothing declares a host) is removed. main.py is never touched once it exists.
+Reason: partial builds would leave the frontend and backend out of step, which is the bug class v0.5 exists to remove.
+
+Decision: canon dev runs uvicorn with $CANON_PYTHON (default python3) from the backend folder, rebuilds on every save of a .cn file under the source folder, and starts the server after the first successful build.
+Reason: the CLI cannot know which Python has FastAPI installed. uvicorn's own --reload picks up the regenerated files.
+
 ## 2026-11-22 — v0.5 M3: the FastAPI backend
 Decision: a one-module project generates logic.py (as in the spec's golden files); a project of several modules generates one Python module per Canon module (canon/billing/money.cn becomes canon_generated/billing/money.py) and no logic.py. models.py, api.py, store.py and runtime.py are shared. api.py imports a logic module under an alias (`users as users_logic`) only when a route parameter of the same name would hide it.
 Reason: the spec says "plus one module per Canon module where a project has several", and keeping the Canon module structure keeps the one-to-one mapping readable.

@@ -4,13 +4,13 @@
  */
 import { spawn, type ChildProcess } from "node:child_process";
 import {
-  chmodSync, existsSync, mkdirSync, readFileSync, unwatchFile, watch as fsWatch, watchFile as pollFile, writeFileSync, type FSWatcher,
+  chmodSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, unwatchFile, watch as fsWatch, watchFile as pollFile, writeFileSync, type FSWatcher,
 } from "node:fs";
-import { basename, dirname, relative, resolve } from "node:path";
+import { basename, dirname, join, relative, resolve, sep } from "node:path";
 import {
-  CanonError, analyze, applyPatch, check, manifest, manifestText, checkProject, compileJs, fix, flagName, fmt, linkProject, programText, readSource,
+  CanonError, TargetError, analyze, applyPatch, buildOutputs, check, driftDiagnostics, manifest, manifestText, checkProject, compileJs, fix, flagName, fmt, linkProject, programText, readSource,
   withFeatures, FEATURE_NAMES, MECHANICAL_CODES, V02, V03, VERSION,
-  type CheckResult, type CompileOptions, type Diagnostic, type Program, type FeatureName, type Features, type ProjectResult,
+  type BuildTarget, type CheckResult, type CompileOptions, type Diagnostic, type Program, type FeatureName, type Features, type ProjectResult,
 } from "@canon/compiler";
 import { findProjectRoot, loadProject, projectOfFile, ProjectError, type Project } from "./project.js";
 import { fuzzContracts, runMain, runTests, testHost, type Effect, type Host, type TrapJson } from "@canon/runtime";
@@ -35,6 +35,12 @@ usage (in a project with canon.toml, check, test and manifest need no FILE):
                                  then fuzz every pure function that has a contract
   canon manifest [FILE]          list every endpoint (api fn) with its route, effects
                                  and validation rules
+  canon build [--target fastapi|ts-client] [--force] [--watch]
+                                 in a project: generate the FastAPI backend and the
+                                 TypeScript client into the folders canon.toml names;
+                                 refuses to overwrite hand-edited files without --force
+  canon dev [--port 8000]        in a project: build on every save, and serve the
+                                 backend with uvicorn --reload ($CANON_PYTHON)
   canon build FILE [-o OUT] [--module] [--deny EFFECTS] [--no-contracts]
                                  check, then write a standalone JavaScript file that
                                  runs with plain node (default OUT: FILE.js; with
@@ -64,7 +70,7 @@ exit codes: 0 success, 1 diagnostics / failed tests / traps, 2 usage error
 class UsageError extends Error {}
 
 /** Commands that take no file inside a project (v0.5). */
-const PROJECT_CMDS = new Set(["check", "test", "manifest"]);
+const PROJECT_CMDS = new Set(["check", "test", "manifest", "build", "dev"]);
 
 interface Args {
   cmd: string;
@@ -82,6 +88,12 @@ interface Args {
   features: Partial<Features>;
   /** argv without --watch (a watched run starts the CLI again with these). */
   passthrough: string[];
+  /** v0.5: canon build --target fastapi|ts-client */
+  target: BuildTarget | null;
+  /** v0.5: canon build --force overwrites hand-edited generated files */
+  force: boolean;
+  /** v0.5: canon dev --port */
+  port: number;
 }
 
 const LANG_FLAGS = ["--v0.2", "--v0.3", "--syntax", ...FEATURE_NAMES.map((f) => `--no-${flagName(f)}`)];
@@ -91,8 +103,9 @@ const ALLOWED: Record<string, string[]> = {
   fmt: ["--json", "--write", ...LANG_FLAGS],
   run: ["--json", "--deny", "--no-contracts", "--no-capability-guard", "--watch", ...LANG_FLAGS],
   test: ["--json", "--no-capability-guard", "--no-contract-fuzz", "--watch", ...LANG_FLAGS],
-  build: ["--json", "--deny", "--no-contracts", "--no-capability-guard", "--module", "-o", "--watch", ...LANG_FLAGS],
+  build: ["--json", "--deny", "--no-contracts", "--no-capability-guard", "--module", "-o", "--watch", "--target", "--force", ...LANG_FLAGS],
   manifest: ["--json", ...LANG_FLAGS],
+  dev: ["--port", "--target", ...LANG_FLAGS],
 };
 
 function parseArgs(argv: string[]): Args {
@@ -100,7 +113,7 @@ function parseArgs(argv: string[]): Args {
   if (!cmd || !(cmd in ALLOWED)) throw new UsageError(cmd ? `unknown command '${cmd}'` : "missing command");
   const a: Args = {
     cmd, files: [], json: false, write: false, deny: [], contracts: true, fix: false, guard: true, fuzz: true,
-    watch: false, module: false, out: null, features: {}, passthrough: [],
+    watch: false, module: false, out: null, features: {}, passthrough: [], target: null, force: false, port: 8000,
   };
   let syntax: boolean | null = null;
   for (let i = 0; i < rest.length; i++) {
@@ -128,6 +141,18 @@ function parseArgs(argv: string[]): Args {
     else if (flag === "--module") a.module = true;
     else if (flag === "--no-capability-guard") a.guard = false;
     else if (flag === "--no-contract-fuzz") a.fuzz = false;
+    else if (flag === "--force") a.force = true;
+    else if (flag === "--target" || flag === "--port") {
+      const v = inline ?? rest[++i];
+      if (inline === undefined && v !== undefined) a.passthrough.push(v);
+      if (flag === "--port") {
+        if (!v || !/^\d+$/.test(v)) throw new UsageError("--port needs a number, like --port 8000");
+        a.port = Number(v);
+      } else {
+        if (v !== "fastapi" && v !== "ts-client") throw new UsageError("--target takes fastapi or ts-client");
+        a.target = v;
+      }
+    }
     else if (flag === "--v0.2") a.features = { ...V02 };
     else if (flag === "--v0.3") a.features = { ...V03 };
     else if (flag === "--syntax") {
@@ -153,6 +178,7 @@ function parseArgs(argv: string[]): Args {
   if (a.files.length === 0 && !PROJECT_CMDS.has(cmd)) throw new UsageError(`canon ${cmd} needs a file`);
   if ((cmd === "run" || cmd === "build") && a.files.length > 1) throw new UsageError(`canon ${cmd} takes one file`);
   if (a.watch && a.files.length > 1) throw new UsageError("--watch takes one file");
+  if (a.watch && a.files.length === 0 && cmd !== "build") throw new UsageError(`canon ${cmd} --watch takes a file`);
   if (cmd === "check" && a.write && !a.fix) throw new UsageError("--write needs --fix (canon check --fix --write)");
   return a;
 }
@@ -207,6 +233,15 @@ function writeOwn(path: string, text: string) {
 
 // ---------------------------------------------------------------------------------- projects (v0.5)
 
+function loadProjectOrUsage(root: string): Project {
+  try {
+    return loadProject(root);
+  } catch (e) {
+    if (e instanceof ProjectError) throw new UsageError(e.message);
+    throw e;
+  }
+}
+
 interface Scope {
   project: Project;
   /** Absolute paths of the files named on the command line (null: the whole project). */
@@ -248,8 +283,11 @@ function cmdCheck(a: Args, io: CliIO): Outcome {
   if (a.fix) return cmdFix(a, io);
   const scope = projectScope(a);
   const results = scope
-    ? checkScope(scope, a).modules.filter((m) => inScope(scope, m.path)).sort((x, y) => x.path.localeCompare(y.path))
-      .map((m) => ({ path: m.path, result: m.result }))
+    ? [
+      ...checkScope(scope, a).modules.filter((m) => inScope(scope, m.path)).sort((x, y) => x.path.localeCompare(y.path))
+        .map((m) => ({ path: m.path, result: m.result })),
+      ...(scope.only === null ? driftResults(scope.project) : []),
+    ]
     : a.files.map((f) => ({ path: f, result: check(readFile(f), f, opts(a)) }));
   if (a.json) {
     const out = results.length === 1 ? results[0].result : results.map((r) => ({ path: r.path, ...r.result }));
@@ -259,6 +297,29 @@ function cmdCheck(a: Args, io: CliIO): Outcome {
   }
   const n = results.reduce((s, r) => s + r.result.diagnostics.length, 0);
   return { code: results.every((r) => r.result.ok) ? 0 : 1, summary: problems(n) };
+}
+
+/** v0.5: G001 for every hand-edited file in the project's output folders, as check results. */
+function driftResults(project: Project): { path: string; result: CheckResult }[] {
+  const dirs = [project.config.backend?.out, project.config.frontend?.out].filter((d): d is string => !!d);
+  const found: { path: string; text: string }[] = [];
+  for (const d of dirs) {
+    const abs = resolve(project.root, d);
+    if (!existsSync(abs)) continue;
+    for (const f of listFiles(abs)) found.push({ path: relative(project.root, f).split(sep).join("/"), text: readFileSync(f, "utf8") });
+  }
+  return driftDiagnostics(found).map((g) => ({
+    path: relative(process.cwd(), join(project.root, g.path)) || g.path,
+    result: { ok: false, canonical: true, diagnostics: [g.diagnostic] },
+  }));
+}
+
+function listFiles(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+    if (e.name.startsWith(".") || e.name === "node_modules" || e.name === "__pycache__") return [];
+    const p = join(dir, e.name);
+    return e.isDirectory() ? listFiles(p) : [p];
+  });
 }
 
 /** `check --fix`: the self-healing loop. Only diagnostics that need judgment are reported. */
@@ -520,7 +581,115 @@ function moduleText(js: string, a: Args, from: string): string {
   ].join("\n");
 }
 
+// ---------------------------------------------------------------------------------- project build (v0.5)
+
+/** Check a whole project with paths relative to its root (generated headers name them). */
+function checkForBuild(project: Project, a: Args): ProjectResult {
+  return checkProject(project.modules.map((m) => ({ name: m.name, src: readSource(readFileSync(m.abs, "utf8")),
+    path: relative(project.root, m.abs).split(sep).join("/") })), opts(a));
+}
+
+interface BuildReport {
+  ok: boolean;
+  written: string[];
+  unchanged: string[];
+  removed: string[];
+  refused: { path: string; diagnostic: Diagnostic }[];
+  diagnostics: { path: string; diagnostics: Diagnostic[] }[];
+}
+
+/** Generate both sides into the folders canon.toml names. Nothing is written unless all of it can be. */
+function buildProject(project: Project, a: Args): BuildReport {
+  const report: BuildReport = { ok: false, written: [], unchanged: [], removed: [], refused: [], diagnostics: [] };
+  const fresh = loadProject(project.root);
+  const r = checkForBuild(fresh, a);
+  if (!r.ok) {
+    report.diagnostics = r.modules.filter((m) => !m.result.ok).map((m) => ({ path: m.path, diagnostics: m.result.diagnostics }));
+    return report;
+  }
+  let outputs;
+  try {
+    outputs = buildOutputs(r, fresh.config, a.target ?? undefined, { py: a.features.py === true });
+  } catch (e) {
+    if (!(e instanceof TargetError)) throw e;
+    report.diagnostics = e.diagnostics.map((d) => ({ path: d.path, diagnostics: [d.diagnostic] }));
+    return report;
+  }
+  if (!outputs.length) throw new UsageError("canon.toml names no [backend] or [frontend] to build");
+  const abs = (p: string) => join(fresh.root, p);
+  const wanted = new Set(outputs.map((o) => o.path));
+  // files on disk: hand edits are refused, and generated files nobody produces any more are removed
+  const stale: string[] = [];
+  const dirs = [...new Set(outputs.map((o) => o.dir))];
+  for (const d of dirs) {
+    if (!existsSync(abs(d))) continue;
+    const found = listFiles(abs(d)).map((f) => ({ path: relative(fresh.root, f).split(sep).join("/"), text: readFileSync(f, "utf8") }));
+    const drift = driftDiagnostics(found);
+    report.refused.push(...drift);
+    for (const f of found) {
+      if (!wanted.has(f.path) && /^(#|\/\/) Generated by Canon /.test(f.text) && !drift.some((x) => x.path === f.path)) stale.push(f.path);
+    }
+  }
+  for (const o of outputs) {
+    if (o.userOwned || !existsSync(abs(o.path))) continue;
+    const text = readFileSync(abs(o.path), "utf8");
+    if (!/^(#|\/\/) Generated by Canon /.test(text)) {
+      report.refused.push({ path: o.path, diagnostic: { code: "G001", severity: "error", line: 1, col: 1,
+        message: `${o.path} exists and was not generated by Canon; move it, or run canon build --force to replace it` } });
+    }
+  }
+  if (report.refused.length && !a.force) return report;
+  for (const o of outputs) {
+    const p = abs(o.path);
+    if (existsSync(p)) {
+      if (o.userOwned || readFileSync(p, "utf8") === o.text) {
+        report.unchanged.push(o.path);
+        continue;
+      }
+    }
+    mkdirSync(dirname(p), { recursive: true });
+    writeFileSync(p, o.text);
+    report.written.push(o.path);
+  }
+  for (const s of stale) {
+    rmSync(abs(s));
+    report.removed.push(s);
+  }
+  report.ok = true;
+  if (a.force) report.refused = [];
+  return report;
+}
+
+function printBuild(report: BuildReport, a: Args, io: CliIO): Outcome {
+  if (a.json) {
+    io.stdout(JSON.stringify(report, null, 2) + "\n");
+  } else {
+    for (const f of report.diagnostics) for (const d of f.diagnostics) io.stderr(formatDiagnostic(f.path, d));
+    for (const f of report.refused) io.stderr(formatDiagnostic(f.path, f.diagnostic));
+    if (report.ok) {
+      const parts = [`wrote ${report.written.length} file${report.written.length === 1 ? "" : "s"}`];
+      if (report.unchanged.length) parts.push(`${report.unchanged.length} unchanged`);
+      if (report.removed.length) parts.push(`removed ${report.removed.join(", ")}`);
+      io.stdout(`canon build: ${parts.join(", ")}\n`);
+    } else if (report.refused.length) {
+      io.stderr("canon build: nothing written; generated files were edited by hand (see above)\n");
+    }
+  }
+  return { code: report.ok ? 0 : 1, summary: report.ok ? `built (${report.written.length} written)` : "build failed" };
+}
+
+function cmdBuildProject(a: Args, io: CliIO, project: Project): Outcome {
+  if (a.out || a.module) throw new UsageError("-o and --module build one file to JavaScript; a project builds from canon.toml");
+  return printBuild(buildProject(project, a), a, io);
+}
+
 function cmdBuild(a: Args, io: CliIO): Outcome {
+  if (a.files.length === 0) {
+    const root = findProjectRoot(process.cwd());
+    if (!root) throw new UsageError("canon build needs a file, or a project: run it in a folder with canon.toml");
+    return cmdBuildProject(a, io, loadProjectOrUsage(root));
+  }
+  if (a.target || a.force) throw new UsageError("--target and --force are for a project build (canon build with no file)");
   const path = a.files[0];
   const js = compileFor(a, path, io);
   if (js === null) return { code: 1, summary: "does not check" };
@@ -545,6 +714,63 @@ function cmdBuild(a: Args, io: CliIO): Outcome {
 // ---------------------------------------------------------------------------------- watch
 
 const clock = () => new Date().toTimeString().slice(0, 8);
+
+/**
+ * v0.5: rerun on every save of a .cn file under the project's source folder (debounced), until
+ * SIGINT. Used by canon build --watch and canon dev.
+ */
+function watchProject(project: Project, io: CliIO, rerun: () => void, onStop: () => void = () => {}): Promise<number> {
+  return new Promise((done) => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const schedule = (_ev?: string, name?: string | Buffer | null) => {
+      if (name && !name.toString().endsWith(".cn")) return;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        timer = null;
+        rerun();
+      }, 150);
+    };
+    const watcher: FSWatcher = fsWatch(project.srcDir, { recursive: true }, schedule);
+    rerun();
+    const stop = () => {
+      watcher.close();
+      if (timer) clearTimeout(timer);
+      onStop();
+      done(130);
+    };
+    process.once("SIGINT", stop);
+    process.once("SIGTERM", stop);
+    void io;
+  });
+}
+
+/** v0.5: canon dev, canon build --watch plus the backend served by uvicorn --reload. */
+async function cmdDev(a: Args, io: CliIO): Promise<number> {
+  const root = findProjectRoot(process.cwd());
+  if (!root) throw new UsageError("canon dev runs in a project: a folder with canon.toml");
+  const project = loadProjectOrUsage(root);
+  if (!project.config.backend) throw new UsageError("canon dev serves the backend: canon.toml needs a [backend] section");
+  const backendDir = dirname(resolve(root, project.config.backend.out));
+  const status = (s: string) => io.stdout(`[${clock()}] canon dev: ${s}\n`);
+  let server: ChildProcess | null = null;
+  const startServer = () => {
+    if (server) return;
+    const python = process.env.CANON_PYTHON || "python3";
+    server = spawn(python, ["-m", "uvicorn", "main:app", "--reload", "--port", String(a.port)], { cwd: backendDir, stdio: ["ignore", "inherit", "inherit"] });
+    server.on("exit", (code) => {
+      server = null;
+      if (code !== null && code !== 0) status(`uvicorn exited with ${code} (is it installed for ${python}? set CANON_PYTHON)`);
+    });
+    status(`serving ${relative(process.cwd(), backendDir) || "."} at http://127.0.0.1:${a.port}`);
+  };
+  return watchProject(project, io, () => {
+    const outcome = printBuild(buildProject(project, a), a, io);
+    status(outcome.summary);
+    if (outcome.code === 0) startServer();
+  }, () => {
+    if (server) server.kill("SIGTERM");
+  });
+}
 
 /**
  * `--watch`: run once, then rerun on every save of the file (debounced by 100 ms) until SIGINT.
@@ -664,6 +890,16 @@ export async function main(argv: string[], io: CliIO): Promise<number> {
       }
     };
     if (a.cmd === "fmt") return cmdFmt(a, io);
+    if (a.cmd === "dev") return await cmdDev(a, io);
+    if (a.watch && a.cmd === "build" && a.files.length === 0) {
+      const root = findProjectRoot(process.cwd());
+      if (!root) throw new UsageError("canon build --watch needs a file, or a project: run it in a folder with canon.toml");
+      const project = loadProjectOrUsage(root);
+      return await watchProject(project, io, () => {
+        const outcome = printBuild(buildProject(project, a), a, io);
+        io.stdout(`[${clock()}] build: ${outcome.summary}\n`);
+      });
+    }
     if (a.watch) return await watchFile(a, io, once);
     return once().code;
   } catch (e) {

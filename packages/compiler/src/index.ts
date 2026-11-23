@@ -3,6 +3,7 @@ export * from "./generated.js";
 export * from "./pygen.js";
 export { PY_RUNTIME } from "./pyruntime.js";
 export * from "./tsgen.js";
+export * from "./build.js";
 export * from "./diagnostics.js";
 export * from "./lexer.js";
 export type * from "./ast.js";

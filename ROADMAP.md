@@ -129,9 +129,9 @@ Copied from the Milestones section of docs/v0.5-fullstack.md. M3 and M4 may run 
 
 ## v0.5 M5: Parity, drift and build
 
-- [ ] The semantic parity suite (2,000 random portable expressions, three evaluators) passes in CI.
-- [ ] Hand-editing a generated file makes canon check report G001 and makes canon build refuse without `--force`.
-- [ ] canon build and canon dev work from canon.toml; main.py is created once and never overwritten.
+- [x] The semantic parity suite (2,000 random portable expressions, three evaluators) passes in CI.
+- [x] Hand-editing a generated file makes canon check report G001 and makes canon build refuse without `--force`.
+- [x] canon build and canon dev work from canon.toml; main.py is created once and never overwritten.
 
 ## v0.5 M6: Example apps
 

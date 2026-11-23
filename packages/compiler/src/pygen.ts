@@ -106,6 +106,11 @@ class Imports {
   entries(): [string, Set<string>][] {
     return [...this.from];
   }
+  /** Copy every import into another collector. */
+  into(other: Imports) {
+    for (const [m, names] of this.from) for (const n of names) other.add(m, n);
+    for (const m of this.plain) other.module(m);
+  }
   /** `depth`: how deep the generated module sits under canon_generated/ (billing/money.py is 1). */
   render(depth = 0): string[] {
     const third = new Set(["fastapi", "pydantic"]);
@@ -1404,7 +1409,7 @@ function genApi(project: ProjectResult, d: Decls, single: boolean, opts: PyGenOp
       if (it.requires) {
         const g = new LogicGen(m, m.analysis.info, d, opts, fnHome);
         const cond = g.validation(it, it.requires);
-        for (const [mod2, names] of g.im.entries()) for (const nm of names) im.add(mod2, nm);
+        g.im.into(im);
         im.add(".runtime", "require");
         lines.push(`    require(${cond}, ${pyStr(ruleText(it.requires))})`);
       }
@@ -1413,7 +1418,7 @@ function genApi(project: ProjectResult, d: Decls, single: boolean, opts: PyGenOp
         im.add(".runtime", "respond");
         lines.push(`    return respond(${call})`);
       } else lines.push(`    return ${call}`);
-      for (const [mod2, names] of typesIm.entries()) for (const nm of names) im.add(mod2, nm);
+      typesIm.into(im);
       routes.push(lines);
     }
   }
