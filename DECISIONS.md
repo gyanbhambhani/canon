@@ -2,6 +2,10 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-23 — CB-2 (found by CanonBench): comprehension targets are never split
+Decision: the Python line splitter treats a comprehension's target (`for key, members in xs`) as one unit: its commas and its `in` are not delimiters. The full-stack addendum names what G002 covers (an Option inside an Option, to_string of a record or list, file I/O), with the example agents actually wrote.
+Reason: a long map or filter over group_by pairs generated `for key,\n members\n in ...`, a SyntaxError, in 2 of GPT's 180 Canon THINK programs; canon check and the JavaScript runtime were right. Agents hit the Option-of-Option limit (`unwrap_or(map_get(m, k), None)`) in 3 of 3 runs of one task and only learned of it from G002 at build time.
+
 ## 2026-11-23 — fixes from the FS-1 task authors
 Decision: a model field that mentions a type defined further down is one quoted annotation (`"Status | None"`); store.py is always generated, even with no tables; a match arm over 100 characters breaks at its value's outermost bracket, like a statement.
 Reason: `"Status" | None` raised TypeError when models.py was imported, although canon check passed. Without store.py, mypy --strict failed on every table-less project, because runtime.table() imports it. A long record literal in a match arm was L001 with no fix.

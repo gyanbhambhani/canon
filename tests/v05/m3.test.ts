@@ -398,3 +398,41 @@ print(json.dumps(Order(id=1, status=Paid(receipt="r"), history=[]).model_dump())
     expect(types.code, types.out).toBe(0);
   }, 120_000);
 });
+
+describe("CB-2: a comprehension's tuple target is never split across lines (found by CanonBench)", () => {
+  it("a long map over group_by pairs generates valid Python, with the JavaScript runtime's result", async () => {
+    const { checkProject, compileJs, fmt, generateFastapi } = await import("@canon/compiler");
+    const { MemoryHost, Runtime, load, testHost } = await import("@canon/runtime");
+    const { mkdirSync, mkdtempSync, writeFileSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const src = fmt(`fn groups(words: List[String]) -> List[List[String]] {
+  return words
+    |> group_by(|w| str_len(w))
+    |> filter(|key, members| len(members) >= 2)
+    |> map(|key, members| members)
+}
+
+fn pairs(rows: List[(String, Int)], limit: Int) -> List[String] {
+  return rows
+    |> filter(|name, count| count >= limit && str_len(name) > 0 && str_len(name) < 40)
+    |> map(|name, count| name + ":" + to_string(count) + ":" + to_string(count * limit))
+}
+`);
+    const p = checkProject([{ name: "m", path: "canon/m.cn", src }]);
+    expect(p.modules[0].result.diagnostics).toEqual([]);
+    const dir = mkdtempSync(join(tmpdir(), "canon-cb2-"));
+    mkdirSync(join(dir, "canon_generated"));
+    for (const f of generateFastapi(p)) if (!f.userOwned) writeFileSync(join(dir, "canon_generated", f.path), f.text);
+    const pyOut = py(dir, `
+import json
+from canon_generated.logic import groups, pairs
+print(json.dumps([groups(["a", "b", "cc", "dd", "eee"]), pairs([("x", 3), ("yy", 1), ("", 9)], 2)]))
+`);
+    const rt = new Runtime(testHost(new MemoryHost()));
+    const mod = load(compileJs(src, "m.cn").js!, rt);
+    const jsOut = [mod.fns.groups(["a", "b", "cc", "dd", "eee"]), mod.fns.pairs([["x", 3], ["yy", 1], ["", 9]], 2)];
+    expect(pyOut).toEqual(jsOut);
+    const lint = run("ruff", ["format", "--isolated", "--check", "canon_generated"], dir);
+    expect(lint.code, lint.out).toBe(0);
+  }, 120_000);
+});
