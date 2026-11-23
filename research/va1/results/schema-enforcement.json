@@ -1,0 +1,252 @@
+{
+  "tool": "openapi-typescript 7.13.0 (types), ajv 8.17.1 (validators)",
+  "cases": 49,
+  "disagreements": [],
+  "rows": [
+    {
+      "case": "valid",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "min_length/max_length=\"a\"",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "min_length/max_length=\"ab\"",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "min_length/max_length=\"abcd\"",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "min_length/max_length=\"abcde\"",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "min_length/max_length=\"\"",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "min_length/max_length=\"😀😀\"",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "min_length/max_length=\"😀😀😀😀\"",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "min_length/max_length=\"😀😀😀😀😀\"",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "pattern=\"A\"",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "pattern=\"a\"",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "pattern=\"AB1\"",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "pattern=\"AB-1\"",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "pattern=\"\"",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "pattern=\"AB1\\n\"",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "not blank=\"\"",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "not blank=\" \"",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "not blank=\"\\t \\n\"",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "not blank=\" x \"",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "not blank=\"x\"",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "ge/le=4",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "ge/le=5",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "ge/le=10",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "ge/le=11",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "gt/lt=0",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "gt/lt=1",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "gt/lt=2",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "gt/lt=3",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "float ge/le=0.49",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "float ge/le=0.5",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "float ge/le=2.5",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "float ge/le=2.51",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "multiple_of=0",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "multiple_of=5",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "multiple_of=10",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "multiple_of=4",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "multiple_of=7",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "multiple_of=-5",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "Literal enum=\"a\"",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "Literal enum=\"b\"",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "Literal enum=\"c\"",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "Literal enum=\"A\"",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "Literal enum=\"\"",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "Literal[True]=true",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "Literal[True]=false",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "list length=[]",
+      "client": false,
+      "server": 422
+    },
+    {
+      "case": "list length=[\"a\"]",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "list length=[\"a\",\"b\",\"c\"]",
+      "client": true,
+      "server": 200
+    },
+    {
+      "case": "list length=[\"a\",\"b\",\"c\",\"d\"]",
+      "client": false,
+      "server": 422
+    }
+  ]
+}

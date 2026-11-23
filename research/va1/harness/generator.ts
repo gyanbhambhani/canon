@@ -85,8 +85,9 @@ export function evalValue(value: unknown, v: Record<string, unknown>, rand: () =
   let fn = compiled.get(value);
   if (!fn) {
     const body = value.slice(1).replace(/\$([A-Za-z_]\w*)/g, "v.$1");
-    fn = new Function("v", "h", `const {int, float, pick, alnum, rep, chance, emoji} = h; return (${body});`) as typeof fn;
-    compiled.set(value, fn);
+    const made = new Function("v", "h", `const {int, float, pick, alnum, rep, chance, emoji} = h; return (${body});`) as unknown as NonNullable<typeof fn>;
+    compiled.set(value, made);
+    fn = made;
   }
   return fn(v, helpers(rand));
 }
