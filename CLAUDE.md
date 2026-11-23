@@ -28,3 +28,15 @@
 - Every Canon code block in the docs passes `canon check` or fails with its `# expect:` code.
 - Keep the language reference, the docs and the implementation in agreement. A change to
   one is a change to all three in the same commit.
+
+## Full-stack (v0.5)
+- Generated code must meet the readability bar in docs/v0.5-fullstack.md. If a golden file
+  and the generator disagree, fix the generator; never edit a golden file to make a test pass
+  without recording why in DECISIONS.md.
+- Generated Python depends only on FastAPI, Pydantic and the standard library. Generated
+  TypeScript has no dependencies.
+- A built-in allowed in api validation must have Python and TypeScript implementations and
+  parity tests in the same commit.
+- A wire-format change updates both generators, the golden files and the parity suite in the
+  same commit.
+- Nothing on the website claims agent results for full-stack until FS-1 reports.

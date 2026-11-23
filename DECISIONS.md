@@ -2,6 +2,16 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — v0.5 is the full-stack version
+Decision: v0.5 is now "full-stack" (docs/v0.5-fullstack.md). The earlier v0.5 plan in docs/roadmap-to-1.0.md ("write less": proven contracts, synthesis, a library of proven functions) moves after FS-1 and gets a version number when it is scheduled.
+Reason: the owner's v0.5 build spec. Building v0.5 no longer waits for Experiments 1, 1b and 2; Experiments 1 and 1b must run before FS-1's main run, because they decide FS-1's Canon surface. Experiment 2 must still run before v0.7, whose proof point repeats it.
+
+Decision: the undeclared-host error is E104, not E103 as the spec wrote.
+Reason: E103 has meant "effect in a contract" since v0.3. Reusing it would give one code two meanings, and diagnostic codes are promised stable. The spec file is amended and marks the change.
+
+Decision: the v0.5 milestones are listed in ROADMAP.md as "v0.5 M1" to "v0.5 M8", and commits are prefixed the same way.
+Reason: ROADMAP.md already has M0 to M8 from the v0 build; bare names would be ambiguous.
+
 ## 2026-11-22 — v0.4.1: six follow-ups from the v0.4 review (every package moves to 0.4.1)
 Decision: a `to_float` fix never wraps an integer division. T009's patch and T001's suggestion convert an Int `/` operand by operand (`to_float(a) / to_float(b)`), also through `+ - *` around it.
 Reason: `to_float(sum(xs) / len(xs))` checks clean but still truncates, so a "fix" that an agent applies on trust (T009 is in `--fix`) silently changes the meaning of a mean.

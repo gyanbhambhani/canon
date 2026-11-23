@@ -73,9 +73,21 @@ Either way, the checker's guarantee becomes per function, not just per program, 
 - **Stated limit, up front:** Canon's effects are coarse categories (`net`, `fs`, `io`, `time`, `rand`). A program allowed `net` to call one host can call another, so "same effect, different host" attacks are out of scope for the checker. A finer host-level policy belongs in the capability guard and is future work.
 - **Red team:** an adversarial suite tries to sneak an effect past the checker; every attempt must be rejected or denied at run time.
 
-**Gate to v0.5:** Experiments 1, 1b and 2 have run and been published.
+**Gate (amended 2026-11-22):** building v0.5 no longer waits for these experiments. Experiments 1 and 1b must run before FS-1's main run, because they decide which surface FS-1's Canon arm uses. Experiment 2 is still owed before v0.7. See DECISIONS.md.
 
-## v0.5: write less (proven contracts, synthesis, a library of proven functions)
+## v0.5: full-stack (types, endpoints and logic compiled to FastAPI and a TypeScript client)
+
+**Goal.** Make Canon the language agents write the parts of a full-stack feature where frontend and backend must agree: data types, API endpoints, validation and the logic behind each endpoint. Canon compiles them to a FastAPI backend and a typed TypeScript client that read as hand-written; the UI stays in React.
+
+**Design.** The full build spec is [docs/v0.5-fullstack.md](v0.5-fullstack.md): project modules, `api fn` with routes, tables with `store(table)` effects, `net(host)` effects, validation written once as `requires`, and the two generators with a semantic parity suite and drift protection.
+
+**Proof point: Experiment FS-1** (pre-registered before the main run). Canon against hand-written FastAPI plus TypeScript (arm A) and against the same with a client generated from OpenAPI (arm B), on 40 feature tasks and 20 change tasks with hidden end-to-end tests. Primary: end-to-end pass rate, Canon against the better baseline. Win rule: for both frontier models, Canon is non-inferior on pass rate and significantly better on change-task success or mismatch rate.
+
+**Gate to the next version:** FS-1 has run and been published. A win makes full-stack Canon's main story; a tie against arm B means the next version must widen the gap beyond shared types.
+
+## Later: write less (proven contracts, synthesis, a library of proven functions; was v0.5)
+
+*Moved after FS-1 on 2026-11-22 (DECISIONS.md). It gets a version number when it is scheduled.*
 
 **Goal.** Cut the output tokens per correct program below Python's, by having the toolchain write the routine parts and prove them. Output tokens are about 86% of a Canon run's cost.
 
@@ -86,9 +98,9 @@ Either way, the checker's guarantee becomes per function, not just per program, 
 
 **Risks.** Proofs work for arithmetic, lists and simple data; loops need invariants agents rarely write. Synthesis is reliable for small glue code, not for algorithms. Both fall back to the v0.4 behaviour.
 
-**Proof point.** On Experiment 1's tasks: output tokens per correct program, pass rate and silent-failure rate, Canon v0.5 against Canon v0.4 and Python, with the same models.
+**Proof point.** On Experiment 1's tasks: output tokens per correct program, pass rate and silent-failure rate, this version against Canon v0.4 and Python, with the same models.
 
-**Gate to v0.6:** the v0.5 proof point has run and been published.
+**Gate to v0.6:** FS-1 has run and been published.
 
 ## v0.6: learn the dialect (a model trained with the compiler as teacher)
 
@@ -119,11 +131,11 @@ Either way, the checker's guarantee becomes per function, not just per program, 
 
 ## 1.0: the compiler in the loop
 
-**Goal.** A developer writes intent in plain text. The agent writes Canon directly, with the compiler steering every token, so a finished program is well-typed, effect-exact and in canonical form by construction. Holes become questions answered by synthesis (v0.5) or by the developer.
+**Goal.** A developer writes intent in plain text. The agent writes Canon directly, with the compiler steering every token, so a finished program is well-typed, effect-exact and in canonical form by construction. Holes become questions answered by synthesis ("write less") or by the developer.
 
 **Design.**
 - A prefix automaton and type-inhabitation search in the style of Mündler et al., extended beyond types to effects (a token that would perform an undeclared effect is masked) and to canonical form (only canonical texts can be produced). Canon's small type system (no overloading, no subtyping, local inference only) should allow complete constraint rather than a subset, which is the main difference from the TypeScript prior work.
-- Runs on top of the v0.6 Canon-tuned model and the v0.5 synthesis and library.
+- Runs on top of the v0.6 Canon-tuned model and the "write less" synthesis and library.
 
 **Constraint: open-weight models only.** Constrained decoding needs control over every token the model samples, which means running the model yourself: Qwen, Llama, DeepSeek and similar. Closed APIs (Claude, GPT) do not expose per-token control of that kind. For them, 1.0 falls back to v0.3's write, check, `--fix` loop. That fallback is a real limitation for teams that standardize on closed models.
 
@@ -156,7 +168,7 @@ The decision and its evidence are recorded in DECISIONS.md before 1.0 work start
 
 - **After v0.4:** an arXiv write-up of Experiments 1, 1b and 2, with the pre-registrations, raw runs and harness linked. It reports every result, including what did not hold up, the way /research does.
 - **Share it with the PLDI authors** (Mündler, He and colleagues) before submitting it anywhere: they know the prior work best, and Canon's 1.0 proof point is defined against their tool. Ask whether the comparison setup is fair to their method.
-- Each later proof point (v0.5, v0.6, v0.7, 1.0) is published the same way: pre-registration first, then the results, whichever way they go.
+- Each later proof point (v0.5's FS-1, "write less", v0.6, v0.7, 1.0) is published the same way: pre-registration first, then the results, whichever way they go.
 
 ## Out of scope until 1.0
 

@@ -94,6 +94,64 @@ Only after M7, and only when the owner provides model access.
 - [x] One chart per study, embedded in the docs Design notes page
 
 
+# v0.5: full-stack
+
+Copied from the Milestones section of docs/v0.5-fullstack.md. M3 and M4 may run in parallel after M2. After M3 and M4, stop for the owner's approval of the generated code before M6.
+
+## v0.5 M1: Projects and modules
+
+- [ ] canon.toml is read; canon check and canon test work across a multi-file project.
+- [ ] Explicit named imports work in both surfaces; M002 (cycle) and M003 (unknown name) each have tests.
+- [ ] Canonical form sorts imports; fuzzed import orders collapse to one text.
+- [ ] Every existing single-file test still passes unchanged.
+
+## v0.5 M2: API functions, tables and effects with arguments
+
+- [ ] api fn with route: parses in both surfaces and type-checks; A001 to A003 each have at least three failing-program tests.
+- [ ] Tables and the std.store built-ins work in the JavaScript runtime, in memory; R007 has a test.
+- [ ] store(table) and net(host) effects follow the exact-effects rules; E104 and W010 have tests; the capability guard traps a computed URL to an undeclared host with R006.
+- [ ] canon manifest prints the worked example's manifest exactly, in text and JSON.
+- [ ] canon test can call api fns directly, with tables empty for each test.
+
+## v0.5 M3: Python backend
+
+- [ ] The worked example generates the golden Python files, which pass ruff check, ruff format --check and mypy --strict.
+- [ ] HTTP tests (FastAPI's TestClient) cover 200, 400, 422 and 500 for every endpoint shape: body, path parameter, query parameters, and Result and plain returns. Error bodies are `{"error": ...}`.
+- [ ] Tables persist in SQLite across requests and start empty in tests.
+- [ ] Each generated logic function receives only the tables and hosts its Canon effects name.
+
+## v0.5 M4: TypeScript client
+
+- [ ] The worked example generates the golden TypeScript files, which pass tsc --strict, prettier --check and eslint.
+- [ ] Client methods return Result and never throw, including on network failure and 500.
+- [ ] Validators reject exactly what the server's require rejects, checked on 1,000 random inputs per endpoint.
+- [ ] An integration test runs the generated client in Node against the generated backend for every endpoint.
+
+## v0.5 M5: Parity, drift and build
+
+- [ ] The semantic parity suite (2,000 random portable expressions, three evaluators) passes in CI.
+- [ ] Hand-editing a generated file makes canon check report G001 and makes canon build refuse without `--force`.
+- [ ] canon build and canon dev work from canon.toml; main.py is created once and never overwritten.
+
+## v0.5 M6: Example apps
+
+- [ ] examples/todos/: the worked example, with a small React UI that uses the generated client.
+- [ ] examples/shop/: users, products and orders across three modules, with signup, pagination and an outbound call to one declared host (mocked in tests).
+- [ ] Playwright tests drive both UIs end to end.
+
+## v0.5 M7: Agent reference and docs
+
+- [ ] A full-stack addendum to the agent reference, at most 1,500 tokens, served at /llms-fullstack.txt. The core reference stays under 4,000 tokens.
+- [ ] Docs pages: Full-stack quickstart, API functions, Tables, Generated code, canon.toml and the new commands. Every Canon code block passes canon check.
+- [ ] The landing page's claims stay limited to what the tests show; nothing about agent results until FS-1 reports.
+
+## v0.5 M8: Experiment FS-1, ready to run
+
+- [ ] The three starter apps and the task suite are built as described in Experiment FS-1, and every task's reference solution passes its hidden tests in all three arms.
+- [ ] A 10-task pilot has run in every arm with every model.
+- [ ] The power analysis and pre-registration are committed before the main run starts.
+
+
 ## Progress log
 
 ### M0 (done)
