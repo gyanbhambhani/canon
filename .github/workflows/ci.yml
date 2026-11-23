@@ -55,3 +55,6 @@ jobs:
         run: |
           pnpm exec playwright install --with-deps chromium
           pnpm e2e
+
+      - name: Example apps end to end (v0.5)
+        run: pnpm e2e:examples

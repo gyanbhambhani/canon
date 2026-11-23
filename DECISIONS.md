@@ -2,6 +2,22 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — v0.5 M6 and M7: example apps and docs
+Decision: the full-stack addendum is its own page (for-agents-fullstack.mdx), served raw at /llms-fullstack.txt (1,265 tokens; the core reference is unchanged at 2,528). Agents read the core reference plus the addendum.
+Reason: the spec keeps the core reference under 4,000 tokens and the addendum under 1,500. A separate page keeps both budgets independent.
+
+Decision: in the docs, a multi-module example is a set of code blocks marked `project=P module=M`, checked together with checkProject. The docs say "a parity suite of random rules" without the count.
+Reason: every Canon block in the docs must check, and modules only check as a project. The site's numbers test allows figures only from scripts/stats.ts.
+
+Decision: the example apps (examples/todos, examples/shop) commit their generated code; a test rebuilds each in a temporary folder and diffs. The React frontends use Vite 7 with @vitejs/plugin-react 5 (6 needs Vite 8) and call the generated client through Vite's /api proxy. examples/shop's user-owned main.py replaces the payment host with a fake when CANON_FAKE_PAYMENTS=1, which the end-to-end test sets.
+Reason: the spec's golden-files rule covers every program in examples/. Mocking at the dependency the generated code already uses keeps the outbound call's code path real.
+
+Decision: runtime.table(name, model) and net.http(host) return the same dependency object for the same arguments, so `app.dependency_overrides[http("payments.example.com")]` replaces a host (or a table) in tests.
+Reason: otherwise overriding meant digging the callable out of the Annotated alias's metadata, which mypy rejects and nobody would write by hand.
+
+Decision: the end-to-end UI tests use their own Playwright config (pnpm e2e:examples; CI runs it after the smoke test), with a fresh SQLite database per run.
+Reason: they need the Python backends and the Vite dev servers, which the static-site smoke test does not.
+
 ## 2026-11-22 — v0.5 M5: parity, drift and build
 Decision: the parity suite evaluates each of 2,000 random portable expressions as an api fn's requires, on 3 random inputs, in the three places validation actually runs: the Canon JavaScript runtime (R001 means false), the generated Python route's require, and the generated TypeScript validator. Division and remainder use non-zero literal divisors, and Ints stay small.
 Reason: that is the agreement the spec cares about, the server and the client deciding the same thing. Division by zero and overflow are traps on the server, and the client cannot trap. The suite found a real bug on its first run: Float `%` in a rule used math.fmod in api.py without importing math.

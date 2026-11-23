@@ -3,3 +3,4 @@ packages:
   - "apps/*"
   - "research/benchmark"
   - "research/exp1"
+  - "examples/*/frontend"
