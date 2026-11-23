@@ -436,3 +436,26 @@ print(json.dumps([groups(["a", "b", "cc", "dd", "eee"]), pairs([("x", 3), ("yy",
     expect(lint.code, lint.out).toBe(0);
   }, 120_000);
 });
+
+describe("an api fn named like its own module (found by VA-1)", () => {
+  it("does not shadow the logic module in api.py: requests work and mypy passes", async () => {
+    const { checkProject, fmt } = await import("@canon/compiler");
+    const src = fmt('type Gift {\n  code: String,\n  amount: Int,\n}\n\napi fn gift(input: Gift) -> Gift\n  route: POST "/gift"\n  requires: input.amount > 0\n{\n  return input\n}\n');
+    // two modules, so each gets its own Python module: the one named gift holds an api fn gift
+    const p = checkProject([{ name: "gift", path: "canon/gift.cn", src }, { name: "other", path: "canon/other.cn", src: fmt('api fn ping() -> Int\n  route: GET "/ping"\n{\n  return 1\n}\n') }]);
+    expect(p.modules.flatMap((m) => m.result.diagnostics)).toEqual([]);
+    const { buildBackend } = await import("./helpers/py");
+    const dir = buildBackend(p);
+    const r = py(dir, `
+import json, os, tempfile
+os.environ["CANON_DATABASE"] = os.path.join(tempfile.mkdtemp(), "canon.db")
+from fastapi.testclient import TestClient
+from main import app
+c = TestClient(app, raise_server_exceptions=False)
+print(json.dumps([c.post("/gift", json={"code": "x", "amount": 5}).status_code, c.post("/gift", json={"code": "x", "amount": 0}).status_code, c.get("/ping").json()]))
+`);
+    expect(r).toEqual([200, 422, 1]);
+    const types = run("mypy", ["--strict", "canon_generated", "main.py"], dir);
+    expect(types.code, types.out).toBe(0);
+  }, 120_000);
+});

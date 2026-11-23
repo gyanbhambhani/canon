@@ -1408,7 +1408,7 @@ function genApi(project: ProjectResult, d: Decls, single: boolean, opts: PyGenOp
       if (it.k !== "Fn" || !it.route || isExtern(it)) continue;
       const last = single ? "logic" : fnHome(it.name).split(".").pop()!;
       const ep = effectParams(it);
-      if (it.params.some(([n]) => n === last) || ep.tables.includes(last) || ep.hosts.map(hostVar).includes(last)) moduleAliases.add(fnHome(it.name));
+      if (it.name === last || it.params.some(([n]) => n === last) || ep.tables.includes(last) || ep.hosts.map(hostVar).includes(last)) moduleAliases.add(fnHome(it.name));
     }
   }
   for (const m of project.modules) {
@@ -1419,7 +1419,7 @@ function genApi(project: ProjectResult, d: Decls, single: boolean, opts: PyGenOp
       const ep = effectParams(it);
       const last = single ? "logic" : home.split(".").pop()!;
       // a module whose name a route parameter would hide (a users module with a users table) gets an alias
-      const clash = it.params.some(([n]) => n === last) || ep.tables.includes(last) || ep.hosts.map(hostVar).includes(last);
+      const clash = it.name === last || it.params.some(([n]) => n === last) || ep.tables.includes(last) || ep.hosts.map(hostVar).includes(last);
       const mod = clash || moduleAliases.has(home) ? `${last}_logic` : last;
       if (mod !== last) moduleAliases.add(home);
       const parent = "." + (single ? "" : home.split(".").slice(0, -1).join("."));
