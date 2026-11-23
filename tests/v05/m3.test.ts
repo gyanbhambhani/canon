@@ -327,3 +327,53 @@ describe("G002: what the Python target cannot express", () => {
     expect((err as InstanceType<typeof TargetError>).diagnostics[0].diagnostic.message).toMatch(/G?an Option of an Option .*\(fn f\)/);
   });
 });
+
+describe("CB-1: no temporaries hoisted out of lambdas or loop conditions (found by CanonBench)", () => {
+  it("unwrap_or in a lambda, a comprehension and a while condition gives the JavaScript runtime's results", async () => {
+    const { checkProject, compileJs, fmt, generateFastapi } = await import("@canon/compiler");
+    const { MemoryHost, Runtime, load, testHost } = await import("@canon/runtime");
+    const { mkdirSync, mkdtempSync, writeFileSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const src = fmt(`fn to_ints(xs: List[String]) -> List[Int] {
+  return map(xs, |p| unwrap_or(parse_int(p), 0))
+}
+
+fn strip_x(xs: List[String]) -> Int {
+  var out = xs
+  var n = 0
+  while len(out) > 0 && unwrap_or(last(out), "") == "x" {
+    out = take(out, len(out) - 1)
+    n = n + 1
+  }
+  return n
+}
+
+fn eager(s: String) -> Int {
+  return unwrap_or(parse_int(trim(s)), str_len(s))
+}
+`);
+    const p = checkProject([{ name: "m", path: "canon/m.cn", src }]);
+    expect(p.ok).toBe(true);
+    const dir = mkdtempSync(join(tmpdir(), "canon-cb1-"));
+    mkdirSync(join(dir, "canon_generated"));
+    for (const f of generateFastapi(p)) if (!f.userOwned) writeFileSync(join(dir, "canon_generated", f.path), f.text);
+    const pyOut = py(dir, `
+import json
+from canon_generated.logic import to_ints, strip_x, eager
+print(json.dumps([to_ints(["1", "x", "3"]), strip_x(["a", "x", "x"]), strip_x([]), eager(" 7 "), eager("abc")]))
+`);
+    const rt = new Runtime(testHost(new MemoryHost()));
+    const mod = load(compileJs(src, "m.cn").js!, rt);
+    const jsOut = [mod.fns.to_ints(["1", "x", "3"]), mod.fns.strip_x(["a", "x", "x"]), mod.fns.strip_x([]), mod.fns.eager(" 7 "), mod.fns.eager("abc")];
+    expect(pyOut).toEqual(jsOut);
+    expect(jsOut).toEqual([[1, 0, 3], 2, 0, 7, 3]);
+  });
+
+  it("a match inside a lambda is G002, not wrong code", async () => {
+    const { checkProject, fmt, generateFastapi, TargetError } = await import("@canon/compiler");
+    const src = fmt("fn f(xs: List[Option[Int]]) -> List[Int] {\n  return map(xs, |o| match o {\n    Some(v) => v,\n    None => 0,\n  })\n}\n");
+    const p = checkProject([{ name: "m", path: "canon/m.cn", src }]);
+    expect(p.modules[0].result.diagnostics).toEqual([]);
+    expect(() => generateFastapi(p)).toThrow(TargetError);
+  });
+});
