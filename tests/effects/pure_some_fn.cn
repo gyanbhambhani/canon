@@ -1,0 +1,4 @@
+# expect: E101
+fn maybe_clock() -> Option[fn() -> Int] {
+  return Some(now)
+}

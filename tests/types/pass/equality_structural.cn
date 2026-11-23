@@ -3,5 +3,5 @@ type P {
 }
 
 fn same(a: P, b: P, xs: List[Int]) -> Bool {
-  return a == b and xs == [1, 2] and Some(1) == Some(1)
+  return a == b && xs == [1, 2] && Some(1) == Some(1)
 }

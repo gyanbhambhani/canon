@@ -1,0 +1,8 @@
+# expect: E101
+type Hook {
+  run: fn(String) -> Unit,
+}
+
+fn make_hook() -> Hook {
+  return Hook { run: |s| print(s) }
+}

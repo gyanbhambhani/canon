@@ -25,7 +25,7 @@ Canon tests three ideas about how agents write code. They are hypotheses, not re
 2. **A compiler that answers with fixes closes the loop fast.** Errors come back as JSON with stable codes, and mechanical fixes as patches (unified diffs the agent applies as is).
 3. **A language small enough to fit in a single prompt can be learned from that prompt.**
 
-People review the result, so Canon borrows familiar forms (braces, `fn`, `let`, `match`, `|>`, `and`, `or`, `not`) and removes the alternatives.
+People review the result, so Canon borrows familiar forms (braces, `fn`, `let`, `match`, `|>`, `&&`, `||`, `!`) and removes the alternatives.
 
 ### What the evidence says so far
 
@@ -43,7 +43,7 @@ Seven laws decide every feature question. A feature that breaks one is rejected.
 6. **The grammar is small enough to constrain decoding.** Braces delimit blocks and no rule depends on indentation, so a decoding engine can mask invalid tokens. Publishing that strict grammar is on the [Roadmap](/docs/roadmap).
 7. **The reference has a fixed budget.** The [Agent reference](/docs/for-agents) stays under 4,000 tokens, and a test enforces it. A feature that pushes past the budget must replace something already in it.
 
-Laws yield to data. v0.2 replaced `set x = e` with `x = e`, `for cond` with `while cond`, and `concat` with `+`, after a study of model probabilities found the new spellings far more natural, and allowed `match` in any expression. `canon fmt` rewrites the old spellings.
+Laws yield to data. v0.2 replaced `set x = e` with `x = e`, `for cond` with `while cond`, and `concat` with `+`, after a study of model probabilities found the new spellings far more natural, and allowed `match` in any expression. `canon fmt` rewrites the old spellings. v0.3 followed the same evidence to `&&`, `||` and `!`, added `break` and `for (i, x) in` destructuring, sealed the remaining effect gaps (tests and contracts), and made every mechanical fix apply itself (`canon check --fix`); see the [Roadmap](/docs/roadmap).
 
 ## The Wasp lesson
 

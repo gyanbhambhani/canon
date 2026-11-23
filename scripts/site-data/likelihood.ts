@@ -1,12 +1,14 @@
 /**
  * The likelihood study rows where models prefer a spelling other than Canon's v0 one, computed
  * from research/likelihood/results/*.json with the rules in research/likelihood/report.py.
- * Whether today's Canon adopted the preferred spelling is decided by the formatter, not by hand:
+ * Whether Canon v0.2 adopted the preferred spelling is decided by the formatter, not by hand:
  * the v0 spelling no longer formats to itself, and it formats to the same text as the alternative.
+ * The /research page reports the v0.2 study, so this runs the formatter with the v0.3 switches off
+ * (v0.3 also adopts `&&`/`||`/`!`; see docs/v0.3-proposal.md).
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { fmt } from "@canon/compiler";
+import { fmt, V02 } from "@canon/compiler";
 
 interface Row {
   context: number;
@@ -28,7 +30,7 @@ export interface LikelihoodRow {
   preferred: string;
   /** per model: e^delta (Canon's v0 spelling over the preferred one) and how many contexts agree */
   byModel: { model: string; ratio: number; agree: number; contexts: number }[];
-  /** true when today's formatter writes the preferred spelling */
+  /** true when the v0.2 formatter writes the preferred spelling */
   adopted: boolean;
 }
 
@@ -39,7 +41,7 @@ export interface Likelihood {
 
 function tryFmt(src: string): string | null {
   try {
-    return fmt(src);
+    return fmt(src, { features: V02 });
   } catch {
     return null;
   }

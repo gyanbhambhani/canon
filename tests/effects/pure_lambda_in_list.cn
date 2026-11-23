@@ -1,0 +1,4 @@
+# expect: E101
+fn hooks() -> List[fn(String) -> Result[String, Error]] {
+  return [|u| http_get(u)]
+}

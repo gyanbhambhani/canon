@@ -7,6 +7,7 @@ export { parse, Parser } from "./parser.js";
 export { normalize } from "./normalize.js";
 export { Printer, chainEligible, unrollChain, PIPELINE_MIN_STAGES, MAX_LINE } from "./printer.js";
 export * from "./check.js";
+export * from "./features.js";
 export { unifiedDiff } from "./difflib.js";
 export { pyFloatRepr, pyRepr, pySplitlines, readSource } from "./py.js";
 export * from "./types.js";

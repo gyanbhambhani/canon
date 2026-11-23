@@ -2,9 +2,11 @@
 import type * as A from "./ast.js";
 import { walkExprs, walkStmts } from "./ast.js";
 import { CanonError, diag, type Diagnostic, type Fix } from "./diagnostics.js";
+import { features, withFeatures, type CompileOptions } from "./features.js";
 import { unifiedDiff } from "./difflib.js";
 import { cmpStr, normalize } from "./normalize.js";
 import { parse } from "./parser.js";
+import { applyPatch } from "./patch.js";
 import { MAX_LINE, Printer } from "./printer.js";
 import { pyLen, pySplitlines } from "./py.js";
 import { builtinEffects, checkTypes, pureBuiltins, type TypeInfo } from "./types.js";
@@ -13,6 +15,8 @@ export const SNAKE = /^[a-z_][a-z0-9_]*$/;
 export const PASCAL = /^[A-Z][A-Za-z0-9]*$/;
 export const EFFECTS = ["fs", "io", "net", "rand", "time"];
 const EFFECT_SET = new Set(EFFECTS);
+/** v0.3: the effects a test block must declare. The test host makes io, time and rand deterministic. */
+export const TEST_REAL_EFFECTS = new Set(["fs", "net"]);
 
 /** The oracle's effect table, used by the front-end check so it matches canon.py exactly. */
 export const ORACLE_BUILTIN_EFFECTS: Record<string, string[]> = {
@@ -76,6 +80,13 @@ export function checkNames(prog: A.Program): Diagnostic[] {
         }
       }
     }
+    if (it.k === "Test") {
+      for (const e of it.effects) {
+        if (!EFFECT_SET.has(e)) {
+          diags.push(diag("E100", `unknown effect '${e}'; the effects are ${EFFECTS.join(", ")}`, it.line, it.col));
+        }
+      }
+    }
     if (it.k === "Fn" || it.k === "Test") {
       for (const s of walkStmts(it.body)) if (s.k === "Let" && !SNAKE.test(s.name)) bad("binding", s.name, "snake_case", s);
     }
@@ -96,7 +107,7 @@ export function checkEffects(
   const user = new Map<string, Set<string>>();
   for (const it of prog.items) if (it.k === "Fn") user.set(it.name, new Set(it.effects));
   prog.items.forEach((it, idx) => {
-    if (it.k !== "Fn") return;
+    if (it.k !== "Fn" && !(it.k === "Test" && features().sealedEffects)) return;
     const used = new Map<string, string>();
     let allKnown = true;
     if (countValues) {
@@ -126,6 +137,12 @@ export function checkEffects(
       }
       for (const ef of effs) if (!used.has(ef)) used.set(ef, name);
     }
+    if (it.k === "Test") {
+      // only fs and net are real inside a test; the rest are virtual and never declared
+      for (const k of [...used.keys()]) if (!TEST_REAL_EFFECTS.has(k)) used.delete(k);
+      allKnown = true;
+    }
+    const label = it.k === "Fn" ? `fn ${it.name}` : `test ${it.name}`;
     const declared = new Set(it.effects);
     const missing = [...used.keys()].filter((x) => !declared.has(x)).sort(cmpStr);
     const extra = allKnown ? [...declared].filter((x) => !used.has(x)).sort(cmpStr) : [];
@@ -138,15 +155,46 @@ export function checkEffects(
     }
     if (missing.length) {
       const via = missing.map((m) => `${m} (via ${used.get(m)})`).join(", ");
-      diags.push(diag("E101", `fn ${it.name} uses effects it does not declare: ${via}`, it.line, it.col,
+      diags.push(diag("E101", `${label} uses effects it does not declare: ${via}`, it.line, it.col,
         { fix, data: { missing } }));
     }
     if (extra.length) {
       diags.push(diag("E102",
-        `fn ${it.name} declares effects it never uses: ${extra.join(", ")} (effect lists are exact)`,
+        it.k === "Fn"
+          ? `${label} declares effects it never uses: ${extra.join(", ")} (effect lists are exact)`
+          : `${label} declares effects it does not need: ${extra.join(", ")} (tests declare only fs and net)`,
         it.line, it.col, { fix, data: { unused: extra } }));
     }
   });
+  return diags;
+}
+
+/**
+ * v0.3 (sealed effects): requires and ensures must be pure. A contract that performs an effect
+ * would act only when contracts are on (`--no-contracts` skips them), so it is E103.
+ */
+export function checkContractPurity(prog: A.Program, tables: EffectTables): Diagnostic[] {
+  const diags: Diagnostic[] = [];
+  const user = new Map<string, string[]>();
+  for (const it of prog.items) if (it.k === "Fn") user.set(it.name, it.effects);
+  const effectsOf = (n: string) => (Object.hasOwn(tables.effects, n) ? tables.effects[n] : user.get(n) ?? []);
+  for (const it of prog.items) {
+    if (it.k !== "Fn") continue;
+    for (const [clause, e] of [["requires", it.requires], ["ensures", it.ensures]] as const) {
+      if (e === null) continue;
+      const found = new Map<string, string>();
+      for (const x of walkExprs(e)) {
+        const n = x.k === "Call" && x.callee.k === "Name" ? x.callee.path[0] : x.k === "Name" && x.path.length === 1 ? x.path[0] : null;
+        if (n === null) continue;
+        for (const ef of effectsOf(n)) if (!found.has(ef)) found.set(ef, n);
+      }
+      if (found.size) {
+        const via = [...found].map(([ef, n]) => `${ef} (via ${n})`).join(", ");
+        diags.push(diag("E103", `the ${clause} clause of fn ${it.name} performs effects: ${via}; contracts must be pure`,
+          it.line, it.col, { data: { effects: [...found.keys()].sort(cmpStr) } }));
+      }
+    }
+  }
   return diags;
 }
 
@@ -232,7 +280,11 @@ export function formDiagnostics(src: string, canonical: string, path: string): D
 }
 
 /** Exactly the oracle's check(): the front end only (no types). */
-export function checkFront(src: string, path = "main.cn"): CheckResult {
+export function checkFront(src: string, path = "main.cn", opts: CompileOptions = {}): CheckResult {
+  return withFeatures(opts.features, () => checkFrontInner(src, path));
+}
+
+function checkFrontInner(src: string, path: string): CheckResult {
   let parsed: Parsed;
   try {
     parsed = parseCanonical(src);
@@ -250,8 +302,8 @@ export function checkFront(src: string, path = "main.cn"): CheckResult {
   return { ok: !diags.some((d) => d.severity === "error"), canonical: canonical === src, diagnostics: diags };
 }
 
-export function fmt(src: string): string {
-  return parseCanonical(src).canonical;
+export function fmt(src: string, opts: CompileOptions = {}): string {
+  return withFeatures(opts.features, () => parseCanonical(src).canonical);
 }
 
 // ---------------------------------------------------------------------------
@@ -272,7 +324,11 @@ function specTables(): EffectTables {
   return fullTables;
 }
 
-export function analyze(src: string, path = "main.cn"): Analysis {
+export function analyze(src: string, path = "main.cn", opts: CompileOptions = {}): Analysis {
+  return withFeatures(opts.features, () => analyzeInner(src, path));
+}
+
+function analyzeInner(src: string, path: string): Analysis {
   let parsed: Parsed;
   try {
     parsed = parseCanonical(src);
@@ -287,6 +343,9 @@ export function analyze(src: string, path = "main.cn"): Analysis {
   const effectDiags = checkEffects(prog, src, path, tables, true);
   const typed = checkTypes(prog);
   for (const [d, fixed] of typed.fixes) d.fix = makePatch(src, programText(fixed), path);
+  for (const [d, cands] of typed.suggestions) {
+    d.data = { ...(d.data ?? {}), suggestions: cands.map((c) => ({ label: c.label, diff: makePatch(src, programText(c.prog), path).diff })) };
+  }
   const typeDiags = typed.diagnostics.filter((d) => d.code !== "H001");
   const holes = typed.diagnostics.filter((d) => d.code === "H001");
   const diags = [
@@ -294,6 +353,7 @@ export function analyze(src: string, path = "main.cn"): Analysis {
     ...checkNames(prog),
     ...typeDiags.filter((d) => d.code === "M001"),
     ...effectDiags,
+    ...(features().sealedEffects ? checkContractPurity(prog, tables) : []),
     ...typeDiags.filter((d) => d.code !== "M001"),
     ...holes,
   ];
@@ -305,6 +365,46 @@ export function analyze(src: string, path = "main.cn"): Analysis {
 }
 
 /** `canon check`: the front end plus modules, exact effects over the full stdlib, and types. */
-export function check(src: string, path = "main.cn"): CheckResult {
-  return analyze(src, path).result;
+export function check(src: string, path = "main.cn", opts: CompileOptions = {}): CheckResult {
+  return analyze(src, path, opts).result;
+}
+
+// ---------------------------------------------------------------------------
+// v0.3: the self-healing loop
+// ---------------------------------------------------------------------------
+
+/**
+ * Codes whose patch is purely mechanical: applying it never changes what the program means
+ * beyond the reported problem. T004's patch is excluded because it inserts holes (questions).
+ */
+export const MECHANICAL_CODES = ["C001", "E101", "E102", "T009"];
+
+export interface FixResult {
+  /** The source after every mechanical patch was applied (canonical when it parses). */
+  source: string;
+  /** `check` of that source: only judgment errors remain. */
+  result: CheckResult;
+  /** The code of each patch applied, in order. */
+  applied: string[];
+}
+
+/**
+ * `canon check --fix`: apply mechanical patches one at a time, re-checking after each, until
+ * none is left (a fixed point). What is stored is still canonical (design law 1); the agent
+ * sees only the diagnostics that need judgment.
+ */
+export function fix(src: string, path = "main.cn", opts: CompileOptions & { codes?: string[] } = {}): FixResult {
+  const allowed = new Set(opts.codes ?? MECHANICAL_CODES);
+  let cur = src;
+  const applied: string[] = [];
+  for (let round = 0; round < 32; round++) {
+    const result = check(cur, path, opts);
+    const d = result.diagnostics.find((x) => allowed.has(x.code) && x.fix !== undefined);
+    if (!d) return { source: cur, result, applied };
+    const next = applyPatch(cur, d.fix!.diff);
+    if (next === null || next === cur) return { source: cur, result, applied };
+    applied.push(d.code);
+    cur = next;
+  }
+  return { source: cur, result: check(cur, path, opts), applied };
 }

@@ -1,0 +1,13 @@
+# expect: E103
+fn log(s: String) -> Bool
+  effects: io
+{
+  print(s)
+  return true
+}
+
+fn f(n: Int) -> Int
+  requires: log("called")
+{
+  return n
+}

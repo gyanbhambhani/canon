@@ -47,10 +47,13 @@ export type Let = { k: "Let"; name: string; value: Expr; mutable: boolean } & Po
 export type SetStmt = { k: "Set"; target: Expr; value: Expr } & Pos;
 export type Return = { k: "Return"; value: Expr | null } & Pos;
 export type If = { k: "If"; cond: Expr; body: Stmt[]; orelse: Stmt[] | null } & Pos;
-export type ForIn = { k: "ForIn"; var: string; iterable: Expr; body: Stmt[] } & Pos;
+/** v0.3: `names` is set when the loop destructures tuples, `for (a, b) in xs` (then `var` is ""). */
+export type ForIn = { k: "ForIn"; var: string; names?: string[]; iterable: Expr; body: Stmt[] } & Pos;
 export type ForWhile = { k: "ForWhile"; cond: Expr; body: Stmt[] } & Pos;
 export type ExprStmt = { k: "ExprStmt"; expr: Expr } & Pos;
-export type Stmt = Comment | Let | SetStmt | Return | If | ForIn | ForWhile | ExprStmt;
+/** v0.3: exits the innermost loop. */
+export type Break = { k: "Break" } & Pos;
+export type Stmt = Comment | Let | SetStmt | Return | If | ForIn | ForWhile | ExprStmt | Break;
 
 // items
 export type Use = { k: "Use"; path: string[] } & Pos;
@@ -68,7 +71,8 @@ export type Fn = {
   ensures: Expr | null;
   body: Stmt[];
 } & Pos;
-export type Test = { k: "Test"; name: string; body: Stmt[] } & Pos;
+/** v0.3: `effects` lists the real effects (fs, net) a test may use; io, time and rand are virtual. */
+export type Test = { k: "Test"; name: string; effects: string[]; body: Stmt[] } & Pos;
 export type Item = Comment | Use | RecordType | SumType | Fn | Test;
 
 export interface Program {
@@ -77,7 +81,7 @@ export interface Program {
 }
 
 /** Node kinds that are statements (walk_exprs skips yielding these). */
-export const STMT_KINDS = new Set(["Let", "Set", "Return", "If", "ForIn", "ForWhile", "ExprStmt", "Comment"]);
+export const STMT_KINDS = new Set(["Let", "Set", "Return", "If", "ForIn", "ForWhile", "ExprStmt", "Comment", "Break"]);
 
 /**
  * Child fields of each node kind, in dataclass declaration order, so traversals
@@ -92,7 +96,7 @@ export const FIELDS: Record<string, string[]> = {
   PWild: [], PBind: [], PLit: ["lit"], PCtor: ["args"], PTuple: ["items"],
   Comment: [], Let: ["value"], Set: ["target", "value"], Return: ["value"],
   If: ["cond", "body", "orelse"], ForIn: ["iterable", "body"], ForWhile: ["cond", "body"],
-  ExprStmt: ["expr"],
+  ExprStmt: ["expr"], Break: [],
 };
 
 /** Yield every expression-or-pattern node under a value, in the oracle's walk_exprs order. */

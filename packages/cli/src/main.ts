@@ -3,8 +3,11 @@
  * tests or traps; 2 usage errors (unknown command or flag, missing or unreadable file).
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { CanonError, check, compileJs, fmt, readSource, VERSION, type CheckResult, type Diagnostic } from "@canon/compiler";
-import { runMain, runTests, testHost, type Effect, type Host, type TrapJson } from "@canon/runtime";
+import {
+  CanonError, check, compileJs, fix, flagName, fmt, readSource, FEATURE_NAMES, V02, VERSION,
+  type CheckResult, type CompileOptions, type Diagnostic, type FeatureName, type Features,
+} from "@canon/compiler";
+import { fuzzContracts, runMain, runTests, testHost, type Effect, type Host, type TrapJson } from "@canon/runtime";
 import { nodeHost } from "@canon/runtime/node";
 
 export interface CliIO {
@@ -17,17 +20,26 @@ const EFFECTS: Effect[] = ["fs", "io", "net", "rand", "time"];
 export const USAGE = `canon ${VERSION}: a programming language for AI agents
 
 usage:
-  canon check FILE...            check files; print diagnostics (with patches)
+  canon check FILE... [--fix [--write]]
+                                 check files; print diagnostics (with patches)
   canon fmt FILE... [--write]    print the canonical form, or rewrite files in place
   canon run FILE [--deny EFFECTS] [--no-contracts]
                                  check, then run fn main()
-  canon test FILE...             run the test blocks (deterministic time and rand)
+  canon test FILE...             run the test blocks (deterministic time and rand),
+                                 then fuzz every pure function that has a contract
 
 options:
   --json                         machine-readable output (every command)
+  --fix                          apply every mechanical patch (C001, E101, E102, T009) until
+                                 none is left; report only what needs judgment (check)
+  --write                        with fmt or check --fix: rewrite the files
   --deny fs,net                  make calls to those effects trap with R006 (run)
   --no-contracts                 skip requires/ensures checks (run)
   --help, --version
+
+v0.3 switches (each turns one v0.3 change off, for experiments; --v0.2 turns all off):
+  --no-wrap --no-break --no-destructure --no-symbols --no-sealed-effects --no-suggestions
+  --no-capability-guard (run, test)    --no-contract-fuzz (test)
 
 exit codes: 0 success, 1 diagnostics / failed tests / traps, 2 usage error
 `;
@@ -41,19 +53,27 @@ interface Args {
   write: boolean;
   deny: Effect[];
   contracts: boolean;
+  fix: boolean;
+  guard: boolean;
+  fuzz: boolean;
+  features: Partial<Features>;
 }
 
+const LANG_FLAGS = ["--v0.2", ...FEATURE_NAMES.map((f) => `--no-${flagName(f)}`)];
+
 const ALLOWED: Record<string, string[]> = {
-  check: ["--json"],
-  fmt: ["--json", "--write"],
-  run: ["--json", "--deny", "--no-contracts"],
-  test: ["--json"],
+  check: ["--json", "--fix", "--write", ...LANG_FLAGS],
+  fmt: ["--json", "--write", ...LANG_FLAGS],
+  run: ["--json", "--deny", "--no-contracts", "--no-capability-guard", ...LANG_FLAGS],
+  test: ["--json", "--no-capability-guard", "--no-contract-fuzz", ...LANG_FLAGS],
 };
 
 function parseArgs(argv: string[]): Args {
   const [cmd, ...rest] = argv;
   if (!cmd || !(cmd in ALLOWED)) throw new UsageError(cmd ? `unknown command '${cmd}'` : "missing command");
-  const a: Args = { cmd, files: [], json: false, write: false, deny: [], contracts: true };
+  const a: Args = {
+    cmd, files: [], json: false, write: false, deny: [], contracts: true, fix: false, guard: true, fuzz: true, features: {},
+  };
   for (let i = 0; i < rest.length; i++) {
     const x = rest[i];
     if (!x.startsWith("--")) {
@@ -65,6 +85,14 @@ function parseArgs(argv: string[]): Args {
     if (flag === "--json") a.json = true;
     else if (flag === "--write") a.write = true;
     else if (flag === "--no-contracts") a.contracts = false;
+    else if (flag === "--fix") a.fix = true;
+    else if (flag === "--no-capability-guard") a.guard = false;
+    else if (flag === "--no-contract-fuzz") a.fuzz = false;
+    else if (flag === "--v0.2") a.features = { ...V02 };
+    else if (flag.startsWith("--no-")) {
+      const f = FEATURE_NAMES.find((n) => `--no-${flagName(n)}` === flag) as FeatureName;
+      a.features[f] = false;
+    }
     else if (flag === "--deny") {
       const v = inline ?? rest[++i];
       if (!v) throw new UsageError("--deny needs a list of effects, like --deny net,fs");
@@ -76,6 +104,7 @@ function parseArgs(argv: string[]): Args {
   }
   if (a.files.length === 0) throw new UsageError(`canon ${cmd} needs a file`);
   if (cmd === "run" && a.files.length > 1) throw new UsageError("canon run takes one file");
+  if (cmd === "check" && a.write && !a.fix) throw new UsageError("--write needs --fix (canon check --fix --write)");
   return a;
 }
 
@@ -108,13 +137,37 @@ function trapText(t: TrapJson): string {
   return JSON.stringify(t) + "\n";
 }
 
+const opts = (a: Args): CompileOptions => ({ features: a.features });
+
 function cmdCheck(a: Args, io: CliIO): number {
-  const results = a.files.map((f) => ({ path: f, result: check(readFile(f), f) }));
+  if (a.fix) return cmdFix(a, io);
+  const results = a.files.map((f) => ({ path: f, result: check(readFile(f), f, opts(a)) }));
   if (a.json) {
     const out = results.length === 1 ? results[0].result : results.map((r) => ({ path: r.path, ...r.result }));
     io.stdout(JSON.stringify(out, null, 2) + "\n");
   } else {
     for (const r of results) report(r.path, r.result, io);
+  }
+  return results.every((r) => r.result.ok) ? 0 : 1;
+}
+
+/** `check --fix`: the self-healing loop. Only diagnostics that need judgment are reported. */
+function cmdFix(a: Args, io: CliIO): number {
+  const results = a.files.map((f) => {
+    const src = readFile(f);
+    const r = fix(src, f, opts(a));
+    if (a.write && r.source !== src) writeFileSync(f, r.source);
+    return { path: f, ...r };
+  });
+  if (a.json) {
+    const shape = (r: (typeof results)[number]) => ({ ...r.result, applied: r.applied, source: r.source });
+    const out = results.length === 1 ? shape(results[0]) : results.map((r) => ({ path: r.path, ...shape(r) }));
+    io.stdout(JSON.stringify(out, null, 2) + "\n");
+  } else {
+    for (const r of results) {
+      if (r.applied.length) io.stdout(`${r.path}: applied ${r.applied.join(", ")}${a.write ? "" : " (not written; add --write)"}\n`);
+      report(r.path, r.result, io);
+    }
   }
   return results.every((r) => r.result.ok) ? 0 : 1;
 }
@@ -126,7 +179,7 @@ function cmdFmt(a: Args, io: CliIO): number {
     const src = readFile(f);
     let formatted: string;
     try {
-      formatted = fmt(src);
+      formatted = fmt(src, opts(a));
     } catch (e) {
       if (!(e instanceof CanonError)) throw e;
       status = 1;
@@ -143,7 +196,7 @@ function cmdFmt(a: Args, io: CliIO): number {
 }
 
 function compileFor(a: Args, path: string, io: CliIO): string | null {
-  const c = compileJs(readFile(path), path);
+  const c = compileJs(readFile(path), path, opts(a));
   if (c.js) return c.js;
   if (a.json) io.stdout(JSON.stringify({ ok: false, diagnostics: c.check.diagnostics }, null, 2) + "\n");
   else report(path, c.check, io, "stderr");
@@ -156,7 +209,7 @@ function cmdRun(a: Args, io: CliIO): number {
   if (js === null) return 1;
   let captured = "";
   const host = nodeHost({ deny: a.deny, write: a.json ? (s) => (captured += s) : (s) => io.stdout(s) });
-  const r = runMain(js, host, { contracts: a.contracts });
+  const r = runMain(js, host, { contracts: a.contracts, capabilityGuard: a.guard });
   if (a.json) {
     const out: Record<string, unknown> = { ok: r.status === 0, status: r.status, stdout: captured };
     if (r.trap) out.trap = r.trap;
@@ -182,11 +235,30 @@ function cmdTest(a: Args, io: CliIO): number {
       continue;
     }
     const host: Host = testHost(nodeHost({ write: a.json ? (s) => (stdout += s) : (s) => io.stdout(s) }));
-    for (const t of runTests(js, host)) {
+    // with --no-sealed-effects, tests are unchecked as in v0.2, so the guard does not apply to them
+    const guard = a.guard && a.features.sealedEffects !== false;
+    for (const t of runTests(js, host, { capabilityGuard: guard })) {
       if (t.passed) passed++;
       else failed++;
       if (!a.json) io.stdout(t.passed ? `PASS ${t.name}\n` : `FAIL ${t.name}\n  ${trapText(t.trap!)}`);
       tests.push({ file: path, ...t });
+    }
+    if (a.fuzz) {
+      for (const z of fuzzContracts(js, testHost(nodeHost({ write: () => {} })), { capabilityGuard: a.guard })) {
+        if (z.skipped) {
+          if (!a.json) io.stdout(`SKIP ${z.name} (${z.skipped})\n`);
+          tests.push({ file: path, ...z });
+          continue;
+        }
+        if (z.passed) passed++;
+        else failed++;
+        if (!a.json) {
+          io.stdout(z.passed
+            ? `PASS ${z.name} (${z.runs} inputs)\n`
+            : `FAIL ${z.name}: ${z.counterexample!.args.join(", ")}\n  ${trapText(z.counterexample!.trap)}`);
+        }
+        tests.push({ file: path, ...z });
+      }
     }
   }
   const ok = failed === 0 && broken === 0;

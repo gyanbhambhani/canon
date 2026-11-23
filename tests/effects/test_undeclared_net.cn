@@ -1,0 +1,5 @@
+# expect: E101
+test "calls the network" {
+  let r = http_get("http://example.com")
+  assert(r == r)
+}

@@ -225,7 +225,7 @@ Pure. Whether any item equals `x`, compared by structure.
 ```canon
 test "contains" {
   assert(contains(["a", "b"], "b"))
-  assert(not contains([1, 2], 3))
+  assert(!contains([1, 2], 3))
 }
 ```
 
@@ -376,7 +376,7 @@ test "to_int" {
 
 ## Strings
 
-Strings join with the `+` operator, not a function: `"a" + b + "c"`. Both operands must be String (T001 otherwise), so convert other values with `to_string`. v0 had a variadic `concat` built-in; it is gone in v0.2, and the formatter rewrites `concat(a, b, c)` to `a + b + c`.
+Strings join with the `+` operator, not a function: `"a" + b + "c"`. Both operands must be String (T001 otherwise), so convert other values with `to_string`. v0 had a variadic `concat` built-in; it is gone since v0.2, and the formatter rewrites `concat(a, b, c)` to `a + b + c`.
 
 ```canon
 test "joining strings" {

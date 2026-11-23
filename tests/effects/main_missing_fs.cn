@@ -1,0 +1,13 @@
+# expect: E101
+fn save(text: String) -> Result[Unit, Error]
+  effects: fs
+{
+  return write_file("out.txt", text)
+}
+
+fn main() -> Unit
+  effects: io
+{
+  let r = save("x")
+  print(to_string(r == r))
+}

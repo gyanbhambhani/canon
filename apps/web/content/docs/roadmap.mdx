@@ -3,7 +3,7 @@ title: Roadmap
 description: What Canon ships today, what comes next, and the questions still open.
 ---
 
-This page lists what Canon does today and what comes next. The current language is v0.2, which reads like this:
+This page lists what Canon does today and what comes next. The current language is v0.3, which reads like this:
 
 ```canon
 fn halvings(n: Int) -> Int {
@@ -27,6 +27,7 @@ The full checklist, with every milestone and its tests, is [ROADMAP.md on GitHub
 - **The docs, the [playground](/play) and the [Agent reference](/docs/for-agents)**, also served as `/llms.txt`.
 - **Two studies.** A study of which spellings language models find most natural, and a benchmark of agents writing Canon against agents writing TypeScript. Results are on the [Research](/research) page.
 - **Language v0.2.** Four changes taken from those studies: `x = e` assignment, `while` loops, `+` to join strings, and `match` in any expression. `canon fmt` rewrites the old spellings.
+- **Language v0.3.** `&&`, `||` and `!`; `break`; `for (i, x) in` destructuring; long statements broken by the formatter; test blocks and contracts effect-checked, with a run-time capability guard; `canon check --fix` applies every mechanical patch; T001 lists candidate fixes; `canon test` fuzzes functions that have contracts. Every change has a switch for experiments (`--v0.2` turns them all off). The reasoning and the planned test are in `docs/v0.3-proposal.md` in the repository.
 
 ## Next
 

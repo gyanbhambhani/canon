@@ -1,0 +1,4 @@
+# expect: E101
+fn shout(xs: List[String]) -> List[Unit] {
+  return map(xs, print)
+}

@@ -165,6 +165,21 @@ After the M8 studies, four rules above changed. DECISIONS.md has the evidence fo
 
 The v0 spellings still parse, and fmt rewrites them, so every v0 program migrates with `canon fmt --write`.
 
+### Amendment: v0.3 (2026-11-22)
+
+docs/v0.3-proposal.md has the evidence, the ranking and the planned pre-registered test; DECISIONS.md has each judgment call. Every change below has a switch (packages/compiler/src/features.ts; `--no-<name>` on the CLI, `--v0.2` for all), so an experiment can ablate each one.
+
+- The logical operators are `&&`, `||` and `!` (likelihood study: symbols preferred in every context by the 7B model). `!` is unary at level 7, beside `-` and `try`; fmt rewrites `and`, `or`, `not`, and `not a == b` becomes `!(a == b)`.
+- `break`, alone on its line, leaves the innermost loop (T010 outside one). There is no `continue`.
+- `for (a, b) in xs { }` destructures tuple elements.
+- fmt breaks a statement longer than 100 characters at its outermost list, tuple, record or call brackets, one item per line with a trailing comma; L001 remains for lines it cannot break.
+- Test blocks are effect-checked: `fs` and `net` are declared with an `effects:` line after the test name; `io`, `time` and `rand` are virtual under the test host and never declared. `requires` and `ensures` must be pure (E103).
+- At run time the host performs only the effects the entry point declares (the capability guard, R006).
+- `canon check --fix` applies C001, E101, E102 and T009 patches to a fixed point and reports only what needs judgment. T001 may carry ranked candidate patches in `data.suggestions`.
+- `canon test` also fuzzes every pure, non-generic function with a contract on seeded inputs generated from its parameter types.
+
+Design law 1 holds: fmt still decides one text per program, including where long lines break. v0.2 files migrate with `canon fmt --write`, except a test block that uses `fs` or `net`, which needs `canon check --fix --write`.
+
 ## Runtime semantics
 
 This section defines what a Canon program does when it runs. Where this section and the reference implementation are silent, the implementer decides and records the decision in DECISIONS.md.

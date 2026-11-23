@@ -113,4 +113,4 @@ fn f() -> Int {
 
 ## Keywords
 
-`fn type let var if else match for in while return use effects requires ensures true false test and or not try`, plus `set`, which v0.2 keeps reserved so that old files still parse (the formatter rewrites `set x = e` to `x = e`). There is no `break`, `continue`, `class`, `null` or `import`.
+`fn type let var if else match for in while return use effects requires ensures true false test and or not try`, plus `set`, which stays reserved so that old files still parse (the formatter rewrites `set x = e` to `x = e`, and `and`, `or`, `not` to `&&`, `||`, `!`). `break` is a statement only when it stands alone on its line, so it is not reserved. There is no `continue`, `class`, `null` or `import`.

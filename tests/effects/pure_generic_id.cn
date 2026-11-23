@@ -1,0 +1,8 @@
+# expect: E101
+fn id[T](x: T) -> T {
+  return x
+}
+
+fn sneaky() -> fn(String) -> Unit {
+  return id(print)
+}

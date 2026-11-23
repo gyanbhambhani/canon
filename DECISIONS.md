@@ -2,6 +2,57 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — Language v0.3: implementation
+Decision: v0.3 ships eight changes, each behind a switch in `packages/compiler/src/features.ts` (language: `wrap`, `break`, `destructure`, `symbols`, `sealedEffects`, `suggestions`) or in the CLI/runtime (`--fix`, `--no-capability-guard`, `--no-contract-fuzz`). With every switch off (`--v0.2`, or `features: V02`) the compiler is v0.2 byte for byte on the conformance corpus.
+Reason: the owner's brief requires each v0.3 feature to be ablatable, so a future experiment can attribute any effect to one change. docs/v0.3-proposal.md has the evidence and ranking for each change.
+
+Decision: the switches are a module-level setting scoped by `withFeatures` for the length of one `check`/`fmt`/`compileJs` call, not a parameter threaded through the parser, printer and checker.
+Reason: the compiler is synchronous, so the scope nests safely, and it keeps every internal signature (and the oracle-shaped front end) unchanged.
+
+Decision: `!` is a unary operator at precedence 7 (with `-` and `try`), not a respelling of v0.2's `not` at level 3. fmt therefore rewrites `not a == b` to `!(a == b)`.
+Reason: every language models know (TypeScript, Rust, C, Java) binds `!` tightly; keeping `not`'s loose binding under the `!` spelling would make `!a == b` mean something different from what a model expects.
+
+Decision: `||` at the start of an expression is still a lambda with no parameters; between operands it is "or".
+Reason: the lexer now reads `||` as one token, and zero-parameter lambdas (`|| 1`) are legal; Rust resolves the same ambiguity the same way.
+
+Decision: `break` is a contextual keyword: a statement only when it is alone on its line. It stays usable as a name.
+Reason: reserving it would break any v0.2 program that uses `break` as a name, and a bare name on its own line was already an error (P004), so the statement form is unambiguous.
+
+Decision: no `continue`.
+Reason: the v0.3 likelihood study (research/likelihood/REPORT-v0.3.md) found the guard form (`if !cond { ... }`) preferred over `continue` in every context by both models; adding `continue` would add a second way to skip an iteration.
+
+Decision: `for (a, b) in xs` takes two or more plain names (or `_`), not nested patterns.
+Reason: it covers `enumerate`, `zip` and map pairs, which is where the benchmark's `pair.0`/`pair.1` variants came from; nested patterns belong to `match`.
+
+Decision: line wrapping breaks only the outermost list, tuple (2+ items), record or call (not pipeline) bracket of a statement whose text has a line over 100 characters, one item per line with a trailing comma. Anything else stays L001.
+Reason: it is the form models already wrote in the benchmark's L001 drafts (validate_user), it depends only on the tree (so one text per program still holds), and a single rule is easy to state in the reference.
+
+Decision: in tests, only `fs` and `net` are declared; `io`, `time` and `rand` are not (declaring them is E102).
+Reason: the test host virtualizes time and rand and captures nothing real for io, so they are not side effects on the world; the likelihood study found an effects clause on a test 20 to 110 times less likely than none, so the common case keeps no clause, and only the real effects need one.
+
+Decision: `requires` and `ensures` must be pure (new code E103), under the `sealedEffects` switch.
+Reason: the red-team suite (tests/effects) found that a contract could call `now()` or any effectful function without any signature showing it; contracts are also skipped by `--no-contracts`, so an effect in one would depend on a flag.
+
+Decision: the runtime capability guard is on by default. `canon run` allows exactly main's declared effects; each test allows io, time, rand and its declared fs/net; contract fuzzing allows none.
+Reason: the checker already guarantees this, so the guard never fires on a checked program; it makes the "you can know what it can do before running it" claim hold even if the checker has a bug (tests/effects.test.ts forges a module to show it).
+
+Decision: `fix()` applies C001, E101, E102 and T009 patches, one at a time with a re-check after each, up to 32 rounds; never T004.
+Reason: those four patches only restate what the program already means (layout, the exact effect list, an explicit to_float). T004's patch inserts holes, which are questions for the agent.
+
+Decision: contract fuzzing tries 200 inputs per function from a mulberry32 generator seeded with 2026, biased to small values (Ints mostly in -50..50, strings of up to 6 characters from a small alphabet, lists up to 5 items). Inputs whose own `requires` fails at the top frame are discarded; every other trap, including R003 and R004, is a counterexample. Only pure, non-generic functions that declare a contract are fuzzed.
+Reason: a counterexample must be something the function's own contract admits; small values keep counterexamples readable; limiting fuzzing to functions with a contract means the author asked for the check.
+
+Decision: suggestions (T001 `data.suggestions`) cover to_string, to_float, to_int, `unwrap_or(e, ?)`, `Some(e)`, `Ok(e)` and `[e]`, and for `String + Int` the non-String side. They are not applied by `--fix`.
+Reason: those conversions are the ones the reference tells agents to use; each is a choice between meanings, not a mechanical fix.
+
+Decision: the conformance test checks the v0.2 rules with every switch off (exactly as before), and adds a v0.3 pass: with the defaults, a file whose oracle output uses `and`, `or` or `not` may differ from the oracle only on those lines (and v0.3 fmt must equal v0.3 fmt of the oracle's output); every other file must match the oracle byte for byte.
+Reason: the oracle stays the spec for everything v0.3 does not change, as in v0.2.
+
+Decision: `scripts/site-data/likelihood.ts` decides what "v0.2 adopted" with the v0.3 switches off.
+Reason: /research reports the v0.2 study; with the v0.3 defaults the formatter would also mark `&&` as adopted, which is true of v0.3, not v0.2.
+
+Tests changed because the language changed (not to make them pass): `tests/types/pass/comparisons.cn`, `tests/types/pass/equality_structural.cn`, `tests/types/fail/t001_and_operand.cn`, `tests/run/bools.cn` and `tests/run/rand_int.cn` were migrated with `canon fmt --write`, and the docs' code blocks with the same formatter (only blocks that were v0.2-canonical).
+
 ## 2026-11-22 — /research rewritten as a research post
 Decision: /research leads with the result (H1), then four findings, one chart, method, what we learned, what's next, data links and a collapsed appendix, using the owner's brief verbatim. Criteria codes, commit hashes and confidence intervals appear only in the appendix; a Playwright test enforces that on the rendered page.
 - The brief's REDESIGN.md is not in the repository, so its section 6 copy rules could not be checked; the page follows the design tokens in global.css and the redesign entry below.

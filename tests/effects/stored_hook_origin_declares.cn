@@ -1,0 +1,18 @@
+# expect: ok
+type Hook {
+  run: fn(String) -> Unit,
+}
+
+fn make_hook() -> Hook
+  effects: io
+{
+  return Hook { run: |s| print(s) }
+}
+
+fn main() -> Unit
+  effects: io
+{
+  let h = make_hook()
+  let run = h.run
+  run("hooks carry the effect of the function that built them")
+}

@@ -1,0 +1,6 @@
+# expect: E103
+fn f(n: Int) -> Int
+  ensures: random() < 2.0
+{
+  return n
+}

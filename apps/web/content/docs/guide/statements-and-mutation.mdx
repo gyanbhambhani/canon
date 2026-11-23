@@ -97,7 +97,9 @@ To choose between values rather than statements, use [match](/docs/guide/pattern
 
 ## for and while
 
-There are two loops. `for x in xs { }` walks a List. `while cond { }` repeats while the condition is true. There is no `break` or `continue`; return from inside a loop to stop early. (v0 wrote the condition loop as `for cond { }`; it still parses, and the formatter rewrites it to `while`.)
+There are two loops. `for x in xs { }` walks a List. `while cond { }` repeats while the condition is true. `break`, alone on its line, leaves the innermost loop; `return` leaves the function. There is no `continue`: put the rest of the body under an `if`. (v0 wrote the condition loop as `for cond { }`; it still parses, and the formatter rewrites it to `while`.)
+
+When the elements are tuples, the loop can name each slot: `for (i, x) in enumerate(xs) { }` or `for (k, v) in zip(ks, vs) { }`. The number of names must match the tuple (T001 otherwise). `break` outside a loop is T010.
 
 ```canon
 fn index_of(xs: List[String], want: String) -> Int {

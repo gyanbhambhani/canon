@@ -14,6 +14,12 @@ type Fn = (...args: any[]) => unknown;
 export interface RunOptions {
   /** requires/ensures are checked unless this is false (canon run --no-contracts). */
   contracts?: boolean;
+  /**
+   * v0.3 capability guard (on unless false; `--no-capability-guard`): the host performs only the
+   * effects the entry point declares (main's effects clause, or a test's fs/net plus the virtual
+   * io, time and rand). The checker already guarantees this; the guard enforces it at run time.
+   */
+  capabilityGuard?: boolean;
 }
 
 export class Runtime {
@@ -22,6 +28,10 @@ export class Runtime {
   types: TypeTable = {};
   readonly Early = Early;
   readonly eq = eq;
+
+  /** Effects the entry point may perform (null: no guard). */
+  allowed: Set<Effect> | null = null;
+  allowedBy = "";
 
   constructor(readonly host: Host, opts: RunOptions = {}) {
     this.contracts = opts.contracts !== false;
@@ -81,6 +91,9 @@ export class Runtime {
   }
 
   private effect(e: Effect, fn: string, line: number, col: number) {
+    if (this.allowed !== null && !this.allowed.has(e)) {
+      this.trap("R006", `effect ${e} denied (${fn}): ${this.allowedBy} does not declare it`, line, col);
+    }
     if (this.host.denied.has(e)) {
       const note = this.host.denyNote ? `; ${this.host.denyNote}` : "";
       this.trap("R006", `effect ${e} denied by the host (${fn})${note}`, line, col);
@@ -249,8 +262,13 @@ export interface CanonModule {
   /** Every user function, by Canon name (for embedding and test harnesses). */
   fns: Record<string, (...args: any[]) => unknown>;
   main?: () => unknown;
-  tests: [string, () => void][];
+  /** name, body, and (v0.3) the real effects the test declares */
+  tests: [string, () => void, string[]?][];
   types: TypeTable;
+  /** v0.3: main's declared effects (the capability guard's allow-list). */
+  mainEffects?: string[];
+  /** v0.3: pure functions with contracts, and their parameter types, for contract fuzzing. */
+  fuzz?: { name: string; params: [string, TD][] }[];
   /** Descriptor of main's return type, used to print an Err. */
   mainRet?: TD;
 }
@@ -281,6 +299,10 @@ function asTrap(e: unknown, rt: Runtime): TrapJson {
 export function runMain(js: string, host: Host, opts: RunOptions = {}): MainResult {
   const rt = new Runtime(host, opts);
   const mod = load(js, rt);
+  if (opts.capabilityGuard !== false && mod.mainEffects) {
+    rt.allowed = new Set(mod.mainEffects as Effect[]);
+    rt.allowedBy = "fn main";
+  }
   if (!mod.main) {
     return { status: 1, error: "no fn main() -> Unit in this file" };
   }
@@ -307,7 +329,11 @@ export function runTests(js: string, host: Host, opts: RunOptions = {}): TestOut
   const out: TestOutcome[] = [];
   const rt = new Runtime(host, opts);
   const mod = load(js, rt);
-  for (const [name, fn] of mod.tests) {
+  for (const [name, fn, effects] of mod.tests) {
+    if (opts.capabilityGuard !== false && effects) {
+      rt.allowed = new Set<Effect>(["io", "rand", "time", ...(effects as Effect[])]);
+      rt.allowedBy = `test ${JSON.stringify(name)}`;
+    }
     try {
       fn();
       out.push({ name, passed: true });

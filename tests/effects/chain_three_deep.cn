@@ -1,0 +1,10 @@
+# expect: E101
+fn c() -> Int
+  effects: time
+{
+  return now()
+}
+
+fn b() -> Int {
+  return c()
+}

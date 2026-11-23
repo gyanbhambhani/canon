@@ -8,6 +8,7 @@
  */
 import type * as A from "./ast.js";
 import { analyze, type CheckResult } from "./check.js";
+import { withFeatures, type CompileOptions } from "./features.js";
 import { prune, resolve, type Type, type TypeInfo } from "./types.js";
 
 type TD = string | { L: TD } | { M: [TD, TD] } | { T: TD[] } | { F: 1 } | { C: string; a: TD[] } | { P: number };
@@ -314,10 +315,12 @@ export function generate(prog: A.Program, info: TypeInfo): string {
         lines.push(`${ind}}`);
         return lines;
       }
+      case "Break":
+        return [`${ind}break;`];
       case "ForIn": {
         const it = ex(s.iterable);
         return withScope(() => {
-          const v = declare(s.var);
+          const v = s.names ? `[${s.names.map((n) => declare(n)).join(", ")}]` : declare(s.var);
           return [`${ind}for (const ${v} of ${it}) {`, ...stmts(s.body, ind + "  "), `${ind}}`];
         });
       }
@@ -379,7 +382,7 @@ export function generate(prog: A.Program, info: TypeInfo): string {
     if (it.k !== "Test") continue;
     withScope(() => {
       const body = stmts(it.body, "    ");
-      tests.push(`  [${JSON.stringify(JSON.parse(it.name))}, () => {\n    $rt.enter(${JSON.stringify(`test ${it.name}`)}, ${it.line}, ${it.col});\n    try {\n${body.map((l) => "  " + l).join("\n")}\n    } finally { $rt.leave(); }\n  }]`);
+      tests.push(`  [${JSON.stringify(JSON.parse(it.name))}, () => {\n    $rt.enter(${JSON.stringify(`test ${it.name}`)}, ${it.line}, ${it.col});\n    try {\n${body.map((l) => "  " + l).join("\n")}\n    } finally { $rt.leave(); }\n  }, ${JSON.stringify(it.effects)}]`);
     });
   }
 
@@ -392,8 +395,14 @@ export function generate(prog: A.Program, info: TypeInfo): string {
   }
   const main = info.userFns.get("main");
   const mainRet = main ? typeExprToTD(main.ret, main.tparams) : null;
+  const mainEffects = main ? main.node.effects : [];
+  // v0.3 contract fuzzing: every non-generic, pure function with a contract, and its parameter types
+  const fuzz = fnNames
+    .map((n) => info.userFns.get(n)!.node)
+    .filter((f) => f.tparams.length === 0 && f.effects.length === 0 && (f.requires !== null || f.ensures !== null) && f.params.length > 0)
+    .map((f) => ({ name: f.name, params: f.params.map(([pn, t]) => [pn, typeExprToTD(t, [])]) }));
   out.push(
-    `return {\n  fns: { ${fnNames.map((n) => `${JSON.stringify(n)}: f_${n}`).join(", ")} },\n  main: ${main ? "f_main" : "undefined"},\n  mainRet: ${JSON.stringify(mainRet)},\n  tests: [\n${tests.join(",\n")}\n  ],\n  types: ${JSON.stringify(table)},\n};`,
+    `return {\n  fns: { ${fnNames.map((n) => `${JSON.stringify(n)}: f_${n}`).join(", ")} },\n  main: ${main ? "f_main" : "undefined"},\n  mainRet: ${JSON.stringify(mainRet)},\n  mainEffects: ${JSON.stringify(mainEffects)},\n  fuzz: ${JSON.stringify(fuzz)},\n  tests: [\n${tests.join(",\n")}\n  ],\n  types: ${JSON.stringify(table)},\n};`,
   );
   return out.join("\n\n") + "\n";
 }
@@ -405,10 +414,10 @@ export interface CompileResult {
 }
 
 /** Check, then generate JavaScript. Code is generated only for programs with no errors. */
-export function compileJs(src: string, path = "main.cn"): CompileResult {
-  const a = analyze(src, path);
+export function compileJs(src: string, path = "main.cn", opts: CompileOptions = {}): CompileResult {
+  const a = analyze(src, path, opts);
   if (!a.result.ok || !a.prog || !a.info) return { check: a.result };
-  return { check: a.result, js: generate(a.prog, a.info) };
+  return { check: a.result, js: withFeatures(opts.features, () => generate(a.prog!, a.info!)) };
 }
 
 /** Wrap generated code as an ES2022 module that runs against @canon/runtime. */

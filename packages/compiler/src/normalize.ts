@@ -110,7 +110,7 @@ export function normalize(prog: A.Program): A.Program {
         body: normalizeStmts(it.body),
       };
     }
-    if (it.k === "Test") return { ...it, body: normalizeStmts(it.body) };
+    if (it.k === "Test") return { ...it, effects: [...new Set(it.effects)].sort(cmpStr), body: normalizeStmts(it.body) };
     return it;
   });
   // stable sort, like Python's sorted

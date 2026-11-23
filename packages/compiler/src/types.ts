@@ -5,6 +5,7 @@
  */
 import type * as A from "./ast.js";
 import { diag, type Diagnostic } from "./diagnostics.js";
+import { features } from "./features.js";
 import { parse } from "./parser.js";
 import { PRELUDE } from "./prelude.js";
 import { Printer } from "./printer.js";
@@ -243,6 +244,8 @@ export interface TypeResult {
   info: TypeInfo;
   /** Programs that a mechanical fix would produce, keyed by diagnostic. */
   fixes: Map<Diagnostic, A.Program>;
+  /** v0.3: ranked candidate fixes for judgment errors (not applied automatically). */
+  suggestions: Map<Diagnostic, { label: string; prog: A.Program }[]>;
 }
 
 // ---------------------------------------------------------------------------
@@ -261,6 +264,8 @@ interface FnCtx {
   isTest: boolean;
   scopes: Map<string, Binding>[];
   lambdaDepth: number;
+  /** v0.3: how many loops enclose the current statement (break needs one). */
+  loopDepth: number;
   holes: { node: A.Hole; type: Type }[];
 }
 
@@ -306,6 +311,7 @@ export function checkTypes(prog: A.Program): TypeResult {
   const pre = prelude();
   const diags: Diagnostic[] = [];
   const fixes = new Map<Diagnostic, A.Program>();
+  const suggestions = new Map<Diagnostic, { label: string; prog: A.Program }[]>();
   const types = new Map<string, TypeDecl>(pre.types);
   const ctors = new Map<string, CtorInfo>(pre.ctors);
   const records = new Map<string, RecordDecl>();
@@ -461,14 +467,49 @@ export function checkTypes(prog: A.Program): TypeResult {
     }
   };
 
-  const mismatch = (pos: A.Pos, want: Type, got: Type, what = "") =>
-    err("T001", `type mismatch${what ? ` in ${what}` : ""}: expected ${show(want)}, found ${show(got)}`, pos);
+  const mismatch = (pos: A.Pos, want: Type, got: Type, what = "", node?: A.Expr, fixTarget?: [A.Expr, Type, Type]) => {
+    const d = err("T001", `type mismatch${what ? ` in ${what}` : ""}: expected ${show(want)}, found ${show(got)}`, pos);
+    const [n, w, g] = fixTarget ?? [node, want, got];
+    if (n && features().suggestions) {
+      const cands = suggest(w, g, n);
+      if (cands.length) suggestions.set(d, cands.map((c) => ({ label: tyPrinter.ex(c, 0), prog: replaceNode(prog, n, c) })));
+    }
+    return d;
+  };
+
+  /**
+   * v0.3: candidate rewrites of an expression whose type is wrong, most likely first. Each is
+   * a conversion an agent would otherwise have to look up; none is applied automatically.
+   */
+  const suggest = (wantT: Type, gotT: Type, node: A.Expr): A.Expr[] => {
+    const want = prune(wantT);
+    const got = prune(gotT);
+    const call = (name: string, ...args: A.Expr[]): A.Expr => ({
+      k: "Call", callee: { k: "Name", path: [name], line: 0, col: 0 }, args, line: 0, col: 0,
+    });
+    const ctor = (name: string, arg: A.Expr): A.Expr => ({
+      k: "Call", callee: { k: "Ctor", name, line: 0, col: 0 }, args: [arg], line: 0, col: 0,
+    });
+    const hole: A.Hole = { k: "Hole", name: "", line: 0, col: 0 };
+    const is = (t: Type, name: string) => t.t === "con" && t.name === name;
+    const out: A.Expr[] = [];
+    if (is(want, "String") && (is(got, "Int") || is(got, "Float") || is(got, "Bool"))) out.push(call("to_string", node));
+    if (is(want, "Float") && is(got, "Int")) out.push(call("to_float", node));
+    if (is(want, "Int") && is(got, "Float")) out.push(call("to_int", node));
+    if (got.t === "con" && got.name === "Option" && show(got.args[0]) === show(want)) out.push(call("unwrap_or", node, hole));
+    if (want.t === "con" && want.name === "Option" && !is(got, "Option") && show(want.args[0]) === show(got)) out.push(ctor("Some", node));
+    if (want.t === "con" && want.name === "Result" && !is(got, "Result") && show(want.args[0]) === show(got)) out.push(ctor("Ok", node));
+    if (want.t === "con" && want.name === "List" && !is(got, "List") && show(want.args[0]) === show(got)) {
+      out.push({ k: "ListLit", items: [node], line: 0, col: 0 });
+    }
+    return out;
+  };
 
   /** Unify `got` into `want`, reporting T001 at pos on failure. */
-  const expectType = (pos: A.Pos, want: Type | null, got: Type, what = ""): Type => {
+  const expectType = (pos: A.Pos, want: Type | null, got: Type, what = "", node?: A.Expr): Type => {
     if (want === null) return got;
     if (!unify(want, got)) {
-      mismatch(pos, want, got, what);
+      mismatch(pos, want, got, what, node);
       return want;
     }
     return want;
@@ -533,14 +574,14 @@ export function checkTypes(prog: A.Program): TypeResult {
     switch (e.k) {
       case "Int":
         if (BigInt(e.value) > MAX_SAFE) err("T001", `integer literal ${e.value} is outside the 53-bit safe range`, e);
-        return expectType(pos, expected, INT, what);
+        return expectType(pos, expected, INT, what, e);
       case "Float":
-        return expectType(pos, expected, FLOAT, what);
+        return expectType(pos, expected, FLOAT, what, e);
       case "Str":
         checkEscapes(e);
-        return expectType(pos, expected, STRING, what);
+        return expectType(pos, expected, STRING, what, e);
       case "Bool":
-        return expectType(pos, expected, BOOL, what);
+        return expectType(pos, expected, BOOL, what, e);
       case "Hole": {
         const t = expected ?? fresh();
         ctx.holes.push({ node: e, type: t });
@@ -555,13 +596,13 @@ export function checkTypes(prog: A.Program): TypeResult {
         const b = lookup(name);
         if (b) {
           info.names.set(e, "local");
-          return expectType(pos, expected, b.type, what);
+          return expectType(pos, expected, b.type, what, e);
         }
         const sig = userFns.get(name) ?? pre.fns.get(name);
         if (sig) {
           info.names.set(e, sig.builtin ? "builtin" : "user");
           const inst = instantiateSig(sig);
-          return expectType(pos, expected, { t: "fn", params: inst.params, ret: inst.ret }, what);
+          return expectType(pos, expected, { t: "fn", params: inst.params, ret: inst.ret }, what, e);
         }
         err("T002", `unknown name ${name}`, e);
         return expected ?? fresh();
@@ -576,10 +617,10 @@ export function checkTypes(prog: A.Program): TypeResult {
           err("T003", `variant ${e.name} takes ${c.fields.length} argument${c.fields.length === 1 ? "" : "s"}, got 0`, e);
           return expected ?? fresh();
         }
-        return expectType(pos, expected, instantiateCtor(c).result, what);
+        return expectType(pos, expected, instantiateCtor(c).result, what, e);
       }
       case "Call":
-        return expectType(pos, expected, call(e, expected), what);
+        return expectType(pos, expected, call(e, expected), what, e);
       case "FieldGet": {
         const objT = prune(expr(e.obj, null));
         if (objT.t === "tuple") {
@@ -588,7 +629,7 @@ export function checkTypes(prog: A.Program): TypeResult {
             err("T008", `tuple ${show(objT)} has no slot ${e.name}`, e);
             return expected ?? fresh();
           }
-          return expectType(pos, expected, objT.items[i], what);
+          return expectType(pos, expected, objT.items[i], what, e);
         }
         if (objT.t === "var") {
           err("T001", `cannot infer the type before .${e.name}; it is used before its type is known`, e);
@@ -600,22 +641,22 @@ export function checkTypes(prog: A.Program): TypeResult {
           err("T008", `type ${show(objT)} has no field ${e.name}`, e);
           return expected ?? fresh();
         }
-        return expectType(pos, expected, ft, what);
+        return expectType(pos, expected, ft, what, e);
       }
       case "Unary": {
         if (e.op === "not") {
           expr(e.operand, BOOL, "not");
-          return expectType(pos, expected, BOOL, what);
+          return expectType(pos, expected, BOOL, what, e);
         }
         const t = expr(e.operand, null);
         if (!numericOrVar(t)) {
           err("T001", `unary - needs Int or Float, found ${show(t)}`, e);
           return expected ?? fresh();
         }
-        return expectType(pos, expected, t, what);
+        return expectType(pos, expected, t, what, e);
       }
       case "Binary":
-        return expectType(pos, expected, binary(e), what);
+        return expectType(pos, expected, binary(e), what, e);
       case "Try": {
         if (ctx.lambdaDepth > 0) {
           err("T007", "try cannot be used inside a lambda; bind the Result with let first", e);
@@ -638,7 +679,7 @@ export function checkTypes(prog: A.Program): TypeResult {
         if (!unify(errT, r.args[1])) {
           err("T007", `try returns error type ${show(errT)} early, but ${ctx.label} returns ${show(r)}`, e);
         }
-        return expectType(pos, expected, val, what);
+        return expectType(pos, expected, val, what, e);
       }
       case "Lambda": {
         const exp = expected ? prune(expected) : null;
@@ -671,12 +712,12 @@ export function checkTypes(prog: A.Program): TypeResult {
         });
         ctx.lambdaDepth--;
         const fnT: Type = { t: "fn", params: unpackTuple ? [{ t: "tuple", items: unpackTuple }] : params, ret };
-        if (exp && exp.t !== "fn") return expectType(pos, expected, fnT, what);
+        if (exp && exp.t !== "fn") return expectType(pos, expected, fnT, what, e);
         return exp && exp.t === "fn" ? exp : fnT;
       }
       case "ListLit": {
         const elem = fresh();
-        if (expected) expectType(pos, expected, con("List", [elem]), what);
+        if (expected) expectType(pos, expected, con("List", [elem]), what, e);
         e.items.forEach((x) => expr(x, elem, "list item"));
         return expected ?? con("List", [elem]);
       }
@@ -684,7 +725,7 @@ export function checkTypes(prog: A.Program): TypeResult {
         const exp = expected ? prune(expected) : null;
         const items = e.items.map((x, i) =>
           expr(x, exp && exp.t === "tuple" && exp.items.length === e.items.length ? exp.items[i] : null));
-        return expectType(pos, expected, { t: "tuple", items }, what);
+        return expectType(pos, expected, { t: "tuple", items }, what, e);
       }
       case "Record": {
         const r = records.get(e.tname);
@@ -709,7 +750,7 @@ export function checkTypes(prog: A.Program): TypeResult {
         }
         const missing = r.fields.map(([n]) => n).filter((n) => !seen.has(n));
         if (missing.length) err("T001", `${r.name} literal is missing field${missing.length === 1 ? "" : "s"} ${missing.join(", ")}`, e);
-        return expectType(pos, expected, inst.result, what);
+        return expectType(pos, expected, inst.result, what, e);
       }
       case "Match":
         return match(e, expected);
@@ -820,7 +861,11 @@ export function checkTypes(prog: A.Program): TypeResult {
       }
     }
     if (!unify(l, r)) {
-      mismatch(exprPos(e), l, r, `operands of ${op}`);
+      // "n = " + n: the likely fix converts the non-String side with to_string
+      const strL = isPrim(lp, "String");
+      const target: [A.Expr, Type, Type] | undefined =
+        op === "+" && strL !== isPrim(rp, "String") ? (strL ? [e.right, STRING, rp] : [e.left, STRING, lp]) : undefined;
+      mismatch(exprPos(e), l, r, `operands of ${op}`, undefined, target);
       return arith ? fresh() : BOOL;
     }
     return arith ? l : BOOL;
@@ -987,6 +1032,9 @@ export function checkTypes(prog: A.Program): TypeResult {
     switch (s.k) {
       case "Comment":
         return;
+      case "Break":
+        if (ctx.loopDepth === 0) err("T010", "break is only allowed inside a for or while loop", s);
+        return;
       case "Let":
         bind(s.name, expr(s.value, null), s.mutable);
         return;
@@ -1032,14 +1080,28 @@ export function checkTypes(prog: A.Program): TypeResult {
           err("T001", `for ... in needs a List, found ${show(it)}`, s);
         }
         withScope(() => {
-          bind(s.var, elem);
+          if (s.names) {
+            // v0.3: `for (a, b) in xs` needs List[(A, B)] with exactly that many slots
+            const slots = s.names.map(() => fresh());
+            const r = prune(elem);
+            if (!unify(elem, { t: "tuple", items: slots })) {
+              err("T001", `for (${s.names.join(", ")}) needs a list of ${s.names.length}-tuples, found ${show(con("List", [r]))}`, s);
+            }
+            s.names.forEach((n, i) => bind(n, slots[i]));
+          } else {
+            bind(s.var, elem);
+          }
+          ctx.loopDepth++;
           s.body.forEach(stmt);
+          ctx.loopDepth--;
         });
         return;
       }
       case "ForWhile":
         expr(s.cond, BOOL, "loop condition");
+        ctx.loopDepth++;
         block(s.body);
+        ctx.loopDepth--;
         return;
       case "ExprStmt":
         expr(s.expr, null);
@@ -1073,7 +1135,7 @@ export function checkTypes(prog: A.Program): TypeResult {
       const scope = new Map(it.tparams.map((p) => [p, { t: "rigid", name: p } as Type]));
       const params = it.params.map(([, t]) => toType(t, scope));
       const ret = toType(it.ret, scope);
-      ctx = { label: `fn ${it.name}`, fnName: it.name, ret, isTest: false, scopes: [new Map()], lambdaDepth: 0, holes: [] };
+      ctx = { label: `fn ${it.name}`, fnName: it.name, ret, isTest: false, scopes: [new Map()], lambdaDepth: 0, loopDepth: 0, holes: [] };
       const seen = new Set<string>();
       it.params.forEach(([n], i) => {
         if (seen.has(n)) err("T001", `parameter ${n} is declared twice`, it);
@@ -1093,11 +1155,11 @@ export function checkTypes(prog: A.Program): TypeResult {
       }
       holeDiags(ctx);
     } else if (it.k === "Test") {
-      ctx = { label: `test ${it.name}`, fnName: null, ret: UNIT, isTest: true, scopes: [new Map()], lambdaDepth: 0, holes: [] };
+      ctx = { label: `test ${it.name}`, fnName: null, ret: UNIT, isTest: true, scopes: [new Map()], lambdaDepth: 0, loopDepth: 0, holes: [] };
       block(it.body);
       holeDiags(ctx);
     }
   }
 
-  return { diagnostics: diags, info, fixes };
+  return { diagnostics: diags, info, fixes, suggestions };
 }

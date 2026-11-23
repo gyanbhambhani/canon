@@ -1,0 +1,5 @@
+# expect: E101
+fn quiet(s: String) -> Unit {
+  let p = print
+  p(s)
+}

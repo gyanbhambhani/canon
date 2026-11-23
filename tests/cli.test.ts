@@ -206,3 +206,61 @@ describe("canon test, several files", () => {
     expect(j).toMatchObject({ ok: true, passed: 1, failed: 0, stdout: "from a test\n" });
   });
 });
+
+describe("v0.3 flags", () => {
+  it("check --fix applies mechanical patches and reports only judgment errors", () => {
+    const f = tmp("fixme.cn", "fn greet(name: String) -> Unit {\n  print(name)\n}\n\nfn bad(n: Int) -> String {\n  return n\n}\n");
+    const r = canon(["check", f, "--fix"]);
+    expect(r.code).toBe(1);
+    expect(r.out).toContain("applied E101 (not written; add --write)");
+    expect(r.out).toContain("T001");
+    expect(r.out).not.toContain("E101:");
+    const j = JSON.parse(canon(["check", f, "--fix", "--json"]).out);
+    expect(j.applied).toEqual(["E101"]);
+    expect(j.diagnostics.map((d: { code: string }) => d.code)).toEqual(["T001"]);
+    expect(j.diagnostics[0].data.suggestions[0].label).toBe("to_string(n)");
+    expect(canon(["check", f, "--fix", "--write"]).code).toBe(1);
+    expect(readFileSync(f, "utf8")).toContain("  effects: io\n");
+  });
+
+  it("check --fix exits 0 when every problem was mechanical", () => {
+    const f = tmp("ok.cn", "fn half(n: Int) -> Float {\n  return n * 0.5\n}\n");
+    expect(canon(["check", f, "--fix", "--write"]).code).toBe(0);
+    expect(canon(["check", f]).code).toBe(0);
+  });
+
+  it("--write on check needs --fix", () => {
+    expect(canon(["check", "examples/hello.cn", "--write"]).code).toBe(2);
+  });
+
+  it("every language switch is accepted, and --v0.2 restores v0.2 formatting", () => {
+    const f = tmp("words.cn", "fn f(a: Bool, b: Bool) -> Bool {\n  return a and not b\n}\n");
+    expect(canon(["fmt", f]).out).toContain("return a && !b");
+    expect(canon(["fmt", f, "--no-symbols"]).out).toContain("return a and not b");
+    expect(canon(["check", f, "--v0.2"]).code).toBe(0);
+    for (const flag of ["--no-wrap", "--no-break", "--no-destructure", "--no-symbols", "--no-sealed-effects", "--no-suggestions"]) {
+      expect(canon(["check", "examples/hello.cn", flag]).code, flag).toBe(0);
+    }
+  });
+
+  it("canon test fuzzes contracts, and --no-contract-fuzz turns it off", () => {
+    const f = tmp("fz.cn", "fn abs_diff(a: Int, b: Int) -> Int\n  ensures: result >= 0\n{\n  return a - b\n}\n");
+    const r = canon(["test", f]);
+    expect(r.code).toBe(1);
+    expect(r.out).toMatch(/FAIL fuzz abs_diff: a = -?\d+, b = -?\d+/);
+    expect(r.out).toContain('"code":"R002"');
+    expect(canon(["test", f, "--no-contract-fuzz"])).toMatchObject({ code: 0, out: "0 passed, 0 failed\n" });
+  });
+
+  it("a test that uses fs must declare it; the runtime guard enforces the declaration", () => {
+    const f = tmp("fs.cn", 'test "writes"\n  effects: fs\n{\n  let r = write_file("/dev/null", "x")\n  assert(r == r)\n}\n');
+    expect(canon(["test", f]).code).toBe(0);
+    const undeclared = tmp("fs2.cn", 'test "writes" {\n  let r = write_file("/dev/null", "x")\n  assert(r == r)\n}\n');
+    expect(canon(["test", undeclared]).err).toContain("E101");
+    expect(canon(["test", undeclared, "--no-sealed-effects"]).code).toBe(0);
+  });
+
+  it("run accepts --no-capability-guard", () => {
+    expect(canon(["run", "examples/hello.cn", "--no-capability-guard"])).toEqual({ code: 0, out: "hello, canon\n", err: "" });
+  });
+});

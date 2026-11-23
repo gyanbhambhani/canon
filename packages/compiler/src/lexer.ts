@@ -18,8 +18,9 @@ export const KEYWORDS = new Set([
   "while",
 ]);
 
-const OPS = ["|>", "->", "=>", "==", "!=", "<=", ">=", "+", "-", "*", "/", "%", "<",
-  ">", "=", "(", ")", "[", "]", "{", "}", ",", ":", ".", "|"];
+// v0.3 adds `&&`, `||` and `!` (the parser decides what they mean; see features.ts)
+const OPS = ["|>", "||", "&&", "->", "=>", "==", "!=", "<=", ">=", "+", "-", "*", "/", "%", "<",
+  ">", "=", "(", ")", "[", "]", "{", "}", ",", ":", ".", "|", "!"];
 
 const isDigit = (c: string) => c >= "0" && c <= "9";
 const isNameStart = (c: string) => (c >= "a" && c <= "z") || (c >= "A" && c <= "Z") || c === "_";

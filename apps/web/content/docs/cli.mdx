@@ -9,17 +9,26 @@ This page lists every `canon` command, flag and exit code. Install the command w
 canon 0.1.1: a programming language for AI agents
 
 usage:
-  canon check FILE...            check files; print diagnostics (with patches)
+  canon check FILE... [--fix [--write]]
+                                 check files; print diagnostics (with patches)
   canon fmt FILE... [--write]    print the canonical form, or rewrite files in place
   canon run FILE [--deny EFFECTS] [--no-contracts]
                                  check, then run fn main()
-  canon test FILE...             run the test blocks (deterministic time and rand)
+  canon test FILE...             run the test blocks (deterministic time and rand),
+                                 then fuzz every pure function that has a contract
 
 options:
   --json                         machine-readable output (every command)
+  --fix                          apply every mechanical patch (C001, E101, E102, T009) until
+                                 none is left; report only what needs judgment (check)
+  --write                        with fmt or check --fix: rewrite the files
   --deny fs,net                  make calls to those effects trap with R006 (run)
   --no-contracts                 skip requires/ensures checks (run)
   --help, --version
+
+v0.3 switches (each turns one v0.3 change off, for experiments; --v0.2 turns all off):
+  --no-wrap --no-break --no-destructure --no-symbols --no-sealed-effects --no-suggestions
+  --no-capability-guard (run, test)    --no-contract-fuzz (test)
 
 exit codes: 0 success, 1 diagnostics / failed tests / traps, 2 usage error
 ```
@@ -39,6 +48,7 @@ A usage error prints `canon: ` and the problem on stderr, then the usage text. I
 ```bash
 canon check FILE...
 canon check --json FILE...
+canon check --fix [--write] FILE...
 ```
 
 Runs every check: layout (C001), line length, naming, declared side effects, modules, types and holes (`?` placeholders). Exits 1 if any file has a diagnostic.
@@ -48,6 +58,16 @@ Text output prints one line per diagnostic as `path:line:col: severity CODE: mes
 A clean file prints `hi.cn: ok`. For H001, the candidates follow the message, one per line under `candidates:`.
 
 `--json` prints `{ ok, canonical, diagnostics }` for one file, where `canonical` says whether the file already has the formatter's one standard layout. Given several files, it prints an array of such objects, each with a `path` field. [Errors and fixes](/docs/diagnostics) describes the fields. Patch paths are `a/` and `b/` plus the path as given, so `patch -p1` applies them from the same directory.
+
+### --fix
+
+`canon check --fix` is the self-healing loop. It applies every mechanical patch (C001 layout, E101 and E102 effect lists, T009 Int and Float mixing), one at a time, re-checking after each, until none is left, and then reports only what needs judgment: type errors, holes, names, parse errors. A T004 patch is never applied, because it inserts holes, which are questions for you. Text output starts with `path: applied C001, E101` and then lists the remaining diagnostics. `--write` saves the fixed file; without it nothing is written. With `--json` the result adds `applied` (the codes, in order) and `source` (the fixed text). The exit code is 0 when nothing but mechanical problems was found.
+
+A T001 type mismatch may carry ranked candidate fixes in `data.suggestions`, each `{ label, diff }`, such as `to_string(n)`, `unwrap_or(first(xs), ?)` or `Some(n)`. They are never applied automatically; pick one and apply its diff.
+
+### v0.3 switches
+
+Each v0.3 change has a switch so that an experiment can turn it off and measure what it did. Every command accepts the language switches `--no-wrap` (no line breaking by the formatter), `--no-break`, `--no-destructure`, `--no-symbols` (print `and`, `or`, `not`), `--no-sealed-effects` (tests and contracts are not effect-checked) and `--no-suggestions`; `--v0.2` turns all of them off. `run` and `test` accept `--no-capability-guard`, and `test` accepts `--no-contract-fuzz`.
 
 ## canon fmt
 
@@ -89,6 +109,10 @@ Checks the file, compiles it to JavaScript, and calls `fn main()`. `run` takes e
 
 A comma-separated list of side effects. Any call to a built-in with a denied effect stops the program with a trap (R006). `--deny net,fs` and `--deny=net,fs` both work. An unknown name is a usage error (exit 2).
 
+### --no-capability-guard
+
+By default a program may perform only the side effects `main` declares: any other effect stops it with R006, naming `fn main`. The checker already guarantees this, so the guard only matters if the checker is wrong; it is the run-time half of "you can see what a program can do from its signature". This flag turns it off.
+
 ### --no-contracts
 
 Skips every `requires` and `ensures` check, so R001 and R002 cannot occur.
@@ -126,9 +150,18 @@ PASS clock
 
 Exit 1 if any test failed. A file with diagnostics prints them on stderr and exits 1 without running tests.
 
-Under `canon test`, the clock starts at 0 ms and advances only through `sleep`, and `random` and `random_int` use a fixed seed, so every run is reproducible. `print`, files and the network are real.
+After the tests, `canon test` fuzzes contracts: every pure, non-generic function with a `requires` or `ensures` clause is called on 200 inputs generated from its parameter types (seeded, so every run is the same). Inputs that fail its `requires` are skipped; any other trap is a failure that shows the input:
 
-`--json` prints `{ ok, passed, failed, tests }`, where each test is `{ file, name, passed }` plus `trap` when it failed.
+```text
+FAIL fuzz abs_diff: a = -19, b = 12
+  {"code":"R002","message":"ensures failed in fn abs_diff","line":2,"col":12,"stack":[{"fn":"abs_diff","line":2,"col":12}]}
+```
+
+A function with a parameter that cannot be generated (a function type) prints `SKIP fuzz name (...)`. `--no-contract-fuzz` turns fuzzing off.
+
+Under `canon test`, the clock starts at 0 ms and advances only through `sleep`, and `random` and `random_int` use a fixed seed, so every run is reproducible. `print`, files and the network are real, and a test may use files and the network only if it declares them (`effects: fs` on the line after its name).
+
+`--json` prints `{ ok, passed, failed, tests }`, where each test is `{ file, name, passed }` plus `trap` when it failed; fuzz results add `runs`, `discarded` and, on failure, `counterexample: { args, trap }`.
 
 ## --help and --version
 

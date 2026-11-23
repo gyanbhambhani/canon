@@ -9,12 +9,12 @@ This page covers expressions: operator precedence, arithmetic, strings, comparis
 test "precedence" {
   assert(1 + 2 * 3 == 7)
   assert((1 + 2) * 3 == 9)
-  assert(not 1 > 2)
-  assert(false and 1 / 0 == 0 or true)
+  assert(!(1 > 2))
+  assert(false && 1 / 0 == 0 || true)
 }
 ```
 
-The last line shows that `and` and `or` short-circuit: `1 / 0` is never evaluated.
+The last line shows that `&&` and `||` short-circuit: `1 / 0` is never evaluated.
 
 ## Precedence
 
@@ -23,21 +23,21 @@ Loosest first. Operators on the same level associate to the left, except compari
 | Level | Operators |
 |---|---|
 | 0 | `\|>` pipeline, lambdas `\|a, b\| expr` |
-| 1 | `or` |
-| 2 | `and` |
-| 3 | `not` |
+| 1 | `||` |
+| 2 | `&&` |
+| 3 | (v0.2's `not` sat here; `!` is now unary, level 7) |
 | 4 | `== != < <= > >=` (never chained) |
 | 5 | `+ -` |
 | 6 | `* / %` |
-| 7 | unary `-`, `try` |
+| 7 | unary `-`, `!`, `try` |
 | 8 | calls `f(x)`, fields `a.b`, tuple slots `t.0` |
 
-Parentheses the precedence already implies are redundant, and the formatter removes them: `((a + 1)) > (2)` becomes `a + 1 > 2`. Because `not` binds looser than comparison, `not a > b` means `not (a > b)` and is written without the parentheses.
+Parentheses the precedence already implies are redundant, and the formatter removes them: `((a + 1)) > (2)` becomes `a + 1 > 2`. `!` binds as tightly as unary minus, as in TypeScript and Rust, so `!a == b` means `(!a) == b`, and negating a comparison needs parentheses: `!(a > b)`. (v0.2's `not` bound looser than comparison; the formatter rewrites `not a > b` to `!(a > b)`, which means the same.)
 
 
 ## Comparisons do not chain
 
-`1 < a < 3` is a parse error (P001). Join two comparisons with `and`.
+`1 < a < 3` is a parse error (P001). Join two comparisons with `&&`.
 
 ```canon
 # expect: P001
@@ -48,7 +48,7 @@ fn between(a: Int) -> Bool {
 
 ```canon
 fn between(a: Int) -> Bool {
-  return 1 < a and a < 3
+  return 1 < a && a < 3
 }
 ```
 

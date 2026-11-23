@@ -46,7 +46,7 @@ Three optional clauses sit between the signature and the body, each on its own l
 
 ```canon
 fn withdraw(balance: Int, amount: Int) -> Int
-  requires: amount > 0 and amount <= balance
+  requires: amount > 0 && amount <= balance
   ensures: result >= 0
 {
   return balance - amount
@@ -57,7 +57,7 @@ test "withdraw" {
 }
 ```
 
-The formatter puts clauses in that order, sorts effect names, and merges two `requires` (or two `ensures`) lines into one joined with `and`.
+The formatter puts clauses in that order, sorts effect names, and merges two `requires` (or two `ensures`) lines into one joined with `&&`.
 
 ## Effects
 
@@ -149,7 +149,7 @@ Running it prints the trap as one JSON line and exits with status 1:
 ```canon
 fn parse_port(s: String) -> Result[Int, Error] {
   let n = unwrap_or(parse_int(s), -1)
-  if n < 1 or n > 65535 {
+  if n < 1 || n > 65535 {
     return Err(Error { message: "bad port: " + s })
   }
   return Ok(n)

@@ -1,13 +1,13 @@
 /** Compile and run Canon source in-process against a memory host (wrapped in the test host). */
-import { compileJs } from "@canon/compiler";
+import { compileJs, type CompileOptions } from "@canon/compiler";
 import { MemoryHost, runMain, runTests, testHost, type Host, type MainResult, type RunOptions, type TestOutcome } from "@canon/runtime";
 
 export interface RunOutput extends MainResult {
   stdout: string;
 }
 
-export function compileOrThrow(src: string): string {
-  const c = compileJs(src, "main.cn");
+export function compileOrThrow(src: string, opts: CompileOptions = {}): string {
+  const c = compileJs(src, "main.cn", opts);
   if (!c.js) throw new Error(`does not check:\n${JSON.stringify(c.check.diagnostics, null, 2)}`);
   return c.js;
 }

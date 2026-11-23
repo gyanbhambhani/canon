@@ -1,0 +1,10 @@
+# expect: ok
+fn apply(f: fn(String) -> Unit, s: String) -> Unit {
+  f(s)
+}
+
+fn main() -> Unit
+  effects: io
+{
+  apply(print, "the caller that supplies print declares io")
+}

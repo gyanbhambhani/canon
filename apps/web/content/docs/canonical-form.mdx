@@ -45,7 +45,7 @@ The parser is loose, so every spacing and layout of a program parses to the same
 | Numbers print one way | `007`, `1.50`, `1e3` | `7`, `1.5`, `1000.0` |
 | `use` lines move to the top, sorted, without duplicates | | |
 | Effect names sorted, without duplicates | `effects: time, io, io` | `effects: io, time` |
-| Clauses in the order `effects`, `requires`, `ensures`; two `requires` (or `ensures`) lines merge with `and` | | |
+| Clauses in the order `effects`, `requires`, `ensures`; two `requires` (or `ensures`) lines merge with `&&` | | |
 | Three or more chained calls form a pipeline, one stage per line; fewer are nested calls | | see [Pipelines](/docs/guide/pipelines) |
 | An end-of-line comment moves to its own line below; a comment above a top-level item stays attached | `let m = n * 2 # cheap` | comment on the next line |
 | Arguments inside a call's parentheses join onto one line | `max(a,` newline `0)` | `max(a, 0)` |
@@ -67,7 +67,7 @@ fn take_some(xs: List[Int], n: Int) -> List[Int]
 
 ```canon
 fn take_some(xs: List[Int], n: Int) -> List[Int]
-  requires: n >= 0 and n <= 100
+  requires: n >= 0 && n <= 100
   ensures: len(result) <= n
 {
   return take(xs, n)
@@ -89,7 +89,7 @@ fn f(a: Int) -> Int {
 
 ## Line length
 
-A line is at most 100 characters. The formatter does not break long lines; it reports L001. Bind a subexpression with `let`.
+A line is at most 100 characters. When a statement is longer, the formatter breaks its outermost brackets (a list, a tuple, a record literal or a call's arguments) one item per line, each with a trailing comma; the rule depends only on the program, so there is still one text. A line it cannot break this way (a long condition, say) is L001: bind a subexpression with `let`. `canon fmt --no-wrap` turns the breaking off (v0.2 behaviour).
 
 ```canon
 # expect: L001
@@ -107,7 +107,7 @@ fn f() -> String {
 
 ## Old v0 spellings
 
-v0.2 changed three spellings. The formatter rewrites the old forms, so an old file fails only with C001, and its patch migrates it: `set x = e` becomes `x = e`, `for cond { }` becomes `while cond { }`, and `concat(a, b, c)` becomes `a + b + c`.
+v0.2 changed three spellings and v0.3 one more. The formatter rewrites the old forms, so an old file fails only with C001, and its patch migrates it: `set x = e` becomes `x = e`, `for cond { }` becomes `while cond { }`, `concat(a, b, c)` becomes `a + b + c`, and (v0.3) `a and not b or c` becomes `a && !b || c`. `!` binds like unary minus, so `not a == b` becomes `!(a == b)`. A v0.2 test block that reads files or calls the network also needs an `effects:` line; `canon check --fix --write` adds it.
 
 ```canon
 # expect: C001

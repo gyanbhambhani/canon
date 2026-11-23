@@ -11,6 +11,12 @@ patch -p1 < fix.diff         # apply each fix the compiler ships
 canon check --json app.cn    # repeat until "ok": true
 ```
 
+Since v0.3 the compiler can apply the mechanical fixes itself, so the agent only sees what needs its judgment:
+
+```bash
+canon check --fix --write --json app.cn    # layout, effect lists, Int/Float: fixed and saved
+```
+
 ## 1. Give the agent the reference
 
 The whole language fits on one page, small enough to fit in a single prompt. It is the [Agent reference](/docs/for-agents), served as plain text at:
@@ -32,14 +38,16 @@ This project is written in Canon (.cn files). Before writing Canon, read the
 language reference at https://canon-lake.vercel.app/llms.txt.
 
 After every change to a .cn file:
-1. Run `canon check --json FILE`.
-2. For each diagnostic with a `fix`, apply `fix.diff` exactly as given
+1. Run `canon check --fix --write --json FILE`. It applies every mechanical
+   fix itself and reports only the problems that need you.
+2. For each remaining diagnostic with a `fix`, apply `fix.diff` exactly as given
    (it is a unified diff; `patch -p1` applies it from the project root).
    Do not rewrite the code by hand when a fix is given.
 3. For H001 (a hole), replace the `?` with a value of type `data.expected`,
    often a call to one of `data.candidates`.
-4. For any other code, change the code as the message says.
-5. Run `canon check --json FILE` again. Repeat until it prints "ok": true.
+4. For T001 with `data.suggestions`, apply the candidate `diff` that matches
+   what you meant. For any other code, change the code as the message says.
+5. Run step 1 again. Repeat until it prints "ok": true.
 
 Then run `canon test FILE`. Never edit a test to make it pass.
 ```

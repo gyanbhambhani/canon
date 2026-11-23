@@ -1,0 +1,6 @@
+# expect: E101
+test "writes through a function value" {
+  let w = write_file
+  let r = w("out.txt", "x")
+  assert(r == r)
+}

@@ -1,0 +1,6 @@
+# expect: E103
+fn f(n: Int) -> Int
+  requires: now() >= n
+{
+  return n
+}

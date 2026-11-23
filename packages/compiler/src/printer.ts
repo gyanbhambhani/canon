@@ -1,6 +1,7 @@
 /** Canonical printer. With a noise source it emits equivalent non-canonical variants (tests). */
 import type * as A from "./ast.js";
-import { pyFloatRepr } from "./py.js";
+import { features } from "./features.js";
+import { pyFloatRepr, pyLen } from "./py.js";
 
 export const PREC: Record<string, number> = {
   pipe: 0, or: 1, and: 2, not: 3, "==": 4, "!=": 4, "<": 4, "<=": 4, ">": 4, ">=": 4,
@@ -31,6 +32,12 @@ export function unrollChain(e: A.Expr): [A.Expr, A.Call[]] {
     cur = cur.args[0];
   }
   return [cur, stages.reverse()];
+}
+
+/** How a binary operator is spelled: v0.3 writes `&&` and `||`, v0.2 `and` and `or`. */
+export function opText(op: string): string {
+  if (!features().symbols) return op;
+  return op === "and" ? "&&" : op === "or" ? "||" : op;
 }
 
 export function floatText(v: number): string {
@@ -95,10 +102,14 @@ export class Printer {
           l = this.ex(e.left, p, indent);
           r = this.ex(e.right, p + 1, indent);
         }
-        return [`${l} ${e.op} ${r}`, p];
+        return [`${l} ${opText(e.op)} ${r}`, p];
       }
       case "Unary":
-        if (e.op === "not") return [`not ${this.ex(e.operand, PREC.not, indent)}`, PREC.not];
+        if (e.op === "not") {
+          // v0.3: `!x` binds like unary minus; v0.2: `not x` sits between `and` and comparisons
+          if (features().symbols) return [`!${this.ex(e.operand, PREC.unary, indent)}`, PREC.unary];
+          return [`not ${this.ex(e.operand, PREC.not, indent)}`, PREC.not];
+        }
         return [`-${this.ex(e.operand, PREC.unary, indent)}`, PREC.unary];
       case "Try":
         return [`try ${this.ex(e.expr, PREC.unary, indent)}`, PREC.unary];
@@ -175,23 +186,60 @@ export class Printer {
     return lines.join("\n");
   }
 
+  /**
+   * v0.3 line wrapping: when a statement's text has a line over MAX_LINE, its value's outermost
+   * bracket (list, tuple, record or call arguments) is broken one item per line with a trailing
+   * comma. The rule depends only on the tree, so the result is still one text per program.
+   */
+  private valued(prefix: string, value: A.Expr, indent: string): string {
+    const flat = prefix + this.ex(value, 0, indent, true);
+    if (this.noise !== null || !features().wrap) return flat;
+    if (!flat.split("\n").some((l) => pyLen(l) > MAX_LINE)) return flat;
+    const wrapped = this.wrapped(value, indent);
+    return wrapped === null ? flat : prefix + wrapped;
+  }
+
+  private wrapped(e: A.Expr, indent: string): string | null {
+    const inner = indent + INDENT;
+    const lines = (xs: string[]) => xs.map((x) => `${inner}${x},`).join("\n");
+    const items = (xs: A.Expr[]) => lines(xs.map((x) => this.ex(x, 0, inner)));
+    switch (e.k) {
+      case "ListLit":
+        return e.items.length ? `[\n${items(e.items)}\n${indent}]` : null;
+      case "TupleLit":
+        return e.items.length >= 2 ? `(\n${items(e.items)}\n${indent})` : null;
+      case "Record":
+        return e.fields.length ? `${e.tname} {\n${lines(e.fields.map(([n, v]) => `${n}: ${this.ex(v, 0, inner)}`))}\n${indent}}` : null;
+      case "Call": {
+        if (unrollChain(e)[1].length >= PIPELINE_MIN_STAGES || e.args.length === 0) return null;
+        return `${this.ex(e.callee, PREC.postfix, indent)}(\n${items(e.args)}\n${indent})`;
+      }
+      default:
+        return null;
+    }
+  }
+
   stmt(s: A.Stmt, indent: string): string {
     switch (s.k) {
       case "Comment":
         return indent + s.text;
+      case "Break":
+        return indent + "break";
       case "Let":
-        return `${indent}${s.mutable ? "var" : "let"} ${s.name} = ${this.ex(s.value, 0, indent, true)}`;
+        return this.valued(`${indent}${s.mutable ? "var" : "let"} ${s.name} = `, s.value, indent);
       case "Set":
-        return `${indent}${this.ex(s.target, 0, indent)} = ${this.ex(s.value, 0, indent, true)}`;
+        return this.valued(`${indent}${this.ex(s.target, 0, indent)} = `, s.value, indent);
       case "Return":
         if (s.value === null) return indent + "return";
-        return `${indent}return ${this.ex(s.value, 0, indent, true)}`;
+        return this.valued(`${indent}return `, s.value, indent);
       case "ExprStmt":
-        return indent + this.ex(s.expr, 0, indent, true);
+        return this.valued(indent, s.expr, indent);
       case "If":
         return indent + this.ifText(s, indent);
-      case "ForIn":
-        return `${indent}for ${s.var} in ${this.ex(s.iterable, 1, indent)} ${this.block(s.body, indent)}`;
+      case "ForIn": {
+        const v = s.names ? `(${s.names.join(", ")})` : s.var;
+        return `${indent}for ${v} in ${this.ex(s.iterable, 1, indent)} ${this.block(s.body, indent)}`;
+      }
       case "ForWhile":
         return `${indent}while ${this.ex(s.cond, 1, indent)} ${this.block(s.body, indent)}`;
     }
@@ -244,6 +292,7 @@ export class Printer {
         return `${head} ${body}`;
       }
       case "Test":
+        if (it.effects.length) return `test ${it.name}\n${INDENT}effects: ${it.effects.join(", ")}\n${this.block(it.body, "")}`;
         return `test ${it.name} ${this.block(it.body, "")}`;
     }
   }

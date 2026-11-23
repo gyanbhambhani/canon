@@ -1,0 +1,11 @@
+# expect: E101
+fn load(path: String) -> Result[String, Error]
+  effects: fs
+{
+  return read_file(path)
+}
+
+test "reads through a helper" {
+  let r = load("secret.txt")
+  assert(r == r)
+}

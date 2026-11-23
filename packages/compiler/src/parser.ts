@@ -1,6 +1,7 @@
 /** Lenient parser: whitespace, parens, commas and pipeline-vs-call are free. Port of canon.py. */
 import type * as A from "./ast.js";
 import { CanonError, diag } from "./diagnostics.js";
+import { features } from "./features.js";
 import { lex, type Tok, type TokKind } from "./lexer.js";
 import { pyRepr } from "./py.js";
 
@@ -95,7 +96,15 @@ export class Parser {
     if (this.atKw("test")) {
       this.advance();
       const name = this.expect("str", undefined, "test name string").text;
-      return { k: "Test", name, body: this.block(), ...this.pos(t) };
+      // v0.3: a test may declare the real effects (fs, net) it uses, like a function
+      const effects: string[] = [];
+      while (this.atKw("effects")) {
+        this.advance();
+        this.expect("op", ":");
+        effects.push(this.expect("name", undefined, "effect name").text);
+        while (this.eatOp(",")) effects.push(this.expect("name", undefined, "effect name").text);
+      }
+      return { k: "Test", name, effects, body: this.block(), ...this.pos(t) };
     }
     return this.error("'use', 'type', 'fn', or 'test' at top level");
   }
@@ -272,8 +281,32 @@ export class Parser {
       return { k: "Return", value: this.expr(), ...p };
     }
     if (this.atKw("if")) return this.ifStmt();
+    if (this.at("name", "break") && features().break) {
+      // v0.3: `break` alone on its line (a contextual keyword, so it stays usable as a name)
+      const next = this.peek();
+      if (next.kind === "eof" || next.line !== t.line || (next.kind === "op" && next.text === "}")) {
+        this.advance();
+        return { k: "Break", ...p };
+      }
+    }
     if (this.atKw("for")) {
       this.advance();
+      if (features().destructure && this.atOp("(") && this.peek().kind === "name") {
+        // v0.3: `for (a, b) in xs`
+        const save = this.i;
+        this.advance();
+        const names = [this.advance().text];
+        while (this.eatOp(",")) {
+          if (this.atOp(")")) break;
+          names.push(this.expect("name", undefined, "loop variable").text);
+        }
+        if (this.eatOp(")") && this.atKw("in") && names.length >= 2) {
+          this.advance();
+          const it = this.expr(true);
+          return { k: "ForIn", var: "", names, iterable: it, body: this.block(), ...p };
+        }
+        this.i = save;
+      }
       if (this.at("name") && this.peek().kind === "kw" && this.peek().text === "in") {
         const v = this.advance().text;
         this.advance();
@@ -335,7 +368,7 @@ export class Parser {
 
   private orExpr(): A.Expr {
     let left = this.andExpr();
-    while (this.atKw("or")) {
+    while (this.atKw("or") || this.atOp("||")) {
       this.advance();
       left = { k: "Binary", op: "or", left, right: this.andExpr(), line: 0, col: 0 };
     }
@@ -344,7 +377,7 @@ export class Parser {
 
   private andExpr(): A.Expr {
     let left = this.notExpr();
-    while (this.atKw("and")) {
+    while (this.atKw("and") || this.atOp("&&")) {
       this.advance();
       left = { k: "Binary", op: "and", left, right: this.notExpr(), line: 0, col: 0 };
     }
@@ -391,6 +424,11 @@ export class Parser {
   }
 
   private unary(): A.Expr {
+    if (this.atOp("!")) {
+      // v0.3: `!` is a unary operator, binding as tightly as unary minus
+      const t = this.advance();
+      return { k: "Unary", op: "not", operand: this.unary(), ...this.pos(t) };
+    }
     if (this.atOp("-")) {
       const t = this.advance();
       return { k: "Unary", op: "-", operand: this.unary(), ...this.pos(t) };
@@ -516,6 +554,15 @@ export class Parser {
     if (this.atOp("[")) {
       this.advance();
       return { k: "ListLit", items: this.argsUntil("]"), ...p };
+    }
+    if (this.atOp("||")) {
+      // a lambda with no parameters, `|| e`
+      this.advance();
+      const saved = this.ns;
+      this.ns = false;
+      const body = this.orExpr();
+      this.ns = saved;
+      return { k: "Lambda", params: [], body, ...p };
     }
     if (this.atOp("|")) {
       this.advance();
