@@ -8,10 +8,10 @@ Each cell: verdict, Canon minus baseline in percentage points [95% bootstrap int
 | READ-effects | **inconclusive** +6.3 [-10.9, +23.4] p=1.000 n=16 (vs py) | **non-inferior** +0.8 [+0.0, +2.3] p=1.000 n=16 (vs py) | **win** +8.3 [+3.6, +13.5] p=0.001 n=16 (vs ts) |
 | READ-property | **inconclusive** -1.9 [-11.5, +7.7] p=1.000 n=52 (vs ts) | **non-inferior** -1.9 [-5.8, +0.0] p=1.000 n=52 (vs py) | **non-inferior** +7.1 [+1.3, +14.1] p=0.130 n=52 (vs ts) |
 | READ-output | **non-inferior** +4.2 [-0.8, +10.0] p=0.657 n=60 (vs py) | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=60 (vs py) | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=60 (vs py) |
-| WRITE | **no data** – [–, –] p=1.000 n=0 (vs ts) | not run | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=60 (vs py) |
+| WRITE | **lose** -32.7 [-46.9, -20.4] p=1.000 n=49 (vs ts) | not run | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=60 (vs py) |
 | FIX | not run | not run | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=53 (vs py) |
 | CHANGE | not run | not run | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=24 (vs py) |
-| THINK | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=1 (vs py) | not run | **non-inferior** -2.8 [-6.7, +0.0] p=1.000 n=60 (vs py) |
+| THINK | **lose** -36.7 [-48.3, -25.0] p=1.000 n=60 (vs py) | not run | **non-inferior** -2.8 [-6.7, +0.0] p=1.000 n=60 (vs py) |
 
 ### Arm means per cell (seed-averaged, %)
 
@@ -29,11 +29,11 @@ Each cell: verdict, Canon minus baseline in percentage points [95% bootstrap int
 | READ-output | qwen7b | canon 21.7, canon-stripped 20.0, py 17.5, ts 30.8 |
 | READ-output | opus | canon 100.0, canon-stripped 100.0, py 100.0, ts 100.0 |
 | READ-output | gpt | canon 100.0, canon-stripped 100.0, py 100.0, ts 100.0 |
-| WRITE | qwen7b | canon 0.0, py 0.0 |
+| WRITE | qwen7b | canon 0.0, py 36.7, ts 32.7 |
 | WRITE | gpt | canon 100.0, py 100.0, ts 100.0 |
 | FIX | gpt | canon 100.0, py 100.0, ts 100.0 |
 | CHANGE | gpt | canon 100.0, py 100.0, ts 100.0 |
-| THINK | qwen7b | canon->py 0.0, py 0.0 |
+| THINK | qwen7b | canon->py 0.0, py 36.7 |
 | THINK | gpt | canon->py 97.2, py 100.0 |
 
 ### Cost: tokens per item, Canon / baseline
@@ -43,7 +43,7 @@ Each cell: verdict, Canon minus baseline in percentage points [95% bootstrap int
 | read | qwen7b | ts | 6.78 [6.30, 7.32] | lose (more tokens) |
 | read | opus | py | 5.74 [5.36, 6.14] | lose (more tokens) |
 | read | gpt | ts | 7.66 [7.20, 8.15] | lose (more tokens) |
-| write | qwen7b | ts | NaN [NaN, NaN] | inconclusive |
+| write | qwen7b | ts | 17.00 [13.86, 20.14] | lose (more tokens) |
 | write | gpt | py | 4.82 [4.55, 5.10] | lose (more tokens) |
 | fix | gpt | py | 3.49 [3.27, 3.71] | lose (more tokens) |
 | change | gpt | py | 3.23 [2.90, 3.60] | lose (more tokens) |
@@ -93,8 +93,9 @@ Each cell: verdict, Canon minus baseline in percentage points [95% bootstrap int
 | read | gpt | canon-stripped | 594 | 99.3 | – | – (0) | – (0) | – | 3110 | 3131 | 0.39 | 1058 | – |
 | read | gpt | py | 594 | 86.4 | – | – (0) | – (0) | – | 551 | 638 | 0.76 | 1113 | – |
 | read | gpt | ts | 594 | 94.9 | – | – (0) | – (0) | – | 447 | 471 | 0.63 | 1066 | – |
-| write | qwen7b | canon | 57 | 0.0 | 0.0 | 0.0 (228) | – (0) | 3.00 | 16745 | – | 0.00 | 8412 | – |
-| write | qwen7b | py | 2 | 0.0 | 50.0 | 0.0 (1) | 100.0 (2) | 0.50 | 1434 | – | 0.00 | 120 | – |
+| write | qwen7b | canon | 60 | 0.0 | 0.0 | 0.0 (240) | – (0) | 3.00 | 16780 | – | 0.00 | 8938 | – |
+| write | qwen7b | py | 60 | 36.7 | 75.0 | 0.0 (199) | 57.7 (52) | 0.53 | 2144 | 5847 | 0.00 | 3910 | – |
+| write | qwen7b | ts | 49 | 32.7 | 83.7 | 0.0 (60) | 65.2 (46) | 0.31 | 1459 | 4469 | 0.00 | 2941 | – |
 | write | gpt | canon | 180 | 100.0 | 93.9 | 77.1 (131) | 0.0 (180) | 0.06 | 3973 | 3973 | 1.42 | 2265 | – |
 | write | gpt | py | 180 | 100.0 | 100.0 | – (0) | 0.0 (180) | 0.00 | 834 | 834 | 0.80 | 1055 | – |
 | write | gpt | ts | 180 | 100.0 | 100.0 | – (0) | 0.0 (180) | 0.00 | 803 | 803 | 0.82 | 1061 | – |
@@ -104,7 +105,7 @@ Each cell: verdict, Canon minus baseline in percentage points [95% bootstrap int
 | change | gpt | canon | 72 | 100.0 | 100.0 | 100.0 (8) | 0.0 (72) | 0.00 | 3728 | 3728 | 0.42 | 599 | 0.0 |
 | change | gpt | py | 72 | 100.0 | 100.0 | – (0) | 0.0 (72) | 0.00 | 1219 | 1219 | 0.46 | 600 | 0.0 |
 | change | gpt | ts | 72 | 100.0 | 100.0 | – (0) | 0.0 (72) | 0.00 | 904 | 904 | 0.33 | 399 | 0.0 |
-| think | qwen7b | canon->py | 55 | 0.0 | 0.0 | 0.0 (220) | – (0) | 3.00 | 16733 | – | 0.00 | 8113 | – |
-| think | qwen7b | py | 1 | 0.0 | 0.0 | 0.0 (1) | – (1) | 1.00 | 2174 | – | 0.00 | 85 | – |
+| think | qwen7b | canon->py | 60 | 0.0 | 0.0 | 0.0 (240) | – (0) | 3.00 | 16780 | – | 0.00 | 8938 | – |
+| think | qwen7b | py | 60 | 36.7 | 75.0 | 0.0 (199) | – (52) | 0.53 | 2144 | 5847 | 0.00 | 3910 | – |
 | think | gpt | canon->py | 180 | 97.2 | 93.9 | 77.1 (131) | – (180) | 0.06 | 3973 | 4087 | 1.42 | 2265 | – |
 | think | gpt | py | 180 | 100.0 | 100.0 | – (0) | – (180) | 0.00 | 834 | 834 | 0.80 | 1055 | – |
