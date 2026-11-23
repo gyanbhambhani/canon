@@ -1,9 +1,9 @@
 ---
 title: Expressions
-description: Operator precedence, arithmetic, string joining and comparison rules, calls, fields, tuple slots, lambdas, and evaluation order.
+description: Operator precedence including &&, || and !, arithmetic, string joining, comparison rules, calls, fields, tuple slots, lambdas, and evaluation order.
 ---
 
-This page covers expressions: operator precedence, arithmetic, strings, comparisons, calls and lambdas.
+This page covers expressions: operator precedence, logic, arithmetic, strings, comparisons, calls and lambdas.
 
 ```canon
 test "precedence" {
@@ -18,22 +18,40 @@ The last line shows that `&&` and `||` short-circuit: `1 / 0` is never evaluated
 
 ## Precedence
 
-Loosest first. Operators on the same level associate to the left, except comparisons, which never chain.
+Loosest first. Operators on one row associate to the left, except comparisons, which never chain.
 
-| Level | Operators |
+| Binds | Operators |
 |---|---|
-| 0 | `\|>` pipeline, lambdas `\|a, b\| expr` |
-| 1 | `||` |
-| 2 | `&&` |
-| 3 | (v0.2's `not` sat here; `!` is now unary, level 7) |
-| 4 | `== != < <= > >=` (never chained) |
-| 5 | `+ -` |
-| 6 | `* / %` |
-| 7 | unary `-`, `!`, `try` |
-| 8 | calls `f(x)`, fields `a.b`, tuple slots `t.0` |
+| loosest | `\|>` pipeline, lambdas `\|a, b\| expr` |
+| | `\|\|` (or) |
+| | `&&` (and) |
+| | `== != < <= > >=` (never chained) |
+| | `+ -` |
+| | `* / %` |
+| | unary `-`, `!`, `try` |
+| tightest | calls `f(x)`, fields `a.b`, tuple slots `t.0` |
 
-Parentheses the precedence already implies are redundant, and the formatter removes them: `((a + 1)) > (2)` becomes `a + 1 > 2`. `!` binds as tightly as unary minus, as in TypeScript and Rust, so `!a == b` means `(!a) == b`, and negating a comparison needs parentheses: `!(a > b)`. (v0.2's `not` bound looser than comparison; the formatter rewrites `not a > b` to `!(a > b)`, which means the same.)
+Parentheses the precedence already implies are redundant, and the formatter removes them: `((a + 1)) > (2)` becomes `a + 1 > 2`.
 
+## Logic: &&, || and !
+
+`&&` and `||` take two Bools and short-circuit. `!` negates, and binds as tightly as unary minus, as in TypeScript and Rust: `!a == b` means `(!a) == b`, so negating a comparison needs parentheses, `!(a > b)`.
+
+```canon
+fn in_window(t: Int, lo: Int, hi: Int, closed: Bool) -> Bool {
+  return !closed && t >= lo && t < hi || t == lo
+}
+
+test "logic" {
+  assert(in_window(5, 0, 10, false))
+  assert(!in_window(5, 0, 10, true))
+  assert(!(3 > 4))
+}
+```
+
+The formatter collapses comparisons with a Bool literal and double negation: `x == true` becomes `x`, `x == false` becomes `!x`, and `!!x` becomes `x`. `||` at the start of an expression is a lambda with no parameters (`|| 1`), as in Rust; between two operands it is "or".
+
+v0.2 spelled these `and`, `or` and `not`, with `not` binding looser than comparison. The words still parse, and the formatter rewrites them to symbols, adding parentheses where the old `not` covered a comparison (`not a == b` becomes `!(a == b)`), so the meaning never changes. [Formatting rules](/docs/canonical-form#migrating-from-v02) shows the migration.
 
 ## Comparisons do not chain
 
@@ -54,7 +72,7 @@ fn between(a: Int) -> Bool {
 
 ## Arithmetic
 
-Int with Int gives Int, and Float with Float gives Float. Mixing them is T009, and its patch (a unified diff the compiler ships as the fix) wraps the Int side in `to_float`. Int division truncates toward zero, and `%` takes the sign of the left side. Dividing by zero, or taking `%` of zero, traps with R004. An Int result outside the 53-bit safe range traps with R003.
+Int with Int gives Int, and Float with Float gives Float. Mixing them is T009, and its patch wraps the Int side in `to_float` (`canon check --fix` applies it). Int division truncates toward zero, and `%` takes the sign of the left side. Dividing by zero, or taking `%` of zero, traps with R004. An Int result outside the 53-bit safe range traps with R003.
 
 ```canon
 test "integer arithmetic" {
@@ -72,9 +90,11 @@ fn scale(n: Int, x: Float) -> Float {
 }
 ```
 
+The T009 patch restates the program; it does not guess. `sum(xs) / len(xs) * 1.0` becomes `to_float(sum(xs) / len(xs)) * 1.0`, which still divides Ints. For a Float average, convert both sides first: `to_float(sum(xs)) / to_float(len(xs))`.
+
 ## Joining strings
 
-`+` also joins two Strings. Both sides must be String: `"n = " + 3` is T001, so convert with `to_string` first. (v0 joined strings with a `concat` built-in; the formatter rewrites `concat(a, b, c)` to `a + b + c`.) `-`, `*`, `/` and `%` stay numeric only.
+`+` also joins two Strings. Both sides must be String: `"n = " + 3` is T001, and its first suggested fix is `to_string(3)`. `-`, `*`, `/` and `%` are numeric only.
 
 ```canon
 test "strings join with +" {
@@ -87,8 +107,6 @@ test "strings join with +" {
 ## Comparison and equality
 
 `<`, `<=`, `>` and `>=` work on Int, Float and String (strings compare by code point). `==` and `!=` compare any two values of the same type by structure: lists, tuples, records and variants included. Comparing values of different types is T001, and so is comparing functions.
-
-The formatter collapses comparisons with a Bool literal: `x == true` becomes `x`, and `x == false` becomes `not x`. `not not x` becomes `x`.
 
 ## Calls, fields and tuple slots
 
@@ -129,4 +147,4 @@ test "tuple unpacking and capture" {
 
 ## Evaluation order
 
-Evaluation is strict and left to right. Arguments are evaluated before the call. `match` is an expression and may appear in any expression position, including as an operand or an argument; it binds like a call, so `match a { … } + 1` adds 1 to the match's value. See [Pattern matching](/docs/guide/pattern-matching).
+Evaluation is strict and left to right; arguments are evaluated before the call. `match` is an expression and may appear in any expression position, including as an operand or an argument; it binds like a call, so `(match a { … }) + 1` adds 1 to the match's value. See [Pattern matching](/docs/guide/pattern-matching).

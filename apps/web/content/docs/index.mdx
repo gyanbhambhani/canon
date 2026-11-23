@@ -1,13 +1,13 @@
 ---
 title: What is Canon
-description: The programming language for AI agents. Typed, compiled, and small enough to fit in a single prompt.
+description: Canon is a typed, compiled programming language for AI agents. The whole reference fits in one prompt, and the compiler fixes every mechanical error itself.
 ---
 
-Canon is the programming language for AI agents. It is typed, compiled, and small enough to fit in a single prompt. Every compiler error ships with its fix.
+Canon is a programming language for AI agents. It is typed, compiled to JavaScript, and small enough that its whole reference fits in a single prompt. Every compiler error has a stable code, and every error with a mechanical fix comes with that fix as a patch.
 
 <HeroTerminal />
 
-Above, `main` prints without declaring it. The compiler returns a stable code (E101) and a patch, a unified diff the agent applies as is. Then the file runs:
+Above, `main` prints without declaring that it does. The compiler answers with a stable code (E101) and a patch, a unified diff the agent applies as is. Then the file runs:
 
 ```canon
 fn main() -> Unit
@@ -19,15 +19,30 @@ fn main() -> Unit
 
 ## Who it is for
 
-- **Agents write it.** The whole reference fits on one page in the agent's prompt. The compiler answers in JSON, so the agent fixes its own mistakes.
-- **People read it.** Canon looks like clean TypeScript or Python. Every function lists its types and its side effects, such as printing or reading files, so a reviewer sees what code can do from its first line.
-- **Reviewers diff it.** The formatter turns any spacing or layout of a program into one standard text, so diffs between two versions show only real changes.
+- **Agents write it.** The [Agent reference](/docs/for-agents) is the whole language on one page. `canon check --fix` applies every mechanical patch itself (layout, effect lists, Int and Float conversions), so the agent only sees the problems that need its judgment, answered in JSON.
+- **People read it.** Every function states its types and its side effects (printing, files, network, time, randomness). A checked program can perform only the effects its entry point declares, and the runtime enforces that too.
+- **Reviewers diff it.** The formatter turns any layout of a program into one standard text, so a diff between two versions shows only real changes.
 
-Canon compiles to JavaScript and runs in Node and in the browser [playground](/play).
+```canon
+fn first_short(words: List[String]) -> Int {
+  for (i, w) in enumerate(words) {
+    if str_len(w) < 3 && w != "" {
+      return i
+    }
+  }
+  return -1
+}
+
+test "first short word" {
+  assert(first_short(["canon", "is", "small"]) == 1)
+}
+```
+
+Canon runs in Node and in the browser [playground](/play). The current language is v0.3; [Design notes](/docs/design-notes) say what changed and why, and [Research](/research) shows what has been measured so far.
 
 ## Where to go next
 
-- [Quickstart](/docs/quickstart): run a program, see an error and its fix.
+- [Quickstart](/docs/quickstart): run a program, see an error, let the compiler fix it.
 - [Use Canon with your agent](/docs/agents): give an agent the reference and the fix loop.
 - [Basics](/docs/guide/files-and-syntax): start learning the language.
 - [Research](/research): what the benchmarks found so far.

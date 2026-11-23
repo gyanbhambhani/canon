@@ -1,12 +1,12 @@
 ---
 title: Command line
-description: Every canon command, flag and exit code, with the exact output formats in text and JSON mode.
+description: Every canon command and flag - check and check --fix, fmt, run, test with contract fuzzing, the capability guard, the v0.3 ablation switches - with exit codes and real output in text and JSON.
 ---
 
-This page lists every `canon` command, flag and exit code. Install the command with `npm i -g canon-lang`, or run it without installing as `npx canon-lang`. `canon --help` prints:
+This page lists every `canon` command, flag and exit code, with output produced by running the CLI. Install the command with `npm i -g canon-lang`, or run it without installing as `npx canon-lang`. `canon --help` prints:
 
 ```text
-canon 0.1.1: a programming language for AI agents
+canon 0.3.0: a programming language for AI agents
 
 usage:
   canon check FILE... [--fix [--write]]
@@ -37,37 +37,63 @@ exit codes: 0 success, 1 diagnostics / failed tests / traps, 2 usage error
 
 | Code | Meaning |
 |---|---|
-| 0 | Success: no diagnostics, all tests passed, or the program finished |
-| 1 | Diagnostics, failed tests, a runtime trap, or an `Err` returned from `main` |
-| 2 | Usage error: unknown command, unknown or misplaced flag, unknown effect in `--deny`, missing or unreadable file, or more than one file given to `run` |
+| 0 | Success: no diagnostics (after `--fix`, if given), all tests and fuzz checks passed, or the program finished |
+| 1 | Diagnostics, a failed test or fuzz check, a runtime trap, or an `Err` returned from `main` |
+| 2 | Usage error: unknown command, unknown or misplaced flag, unknown effect in `--deny`, `--write` on `check` without `--fix`, missing or unreadable file, or more than one file given to `run` |
 
-A usage error prints `canon: ` and the problem on stderr, then the usage text. In this output, "canonical form" means the formatter's one standard layout, and "effects" are the side effects a function declares (`fs`, `io`, `net`, `rand`, `time`).
+A usage error prints `canon: ` and the problem on stderr, then the usage text:
+
+```text
+canon: --write needs --fix (canon check --fix --write)
+```
+
+## Flags by command
+
+| Flag | check | fmt | run | test |
+|---|---|---|---|---|
+| `--json` | yes | yes | yes | yes |
+| `--fix` | yes | | | |
+| `--write` | with `--fix` | yes | | |
+| `--deny EFFECTS` | | | yes | |
+| `--no-contracts` | | | yes | |
+| `--no-capability-guard` | | | yes | yes |
+| `--no-contract-fuzz` | | | | yes |
+| `--v0.2` and the `--no-*` language switches | yes | yes | yes | yes |
+
+Flags may come before or after the files, and `--flag=value` works for `--deny`.
 
 ## canon check
 
 ```bash
 canon check FILE...
 canon check --json FILE...
-canon check --fix [--write] FILE...
+canon check --fix [--write] [--json] FILE...
 ```
 
-Runs every check: layout (C001), line length, naming, declared side effects, modules, types and holes (`?` placeholders). Exits 1 if any file has a diagnostic.
+Runs every check: layout (C001), line length, naming, effects, modules, types and holes. Exits 1 if any file has a diagnostic.
 
-Text output prints one line per diagnostic as `path:line:col: severity CODE: message`, then the fix as a unified diff (a patch) indented by two spaces when there is one, then a summary line per file such as `hi.cn: 1 problem` ([Quickstart](/docs/quickstart) shows a full example).
+Text output prints one line per diagnostic as `path:line:col: severity CODE: message`, then the patch indented by two spaces when there is one, then a summary line per file: `hello.cn: 1 problem`, or `hello.cn: ok` for a clean file. For H001, the candidates follow the message under `candidates:`. T001 suggestions appear only in JSON.
 
-A clean file prints `hi.cn: ok`. For H001, the candidates follow the message, one per line under `candidates:`.
-
-`--json` prints `{ ok, canonical, diagnostics }` for one file, where `canonical` says whether the file already has the formatter's one standard layout. Given several files, it prints an array of such objects, each with a `path` field. [Errors and fixes](/docs/diagnostics) describes the fields. Patch paths are `a/` and `b/` plus the path as given, so `patch -p1` applies them from the same directory.
+`--json` prints `{ ok, canonical, diagnostics }` for one file, where `canonical` says whether the file is already in the formatter's layout. Given several files, it prints an array of such objects, each with a `path` field. [Errors and fixes](/docs/diagnostics) describes the fields. Patch paths are `a/` and `b/` plus the path as given, so `patch -p1` applies them from the same directory.
 
 ### --fix
 
-`canon check --fix` is the self-healing loop. It applies every mechanical patch (C001 layout, E101 and E102 effect lists, T009 Int and Float mixing), one at a time, re-checking after each, until none is left, and then reports only what needs judgment: type errors, holes, names, parse errors. A T004 patch is never applied, because it inserts holes, which are questions for you. Text output starts with `path: applied C001, E101` and then lists the remaining diagnostics. `--write` saves the fixed file; without it nothing is written. With `--json` the result adds `applied` (the codes, in order) and `source` (the fixed text). The exit code is 0 when nothing but mechanical problems was found.
+`canon check --fix` is the self-healing loop. It applies the patches of C001 (layout), E101 and E102 (effect lists) and T009 (Int and Float mixed), one at a time with a re-check after each, until none is left, and reports only what needs judgment. It never applies T004 (its patch inserts holes) or T001 suggestions (each is a choice). Without `--write` nothing is saved. Here is a draft with a layout problem, a missing effect and mixed arithmetic:
 
-A T001 type mismatch may carry ranked candidate fixes in `data.suggestions`, each `{ label, diff }`, such as `to_string(n)`, `unwrap_or(first(xs), ?)` or `Some(n)`. They are never applied automatically; pick one and apply its diff.
+```text
+draft.cn: applied C001, E101, T009 (not written; add --write)
+draft.cn: ok
+```
 
-### v0.3 switches
+With a problem left over, the remaining diagnostics follow the `applied` line, and the exit status is 1:
 
-Each v0.3 change has a switch so that an experiment can turn it off and measure what it did. Every command accepts the language switches `--no-wrap` (no line breaking by the formatter), `--no-break`, `--no-destructure`, `--no-symbols` (print `and`, `or`, `not`), `--no-sealed-effects` (tests and contracts are not effect-checked) and `--no-suggestions`; `--v0.2` turns all of them off. `run` and `test` accept `--no-capability-guard`, and `test` accepts `--no-contract-fuzz`.
+```text
+fixme.cn: applied C001, E101, T009 (not written; add --write)
+fixme.cn:6:10: error T001: type mismatch in operands of +: expected String, found Int
+fixme.cn: 1 problem
+```
+
+With `--json`, the object gains `applied` (the codes, in order) and `source` (the fixed text). Positions and diffs in the remaining diagnostics refer to `source`, which is the file on disk only with `--write`. [Use Canon with your agent](/docs/agents#3-read-the-json) shows a full example.
 
 ## canon fmt
 
@@ -77,11 +103,19 @@ canon fmt --write FILE...
 canon fmt --json FILE...
 ```
 
-Prints each file in the formatter's standard layout (see [Formatting rules](/docs/canonical-form)) on stdout. With `--write`, it rewrites each file whose text changes and prints nothing. `fmt` exits 0 even when a file changed; use `check` to fail on that.
+Prints each file in the formatter's layout (see [Formatting rules](/docs/canonical-form)). With `--write`, it rewrites each file whose text changes and prints nothing. `fmt` exits 0 even when a file changed; use `check` to fail on that. `fmt` is also how a v0 or v0.2 file migrates to v0.3.
 
-`--json` prints `{ path, changed, formatted }` per file (an array for several files).
+`--json` prints `{ path, changed, formatted }` per file (an array for several):
 
-`fmt` needs a file that parses. A parse error (P001 to P005) goes to stderr with exit 1; in JSON mode it is `{ path, error }`. `fmt` does not check names, side effects or types, so a formatted file can still fail `check`.
+```json
+{
+  "path": "wrap.cn",
+  "changed": true,
+  "formatted": "fn checks(name: String, age: Int, email: String) -> List[(Bool, String)] {\n  return [\n    (name == \"\", \"name is empty\"),\n    (age < 0 || age > 150, \"age out of range\"),\n    (email == \"\", \"email is empty\"),\n  ]\n}\n"
+}
+```
+
+`fmt` needs a file that parses. A parse error goes to stderr with exit 1; in JSON it is `{ path, error }`. `fmt` does not check names, effects or types, so a formatted file can still fail `check`.
 
 ## canon run
 
@@ -107,11 +141,11 @@ Checks the file, compiles it to JavaScript, and calls `fn main()`. `run` takes e
 
 ### --deny EFFECTS
 
-A comma-separated list of side effects. Any call to a built-in with a denied effect stops the program with a trap (R006). `--deny net,fs` and `--deny=net,fs` both work. An unknown name is a usage error (exit 2).
+A comma-separated list of effects. Any call to a built-in with a denied effect stops the program with R006, for example `{"code":"R006","message":"effect net denied by the host (http_get)",...}`. An unknown effect name is a usage error.
 
-### --no-capability-guard
+### The capability guard and --no-capability-guard
 
-By default a program may perform only the side effects `main` declares: any other effect stops it with R006, naming `fn main`. The checker already guarantees this, so the guard only matters if the checker is wrong; it is the run-time half of "you can see what a program can do from its signature". This flag turns it off.
+By default the host performs only the effects `main` declares; anything else stops the program with R006, naming `fn main`. The checker already guarantees this bound, so on a checked program the guard never fires; it holds the bound even if the checker has a bug. The bound is on the whole program: a function's own signature can understate what it does when it is passed an effectful function as a value (see [What the guarantee covers](/docs/guide/functions-effects-contracts#what-the-guarantee-covers)). `--no-capability-guard` turns the guard off, for experiments.
 
 ### --no-contracts
 
@@ -119,7 +153,7 @@ Skips every `requires` and `ensures` check, so R001 and R002 cannot occur.
 
 ### --json
 
-Captures the program's stdout and prints one object when it ends:
+Captures stdout and prints one object when the program ends:
 
 ```json
 {
@@ -129,39 +163,84 @@ Captures the program's stdout and prints one object when it ends:
 }
 ```
 
-A trap adds `trap`; an `Err` from `main` adds `error`. A file with diagnostics prints `{ ok: false, diagnostics }` instead.
+A trap adds `trap` (the trap object); an `Err` from `main` adds `error`. A file with diagnostics prints `{ ok: false, diagnostics }` instead.
 
 ## canon test
 
 ```bash
 canon test FILE...
 canon test --json FILE...
+canon test --no-contract-fuzz FILE...
 ```
 
-Checks each file, then runs every `test` block in it. Text output is one line per test, with the trap JSON indented under a failure, then a summary:
+Checks each file, runs every `test` block, then fuzzes contracts. Text output is one line per test, with the trap JSON indented under a failure, then a summary. A file with diagnostics prints them on stderr and is counted in the summary (`1 file with errors`), without running its tests. Exit 1 if anything failed.
+
+**The test host.** The clock starts at 0 ms and advances only through `sleep`; `random` and `random_int` use a fixed seed; `print` output is passed through. So `io`, `time` and `rand` are deterministic, and a test uses them without declaring them. Files and the network are real: a test may use them only if it declares them (`effects: fs` on the line after its name), and the capability guard stops any other effect.
+
+**Contract fuzzing.** Every pure, non-generic function with a `requires` or `ensures` clause is called on 200 inputs generated from its parameter types, from a seeded generator, so every run is the same. Inputs that fail the function's own `requires` are discarded; any other trap is a failure that shows the input. During fuzzing the guard allows no effects at all.
 
 ```text
-PASS math works
-FAIL wrong
-  {"code":"R005","message":"assert failed","line":6,"col":3,"stack":[{"fn":"test \"wrong\"","line":6,"col":3}]}
-PASS clock
+PASS abs_diff of equal numbers
+FAIL fuzz abs_diff: a = -19, b = 12
+  {"code":"R002","message":"ensures failed in fn abs_diff","line":2,"col":12,"stack":[{"fn":"abs_diff","line":2,"col":12}]}
+PASS fuzz halve (107 inputs)
+SKIP fuzz apply_twice (a function-typed parameter)
 2 passed, 1 failed
 ```
 
-Exit 1 if any test failed. A file with diagnostics prints them on stderr and exits 1 without running tests.
+`PASS fuzz NAME (N inputs)` counts the inputs that ran; a skipped function is not counted as passed or failed. The program is on [Functions and side effects](/docs/guide/functions-effects-contracts#contract-fuzzing).
 
-After the tests, `canon test` fuzzes contracts: every pure, non-generic function with a `requires` or `ensures` clause is called on 200 inputs generated from its parameter types (seeded, so every run is the same). Inputs that fail its `requires` are skipped; any other trap is a failure that shows the input:
+`--json` prints `{ ok, passed, failed, files_with_errors, tests, stdout }`. Each test is `{ file, name, passed }` plus `trap` when it failed. Each fuzz entry adds `fn`, `runs`, `discarded`, and either `skipped` (the reason) or, on failure, `counterexample: { args, trap }`:
 
-```text
-FAIL fuzz abs_diff: a = -19, b = 12
-  {"code":"R002","message":"ensures failed in fn abs_diff","line":2,"col":12,"stack":[{"fn":"abs_diff","line":2,"col":12}]}
+```json
+{
+  "file": "fuzz.cn",
+  "name": "fuzz abs_diff",
+  "fn": "abs_diff",
+  "passed": false,
+  "runs": 1,
+  "discarded": 0,
+  "counterexample": {
+    "args": [
+      "a = -19",
+      "b = 12"
+    ],
+    "trap": {
+      "code": "R002",
+      "message": "ensures failed in fn abs_diff",
+      "line": 2,
+      "col": 12,
+      "stack": [
+        {
+          "fn": "abs_diff",
+          "line": 2,
+          "col": 12
+        }
+      ]
+    }
+  }
+}
 ```
 
-A function with a parameter that cannot be generated (a function type) prints `SKIP fuzz name (...)`. `--no-contract-fuzz` turns fuzzing off.
+`--no-capability-guard` lets tests perform any effect; `--no-contract-fuzz` runs the test blocks only.
 
-Under `canon test`, the clock starts at 0 ms and advances only through `sleep`, and `random` and `random_int` use a fixed seed, so every run is reproducible. `print`, files and the network are real, and a test may use files and the network only if it declares them (`effects: fs` on the line after its name).
+## The v0.3 switches
 
-`--json` prints `{ ok, passed, failed, tests }`, where each test is `{ file, name, passed }` plus `trap` when it failed; fuzz results add `runs`, `discarded` and, on failure, `counterexample: { args, trap }`.
+Every v0.3 change can be turned off on its own, so that an experiment can measure what each one does. They are not meant for everyday use.
+
+| Flag | Commands | Turns off | With it off |
+|---|---|---|---|
+| `--no-wrap` | all | line breaking by the formatter | long lines stay and are L001 |
+| `--no-break` | all | `break` | `break` is a plain name (P004 on its own line) |
+| `--no-destructure` | all | `for (a, b) in xs` | a parse error (P001) |
+| `--no-symbols` | all | `&&`, `\|\|`, `!` as the canonical form | fmt prints `and`, `or`, `not`; both spellings parse |
+| `--no-sealed-effects` | all | effect-checked tests, pure contracts (E103) | tests and contracts are unchecked, and the guard does not apply to tests |
+| `--no-suggestions` | all | T001 `data.suggestions` | no suggestions |
+| `--v0.2` | all | all six above | the v0.2 language |
+| `--no-capability-guard` | run, test | the run-time guard | the host allows any effect not denied |
+| `--no-contract-fuzz` | test | contract fuzzing | only test blocks run |
+
+`--fix` is opt-in, so leaving it out is its own switch. In the compiler API the language switches are the `features` option of `check`, `fmt` and `compileJs` (`packages/compiler/src/features.ts`). With every switch off, the compiler matches v0.2 byte for byte on the conformance corpus.
 
 ## --help and --version
 

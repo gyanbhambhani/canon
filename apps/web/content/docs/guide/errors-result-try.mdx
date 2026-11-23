@@ -1,6 +1,6 @@
 ---
 title: Errors
-description: Canon has one error mechanism, Result, and one way to propagate it, try. Option covers values that may be missing.
+description: Canon has one error mechanism, Result, and one way to propagate it, try. Option covers values that may be missing. Traps cover bugs.
 ---
 
 This page covers error handling with `Result` and `try`. Canon has no exceptions and no null. A value that may be missing is an `Option`, and an operation that may fail returns a `Result`. Both are ordinary sum types:
@@ -123,6 +123,21 @@ test "options" {
   assert(last([]) == None)
 }
 ```
+
+Returning an Option where its value is expected is T001, and the error suggests `unwrap_or(e, ?)`: a patch that leaves the fallback as a hole for you to fill, since only you know the right default.
+
+```canon
+# expect: T001
+fn top(xs: List[Int]) -> Int {
+  return first(xs)
+}
+```
+
+```text
+example.cn:3:10: error T001: type mismatch in return value: expected Int, found Option[Int]
+```
+
+The other way round, a plain value where a `Result` or `Option` is expected, suggests `Ok(e)` or `Some(e)`. Suggestions are in `data.suggestions` of `canon check --json`; `--fix` never applies them.
 
 ## Results without a value
 

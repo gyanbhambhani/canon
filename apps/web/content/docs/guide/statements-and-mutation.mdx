@@ -1,18 +1,17 @@
 ---
 title: Control flow
-description: let, var and assignment; the one conditional statement; the for and while loops; explicit return; and expression statements.
+description: let, var and assignment; the one conditional statement; for, while, break and for-loop destructuring; explicit return; and expression statements.
 ---
 
-This page covers statements: bindings, assignment, `if`, loops and `return`. Canon has eight kinds of statement: `let`, `var`, assignment `x = e`, `return`, `if`, `for`, `while`, and a call on its own line.
+This page covers statements. Canon has nine: `let`, `var`, assignment `x = e`, `return`, `if`, `for`, `while`, `break`, and a call on its own line.
 
 ## let, var and assignment
 
-`let` binds an immutable name. `var` binds a mutable one, and `x = e` assigns to it. Only a `var` can be assigned, so every name that can change is declared with `var`, one search away. (v0 wrote `set x = e`; it still parses, and the formatter rewrites it.)
+`let` binds an immutable name. `var` binds a mutable one, and `x = e` assigns to it. Only a `var` can be assigned, so every name that can change is declared with `var`, one search away.
 
 ```canon
 fn total_qty(qtys: List[Int]) -> Int {
-  let start = 0
-  var total = start
+  var total = 0
   for q in qtys {
     total = total + q
   }
@@ -45,7 +44,7 @@ fn f() -> Int {
 }
 ```
 
-A local may shadow an outer local with a new `let` in an inner block.
+A local may shadow an outer one with a new `let` in an inner block.
 
 ## Updating records
 
@@ -97,20 +96,9 @@ To choose between values rather than statements, use [match](/docs/guide/pattern
 
 ## for and while
 
-There are two loops. `for x in xs { }` walks a List. `while cond { }` repeats while the condition is true. `break`, alone on its line, leaves the innermost loop; `return` leaves the function. There is no `continue`: put the rest of the body under an `if`. (v0 wrote the condition loop as `for cond { }`; it still parses, and the formatter rewrites it to `while`.)
-
-When the elements are tuples, the loop can name each slot: `for (i, x) in enumerate(xs) { }` or `for (k, v) in zip(ks, vs) { }`. The number of names must match the tuple (T001 otherwise). `break` outside a loop is T010.
+There are two loops. `for x in xs { }` walks a List, and `while cond { }` repeats while the condition is true.
 
 ```canon
-fn index_of(xs: List[String], want: String) -> Int {
-  for pair in enumerate(xs) {
-    if pair.1 == want {
-      return pair.0
-    }
-  }
-  return -1
-}
-
 fn collatz_steps(start: Int) -> Int
   requires: start > 0
 {
@@ -127,13 +115,91 @@ fn collatz_steps(start: Int) -> Int
   return steps
 }
 
-test "loops" {
-  assert(index_of(["a", "b"], "b") == 1)
+test "collatz" {
   assert(collatz_steps(6) == 8)
 }
 ```
 
-`for x in` takes a List only. To walk a Map, walk `keys(m)` or `values(m)`.
+`for x in` takes a List only (a Map is T001). To walk a Map, walk `keys(m)`, `values(m)`, or `zip(keys(m), values(m))`.
+
+## Destructuring in for
+
+When the elements are tuples, the loop names each slot: `for (i, x) in enumerate(xs)`, `for (k, v) in zip(ks, vs)`. Write `_` for a slot you do not need. The names must match the tuple's size (T001 otherwise), and they are plain names, not nested patterns; for those, use `match`.
+
+```canon
+fn index_of(xs: List[String], want: String) -> Int {
+  for (i, x) in enumerate(xs) {
+    if x == want {
+      return i
+    }
+  }
+  return -1
+}
+
+fn weighted(rows: List[(String, Int, Float)]) -> Float {
+  var total = 0.0
+  for (_, n, w) in rows {
+    total = total + to_float(n) * w
+  }
+  return total
+}
+
+test "destructuring" {
+  assert(index_of(["a", "b"], "b") == 1)
+  assert(weighted([("a", 2, 0.5), ("b", 1, 1.5)]) == 2.5)
+}
+```
+
+`for p in enumerate(xs)` with `p.0` and `p.1` is still legal; the formatter cannot turn one form into the other without inventing names.
+
+## break
+
+`break`, alone on its line, leaves the innermost `for` or `while`. `return` leaves the whole function. There is no `continue`: put the rest of the body under an `if`.
+
+```canon
+fn first_gap(xs: List[Int]) -> Int {
+  var prev = 0
+  var gap = -1
+  for (i, x) in enumerate(xs) {
+    if i > 0 && x - prev > 1 {
+      gap = i
+      break
+    }
+    prev = x
+  }
+  return gap
+}
+
+fn count_up(limit: Int) -> Int {
+  var i = 0
+  while true {
+    i = i + 1
+    if i >= limit {
+      break
+    }
+  }
+  return i
+}
+
+test "break" {
+  assert(first_gap([1, 2, 4, 5]) == 2)
+  assert(count_up(4) == 4)
+}
+```
+
+`break` outside a loop is T010:
+
+```canon
+# expect: T010
+fn f(n: Int) -> Int {
+  if n > 0 {
+    break
+  }
+  return n
+}
+```
+
+`break` is a statement only when it stands alone on its line, so it is not a reserved word: `fn f(break: Int)` still checks.
 
 ## return
 

@@ -1,9 +1,9 @@
 ---
 title: Functions and side effects
-description: Typed signatures, exact effect lists, requires and ensures contracts, the fixed clause order, and the main entry point.
+description: Typed signatures, exact effect lists, effect-checked tests, pure requires and ensures contracts, contract fuzzing, the capability guard, and the main entry point.
 ---
 
-This page covers functions: typed signatures, the `effects` clause that lists a function's side effects, and contracts that check inputs and outputs.
+This page covers functions: typed signatures, the `effects` clause that lists a function's side effects, contracts that check inputs and outputs, and what a checked program is allowed to do when it runs.
 
 ## Signatures
 
@@ -25,11 +25,10 @@ Generic functions name their type parameters in square brackets:
 
 ```canon
 fn first_or[T](xs: List[T], fallback: T) -> T {
-  let found = match first(xs) {
+  return match first(xs) {
     Some(x) => x,
     None => fallback,
   }
-  return found
 }
 
 test "first_or" {
@@ -38,7 +37,7 @@ test "first_or" {
 }
 ```
 
-There is no overloading: a user function may not reuse a name from the standard library (T001), and each name means one function.
+There is no overloading: a user function may not reuse a standard library name (T001), and each name means one function.
 
 ## Clauses
 
@@ -61,7 +60,7 @@ The formatter puts clauses in that order, sorts effect names, and merges two `re
 
 ## Effects
 
-An effect is a kind of side effect: printing, files, network, time or randomness. Pure is the default: leaving out the `effects` clause means the function has none. There are five effects:
+An effect is a kind of side effect. There are five, and pure is the default: leaving out the `effects` clause means the function has none.
 
 | Effect | Built-ins that use it |
 |---|---|
@@ -71,7 +70,7 @@ An effect is a kind of side effect: printing, files, network, time or randomness
 | `rand` | `random`, `random_int` |
 | `time` | `now`, `sleep` |
 
-A function lists exactly the effects it uses, no more and no fewer, in alphabetical order. Effects propagate through user functions: calling a function that declares `io` uses `io`.
+A function lists exactly the effects it uses, no more and no fewer, in alphabetical order. Effects propagate: calling a function that declares `io` uses `io`, and so does naming an effectful function as a value (`map(names, print)`) or calling one inside a lambda (`map(names, |n| print(n))`).
 
 ```canon
 fn log_all(lines: List[String]) -> Unit
@@ -90,7 +89,7 @@ fn stamp(lines: List[String]) -> Int
 }
 ```
 
-The checker enforces the list both ways, and both errors carry a patch (a unified diff) that rewrites the clause:
+The checker enforces the list both ways, and both errors carry a patch that rewrites the clause (`canon check --fix` applies it):
 
 - **E101**: the function uses an effect it does not declare.
 - **E102**: the function declares an effect it never uses.
@@ -112,9 +111,34 @@ fn add(a: Int, b: Int) -> Int
 }
 ```
 
-A lambda's calls count toward the enclosing function, so `map(names, |n| print(n))` needs `io`.
+## Effects in tests
 
-Test blocks are not functions and carry no effects clause; they may call effectful built-ins directly. Under `canon test`, time and randomness are deterministic (see [Command line](/docs/cli)).
+Test blocks are effect-checked too, with one difference: under `canon test`, `io`, `time` and `rand` are virtual (output is captured, the clock starts at 0 and moves only through `sleep`, and random numbers come from a fixed seed), so a test uses them freely and never declares them. `fs` and `net` touch the real world, so a test that uses them declares them on the line after its name, exactly like a function:
+
+```canon
+test "the clock is virtual" {
+  print("tests may print")
+  sleep(250)
+  assert(now() == 250)
+}
+
+test "reads a fixture"
+  effects: fs
+{
+  let r = read_file("/tmp/fixture.txt")
+  assert(r == r)
+}
+```
+
+A test that reads a file without the line is E101, and the patch adds it. Declaring `io`, `time` or `rand` on a test is E102, because it needs none of them.
+
+```canon
+# expect: E101
+test "reads a fixture" {
+  let r = read_file("/tmp/fixture.txt")
+  assert(r == r)
+}
+```
 
 ## Contracts
 
@@ -134,13 +158,64 @@ fn main() -> Unit
 }
 ```
 
-Running it prints the trap as one JSON line and exits with status 1:
+Running it prints the trap as one JSON line on stderr and exits with status 1:
 
 ```json
 {"code":"R001","message":"requires failed in fn halve","line":2,"col":13,"stack":[{"fn":"halve","line":2,"col":13},{"fn":"main","line":10,"col":19}]}
 ```
 
 `canon run --no-contracts` skips both checks; the same program then prints `1`.
+
+Contracts must be pure. A clause that performs an effect, directly or through a function it calls, is E103: an effect hidden in a contract would appear in no signature, and would happen or not depending on `--no-contracts`. Compute the value in the body instead.
+
+```canon
+# expect: E103
+fn wait_for(n: Int) -> Int
+  requires: now() >= 0
+{
+  return n
+}
+```
+
+## Contract fuzzing
+
+`canon test` runs the test blocks, then fuzzes contracts: every pure, non-generic function with a `requires` or `ensures` clause is called on 200 inputs generated from its parameter types. Ints, strings and lists are small (so a counterexample is readable), and the generator is seeded, so every run tries the same inputs. Inputs that fail the function's own `requires` are discarded; any other trap (a failed `ensures`, an `assert`, overflow, division by zero) is a counterexample.
+
+```canon
+fn abs_diff(a: Int, b: Int) -> Int
+  ensures: result >= 0
+{
+  return a - b
+}
+
+fn halve(n: Int) -> Int
+  requires: n % 2 == 0
+  ensures: result * 2 == n
+{
+  return n / 2
+}
+
+fn apply_twice(f: fn(Int) -> Int, x: Int) -> Int
+  ensures: result == result
+{
+  return f(f(x))
+}
+
+test "abs_diff of equal numbers" {
+  assert(abs_diff(3, 3) == 0)
+}
+```
+
+```text
+PASS abs_diff of equal numbers
+FAIL fuzz abs_diff: a = -19, b = 12
+  {"code":"R002","message":"ensures failed in fn abs_diff","line":2,"col":12,"stack":[{"fn":"abs_diff","line":2,"col":12}]}
+PASS fuzz halve (107 inputs)
+SKIP fuzz apply_twice (a function-typed parameter)
+2 passed, 1 failed
+```
+
+The test block passes, but the contract says what `abs_diff` promises, and the fuzzer found an input that breaks it. `halve` passed on every input its `requires` admits (the rest were discarded). A function whose parameters cannot be generated, such as a function type, is skipped. Functions with effects, generic functions and functions without a contract are not fuzzed. `canon test --no-contract-fuzz` runs only the test blocks.
 
 ## The entry point
 
@@ -165,3 +240,23 @@ fn main() -> Result[Int, Error]
 ```
 
 This program prints `error: bad port: 80x` and exits 1.
+
+## What the guarantee covers
+
+The effects a checked program can perform are bounded by its entry point: `main`'s effects clause under `canon run`, and under `canon test`, each test's declared `fs` and `net` plus the virtual `io`, `time` and `rand`. The checker guarantees it, and at run time a capability guard enforces it again: the host performs only the effects the entry point declares, and contract fuzzing allows none. On a checked program the guard never fires; it is there in case the checker has a bug, and it reports R006 naming the entry point (`effect fs denied (write_file): fn main does not declare it`). `--no-capability-guard` turns it off for experiments.
+
+The guarantee is per program, not per function. A function type carries no effects, so a function whose own signature declares none can still perform effects it is handed as a parameter or a record field:
+
+```canon
+fn apply(f: fn(String) -> Unit, s: String) -> Unit {
+  f(s)
+}
+
+fn main() -> Unit
+  effects: io
+{
+  apply(print, "printed through a function that declares no effects")
+}
+```
+
+`apply` checks as pure and still prints. The effect is not lost: `main` names `print`, so `main` must declare `io` (without it, E101 says `io (via print as a value)`), and the bound on the whole program holds. What you cannot conclude is that `apply` is harmless from its signature alone. Effects on function types (so that `apply`'s signature would show the `io`) are planned for v0.4; see the [Roadmap](/docs/roadmap).

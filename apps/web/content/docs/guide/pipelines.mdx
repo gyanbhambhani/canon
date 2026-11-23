@@ -132,7 +132,46 @@ fn label(xs: List[Int]) -> String {
 }
 ```
 
-If that line passes 100 characters (L001), bind the pipeline with `let` first.
+## Long stages
+
+The formatter breaks an over-long statement at its outermost list, tuple, record or call brackets, but never inside a pipeline. A stage line over 100 characters is L001, which has no patch:
+
+```canon
+# expect: L001
+type Order {
+  id: Int,
+  customer: String,
+  amount: Float,
+}
+
+fn big_spenders(orders: List[Order], floor: Float) -> List[String] {
+  return orders
+    |> filter(|o| o.amount > floor && o.customer != "" && o.customer != "internal test account here")
+    |> sort_by(|o| o.amount)
+    |> map(|o| o.customer)
+}
+```
+
+Split the condition into two stages, or bind part of it with `let`:
+
+```canon
+type Order {
+  id: Int,
+  customer: String,
+  amount: Float,
+}
+
+fn big_spenders(orders: List[Order], floor: Float) -> List[String] {
+  let internal = "internal test account here"
+  return orders
+    |> filter(|o| o.amount > floor && o.customer != "")
+    |> filter(|o| o.customer != internal)
+    |> sort_by(|o| o.amount)
+    |> map(|o| o.customer)
+}
+```
+
+The same holds for a pipeline inside an expression: if its one line passes 100 characters, bind the pipeline with `let` first.
 
 ## Why three
 

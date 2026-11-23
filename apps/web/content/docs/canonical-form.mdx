@@ -1,9 +1,9 @@
 ---
 title: Formatting rules
-description: Every rule the formatter applies. The formatter turns any spacing or layout of a program into one standard text, and a file in any other layout fails with C001 and a patch.
+description: Every rule the formatter applies, with before and after pairs for line breaking, logical operators and each migration from v0 and v0.2. Any other layout fails with C001 and a patch.
 ---
 
-This page lists every rule the formatter applies. The formatter turns any spacing or layout of a program into one standard text, called the canonical form, and Canon accepts only that text. This file fails:
+This page lists every rule the formatter applies. The formatter turns any layout of a program into one standard text, the canonical form, and Canon accepts only that text. This file fails:
 
 ```canon
 # expect: C001
@@ -23,11 +23,11 @@ messy.cn:1:1: error C001: source is not in canonical form; apply the patch (Cano
   +}
 ```
 
-`canon fmt FILE` prints the canonical text; `canon fmt --write FILE` rewrites the file. One patch applies every rule below at once.
+`canon fmt FILE` prints the canonical text, `canon fmt --write FILE` rewrites the file, and `canon check --fix --write FILE` applies the C001 patch together with every other mechanical fix. One patch applies every rule below at once.
 
 ## How it works
 
-The parser is loose, so every spacing and layout of a program parses to the same tree. The formatter rewrites forms that mean the same thing (`x == true` and `x`) into one, then prints the tree. A file is accepted only if it equals that printed text.
+The parser is loose, so every layout of a program parses to the same tree. The formatter rewrites forms that mean the same thing (`x == true` and `x`) into one, then prints the tree. A file is accepted only if it equals that printed text. Where lines break depends only on the tree, so there is still exactly one text per program.
 
 ## The rules
 
@@ -37,22 +37,93 @@ The parser is loose, so every spacing and layout of a program parses to the same
 | One statement per line; one blank line between top-level items, none inside a block | | |
 | An empty body is `{}` | `{` newline `}` | `{}` |
 | Redundant parentheses are removed | `((a + 1)) * 2 > (3)` | `(a + 1) * 2 > 3` |
-| No trailing comma in arguments, lists, tuples and parameters | `[a, 2, 3,]` | `[a, 2, 3]` |
+| No trailing comma in arguments, lists, tuples and parameters that fit on one line | `[a, 2, 3,]` | `[a, 2, 3]` |
+| A statement over 100 characters breaks at its outermost list, tuple, record or call brackets, one item per line, each with a trailing comma | see [below](#long-statements) | |
 | Record fields and match arms: one per line, each ending with a comma | `type Point { x: Int y: Int }` | one field per line |
 | Sum type variants: one per line, starting with `\|` | `type Light = Red \| Green` | one variant per line |
 | `else { if … }` alone in the block becomes `else if` | | `} else if n < 0 {` |
-| Bool comparisons and double negation collapse | `x == true`, `x == false`, `not not x` | `x`, `not x`, `x` |
+| Logical operators are `&&`, `\|\|`, `!` | `a and not b or c` | `a && !b \|\| c` |
+| Bool comparisons and double negation collapse | `x == true`, `x == false`, `!!x` | `x`, `!x`, `x` |
 | Numbers print one way | `007`, `1.50`, `1e3` | `7`, `1.5`, `1000.0` |
 | `use` lines move to the top, sorted, without duplicates | | |
 | Effect names sorted, without duplicates | `effects: time, io, io` | `effects: io, time` |
 | Clauses in the order `effects`, `requires`, `ensures`; two `requires` (or `ensures`) lines merge with `&&` | | |
 | Three or more chained calls form a pipeline, one stage per line; fewer are nested calls | | see [Pipelines](/docs/guide/pipelines) |
 | An end-of-line comment moves to its own line below; a comment above a top-level item stays attached | `let m = n * 2 # cheap` | comment on the next line |
-| Arguments inside a call's parentheses join onto one line | `max(a,` newline `0)` | `max(a, 0)` |
+| Arguments inside a call's parentheses join onto one line (unless the statement is too long) | `max(a,` newline `0)` | `max(a, 0)` |
+| Old spellings become current ones | `set x = e`, `for c { }`, `concat(a, b)` | `x = e`, `while c { }`, `a + b` |
+
+## Long statements
+
+A line is at most 100 characters. When a statement is longer, the formatter breaks its outermost bracket (a list, a tuple of two or more items, a record literal or a call's arguments) one item per line, each item ending with a comma. This is the form models already write by hand, and it makes a long line a mechanical fix rather than a rewrite:
+
+```canon
+# expect: C001
+fn checks(name: String, age: Int, email: String) -> List[(Bool, String)] {
+  return [(name == "", "name is empty"), (age < 0 || age > 150, "age out of range"), (email == "", "email is empty")]
+}
+```
+
+```canon
+fn checks(name: String, age: Int, email: String) -> List[(Bool, String)] {
+  return [
+    (name == "", "name is empty"),
+    (age < 0 || age > 150, "age out of range"),
+    (email == "", "email is empty"),
+  ]
+}
+```
+
+Records and calls break the same way:
+
+```canon
+# expect: C001
+type Contact {
+  first_name: String,
+  last_name: String,
+  email_address: String,
+}
+
+fn contact(s: String) -> Contact {
+  return Contact { first_name: s + "aaaaaaaaaa", last_name: s + "bbbbbbbbbbbb", email_address: s + "cccccccccc" }
+}
+```
+
+```canon
+type Contact {
+  first_name: String,
+  last_name: String,
+  email_address: String,
+}
+
+fn contact(s: String) -> Contact {
+  return Contact {
+    first_name: s + "aaaaaaaaaa",
+    last_name: s + "bbbbbbbbbbbb",
+    email_address: s + "cccccccccc",
+  }
+}
+```
+
+A long line with no such bracket (a chain of operators, or a pipeline stage) is L001, which has no patch: bind a subexpression with `let`.
+
+```canon
+# expect: L001
+fn f() -> String {
+  return "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" + "cccccccccccccccccccccc"
+}
+```
+
+```canon
+fn f() -> String {
+  let head = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  return head + "cccccccccccccccccccccc"
+}
+```
 
 ## Declarations with clauses
 
-A function's `effects` clause lists the side effects it has; `requires` and `ensures` are its contracts. Each clause sits on its own indented line, and the opening brace moves to a line by itself.
+Each clause sits on its own indented line, in the order `effects`, `requires`, `ensures`, and the opening brace moves to a line by itself. Test blocks that declare `fs` or `net` follow the same layout.
 
 ```canon
 # expect: C001
@@ -76,7 +147,7 @@ fn take_some(xs: List[Int], n: Int) -> List[Int]
 
 ## The line rule for a call's parenthesis
 
-A call's `(` must sit on the same line as the function name. A `(` at the start of a line starts a new statement, which is a different program, and the checker rejects it with P004 (a statement that is not a call):
+A call's `(` must sit on the same line as the function name. A `(` at the start of a line starts a new statement, which is a different program, so the formatter cannot join them; the checker rejects it with P004 (a statement that is not a call):
 
 ```canon
 # expect: P004
@@ -87,41 +158,91 @@ fn f(a: Int) -> Int {
 }
 ```
 
-## Line length
+## Migrating from v0.2
 
-A line is at most 100 characters. When a statement is longer, the formatter breaks its outermost brackets (a list, a tuple, a record literal or a call's arguments) one item per line, each with a trailing comma; the rule depends only on the program, so there is still one text. A line it cannot break this way (a long condition, say) is L001: bind a subexpression with `let`. `canon fmt --no-wrap` turns the breaking off (v0.2 behaviour).
+v0.3 changed one spelling and one checking rule. Both migrate mechanically.
 
-```canon
-# expect: L001
-fn f() -> String {
-  return "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" + "cccccccccccccccccccccc"
-}
-```
-
-```canon
-fn f() -> String {
-  let head = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-  return head + "cccccccccccccccccccccc"
-}
-```
-
-## Old v0 spellings
-
-v0.2 changed three spellings and v0.3 one more. The formatter rewrites the old forms, so an old file fails only with C001, and its patch migrates it: `set x = e` becomes `x = e`, `for cond { }` becomes `while cond { }`, `concat(a, b, c)` becomes `a + b + c`, and (v0.3) `a and not b or c` becomes `a && !b || c`. `!` binds like unary minus, so `not a == b` becomes `!(a == b)`. A v0.2 test block that reads files or calls the network also needs an `effects:` line; `canon check --fix --write` adds it.
+**Logical operators.** `and`, `or` and `not` still parse, and the formatter rewrites them to `&&`, `||` and `!`. Because `!` binds as tightly as unary minus, while v0.2's `not` bound looser than comparison, the formatter adds parentheses where `not` covered a comparison, so the meaning never changes:
 
 ```canon
 # expect: C001
-fn greet(name: String, n: Int) -> String {
-  var out = concat("hello ", name)
-  set out = concat(out, " #", to_string(n))
+fn has_positive(xs: List[Int]) -> Bool {
+  var seen = false
+  for x in xs {
+    if x > 0 and not seen {
+      seen = true
+    }
+  }
+  return seen
+}
+
+fn differs(a: Int, b: Int) -> Bool {
+  return not a == b
+}
+```
+
+```canon
+fn has_positive(xs: List[Int]) -> Bool {
+  var seen = false
+  for x in xs {
+    if x > 0 && !seen {
+      seen = true
+    }
+  }
+  return seen
+}
+
+fn differs(a: Int, b: Int) -> Bool {
+  return !(a == b)
+}
+```
+
+**Tests that use files or the network.** Test blocks are effect-checked in v0.3, and a test that uses `fs` or `net` declares it. That is not a layout change, so it is E101 rather than C001, and its patch adds the line. `canon check --fix --write` applies both migrations at once.
+
+```canon
+# expect: E101
+test "reads its fixture" {
+  let r = read_file("/tmp/fixture.txt")
+  assert(r == r)
+}
+```
+
+```canon
+test "reads its fixture"
+  effects: fs
+{
+  let r = read_file("/tmp/fixture.txt")
+  assert(r == r)
+}
+```
+
+A contract that performs an effect (E103) has no mechanical fix: move the effect into the body. Long lines that v0.2 reported as L001 now break as shown above. So a v0.2 project migrates with `canon fmt --write` on every file, plus `canon check --fix --write` where tests use `fs` or `net`.
+
+## Migrating from v0
+
+v0.2 replaced three v0 spellings. The formatter rewrites each: `set x = e` becomes `x = e`, `for cond { }` becomes `while cond { }`, and `concat(a, b, c)` becomes `a + b + c`.
+
+```canon
+# expect: C001
+fn countdown(n: Int) -> String {
+  var k = n
+  var out = concat("from ", to_string(n), ":")
+  for k > 0 {
+    set out = concat(out, " ", to_string(k))
+    set k = k - 1
+  }
   return out
 }
 ```
 
 ```canon
-fn greet(name: String, n: Int) -> String {
-  var out = "hello " + name
-  out = out + " #" + to_string(n)
+fn countdown(n: Int) -> String {
+  var k = n
+  var out = "from " + to_string(n) + ":"
+  while k > 0 {
+    out = out + " " + to_string(k)
+    k = k - 1
+  }
   return out
 }
 ```

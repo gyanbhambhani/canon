@@ -1,0 +1,22 @@
+{
+  "name": "canon-exp1",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.12.0",
+    "@canon/compiler": "workspace:*",
+    "@canon/runtime": "workspace:*",
+    "canon-benchmark": "workspace:*",
+    "openai": "^7.62.0",
+    "prettier": "^3.10.1",
+    "typescript": "~5.9.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "tsx": "^4.23.15"
+  }
+}

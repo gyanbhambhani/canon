@@ -93,3 +93,16 @@ cd packages/cli
 pnpm pack --pack-destination /tmp
 npm publish /tmp/canon-lang-0.1.1.tgz --access public --auth-type=web
 ```
+
+## 8. Publish canon-lang 0.3.0 (language v0.3)
+
+0.3.0 ships language and toolchain v0.3: `&&`, `||` and `!`; `break`; `for (i, x) in`; formatter line
+wrapping; `canon check --fix`; contract fuzzing in `canon test`; sealed effects (E103, effect-checked
+tests) and the run-time capability guard; T001 fix suggestions; and a `--no-<feature>` / `--v0.2`
+switch for every change. The npm version now tracks the language version.
+
+```bash
+cd ~/Desktop/canon/packages/cli
+pnpm pack --pack-destination /tmp      # writes /tmp/canon-lang-0.3.0.tgz with workspace:* rewritten
+npm publish /tmp/canon-lang-0.3.0.tgz --access public --auth-type=web
+```

@@ -1,6 +1,6 @@
 ---
 title: Types
-description: The built-in types, record and sum type declarations, type parameters, and the built-in Option, Result and Error types.
+description: The built-in types, record and sum type declarations, type parameters, tuples, function types, and the built-in Option, Result and Error types.
 ---
 
 This page covers Canon's types and how you declare your own. A record type lists named fields, one per line, each with a trailing comma. Build a record with a literal that names every field; read a field with `.`.
@@ -34,19 +34,17 @@ A literal that leaves out a field, or gives one twice, is T001. Reading or writi
 | `String` | Immutable Unicode text |
 | `Unit` | The result of a function with nothing to return |
 | `List[T]` | Immutable ordered lists: `[1, 2, 3]` |
-| `Map[K, V]` | Maps with insertion order; keys are Int, Float or String |
+| `Map[K, V]` | Immutable maps in insertion order; keys are Int, Float or String |
 | `Option[T]` | `Some(value: T)` or `None` |
 | `Result[T, E]` | `Ok(value: T)` or `Err(error: E)` |
-| `(A, B)` | Tuples, read with `t.0`, `t.1` |
+| `(A, B)` | Tuples, read with `t.0`, `t.1` or taken apart by `for (a, b) in` and `match` |
 | `fn(A) -> B` | Functions and lambdas |
 
-`Error` is the built-in record `Error { message: String }`, the usual error type in a `Result`.
-
-User types may not redefine any built-in type name, and there is no `Json`, `Any` or `null` in v0.
+`Error` is the built-in record `Error { message: String }`, the usual error type in a `Result`. User types may not reuse a built-in type name, and there is no `Json`, `Any` or `null`.
 
 ## Sum types
 
-A sum type lists its variants, one per line, each starting with `|`. A variant can carry named fields or none.
+A sum type lists its variants, one per line, each starting with `|`. A variant carries named fields or none.
 
 ```canon
 type Step =
@@ -76,7 +74,7 @@ Variants are built with call syntax (`Call("search", "canon")`, `Red`) and taken
 
 ## Type parameters
 
-Types and functions can take type parameters in square brackets. There are no interfaces or trait bounds in v0; the only constrained parameter is the standard library's key type, which must be Int, Float or String.
+Types and functions take type parameters in square brackets. There are no interfaces or trait bounds; the only constrained parameter is the standard library's key type `K`, which must be Int, Float or String.
 
 ```canon
 type Pair[A, B] {
@@ -96,7 +94,7 @@ test "swap" {
 
 ## Tuples
 
-Tuples group values without naming them. Read a slot with `t.0`, `t.1`, and so on; a slot the tuple does not have is T008.
+Tuples group values without naming them. Read a slot with `t.0`, `t.1`, and so on (a slot the tuple does not have is T008), or name every slot at once in a loop or a match.
 
 ```canon
 fn min_max(xs: List[Int]) -> (Int, Int) {
@@ -105,16 +103,25 @@ fn min_max(xs: List[Int]) -> (Int, Int) {
   return (lo, hi)
 }
 
-test "min and max" {
+fn widest(ranges: List[(Int, Int)]) -> Int {
+  var best = 0
+  for (lo, hi) in ranges {
+    best = max(best, hi - lo)
+  }
+  return best
+}
+
+test "tuples" {
   let bounds = min_max([3, -2, 9])
   assert(bounds == (-2, 9))
   assert(bounds.1 == 9)
+  assert(widest([(0, 3), (5, 12)]) == 7)
 }
 ```
 
 ## Function types
 
-A function type is written `fn(A, B) -> C`. Named functions and lambdas are both values of function types, and a local or parameter of function type can be called by name.
+A function type is written `fn(A, B) -> C`. Named functions and lambdas are both values of function types, and a parameter or local of function type is called by name.
 
 ```canon
 fn twice(f: fn(Int) -> Int, x: Int) -> Int {
@@ -130,6 +137,8 @@ test "twice" {
   assert(twice(|n| n + 1, 3) == 5)
 }
 ```
+
+A function type does not carry effects. Passing an effectful function such as `print` as a value counts as using its effect in the function that names it, which must declare it; see [Functions and side effects](/docs/guide/functions-effects-contracts#what-the-guarantee-covers).
 
 ## Equality and values
 

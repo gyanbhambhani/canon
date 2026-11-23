@@ -1,6 +1,6 @@
 ---
 title: Roadmap
-description: What Canon ships today, what comes next, and the questions still open.
+description: What Canon v0.3 ships, what comes next (the v0.3 benchmark, Canon-Py, effects on function types, a fuller standard library), and the questions still open.
 ---
 
 This page lists what Canon does today and what comes next. The current language is v0.3, which reads like this:
@@ -22,21 +22,25 @@ The full checklist, with every milestone and its tests, is [ROADMAP.md on GitHub
 ## Shipped
 
 - **The compiler.** Parser, formatter, type checker and code generator, written in TypeScript with no runtime dependencies. It runs in Node and in the browser. Every error has a stable code, and every mechanical fix comes back as a patch (a unified diff).
-- **The `canon` command.** `check`, `fmt`, `run` and `test`, each with `--json` output, published on npm as `canon-lang`.
-- **The runtime and standard library.** Programs compile to JavaScript. Side effects (files, printing, network, randomness, time) are declared on every function and can be denied at run time with `--deny`.
+- **The `canon` command.** `check` (with `--fix`), `fmt`, `run` and `test`, each with `--json` output, published on npm as `canon-lang`.
+- **The runtime and standard library.** Programs compile to JavaScript. Effects (files, printing, network, randomness, time) are declared on every function, enforced at run time by a capability guard, and can be denied with `--deny`.
 - **The docs, the [playground](/play) and the [Agent reference](/docs/for-agents)**, also served as `/llms.txt`.
-- **Two studies.** A study of which spellings language models find most natural, and a benchmark of agents writing Canon against agents writing TypeScript. Results are on the [Research](/research) page.
-- **Language v0.2.** Four changes taken from those studies: `x = e` assignment, `while` loops, `+` to join strings, and `match` in any expression. `canon fmt` rewrites the old spellings.
-- **Language v0.3.** `&&`, `||` and `!`; `break`; `for (i, x) in` destructuring; long statements broken by the formatter; test blocks and contracts effect-checked, with a run-time capability guard; `canon check --fix` applies every mechanical patch; T001 lists candidate fixes; `canon test` fuzzes functions that have contracts. Every change has a switch for experiments (`--v0.2` turns them all off). The reasoning and the planned test are in `docs/v0.3-proposal.md` in the repository.
+- **Two studies.** A study of which spellings language models find most natural, and two benchmarks of agents writing Canon (v0, v0.2) against agents writing TypeScript. Results are on the [Research](/research) page.
+- **Language v0.2.** `x = e` assignment, `while` loops, `+` to join strings, and `match` in any expression.
+- **Language v0.3.** `canon check --fix`; the formatter breaks long statements; ranked T001 suggestions; contract fuzzing in `canon test`; effect-checked tests, pure contracts and the capability guard; `&&`, `||` and `!`; `break`; `for (i, x) in` destructuring. Every change has a switch for experiments. [Design notes](/docs/design-notes#v03-what-the-evidence-decided) say why.
 
 ## Next
 
-1. **A strict grammar.** The formatter's one standard layout, written in a form that constrained-decoding engines accept, so a model cannot emit a file the formatter would change. Today's parser is lenient on purpose.
-2. **A native backend.** Compile through C, then LLVM. WebAssembly as a second target for running agent-written code in a sandbox.
-3. **A corpus pipeline.** Have models translate tested open-source functions into Canon, and keep only translations that pass the original tests.
+1. **Benchmark v0.3.** v0.3 is built but not yet measured. A pre-registered experiment will run it against TypeScript and against v0.3 with single changes switched off, so each change's effect can be told apart.
+2. **Test Canon-Py.** Canon's rules written as a strict subset of typed Python scored as natural to models as typed Python, and far more than Canon's syntax ([Design notes](/docs/design-notes#the-surprisal-finding-canon-py)). A cheap pre-registered test comes first; a new front end only if it passes.
+3. **Effects on function types.** Today the effect bound is exact for a whole program but not for each higher-order function: `fn apply(f: fn(String) -> Unit, s: String)` declares nothing and prints when given `print`. Writing effects into function types would make every signature exact; it needs effect polymorphism in the checker.
+4. **A fuller standard library.** Most of the length gap between Canon and Python programs is missing capability, not syntax: indexing, character tests, string repetition, counting. Each addition costs reference space and needs its own evidence.
+5. **A strict grammar.** The formatter's one layout, written in a form that constrained-decoding engines accept, so a model cannot emit a file the formatter would change.
 
 ## Later
 
+- **A native backend.** Compile through C, then LLVM, with WebAssembly as a target for running agent-written code in a sandbox.
+- **A corpus pipeline.** Have models translate tested open-source functions into Canon, and keep only translations that pass the original tests.
 - **Memory model.** Every value behaves as its own copy; the compiler removes the copies. No lifetime annotations.
 - **Content-addressed compilation.** Identify each function by a hash of its formatted text, so an unchanged function is never recompiled or retested.
 - **Modules, a package manager and an editor language server.** Today a program is one file plus the standard library.
