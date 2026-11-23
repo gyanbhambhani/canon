@@ -1,0 +1,7 @@
+{
+  "files": {
+    "/var/lib/ids/counter": "41\n",
+    "/var/lib/ids/corrupt": "forty-one\n"
+  },
+  "http": {}
+}

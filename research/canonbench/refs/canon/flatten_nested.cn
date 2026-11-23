@@ -1,0 +1,74 @@
+fn at(cs: List[String], i: Int) -> String {
+  return cs
+    |> drop(i)
+    |> first()
+    |> unwrap_or("")
+}
+
+fn is_digit(c: String) -> Bool {
+  return str_len(c) == 1 && c >= "0" && c <= "9"
+}
+
+fn bad(i: Int) -> String {
+  return "invalid at " + to_string(i)
+}
+
+fn parse_int_at(cs: List[String], i: Int) -> Result[(Int, Int), String] {
+  var j = i
+  var sign = 1
+  if at(cs, j) == "-" {
+    sign = -1
+    j = j + 1
+  }
+  if !is_digit(at(cs, j)) {
+    return Err(bad(j))
+  }
+  var v = 0
+  while is_digit(at(cs, j)) {
+    v = v * 10 + (cs |> at(j) |> parse_int() |> unwrap_or(0))
+    j = j + 1
+  }
+  return Ok((sign * v, j))
+}
+
+fn parse_list(cs: List[String], i: Int, depth: Int) -> Result[(List[Int], Int, Int), String] {
+  if at(cs, i) != "[" {
+    return Err(bad(i))
+  }
+  var j = i + 1
+  var ints = []
+  var deepest = depth
+  if at(cs, j) == "]" {
+    return Ok((ints, j + 1, deepest))
+  }
+  var going = true
+  while going {
+    if at(cs, j) == "[" {
+      let r = try parse_list(cs, j, depth + 1)
+      ints = fold(r.0, ints, |acc, x| append(acc, x))
+      deepest = max(deepest, r.2)
+      j = r.1
+    } else {
+      let r = try parse_int_at(cs, j)
+      ints = append(ints, r.0)
+      j = r.1
+    }
+    if at(cs, j) == "," {
+      j = j + 1
+    } else if at(cs, j) == "]" {
+      going = false
+    } else {
+      return Err(bad(j))
+    }
+  }
+  return Ok((ints, j + 1, deepest))
+}
+
+fn flatten_nested(s: String) -> Result[(List[Int], Int), String] {
+  let cs = filter(split(s, ""), |c| c != " ")
+  let r = try parse_list(cs, 0, 1)
+  if r.1 < len(cs) {
+    return Err(bad(r.1))
+  }
+  return Ok((r.0, r.2))
+}

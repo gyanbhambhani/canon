@@ -1,0 +1,48 @@
+fn name(n: Int) -> String {
+  return match n {
+    0 => "love",
+    1 => "15",
+    2 => "30",
+    _ => "40",
+  }
+}
+
+fn tennis_score(points: String) -> String {
+  var a = 0
+  var b = 0
+  var over = false
+  for c in split(points, "") {
+    if over {
+      return "error: point after game"
+    }
+    if c == "A" {
+      a = a + 1
+    } else if c == "B" {
+      b = b + 1
+    } else {
+      return "error: bad point"
+    }
+    if (a >= 4 || b >= 4) && abs(a - b) >= 2 {
+      over = true
+    }
+  }
+  if over {
+    if a > b {
+      return "game A"
+    }
+    return "game B"
+  }
+  if a >= 3 && b >= 3 {
+    if a == b {
+      return "deuce"
+    }
+    if a > b {
+      return "advantage A"
+    }
+    return "advantage B"
+  }
+  if a == b {
+    return name(a) + "-all"
+  }
+  return name(a) + "-" + name(b)
+}

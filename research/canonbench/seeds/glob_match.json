@@ -1,0 +1,41 @@
+{
+  "id": "glob_match",
+  "source": "exp1-hard",
+  "fn": "glob_match",
+  "params": [
+    [
+      "pattern",
+      "String"
+    ],
+    [
+      "s",
+      "String"
+    ]
+  ],
+  "ret": "Bool",
+  "desc": "Return whether the whole string s matches pattern. In the pattern, \"*\" matches any sequence of characters (including none), \"?\" matches exactly one character, a backslash followed by any character matches that character literally (so \"\\*\" matches only \"*\"), a backslash that is the last character of the pattern matches a literal backslash, and every other character matches itself.",
+  "examples": [
+    {
+      "args": [
+        "a*c",
+        "abbbc"
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        "",
+        ""
+      ],
+      "expected": true
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

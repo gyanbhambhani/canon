@@ -1,0 +1,57 @@
+fn sym_val(c: String) -> Int {
+  return match c {
+    "I" => 1,
+    "V" => 5,
+    "X" => 10,
+    "L" => 50,
+    "C" => 100,
+    "D" => 500,
+    "M" => 1000,
+    _ => 0,
+  }
+}
+
+fn to_roman(n: Int) -> String {
+  let table = [(1000, "M"), (900, "CM"), (500, "D"), (400, "CD"), (100, "C"), (90, "XC"), (50, "L")]
+  let small = [(40, "XL"), (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I")]
+  var rest = n
+  var out = ""
+  for p in table {
+    while rest >= p.0 {
+      out = out + p.1
+      rest = rest - p.0
+    }
+  }
+  for p in small {
+    while rest >= p.0 {
+      out = out + p.1
+      rest = rest - p.0
+    }
+  }
+  return out
+}
+
+fn roman_to_int(s: String) -> Result[Int, String] {
+  if s == "" {
+    return Err("empty")
+  }
+  let cs = split(s, "")
+  for c in cs {
+    if sym_val(c) == 0 {
+      return Err("invalid character: " + c)
+    }
+  }
+  let vals = map(cs, |c| sym_val(c))
+  var total = 0
+  for p in zip(vals, append(drop(vals, 1), 0)) {
+    if p.0 < p.1 {
+      total = total - p.0
+    } else {
+      total = total + p.0
+    }
+  }
+  if total < 1 || total > 3999 || to_roman(total) != s {
+    return Err("not canonical")
+  }
+  return Ok(total)
+}

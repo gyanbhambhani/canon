@@ -1,0 +1,18 @@
+{
+  "id": "parse_money",
+  "requirement": "Also accept negative amounts written in accounting style, wrapped in parentheses: \"($12.50)\" is -1250. If s starts with \"(\" it must end with \")\" (otherwise return the error \"unbalanced parentheses\", checked before anything else); the text between them is parsed as usual except that it may not start with \"-\" (that gives \"missing $\"), and the result is negated.",
+  "fn": "parse_money",
+  "params": [
+    [
+      "s",
+      "String"
+    ]
+  ],
+  "ret": "Result[Int, String]",
+  "desc": "Parse an amount like \"$1,234.56\" into cents. Format: an optional \"-\", then \"$\", then the dollars, then optionally a \".\" followed by exactly two digits of cents. The dollars are one or more decimal digits, either with no commas, or grouped as 1 to 3 digits followed by one or more groups of a comma and exactly 3 digits; ignoring commas, the dollars may not start with 0 unless they are exactly \"0\". Return dollars * 100 + cents, negated if there is a \"-\". A negative amount may instead be written in parentheses: if s starts with \"(\", it must end with \")\" (otherwise the error is \"unbalanced parentheses\", checked before every other error); the text between the parentheses must then be \"$\", the dollars and optional cents as above (no \"-\"), and the result is negated. Errors, checked in this order: \"missing $\" if the character after the optional \"-\" (or after the \"(\") is not \"$\" (or there is none); \"bad cents\" if the amount contains a \".\" and the text after the first \".\" (up to the closing \")\" if there is one) is not exactly two digits; \"bad dollars\" if the text between \"$\" and the first \".\" (or the end, or the closing \")\") is not valid dollars.",
+  "decls": {
+    "canon": "",
+    "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {}
+}

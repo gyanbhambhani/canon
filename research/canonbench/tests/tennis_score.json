@@ -1,0 +1,65 @@
+{
+ "id": "tennis_score",
+ "cases": [
+  {
+   "args": [
+    ""
+   ],
+   "expected": "love-all"
+  },
+  {
+   "args": [
+    "A"
+   ],
+   "expected": "15-love"
+  },
+  {
+   "args": [
+    "AB"
+   ],
+   "expected": "15-all"
+  },
+  {
+   "args": [
+    "BBA"
+   ],
+   "expected": "15-30"
+  },
+  {
+   "args": [
+    "AAAB"
+   ],
+   "expected": "40-15"
+  },
+  {
+   "args": [
+    "AAABBB"
+   ],
+   "expected": "deuce"
+  },
+  {
+   "args": [
+    "AAABBBA"
+   ],
+   "expected": "advantage A"
+  },
+  {
+   "args": [
+    "BBBAB"
+   ],
+   "expected": "game B"
+  },
+  {
+   "args": [
+    "AAAAB"
+   ],
+   "expected": "error: point after game"
+  },
+  {
+   "args": [
+    "ABX"
+   ],
+   "expected": "error: bad point"
+  }
+ ]
+}

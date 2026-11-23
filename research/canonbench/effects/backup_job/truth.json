@@ -1,0 +1,26 @@
+{
+  "functions": {
+    "base_name": [],
+    "backup_name": [],
+    "fingerprint": [],
+    "copy_file": ["fs"],
+    "backup_file": ["fs", "time"],
+    "upload_backup": ["fs", "net"],
+    "verify_copy": ["fs"],
+    "run_backup": ["fs", "net", "time"]
+  },
+  "drive": [
+    { "fn": "base_name", "args": ["/srv/db/orders.db"] },
+    { "fn": "backup_name", "args": ["/srv/db/orders.db", "/backups", 1700000000000] },
+    { "fn": "fingerprint", "args": ["a\nb"] },
+    { "fn": "copy_file", "args": ["/srv/db/orders.db", "/tmp/orders.db"] },
+    { "fn": "copy_file", "args": ["/srv/db/missing.db", "/tmp/missing.db"] },
+    { "fn": "backup_file", "args": ["/srv/db/orders.db", "/backups"] },
+    { "fn": "upload_backup", "args": ["/srv/db/orders.db", "https://backup.example.com/upload"] },
+    { "fn": "upload_backup", "args": ["/srv/db/orders.copy", "https://backup.example.com/upload"] },
+    { "fn": "verify_copy", "args": ["/srv/db/orders.db", "/srv/db/orders.copy"] },
+    { "fn": "verify_copy", "args": ["/srv/db/orders.db", "/srv/db/stale.copy"] },
+    { "fn": "run_backup", "args": ["/srv/db/orders.db", "/backups", "https://backup.example.com/upload"] },
+    { "fn": "run_backup", "args": ["/srv/db/missing.db", "/backups", "https://backup.example.com/upload"] }
+  ]
+}

@@ -1,0 +1,21 @@
+type Meeting {
+  start: Int,
+  end: Int,
+}
+
+fn free_slots(meetings: List[Meeting], day_start: Int, day_end: Int) -> List[(Int, Int)] {
+  let ms = sort_by(filter(meetings, |m| m.end > m.start), |m| m.start)
+  var out = []
+  var cur = day_start
+  for m in ms {
+    let s = min(m.start, day_end)
+    if s > cur {
+      out = append(out, (cur, s))
+    }
+    cur = max(cur, m.end)
+  }
+  if day_end > cur {
+    out = append(out, (cur, day_end))
+  }
+  return out
+}

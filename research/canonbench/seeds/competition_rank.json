@@ -1,0 +1,48 @@
+{
+  "id": "competition_rank",
+  "source": "exp1-hard",
+  "fn": "competition_rank",
+  "params": [
+    [
+      "players",
+      "List[Player]"
+    ]
+  ],
+  "ret": "List[(Int, String)]",
+  "desc": "Rank the players by score, highest first, using standard competition ranking (\"1224\"): a player's rank is 1 plus the number of players with a strictly higher score, so equal scores share a rank and the next rank is skipped accordingly. Return (rank, name) pairs ordered by score (highest first); players with equal scores are ordered by name in ascending code-point order.",
+  "examples": [
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          {
+            "name": "a",
+            "score": 5
+          }
+        ]
+      ],
+      "expected": [
+        [
+          1,
+          "a"
+        ]
+      ]
+    }
+  ],
+  "decls": {
+    "canon": "type Player {\n  name: String,\n  score: Int,\n}",
+    "ts": "type Player = { name: string; score: number };"
+  },
+  "typeKinds": {
+    "Player": "record"
+  },
+  "tags": [
+    "total",
+    "adt"
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "id": "flatten_nested",
+  "source": "exp1-hard",
+  "fn": "flatten_nested",
+  "params": [
+    [
+      "s",
+      "String"
+    ]
+  ],
+  "ret": "Result[(List[Int], Int), String]",
+  "desc": "s holds a nested list of integers such as \"[1,[2,-3],[]]\". First remove every space character. The rest must be exactly one list: list = \"[\" then either \"]\" or element, zero or more of (\",\" element), then \"]\"; element = integer or list; integer = an optional \"-\" followed by one or more decimal digits. Return the integers in left-to-right order, paired with the maximum nesting depth of lists (the outer list has depth 1). If the text is not valid, return the error \"invalid at N\", where N is the 0-based position (in the text with spaces removed) of the first character that cannot continue a valid input, or the length of that text if it ends too early.",
+  "examples": [
+    {
+      "args": [
+        "[1,[2,-3],[]]"
+      ],
+      "expected": {
+        "ok": true,
+        "value": [
+          [
+            1,
+            2,
+            -3
+          ],
+          2
+        ]
+      }
+    },
+    {
+      "args": [
+        "[]"
+      ],
+      "expected": {
+        "ok": true,
+        "value": [
+          [],
+          1
+        ]
+      }
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {},
+  "tags": [
+    "result"
+  ]
+}

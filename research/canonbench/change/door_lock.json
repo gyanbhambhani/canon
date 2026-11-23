@@ -1,0 +1,24 @@
+{
+ "id": "door_lock",
+ "requirement": "Add a new key, Reset (an administrator override). While \"blocked\", Reset returns the lock to \"locked\" with an empty buffer and a failure count of 0. While \"locked\" or \"open\", Reset is ignored (it changes nothing, not even the buffer).",
+ "fn": "door_lock",
+ "params": [
+  [
+   "code",
+   "String"
+  ],
+  [
+   "events",
+   "List[Key]"
+  ]
+ ],
+ "ret": "String",
+ "desc": "Simulate a keypad lock. code is a non-empty string of decimal digits. The lock starts \"locked\" with an empty entry buffer and a failure count of 0. While \"locked\": Digit(d) appends the digit d (0-9) to the buffer, but the buffer holds at most as many digits as code has, so when it is full the oldest digit is dropped first; Clear empties the buffer; Enter compares the buffer with code: if equal, the lock becomes \"open\" and the failure count resets to 0, otherwise the failure count goes up by 1 and, when it reaches 3, the lock becomes \"blocked\". Enter always empties the buffer. Clear does not reset the failure count. Reset is ignored. While \"open\": Enter makes it \"locked\" again (buffer empty, failure count still 0); Digit, Clear and Reset are ignored. While \"blocked\": Reset makes it \"locked\" again with an empty buffer and a failure count of 0; every other key is ignored. Return the final state: \"locked\", \"open\" or \"blocked\".",
+ "decls": {
+  "canon": "type Key =\n  | Digit(d: Int)\n  | Enter\n  | Clear\n  | Reset",
+  "ts": "type Key = { kind: \"Digit\"; d: number } | { kind: \"Enter\" } | { kind: \"Clear\" } | { kind: \"Reset\" };"
+ },
+ "typeKinds": {
+  "Key": "sum"
+ }
+}

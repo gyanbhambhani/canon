@@ -1,0 +1,61 @@
+{
+  "id": "stack_vm",
+  "source": "exp1-hard",
+  "fn": "stack_vm",
+  "params": [
+    [
+      "prog",
+      "List[Instr]"
+    ]
+  ],
+  "ret": "Result[List[Int], String]",
+  "desc": "Run a stack machine program and return the values it prints. Start with an empty stack at instruction 0. Push(n) pushes n. Pop removes the top value. Add, Sub and Mul pop the top value b, then the next value a, and push a + b, a - b or a * b. Dup pushes a copy of the top value. Swap exchanges the top two values. Print pops the top value and appends it to the output. Jz(t) pops the top value and jumps to instruction t if it is 0, else continues with the next instruction. Jmp(t) jumps to instruction t. Halt stops. Running past the last instruction also stops. Return the output when the program stops. Errors, where N is the 0-based index of the instruction being executed: \"stack underflow at N\" if it needs more values than the stack holds (Pop, Dup, Print and Jz need 1; Add, Sub, Mul and Swap need 2); \"bad jump at N\" if a Jz or Jmp has a target outside 0 to (number of instructions - 1), checked every time it executes, whether or not the jump would be taken, and after the underflow check; \"step limit exceeded\" if the program is about to execute an instruction after 1000 instructions have already been executed.",
+  "examples": [
+    {
+      "args": [
+        [
+          {
+            "kind": "Push",
+            "n": 2
+          },
+          {
+            "kind": "Push",
+            "n": 3
+          },
+          {
+            "kind": "Add"
+          },
+          {
+            "kind": "Print"
+          }
+        ]
+      ],
+      "expected": {
+        "ok": true,
+        "value": [
+          5
+        ]
+      }
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": {
+        "ok": true,
+        "value": []
+      }
+    }
+  ],
+  "decls": {
+    "canon": "type Instr =\n  | Push(n: Int)\n  | Pop\n  | Add\n  | Sub\n  | Mul\n  | Dup\n  | Swap\n  | Jz(target: Int)\n  | Jmp(target: Int)\n  | Print\n  | Halt",
+    "ts": "type Instr =\n  | { kind: \"Push\"; n: number }\n  | { kind: \"Pop\" }\n  | { kind: \"Add\" }\n  | { kind: \"Sub\" }\n  | { kind: \"Mul\" }\n  | { kind: \"Dup\" }\n  | { kind: \"Swap\" }\n  | { kind: \"Jz\"; target: number }\n  | { kind: \"Jmp\"; target: number }\n  | { kind: \"Print\" }\n  | { kind: \"Halt\" };\ntype Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {
+    "Instr": "sum"
+  },
+  "tags": [
+    "result",
+    "adt"
+  ]
+}

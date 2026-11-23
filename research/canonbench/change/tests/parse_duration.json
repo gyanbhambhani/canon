@@ -1,0 +1,151 @@
+{
+ "id": "parse_duration",
+ "cases": [
+  {
+   "args": [
+    "1d"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 86400
+   }
+  },
+  {
+   "args": [
+    "2d3h"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 183600
+   }
+  },
+  {
+   "args": [
+    "1d1h1m1s"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 90061
+   }
+  },
+  {
+   "args": [
+    "0d10s"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 10
+   }
+  },
+  {
+   "args": [
+    "3h1d"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unit out of order: d"
+   }
+  },
+  {
+   "args": [
+    "1d2d"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unit out of order: d"
+   }
+  },
+  {
+   "args": [
+    "d5s"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "missing number before d"
+   }
+  },
+  {
+   "args": [
+    "1d5"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "missing unit"
+   }
+  }
+ ],
+ "regression": [
+  {
+   "args": [
+    "1h30m15s"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 5415
+   }
+  },
+  {
+   "args": [
+    "2h5s"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 7205
+   }
+  },
+  {
+   "args": [
+    "10"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "missing unit"
+   }
+  },
+  {
+   "args": [
+    "m"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "missing number before m"
+   }
+  },
+  {
+   "args": [
+    "5m3h"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unit out of order: h"
+   }
+  },
+  {
+   "args": [
+    "1h2h"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unit out of order: h"
+   }
+  },
+  {
+   "args": [
+    "90m"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 5400
+   }
+  },
+  {
+   "args": [
+    "0h05m"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 300
+   }
+  }
+ ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "stack_vm",
+  "requirement": "Add two instructions, Div and Mod. Each pops the top value b, then the next value a, and pushes a / b (the quotient truncated toward zero) or a % b (the remainder of that truncated division, with the sign of a). Both need 2 values on the stack; if b is 0, return the error \"division by zero at N\" (N is the instruction's index), checked after the underflow check.",
+  "fn": "stack_vm",
+  "params": [
+    [
+      "prog",
+      "List[Instr]"
+    ]
+  ],
+  "ret": "Result[List[Int], String]",
+  "desc": "Run a stack machine program and return the values it prints. Start with an empty stack at instruction 0. Push(n) pushes n. Pop removes the top value. Add, Sub, Mul, Div and Mod pop the top value b, then the next value a, and push a + b, a - b, a * b, a / b or a % b, where a / b is the quotient truncated toward zero and a % b is the remainder of that division (it has the sign of a, so -7 / 2 is -3 and -7 % 3 is -1). Dup pushes a copy of the top value. Swap exchanges the top two values. Print pops the top value and appends it to the output. Jz(t) pops the top value and jumps to instruction t if it is 0, else continues with the next instruction. Jmp(t) jumps to instruction t. Halt stops. Running past the last instruction also stops. Return the output when the program stops. Errors, where N is the 0-based index of the instruction being executed: \"stack underflow at N\" if it needs more values than the stack holds (Pop, Dup, Print and Jz need 1; Add, Sub, Mul, Div, Mod and Swap need 2); \"division by zero at N\" if a Div or Mod has b = 0, checked after the underflow check; \"bad jump at N\" if a Jz or Jmp has a target outside 0 to (number of instructions - 1), checked every time it executes, whether or not the jump would be taken, and after the underflow check; \"step limit exceeded\" if the program is about to execute an instruction after 1000 instructions have already been executed.",
+  "decls": {
+    "canon": "type Instr =\n  | Push(n: Int)\n  | Pop\n  | Add\n  | Sub\n  | Mul\n  | Div\n  | Mod\n  | Dup\n  | Swap\n  | Jz(target: Int)\n  | Jmp(target: Int)\n  | Print\n  | Halt",
+    "ts": "type Instr =\n  | { kind: \"Push\"; n: number }\n  | { kind: \"Pop\" }\n  | { kind: \"Add\" }\n  | { kind: \"Sub\" }\n  | { kind: \"Mul\" }\n  | { kind: \"Div\" }\n  | { kind: \"Mod\" }\n  | { kind: \"Dup\" }\n  | { kind: \"Swap\" }\n  | { kind: \"Jz\"; target: number }\n  | { kind: \"Jmp\"; target: number }\n  | { kind: \"Print\" }\n  | { kind: \"Halt\" };\ntype Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {
+    "Instr": "sum"
+  }
+}

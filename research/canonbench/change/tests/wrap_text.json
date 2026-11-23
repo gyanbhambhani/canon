@@ -1,0 +1,141 @@
+{
+ "id": "wrap_text",
+ "cases": [
+  {
+   "args": [
+    "a verylongword b",
+    4
+   ],
+   "expected": [
+    "a",
+    "very",
+    "long",
+    "word",
+    "b"
+   ]
+  },
+  {
+   "args": [
+    "abcdefg",
+    3
+   ],
+   "expected": [
+    "abc",
+    "def",
+    "g"
+   ]
+  },
+  {
+   "args": [
+    "abcd e",
+    3
+   ],
+   "expected": [
+    "abc",
+    "d e"
+   ]
+  },
+  {
+   "args": [
+    "xx abcdef",
+    5
+   ],
+   "expected": [
+    "xx",
+    "abcde",
+    "f"
+   ]
+  },
+  {
+   "args": [
+    "one two",
+    1
+   ],
+   "expected": [
+    "o",
+    "n",
+    "e",
+    "t",
+    "w",
+    "o"
+   ]
+  },
+  {
+   "args": [
+    "hi abcdefgh",
+    4
+   ],
+   "expected": [
+    "hi",
+    "abcd",
+    "efgh"
+   ]
+  },
+  {
+   "args": [
+    "  abcdef  ",
+    2
+   ],
+   "expected": [
+    "ab",
+    "cd",
+    "ef"
+   ]
+  }
+ ],
+ "regression": [
+  {
+   "args": [
+    "the quick brown fox",
+    10
+   ],
+   "expected": [
+    "the quick",
+    "brown fox"
+   ]
+  },
+  {
+   "args": [
+    "  a  b   c ",
+    3
+   ],
+   "expected": [
+    "a b",
+    "c"
+   ]
+  },
+  {
+   "args": [
+    "",
+    5
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    "    ",
+    4
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    "hello",
+    5
+   ],
+   "expected": [
+    "hello"
+   ]
+  },
+  {
+   "args": [
+    "aa bb cc dd",
+    5
+   ],
+   "expected": [
+    "aa bb",
+    "cc dd"
+   ]
+  }
+ ]
+}

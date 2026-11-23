@@ -1,0 +1,95 @@
+{
+ "id": "roman_to_int",
+ "cases": [
+  {
+   "args": [
+    "MCMXCIV"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 1994
+   }
+  },
+  {
+   "args": [
+    "III"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 3
+   }
+  },
+  {
+   "args": [
+    "MMMCMXCIX"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 3999
+   }
+  },
+  {
+   "args": [
+    ""
+   ],
+   "expected": {
+    "ok": false,
+    "error": "empty"
+   }
+  },
+  {
+   "args": [
+    "IIII"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "not canonical"
+   }
+  },
+  {
+   "args": [
+    "IC"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "not canonical"
+   }
+  },
+  {
+   "args": [
+    "MXQ"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "invalid character: Q"
+   }
+  },
+  {
+   "args": [
+    "iv"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "invalid character: i"
+   }
+  },
+  {
+   "args": [
+    "XLII"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 42
+   }
+  },
+  {
+   "args": [
+    "MMMM"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "not canonical"
+   }
+  }
+ ]
+}

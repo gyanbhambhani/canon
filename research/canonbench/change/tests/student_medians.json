@@ -1,0 +1,331 @@
+{
+ "id": "student_medians",
+ "cases": [
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "scores": [
+       1
+      ]
+     },
+     {
+      "name": "a",
+      "scores": [
+       3
+      ]
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     2
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "scores": [
+       10,
+       20
+      ]
+     },
+     {
+      "name": "b",
+      "scores": [
+       5
+      ]
+     },
+     {
+      "name": "a",
+      "scores": [
+       30
+      ]
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     20
+    ],
+    [
+     "b",
+     5
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "x",
+      "scores": []
+     },
+     {
+      "name": "x",
+      "scores": [
+       4
+      ]
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "x",
+     4
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "scores": []
+     },
+     {
+      "name": "a",
+      "scores": []
+     }
+    ]
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "b",
+      "scores": [
+       1,
+       2
+      ]
+     },
+     {
+      "name": "a",
+      "scores": [
+       9
+      ]
+     },
+     {
+      "name": "b",
+      "scores": [
+       3,
+       4
+      ]
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     9
+    ],
+    [
+     "b",
+     2.5
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "c",
+      "scores": [
+       5
+      ]
+     },
+     {
+      "name": "d",
+      "scores": [
+       6
+      ]
+     },
+     {
+      "name": "c",
+      "scores": [
+       7
+      ]
+     },
+     {
+      "name": "d",
+      "scores": [
+       6
+      ]
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "c",
+     6
+    ],
+    [
+     "d",
+     6
+    ]
+   ]
+  }
+ ],
+ "regression": [
+  {
+   "args": [
+    []
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "scores": []
+     }
+    ]
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "scores": [
+       90,
+       70,
+       80
+      ]
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     80
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "b",
+      "scores": [
+       1,
+       4,
+       2,
+       3
+      ]
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "b",
+     2.5
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "zed",
+      "scores": [
+       50
+      ]
+     },
+     {
+      "name": "amy",
+      "scores": [
+       40,
+       60
+      ]
+     },
+     {
+      "name": "bob",
+      "scores": [
+       70
+      ]
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "bob",
+     70
+    ],
+    [
+     "amy",
+     50
+    ],
+    [
+     "zed",
+     50
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "c",
+      "scores": [
+       5,
+       5,
+       9,
+       1
+      ]
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "c",
+     5
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "x",
+      "scores": []
+     },
+     {
+      "name": "y",
+      "scores": [
+       3,
+       4
+      ]
+     },
+     {
+      "name": "w",
+      "scores": [
+       100,
+       0
+      ]
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "w",
+     50
+    ],
+    [
+     "y",
+     3.5
+    ]
+   ]
+  }
+ ]
+}

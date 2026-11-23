@@ -1,0 +1,161 @@
+{
+ "id": "vending_machine",
+ "cases": [
+  {
+   "args": [
+    [
+     {
+      "kind": "Coin",
+      "cents": 25
+     },
+     {
+      "kind": "Coin",
+      "cents": 25
+     },
+     {
+      "kind": "Coin",
+      "cents": 25
+     },
+     {
+      "kind": "Select",
+      "price": 65
+     }
+    ]
+   ],
+   "expected": [
+    "vend 65 change 10"
+   ]
+  },
+  {
+   "args": [
+    []
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Coin",
+      "cents": 3
+     },
+     {
+      "kind": "Coin",
+      "cents": 10
+     },
+     {
+      "kind": "Select",
+      "price": 15
+     },
+     {
+      "kind": "Coin",
+      "cents": 5
+     },
+     {
+      "kind": "Select",
+      "price": 15
+     }
+    ]
+   ],
+   "expected": [
+    "reject 3",
+    "insufficient 10",
+    "vend 15 change 0"
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Coin",
+      "cents": 100
+     },
+     {
+      "kind": "Refund"
+     },
+     {
+      "kind": "Refund"
+     }
+    ]
+   ],
+   "expected": [
+    "refund 100"
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Coin",
+      "cents": 10
+     },
+     {
+      "kind": "Coin",
+      "cents": 50
+     }
+    ]
+   ],
+   "expected": [
+    "reject 50",
+    "refund 10"
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Select",
+      "price": 5
+     }
+    ]
+   ],
+   "expected": [
+    "insufficient 0"
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Coin",
+      "cents": 100
+     },
+     {
+      "kind": "Select",
+      "price": 30
+     },
+     {
+      "kind": "Select",
+      "price": 30
+     }
+    ]
+   ],
+   "expected": [
+    "vend 30 change 70",
+    "insufficient 0"
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Coin",
+      "cents": 25
+     },
+     {
+      "kind": "Select",
+      "price": 25
+     },
+     {
+      "kind": "Coin",
+      "cents": 5
+     }
+    ]
+   ],
+   "expected": [
+    "vend 25 change 0",
+    "refund 5"
+   ]
+  }
+ ]
+}

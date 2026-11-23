@@ -1,0 +1,24 @@
+{
+ "id": "invoice_total",
+ "requirement": "Add a second bulk-discount tier. A line with qty 50 or more now gets a 20% bulk discount, i.e. subtract amount / 5 rounded down, instead of the 10% discount; lines with qty 10 to 49 keep the 10% discount (amount / 10 rounded down) and smaller lines get none. Everything else (quantity check, coupons, tax) is unchanged.",
+ "fn": "invoice_total",
+ "params": [
+  [
+   "lines",
+   "List[Line]"
+  ],
+  [
+   "coupon",
+   "String"
+  ]
+ ],
+ "ret": "Result[Int, String]",
+ "desc": "Compute an invoice total in cents, using integer arithmetic only. Steps, in order: (1) if any line has qty below 1, return the error \"bad quantity: \" followed by the sku of the first such line. (2) Each line's amount is qty * unit_cents; if qty is 50 or more, subtract a bulk discount of amount / 5 rounded down; otherwise, if qty is 10 or more, subtract a bulk discount of amount / 10 rounded down. (3) The subtotal is the sum of the line amounts. (4) Apply the coupon to the subtotal: \"\" means no coupon; \"SAVE500\" subtracts 500, but the result never goes below 0; \"PCT10\" subtracts subtotal / 10 rounded down; \"BIG20\" subtracts subtotal / 5 rounded down, but only if the subtotal is at least 10000, otherwise return the error \"coupon not applicable: BIG20\"; any other coupon string (codes are case-sensitive) returns the error \"unknown coupon: \" followed by the coupon. (5) Add 8% tax on the amount after the coupon, rounded to the nearest cent with halves rounded up, i.e. tax = (amount * 8 + 50) / 100 with the division rounded down. Return amount plus tax. An empty invoice totals 0.",
+ "decls": {
+  "canon": "type Line {\n  sku: String,\n  qty: Int,\n  unit_cents: Int,\n}",
+  "ts": "type Line = { sku: string; qty: number; unit_cents: number };\ntype Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+ },
+ "typeKinds": {
+  "Line": "record"
+ }
+}

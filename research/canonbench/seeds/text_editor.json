@@ -1,0 +1,51 @@
+{
+  "id": "text_editor",
+  "source": "exp1-hard",
+  "fn": "text_editor",
+  "params": [
+    [
+      "ops",
+      "List[EditOp]"
+    ]
+  ],
+  "ret": "String",
+  "desc": "Simulate a one-line text editor and return its final text. It starts with empty text and the cursor at position 0 (positions run from 0, before the first character, to the text length, after the last). Insert(t) inserts t at the cursor and moves the cursor to just after the inserted text. Delete(n) removes up to n characters immediately before the cursor (fewer if the cursor is closer to the start) and moves the cursor back by the number removed. Left(n) and Right(n) move the cursor n positions, stopping at 0 and at the text length. Every Insert and Delete, even one that changes nothing, saves the (text, cursor) state from just before it on an undo history. Undo restores the most recently saved state (both text and cursor) and removes it from the history; with an empty history it does nothing. Undo itself is never saved, so it cannot be undone. n is never negative.",
+  "examples": [
+    {
+      "args": [
+        [
+          {
+            "kind": "Insert",
+            "text": "hello"
+          },
+          {
+            "kind": "Left",
+            "n": 2
+          },
+          {
+            "kind": "Insert",
+            "text": "XY"
+          }
+        ]
+      ],
+      "expected": "helXYlo"
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": ""
+    }
+  ],
+  "decls": {
+    "canon": "type EditOp =\n  | Insert(text: String)\n  | Delete(n: Int)\n  | Left(n: Int)\n  | Right(n: Int)\n  | Undo",
+    "ts": "type EditOp =\n  | { kind: \"Insert\"; text: string }\n  | { kind: \"Delete\"; n: number }\n  | { kind: \"Left\"; n: number }\n  | { kind: \"Right\"; n: number }\n  | { kind: \"Undo\" };"
+  },
+  "typeKinds": {
+    "EditOp": "sum"
+  },
+  "tags": [
+    "total",
+    "adt"
+  ]
+}

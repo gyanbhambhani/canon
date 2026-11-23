@@ -1,0 +1,7 @@
+{
+  "files": {
+    "/run/limits/api.bucket": "3,1699999990000\n",
+    "/run/limits/empty.bucket": "0,1700000000000\n"
+  },
+  "http": {}
+}

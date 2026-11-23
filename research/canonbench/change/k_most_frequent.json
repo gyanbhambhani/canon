@@ -1,0 +1,22 @@
+{
+ "id": "k_most_frequent",
+ "requirement": "Change the tie-break: values with equal counts must now be ordered by the position of their first occurrence in xs (earliest first) instead of from smallest to largest value. This also decides which tied values are kept when k cuts through a group of equal counts.",
+ "fn": "k_most_frequent",
+ "params": [
+  [
+   "xs",
+   "List[Int]"
+  ],
+  [
+   "k",
+   "Int"
+  ]
+ ],
+ "ret": "List[(Int, Int)]",
+ "desc": "Return (value, count) pairs for the k most frequent distinct values of xs, ordered by count from highest to lowest; values with equal counts are ordered by the position of their first occurrence in xs, earliest first. If k exceeds the number of distinct values, return all of them; if k <= 0, return an empty list.",
+ "decls": {
+  "canon": "",
+  "ts": ""
+ },
+ "typeKinds": {}
+}

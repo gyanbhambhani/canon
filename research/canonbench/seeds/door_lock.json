@@ -1,0 +1,60 @@
+{
+  "id": "door_lock",
+  "source": "exp1-hard",
+  "fn": "door_lock",
+  "params": [
+    [
+      "code",
+      "String"
+    ],
+    [
+      "events",
+      "List[Key]"
+    ]
+  ],
+  "ret": "String",
+  "desc": "Simulate a keypad lock. code is a non-empty string of decimal digits. The lock starts \"locked\" with an empty entry buffer and a failure count of 0. While \"locked\": Digit(d) appends the digit d (0-9) to the buffer, but the buffer holds at most as many digits as code has, so when it is full the oldest digit is dropped first; Clear empties the buffer; Enter compares the buffer with code: if equal, the lock becomes \"open\" and the failure count resets to 0, otherwise the failure count goes up by 1 and, when it reaches 3, the lock becomes \"blocked\". Enter always empties the buffer. Clear does not reset the failure count. While \"open\": Enter makes it \"locked\" again (buffer empty, failure count still 0); Digit and Clear are ignored. While \"blocked\": every key is ignored. Return the final state: \"locked\", \"open\" or \"blocked\".",
+  "examples": [
+    {
+      "args": [
+        "123",
+        [
+          {
+            "kind": "Digit",
+            "d": 1
+          },
+          {
+            "kind": "Digit",
+            "d": 2
+          },
+          {
+            "kind": "Digit",
+            "d": 3
+          },
+          {
+            "kind": "Enter"
+          }
+        ]
+      ],
+      "expected": "open"
+    },
+    {
+      "args": [
+        "123",
+        []
+      ],
+      "expected": "locked"
+    }
+  ],
+  "decls": {
+    "canon": "type Key =\n  | Digit(d: Int)\n  | Enter\n  | Clear",
+    "ts": "type Key = { kind: \"Digit\"; d: number } | { kind: \"Enter\" } | { kind: \"Clear\" };"
+  },
+  "typeKinds": {
+    "Key": "sum"
+  },
+  "tags": [
+    "total",
+    "adt"
+  ]
+}

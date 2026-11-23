@@ -1,0 +1,38 @@
+fn cluster_len(cs: List[String]) -> Int {
+  var i = 0
+  var prev = ""
+  var found = -1
+  for c in cs {
+    if found < 0 {
+      let vowel = contains(["a", "e", "i", "o", "u"], c) && !(c == "u" && prev == "q")
+      if vowel || c == "y" && i > 0 {
+        found = i
+      }
+    }
+    prev = c
+    i = i + 1
+  }
+  return found
+}
+
+fn pig_word(w: String) -> String {
+  let cs = split(w, "")
+  let n = cluster_len(cs)
+  if n == 0 {
+    return w + "way"
+  }
+  if n < 0 {
+    return w + "ay"
+  }
+  return join(drop(cs, n), "") + join(take(cs, n), "") + "ay"
+}
+
+fn pig_latin(s: String) -> String {
+  if s == "" {
+    return ""
+  }
+  return s
+    |> split(" ")
+    |> map(|w| pig_word(w))
+    |> join(" ")
+}

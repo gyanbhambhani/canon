@@ -1,0 +1,95 @@
+{
+ "id": "bracket_depth",
+ "cases": [
+  {
+   "args": [
+    ""
+   ],
+   "expected": {
+    "ok": true,
+    "value": 0
+   }
+  },
+  {
+   "args": [
+    "abc"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 0
+   }
+  },
+  {
+   "args": [
+    "a(b[c]{d})"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 2
+   }
+  },
+  {
+   "args": [
+    "([{}])"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 3
+   }
+  },
+  {
+   "args": [
+    "{[()()]}()"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 3
+   }
+  },
+  {
+   "args": [
+    "(]"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "mismatch at 1"
+   }
+  },
+  {
+   "args": [
+    "())"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "mismatch at 2"
+   }
+  },
+  {
+   "args": [
+    "(("
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unclosed at end"
+   }
+  },
+  {
+   "args": [
+    "x)("
+   ],
+   "expected": {
+    "ok": false,
+    "error": "mismatch at 1"
+   }
+  },
+  {
+   "args": [
+    "(()"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unclosed at end"
+   }
+  }
+ ]
+}

@@ -1,0 +1,174 @@
+{
+ "id": "invoice_total",
+ "cases": [
+  {
+   "args": [
+    [],
+    ""
+   ],
+   "expected": {
+    "ok": true,
+    "value": 0
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "a",
+      "qty": 2,
+      "unit_cents": 1000
+     }
+    ],
+    ""
+   ],
+   "expected": {
+    "ok": true,
+    "value": 2160
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "b",
+      "qty": 10,
+      "unit_cents": 333
+     }
+    ],
+    ""
+   ],
+   "expected": {
+    "ok": true,
+    "value": 3237
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "a",
+      "qty": 1,
+      "unit_cents": 300
+     }
+    ],
+    "SAVE500"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 0
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "x",
+      "qty": 9,
+      "unit_cents": 100
+     }
+    ],
+    "SAVE500"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 432
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "a",
+      "qty": 3,
+      "unit_cents": 1260
+     },
+     {
+      "sku": "b",
+      "qty": 1,
+      "unit_cents": 1
+     }
+    ],
+    "PCT10"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 3675
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "a",
+      "qty": 20,
+      "unit_cents": 550
+     }
+    ],
+    "BIG20"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "coupon not applicable: BIG20"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "a",
+      "qty": 20,
+      "unit_cents": 600
+     }
+    ],
+    "BIG20"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 9331
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "a",
+      "qty": 1,
+      "unit_cents": 100
+     }
+    ],
+    "save500"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unknown coupon: save500"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "a",
+      "qty": 1,
+      "unit_cents": 100
+     },
+     {
+      "sku": "b",
+      "qty": 0,
+      "unit_cents": 100
+     },
+     {
+      "sku": "c",
+      "qty": -1,
+      "unit_cents": 5
+     }
+    ],
+    "NOPE"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "bad quantity: b"
+   }
+  }
+ ]
+}

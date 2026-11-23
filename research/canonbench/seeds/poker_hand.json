@@ -1,0 +1,47 @@
+{
+  "id": "poker_hand",
+  "source": "exp1-hard",
+  "fn": "poker_hand",
+  "params": [
+    [
+      "cards",
+      "List[String]"
+    ]
+  ],
+  "ret": "String",
+  "desc": "Each card is two characters: a rank from \"23456789TJQKA\" then a suit from \"CDHS\". Return \"invalid\" unless cards holds exactly 5 valid cards with no card repeated. Otherwise return the hand's category, checking in this order: \"straight flush\", \"four of a kind\", \"full house\" (three of one rank and two of another), \"flush\" (all one suit), \"straight\" (five consecutive ranks; the ace counts high in TJQKA and low in A2345, but ranks do not wrap around, so QKA23 is not a straight), \"three of a kind\", \"two pair\", \"one pair\", \"high card\".",
+  "examples": [
+    {
+      "args": [
+        [
+          "TH",
+          "JH",
+          "QH",
+          "KH",
+          "AH"
+        ]
+      ],
+      "expected": "straight flush"
+    },
+    {
+      "args": [
+        [
+          "3S",
+          "AS",
+          "2D",
+          "4C",
+          "5S"
+        ]
+      ],
+      "expected": "straight"
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

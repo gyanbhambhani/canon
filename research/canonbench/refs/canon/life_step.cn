@@ -1,0 +1,44 @@
+fn cell(g: List[List[String]], r: Int, c: Int) -> String {
+  if r < 0 || c < 0 {
+    return "."
+  }
+  let row = g
+    |> drop(r)
+    |> first()
+    |> unwrap_or([])
+  return row
+    |> drop(c)
+    |> first()
+    |> unwrap_or(".")
+}
+
+fn live_around(g: List[List[String]], r: Int, c: Int) -> Int {
+  var n = 0
+  for dr in [-1, 0, 1] {
+    for dc in [-1, 0, 1] {
+      if (dr != 0 || dc != 0) && cell(g, r + dr, c + dc) == "#" {
+        n = n + 1
+      }
+    }
+  }
+  return n
+}
+
+fn next_cell(g: List[List[String]], r: Int, c: Int, here: String) -> String {
+  let n = live_around(g, r, c)
+  if n == 3 || here == "#" && n == 2 {
+    return "#"
+  }
+  return "."
+}
+
+fn life_step(grid: List[String], steps: Int) -> List[String] {
+  var g = map(grid, |row| split(row, ""))
+  var s = 0
+  while s < steps {
+    let cur = g
+    g = map(enumerate(cur), |rp| map(enumerate(rp.1), |cp| next_cell(cur, rp.0, cp.0, cp.1)))
+    s = s + 1
+  }
+  return map(g, |row| join(row, ""))
+}

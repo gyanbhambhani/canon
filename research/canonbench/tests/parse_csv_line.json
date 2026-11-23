@@ -1,0 +1,116 @@
+{
+ "id": "parse_csv_line",
+ "cases": [
+  {
+   "args": [
+    "a,b,c"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     "a",
+     "b",
+     "c"
+    ]
+   }
+  },
+  {
+   "args": [
+    ""
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     ""
+    ]
+   }
+  },
+  {
+   "args": [
+    "a,,"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     "a",
+     "",
+     ""
+    ]
+   }
+  },
+  {
+   "args": [
+    "\"x,y\",z"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     "x,y",
+     "z"
+    ]
+   }
+  },
+  {
+   "args": [
+    "\"say \"\"hi\"\"\""
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     "say \"hi\""
+    ]
+   }
+  },
+  {
+   "args": [
+    "\"abc"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unterminated quote"
+   }
+  },
+  {
+   "args": [
+    "ab\"c"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unexpected quote at 2"
+   }
+  },
+  {
+   "args": [
+    "\"ab\"c,d"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "expected comma at 4"
+   }
+  },
+  {
+   "args": [
+    "\"\",x"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     "",
+     "x"
+    ]
+   }
+  },
+  {
+   "args": [
+    " a , b "
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     " a ",
+     " b "
+    ]
+   }
+  }
+ ]
+}

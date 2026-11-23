@@ -1,0 +1,61 @@
+{
+ "id": "caesar_shift",
+ "cases": [
+  {
+   "args": [
+    "abc",
+    1
+   ],
+   "expected": "bcd"
+  },
+  {
+   "args": [
+    "xyz",
+    3
+   ],
+   "expected": "abc"
+  },
+  {
+   "args": [
+    "Hello, World!",
+    1
+   ],
+   "expected": "Hfmmp, Wpsme!"
+  },
+  {
+   "args": [
+    "abc",
+    -1
+   ],
+   "expected": "zab"
+  },
+  {
+   "args": [
+    "abc",
+    52
+   ],
+   "expected": "abc"
+  },
+  {
+   "args": [
+    "",
+    5
+   ],
+   "expected": ""
+  },
+  {
+   "args": [
+    "a-z",
+    -27
+   ],
+   "expected": "z-y"
+  },
+  {
+   "args": [
+    "hello",
+    13
+   ],
+   "expected": "uryyb"
+  }
+ ]
+}

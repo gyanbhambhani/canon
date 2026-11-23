@@ -1,0 +1,228 @@
+{
+ "id": "settle_debts",
+ "cases": [
+  {
+   "args": [
+    [],
+    [
+     "a",
+     "b"
+    ]
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "payer": "a",
+      "amount_cents": 100
+     }
+    ],
+    [
+     "a",
+     "b"
+    ]
+   ],
+   "expected": [
+    [
+     "b",
+     "a",
+     50
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "payer": "a",
+      "amount_cents": 100
+     }
+    ],
+    [
+     "a",
+     "b",
+     "c"
+    ]
+   ],
+   "expected": [
+    [
+     "b",
+     "a",
+     33
+    ],
+    [
+     "c",
+     "a",
+     33
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "payer": "c",
+      "amount_cents": 100
+     }
+    ],
+    [
+     "a",
+     "b",
+     "c"
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     "c",
+     34
+    ],
+    [
+     "b",
+     "c",
+     33
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "payer": "a",
+      "amount_cents": 30
+     },
+     {
+      "payer": "b",
+      "amount_cents": 30
+     },
+     {
+      "payer": "c",
+      "amount_cents": 30
+     }
+    ],
+    [
+     "a",
+     "b",
+     "c"
+    ]
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "payer": "a",
+      "amount_cents": 600
+     },
+     {
+      "payer": "b",
+      "amount_cents": 300
+     }
+    ],
+    [
+     "a",
+     "b",
+     "c",
+     "d"
+    ]
+   ],
+   "expected": [
+    [
+     "c",
+     "a",
+     225
+    ],
+    [
+     "d",
+     "a",
+     150
+    ],
+    [
+     "d",
+     "b",
+     75
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "payer": "a",
+      "amount_cents": 100
+     },
+     {
+      "payer": "b",
+      "amount_cents": 10
+     }
+    ],
+    [
+     "a",
+     "b",
+     "c"
+    ]
+   ],
+   "expected": [
+    [
+     "c",
+     "a",
+     36
+    ],
+    [
+     "b",
+     "a",
+     27
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "payer": "b",
+      "amount_cents": 60
+     },
+     {
+      "payer": "a",
+      "amount_cents": 60
+     }
+    ],
+    [
+     "a",
+     "b",
+     "c",
+     "d"
+    ]
+   ],
+   "expected": [
+    [
+     "c",
+     "a",
+     30
+    ],
+    [
+     "d",
+     "b",
+     30
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "payer": "a",
+      "amount_cents": 77
+     }
+    ],
+    [
+     "a"
+    ]
+   ],
+   "expected": []
+  }
+ ]
+}

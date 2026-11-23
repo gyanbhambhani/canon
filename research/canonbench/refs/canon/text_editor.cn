@@ -1,0 +1,49 @@
+type EditOp =
+  | Insert(text: String)
+  | Delete(n: Int)
+  | Left(n: Int)
+  | Right(n: Int)
+  | Undo
+
+type Editor {
+  text: String,
+  cur: Int,
+  history: List[(String, Int)],
+}
+
+fn step(e: Editor, op: EditOp) -> Editor {
+  let cs = split(e.text, "")
+  let saved = append(e.history, (e.text, e.cur))
+  return match op {
+    Insert(t) => insert(e, t, saved),
+    Delete(n) => delete(e, min(n, e.cur), saved),
+    Left(n) => Editor { text: e.text, cur: max(0, e.cur - n), history: e.history },
+    Right(n) => Editor { text: e.text, cur: min(len(cs), e.cur + n), history: e.history },
+    Undo => undo(e),
+  }
+}
+
+fn insert(e: Editor, t: String, saved: List[(String, Int)]) -> Editor {
+  let cs = split(e.text, "")
+  let text = join(take(cs, e.cur), "") + t + join(drop(cs, e.cur), "")
+  return Editor { text: text, cur: e.cur + str_len(t), history: saved }
+}
+
+fn delete(e: Editor, k: Int, saved: List[(String, Int)]) -> Editor {
+  let cs = split(e.text, "")
+  let text = join(take(cs, e.cur - k), "") + join(drop(cs, e.cur), "")
+  return Editor { text: text, cur: e.cur - k, history: saved }
+}
+
+fn undo(e: Editor) -> Editor {
+  let n = len(e.history)
+  return match last(e.history) {
+    Some(p) => Editor { text: p.0, cur: p.1, history: take(e.history, n - 1) },
+    None => e,
+  }
+}
+
+fn text_editor(ops: List[EditOp]) -> String {
+  let start = Editor { text: "", cur: 0, history: [] }
+  return fold(ops, start, |e, op| step(e, op)).text
+}

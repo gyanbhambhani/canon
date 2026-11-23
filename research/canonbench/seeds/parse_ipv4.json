@@ -1,0 +1,41 @@
+{
+  "id": "parse_ipv4",
+  "source": "exp1-hard",
+  "fn": "parse_ipv4",
+  "params": [
+    [
+      "s",
+      "String"
+    ]
+  ],
+  "ret": "Result[Int, String]",
+  "desc": "Parse a dotted IPv4 address. Split s on \".\": if that does not give exactly 4 parts, return \"expected 4 parts\". Each part must be 1 to 3 decimal digits (no signs or other characters), must not have a leading zero unless it is exactly \"0\", and must be at most 255. Otherwise return \"bad part: P\" for the first invalid part P, in order (P may be empty). For parts a, b, c, d return a*16777216 + b*65536 + c*256 + d.",
+  "examples": [
+    {
+      "args": [
+        "192.168.1.1"
+      ],
+      "expected": {
+        "ok": true,
+        "value": 3232235777
+      }
+    },
+    {
+      "args": [
+        "0.0.0.0"
+      ],
+      "expected": {
+        "ok": true,
+        "value": 0
+      }
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {},
+  "tags": [
+    "result"
+  ]
+}

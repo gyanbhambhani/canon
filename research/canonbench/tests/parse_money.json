@@ -1,0 +1,95 @@
+{
+ "id": "parse_money",
+ "cases": [
+  {
+   "args": [
+    "$1,234.56"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 123456
+   }
+  },
+  {
+   "args": [
+    "-$12"
+   ],
+   "expected": {
+    "ok": true,
+    "value": -1200
+   }
+  },
+  {
+   "args": [
+    "$1,234,567.00"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 123456700
+   }
+  },
+  {
+   "args": [
+    "1.00"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "missing $"
+   }
+  },
+  {
+   "args": [
+    "$1.5"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "bad cents"
+   }
+  },
+  {
+   "args": [
+    "$12,34"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "bad dollars"
+   }
+  },
+  {
+   "args": [
+    "$0012"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "bad dollars"
+   }
+  },
+  {
+   "args": [
+    "$"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "bad dollars"
+   }
+  },
+  {
+   "args": [
+    "-$0.05"
+   ],
+   "expected": {
+    "ok": true,
+    "value": -5
+   }
+  },
+  {
+   "args": [
+    "$1.2.3"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "bad cents"
+   }
+  }
+ ]
+}

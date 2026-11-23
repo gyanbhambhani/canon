@@ -1,0 +1,38 @@
+type Student {
+  name: String,
+  scores: List[Int],
+}
+
+fn median(xs: List[Int]) -> Float {
+  let s = sort_by(xs, |x| x)
+  let n = len(s)
+  let a = s
+    |> drop((n - 1) / 2)
+    |> first()
+    |> unwrap_or(0)
+  let b = s
+    |> drop(n / 2)
+    |> first()
+    |> unwrap_or(0)
+  return to_float(a + b) / 2.0
+}
+
+fn all_scores(records: List[Student]) -> List[Int] {
+  var out = []
+  for r in records {
+    for x in r.scores {
+      out = append(out, x)
+    }
+  }
+  return out
+}
+
+fn student_medians(students: List[Student]) -> List[(String, Float)] {
+  return students
+    |> group_by(|s| s.name)
+    |> map(|g| Student { name: g.0, scores: all_scores(g.1) })
+    |> filter(|s| len(s.scores) > 0)
+    |> map(|s| (s.name, median(s.scores)))
+    |> sort_by(|r| r.0)
+    |> sort_desc_by(|r| r.1)
+}

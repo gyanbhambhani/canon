@@ -1,0 +1,15 @@
+fn shift_char(c: String, k: Int) -> String {
+  let letters = split("abcdefghijklmnopqrstuvwxyz", "")
+  let hits = filter(enumerate(letters), |p| p.1 == c)
+  return match first(hits) {
+    Some(p) => letters |> drop(((p.0 + k) % 26 + 26) % 26) |> first() |> unwrap_or(c),
+    None => c,
+  }
+}
+
+fn caesar_shift(s: String, k: Int) -> String {
+  return s
+    |> split("")
+    |> map(|c| shift_char(c, k))
+    |> join("")
+}

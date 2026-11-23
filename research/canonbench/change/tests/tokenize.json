@@ -1,0 +1,297 @@
+{
+ "id": "tokenize",
+ "cases": [
+  {
+   "args": [
+    "say \"hi there\""
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "kind": "Ident",
+      "name": "say"
+     },
+     {
+      "kind": "Str",
+      "text": "hi there"
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    "\"\""
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "kind": "Str",
+      "text": ""
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    "f(\"a,b\", 1)"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "kind": "Ident",
+      "name": "f"
+     },
+     {
+      "kind": "Sym",
+      "text": "("
+     },
+     {
+      "kind": "Str",
+      "text": "a,b"
+     },
+     {
+      "kind": "Sym",
+      "text": ","
+     },
+     {
+      "kind": "Num",
+      "value": 1
+     },
+     {
+      "kind": "Sym",
+      "text": ")"
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    "\"A!\"==\"B\""
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "kind": "Str",
+      "text": "A!"
+     },
+     {
+      "kind": "Sym",
+      "text": "=="
+     },
+     {
+      "kind": "Str",
+      "text": "B"
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    "\"12\"3"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "kind": "Str",
+      "text": "12"
+     },
+     {
+      "kind": "Num",
+      "value": 3
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    "x = \"abc"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unterminated string at 4"
+   }
+  },
+  {
+   "args": [
+    "a \""
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unterminated string at 2"
+   }
+  },
+  {
+   "args": [
+    "\"ok\" Q"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unexpected character: Q at 5"
+   }
+  }
+ ],
+ "regression": [
+  {
+   "args": [
+    "x = 42"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "kind": "Ident",
+      "name": "x"
+     },
+     {
+      "kind": "Sym",
+      "text": "="
+     },
+     {
+      "kind": "Num",
+      "value": 42
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    "a<=b!=c"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "kind": "Ident",
+      "name": "a"
+     },
+     {
+      "kind": "Sym",
+      "text": "<="
+     },
+     {
+      "kind": "Ident",
+      "name": "b"
+     },
+     {
+      "kind": "Sym",
+      "text": "!="
+     },
+     {
+      "kind": "Ident",
+      "name": "c"
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    "12ab"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "kind": "Num",
+      "value": 12
+     },
+     {
+      "kind": "Ident",
+      "name": "ab"
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    "f(x_1, 007)"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "kind": "Ident",
+      "name": "f"
+     },
+     {
+      "kind": "Sym",
+      "text": "("
+     },
+     {
+      "kind": "Ident",
+      "name": "x_1"
+     },
+     {
+      "kind": "Sym",
+      "text": ","
+     },
+     {
+      "kind": "Num",
+      "value": 7
+     },
+     {
+      "kind": "Sym",
+      "text": ")"
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    "<<==>"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "kind": "Sym",
+      "text": "<"
+     },
+     {
+      "kind": "Sym",
+      "text": "<="
+     },
+     {
+      "kind": "Sym",
+      "text": "="
+     },
+     {
+      "kind": "Sym",
+      "text": ">"
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    "a ! b"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unexpected character: ! at 2"
+   }
+  },
+  {
+   "args": [
+    "count = Max"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unexpected character: M at 8"
+   }
+  },
+  {
+   "args": [
+    "x;1"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unexpected character: ; at 1"
+   }
+  }
+ ]
+}

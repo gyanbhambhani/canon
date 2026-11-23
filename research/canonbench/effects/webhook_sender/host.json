@@ -1,0 +1,10 @@
+{
+  "files": {
+    "/var/lib/hooks/deliveries.log": "OK order.created -> https://shop.example.com/hooks after 1\n"
+  },
+  "http": {
+    "https://shop.example.com/hooks": ["accepted\n"],
+    "https://slow.example.com/hooks": [{ "error": "timed out" }, "busy", "accepted"],
+    "https://gone.example.com/hooks": ["rejected"]
+  }
+}

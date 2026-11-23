@@ -1,0 +1,20 @@
+{
+  "id": "top_product_per_region",
+  "requirement": "When several products tie for the highest revenue in a region, return all of them instead of only the one with the smallest name: one (region, product, revenue) tuple per tied product, in ascending code-point order of product name, still grouped by region in ascending region order.",
+  "fn": "top_product_per_region",
+  "params": [
+    [
+      "sales",
+      "List[Sale]"
+    ]
+  ],
+  "ret": "List[(String, String, Int)]",
+  "desc": "A sale's revenue is units * price_cents. Sum revenue per (region, product) pair over all sales. For each region that has at least one sale, in ascending code-point order of region name, return (region, product, revenue) for the product with the highest total revenue in that region; if several products tie for the highest, return one tuple for each of them, in ascending code-point order of product name, before moving on to the next region.",
+  "decls": {
+    "canon": "type Sale {\n  region: String,\n  product: String,\n  units: Int,\n  price_cents: Int,\n}",
+    "ts": "type Sale = { region: string; product: string; units: number; price_cents: number };"
+  },
+  "typeKinds": {
+    "Sale": "record"
+  }
+}

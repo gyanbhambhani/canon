@@ -1,0 +1,54 @@
+{
+  "id": "session_totals",
+  "source": "exp1-hard",
+  "fn": "session_totals",
+  "params": [
+    [
+      "events",
+      "List[Session]"
+    ]
+  ],
+  "ret": "List[(String, Int)]",
+  "desc": "events are in non-decreasing time order and kind is always \"login\" or \"logout\". Track each user separately: a login while the user is logged out starts a session; a login while already logged in is ignored; a logout while logged in ends the session and adds (logout time - login time) to the user's total; a logout while logged out is ignored. Sessions still open after the last event are closed at the time of the last event in the whole list. Return (user, total) for every user that appears in any event (even with total 0), ordered by user name in ascending code-point order.",
+  "examples": [
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          {
+            "user": "a",
+            "kind": "login",
+            "time": 10
+          },
+          {
+            "user": "a",
+            "kind": "logout",
+            "time": 25
+          }
+        ]
+      ],
+      "expected": [
+        [
+          "a",
+          15
+        ]
+      ]
+    }
+  ],
+  "decls": {
+    "canon": "type Session {\n  user: String,\n  kind: String,\n  time: Int,\n}",
+    "ts": "type Session = { user: string; kind: string; time: number };"
+  },
+  "typeKinds": {
+    "Session": "record"
+  },
+  "tags": [
+    "total",
+    "adt"
+  ]
+}

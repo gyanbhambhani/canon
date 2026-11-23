@@ -1,0 +1,13 @@
+fn sorted_key(w: String) -> String {
+  return w
+    |> split("")
+    |> sort_by(|c| c)
+    |> join("")
+}
+
+fn anagram_groups(words: List[String]) -> List[List[String]] {
+  return words
+    |> group_by(|w| sorted_key(w))
+    |> filter(|g| len(g.1) >= 2)
+    |> map(|g| g.1)
+}

@@ -1,0 +1,98 @@
+{
+ "id": "heading_numbers",
+ "cases": [
+  {
+   "args": [
+    [
+     "# Intro",
+     "text",
+     "## Setup",
+     "## Usage",
+     "### Flags",
+     "# API"
+    ]
+   ],
+   "expected": [
+    "1 Intro",
+    "1.1 Setup",
+    "1.2 Usage",
+    "1.2.1 Flags",
+    "2 API"
+   ]
+  },
+  {
+   "args": [
+    []
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     "### Deep",
+     "# Top",
+     "### Deeper"
+    ]
+   ],
+   "expected": [
+    "0.0.1 Deep",
+    "1 Top",
+    "1.0.1 Deeper"
+   ]
+  },
+  {
+   "args": [
+    [
+     "#NoSpace",
+     "#### Four",
+     "# ",
+     "plain"
+    ]
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     "## A",
+     "## B",
+     "# C",
+     "## D"
+    ]
+   ],
+   "expected": [
+    "0.1 A",
+    "0.2 B",
+    "1 C",
+    "1.1 D"
+   ]
+  },
+  {
+   "args": [
+    [
+     "# A",
+     "### B",
+     "## C",
+     "### D"
+    ]
+   ],
+   "expected": [
+    "1 A",
+    "1.0.1 B",
+    "1.1 C",
+    "1.1.1 D"
+   ]
+  },
+  {
+   "args": [
+    [
+     "# Title with # hash",
+     " # indented"
+    ]
+   ],
+   "expected": [
+    "1 Title with # hash"
+   ]
+  }
+ ]
+}

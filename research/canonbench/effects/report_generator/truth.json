@@ -1,0 +1,21 @@
+{
+  "functions": {
+    "parse_sale": [],
+    "totals_by_region": [],
+    "format_timestamp": [],
+    "render_report": [],
+    "build_report": ["fs", "time"],
+    "publish_report": ["fs", "time"],
+    "report_is_recent": ["time"]
+  },
+  "drive": [
+    { "fn": "parse_sale", "args": ["west, 75"] },
+    { "fn": "totals_by_region", "args": ["a,1\nb,2\na,3"] },
+    { "fn": "format_timestamp", "args": [1700000123456] },
+    { "fn": "render_report", "args": ["a,1\nb,2\na,3", 1700000123456] },
+    { "fn": "build_report", "args": ["/data/sales.csv"] },
+    { "fn": "build_report", "args": ["/data/none.csv"] },
+    { "fn": "publish_report", "args": ["/data/sales.csv", "/reports/today.txt"] },
+    { "fn": "report_is_recent", "args": [1699999000000, 3600000] }
+  ]
+}

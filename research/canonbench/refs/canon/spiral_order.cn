@@ -1,0 +1,52 @@
+fn at(xs: List[Int], i: Int) -> Int {
+  return xs
+    |> drop(i)
+    |> first()
+    |> unwrap_or(0)
+}
+
+fn cell(m: List[List[Int]], r: Int, c: Int) -> Int {
+  return m
+    |> drop(r)
+    |> first()
+    |> unwrap_or([])
+    |> at(c)
+}
+
+fn spiral_order(m: List[List[Int]]) -> List[Int] {
+  var out = []
+  let width = m
+    |> first()
+    |> unwrap_or([])
+    |> len()
+  if len(m) == 0 || width == 0 {
+    return out
+  }
+  var top = 0
+  var bottom = len(m) - 1
+  var left = 0
+  var right = width - 1
+  while top <= bottom && left <= right {
+    for r in range(top, bottom + 1) {
+      out = append(out, cell(m, r, left))
+    }
+    for c in range(left + 1, right + 1) {
+      out = append(out, cell(m, bottom, c))
+    }
+    if left < right {
+      for r in reverse(range(top, bottom)) {
+        out = append(out, cell(m, r, right))
+      }
+    }
+    if top < bottom {
+      for c in reverse(range(left + 1, right)) {
+        out = append(out, cell(m, top, c))
+      }
+    }
+    top = top + 1
+    bottom = bottom - 1
+    left = left + 1
+    right = right - 1
+  }
+  return out
+}

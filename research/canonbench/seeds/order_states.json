@@ -1,0 +1,62 @@
+{
+  "id": "order_states",
+  "source": "exp1-hard",
+  "fn": "order_states",
+  "params": [
+    [
+      "events",
+      "List[OrderEvent]"
+    ]
+  ],
+  "ret": "Result[List[(String, String)], String]",
+  "desc": "Track orders through their life cycle, processing events in order. Create(id) adds a new order in state \"created\"; if an order with that id already exists, return the error \"duplicate order: ID\". For Pay, Ship and Cancel, if no order with that id exists, return the error \"unknown order: ID\". Allowed changes: Pay moves \"created\" to \"paid\"; Ship moves \"paid\" to \"shipped\"; Cancel moves \"created\" or \"paid\" to \"cancelled\". Any other change returns the error \"cannot VERB ID from STATE\", where VERB is pay, ship or cancel and STATE is the order's current state. Stop at the first error. Otherwise return every order as an (id, state) pair, sorted by id in ascending character-code order (so uppercase letters sort before lowercase, and \"A10\" before \"A9\").",
+  "examples": [
+    {
+      "args": [
+        [
+          {
+            "kind": "Create",
+            "id": "a"
+          },
+          {
+            "kind": "Pay",
+            "id": "a"
+          },
+          {
+            "kind": "Ship",
+            "id": "a"
+          }
+        ]
+      ],
+      "expected": {
+        "ok": true,
+        "value": [
+          [
+            "a",
+            "shipped"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": {
+        "ok": true,
+        "value": []
+      }
+    }
+  ],
+  "decls": {
+    "canon": "type OrderEvent =\n  | Create(id: String)\n  | Pay(id: String)\n  | Ship(id: String)\n  | Cancel(id: String)",
+    "ts": "type OrderEvent =\n  | { kind: \"Create\"; id: string }\n  | { kind: \"Pay\"; id: string }\n  | { kind: \"Ship\"; id: string }\n  | { kind: \"Cancel\"; id: string };\ntype Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {
+    "OrderEvent": "sum"
+  },
+  "tags": [
+    "result",
+    "adt"
+  ]
+}

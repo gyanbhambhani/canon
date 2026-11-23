@@ -1,0 +1,271 @@
+{
+ "id": "league_table",
+ "cases": [
+  {
+   "args": [
+    []
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "home": "a",
+      "away": "b",
+      "home_goals": 1,
+      "away_goals": 1
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     1,
+     0,
+     1
+    ],
+    [
+     "b",
+     1,
+     0,
+     1
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "home": "x",
+      "away": "y",
+      "home_goals": 2,
+      "away_goals": 0
+     },
+     {
+      "home": "y",
+      "away": "z",
+      "home_goals": 1,
+      "away_goals": 1
+     },
+     {
+      "home": "z",
+      "away": "x",
+      "home_goals": 0,
+      "away_goals": 3
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "x",
+     6,
+     5,
+     5
+    ],
+    [
+     "y",
+     1,
+     -2,
+     1
+    ],
+    [
+     "z",
+     1,
+     -3,
+     1
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "home": "a",
+      "away": "c",
+      "home_goals": 3,
+      "away_goals": 2
+     },
+     {
+      "home": "b",
+      "away": "d",
+      "home_goals": 1,
+      "away_goals": 0
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     3,
+     1,
+     3
+    ],
+    [
+     "b",
+     3,
+     1,
+     1
+    ],
+    [
+     "c",
+     0,
+     -1,
+     2
+    ],
+    [
+     "d",
+     0,
+     -1,
+     0
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "home": "m",
+      "away": "k",
+      "home_goals": 2,
+      "away_goals": 2
+     },
+     {
+      "home": "k",
+      "away": "m",
+      "home_goals": 0,
+      "away_goals": 0
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "k",
+     2,
+     0,
+     2
+    ],
+    [
+     "m",
+     2,
+     0,
+     2
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "home": "b",
+      "away": "y",
+      "home_goals": 5,
+      "away_goals": 4
+     },
+     {
+      "home": "a",
+      "away": "x",
+      "home_goals": 3,
+      "away_goals": 0
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     3,
+     3,
+     3
+    ],
+    [
+     "b",
+     3,
+     1,
+     5
+    ],
+    [
+     "y",
+     0,
+     -1,
+     4
+    ],
+    [
+     "x",
+     0,
+     -3,
+     0
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "home": "a",
+      "away": "B",
+      "home_goals": 0,
+      "away_goals": 0
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "B",
+     1,
+     0,
+     0
+    ],
+    [
+     "a",
+     1,
+     0,
+     0
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "home": "u",
+      "away": "v",
+      "home_goals": 0,
+      "away_goals": 1
+     },
+     {
+      "home": "v",
+      "away": "u",
+      "home_goals": 2,
+      "away_goals": 2
+     },
+     {
+      "home": "u",
+      "away": "w",
+      "home_goals": 5,
+      "away_goals": 5
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "v",
+     4,
+     1,
+     3
+    ],
+    [
+     "u",
+     2,
+     -1,
+     7
+    ],
+    [
+     "w",
+     1,
+     0,
+     5
+    ]
+   ]
+  }
+ ]
+}

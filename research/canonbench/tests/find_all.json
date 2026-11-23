@@ -1,0 +1,76 @@
+{
+ "id": "find_all",
+ "cases": [
+  {
+   "args": [
+    "aaaa",
+    "aa"
+   ],
+   "expected": [
+    0,
+    1,
+    2
+   ]
+  },
+  {
+   "args": [
+    "abcabc",
+    "abc"
+   ],
+   "expected": [
+    0,
+    3
+   ]
+  },
+  {
+   "args": [
+    "abc",
+    ""
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    "",
+    "a"
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    "abc",
+    "abcd"
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    "abababa",
+    "aba"
+   ],
+   "expected": [
+    0,
+    2,
+    4
+   ]
+  },
+  {
+   "args": [
+    "hello",
+    "o"
+   ],
+   "expected": [
+    4
+   ]
+  },
+  {
+   "args": [
+    "x",
+    "x"
+   ],
+   "expected": [
+    0
+   ]
+  }
+ ]
+}

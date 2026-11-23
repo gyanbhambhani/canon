@@ -1,0 +1,68 @@
+type Sale {
+  region: String,
+  cents: Int,
+}
+
+fn parse_sale(line: String) -> Option[Sale] {
+  let parts = split(line, ",")
+  if len(parts) != 2 {
+    return None
+  }
+  let region = parts
+    |> first()
+    |> unwrap_or("")
+    |> trim()
+  let cents = parts
+    |> last()
+    |> unwrap_or("")
+    |> trim()
+    |> parse_int()
+  return match cents {
+    Some(c) => Some(Sale { region: region, cents: c }),
+    None => None,
+  }
+}
+
+fn totals_by_region(sales_text: String) -> List[(String, Int)] {
+  var sales = []
+  for line in split(sales_text, "\n") {
+    sales = match parse_sale(line) {
+      Some(s) => append(sales, s),
+      None => sales,
+    }
+  }
+  return map(group_by(sales, |s| s.region), |r, group| (r, sum(map(group, |s| s.cents))))
+}
+
+fn format_timestamp(ms: Int) -> String {
+  return "generated at " + to_string(ms / 1000)
+}
+
+fn render_report(sales_text: String, generated_at: Int) -> String {
+  var lines = [format_timestamp(generated_at)]
+  for (region, cents) in totals_by_region(sales_text) {
+    lines = append(lines, region + ": " + to_string(cents))
+  }
+  return join(lines, "\n")
+}
+
+fn build_report(sales_path: String) -> Result[String, Error]
+  effects: fs, time
+{
+  let text = try read_file(sales_path)
+  return Ok(render_report(text, now()))
+}
+
+fn publish_report(sales_path: String, out_path: String) -> Result[Int, Error]
+  effects: fs, time
+{
+  let report = try build_report(sales_path)
+  try write_file(out_path, report)
+  return Ok(str_len(report))
+}
+
+fn report_is_recent(generated_at: Int, max_age_ms: Int) -> Bool
+  effects: time
+{
+  return now() - generated_at <= max_age_ms
+}

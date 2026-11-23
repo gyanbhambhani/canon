@@ -1,0 +1,25 @@
+{
+  "functions": {
+    "price_url": [],
+    "parse_price": [],
+    "backoff_delay": [],
+    "jittered_delay": ["rand"],
+    "fetch_price_once": ["net"],
+    "fetch_price": ["net", "rand", "time"],
+    "fetch_quote": ["net", "rand", "time"]
+  },
+  "drive": [
+    { "fn": "price_url", "args": ["ACME"] },
+    { "fn": "parse_price", "args": [" 19.5 "] },
+    { "fn": "parse_price", "args": ["N/A"] },
+    { "fn": "backoff_delay", "args": [3, 100] },
+    { "fn": "jittered_delay", "args": [2, 100] },
+    { "fn": "fetch_price_once", "args": ["ACME"] },
+    { "fn": "fetch_price_once", "args": ["BAD"] },
+    { "fn": "fetch_price", "args": ["ACME", 3] },
+    { "fn": "fetch_price", "args": ["FLAKY", 3] },
+    { "fn": "fetch_price", "args": ["DOWN", 1] },
+    { "fn": "fetch_quote", "args": ["FLAKY", 3] },
+    { "fn": "fetch_quote", "args": ["DOWN", 0] }
+  ]
+}

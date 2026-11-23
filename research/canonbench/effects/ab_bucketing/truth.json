@@ -1,0 +1,26 @@
+{
+  "functions": {
+    "variant_name": [],
+    "hash_bucket": [],
+    "sticky_variant": [],
+    "random_variant": ["rand"],
+    "assign_variant": ["rand"],
+    "assignment_payload": [],
+    "record_assignment": ["net"],
+    "enroll": ["net", "rand"]
+  },
+  "drive": [
+    { "fn": "variant_name", "args": [1] },
+    { "fn": "hash_bucket", "args": [1001, 3] },
+    { "fn": "sticky_variant", "args": [1002] },
+    { "fn": "random_variant", "args": [] },
+    { "fn": "assign_variant", "args": [1001, true] },
+    { "fn": "assign_variant", "args": [1001, false] },
+    { "fn": "assignment_payload", "args": ["checkout_v2", 1001, "treatment"] },
+    { "fn": "record_assignment", "args": ["https://analytics.example.com", "checkout_v2", 1001, "treatment"] },
+    { "fn": "record_assignment", "args": ["https://down.example.com", "checkout_v2", 1001, "treatment"] },
+    { "fn": "enroll", "args": ["https://analytics.example.com", "checkout_v2", 1003, true] },
+    { "fn": "enroll", "args": ["https://analytics.example.com", "checkout_v2", 1003, false] },
+    { "fn": "enroll", "args": ["https://down.example.com", "checkout_v2", 1003, false] }
+  ]
+}

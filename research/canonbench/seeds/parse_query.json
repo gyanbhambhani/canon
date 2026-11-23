@@ -1,0 +1,50 @@
+{
+  "id": "parse_query",
+  "source": "exp1-hard",
+  "fn": "parse_query",
+  "params": [
+    [
+      "s",
+      "String"
+    ]
+  ],
+  "ret": "Result[List[(String, String)], String]",
+  "desc": "Parse a URL query string. Split s on \"&\" into items and skip empty items (from \"&&\" or a leading or trailing \"&\"). In each item, the key is the text before the first \"=\" and the value is everything after it (it may contain more \"=\"); an item with no \"=\" is a key with value \"\". Then replace every \"+\" with a space in both key and value. If a decoded key is empty, stop and return the error \"empty key: \" followed by the original item. Return the (key, value) pairs in order, keeping duplicates.",
+  "examples": [
+    {
+      "args": [
+        "a=1&b=2"
+      ],
+      "expected": {
+        "ok": true,
+        "value": [
+          [
+            "a",
+            "1"
+          ],
+          [
+            "b",
+            "2"
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        ""
+      ],
+      "expected": {
+        "ok": true,
+        "value": []
+      }
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {},
+  "tags": [
+    "result"
+  ]
+}

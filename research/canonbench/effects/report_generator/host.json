@@ -1,0 +1,6 @@
+{
+  "files": {
+    "/data/sales.csv": "north,1200\nsouth,450\nnorth,300\neast,999\nsouth,50\nbad row\n"
+  },
+  "http": {}
+}

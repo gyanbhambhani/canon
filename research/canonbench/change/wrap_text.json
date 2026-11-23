@@ -1,0 +1,22 @@
+{
+  "id": "wrap_text",
+  "requirement": "Long words are now split instead of being kept whole: before wrapping, every word longer than width is cut from the left into pieces of exactly width characters (the last piece may be shorter). The pieces are then wrapped exactly like separate words, so the last piece may share a line with the words after it.",
+  "fn": "wrap_text",
+  "params": [
+    [
+      "s",
+      "String"
+    ],
+    [
+      "width",
+      "Int"
+    ]
+  ],
+  "ret": "List[String]",
+  "desc": "Words in s are separated by one or more spaces; leading and trailing spaces are ignored. width >= 1. First, every word longer than width is cut from the left into pieces of width characters each (the last piece holds the rest and may be shorter); from then on each piece counts as a separate word. Wrap the words into lines greedily: words on a line are separated by single spaces, and the next word is added to the current line if the line's length afterwards is at most width; otherwise that word starts a new line. Return the lines in order; if s has no words, return an empty list.",
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {}
+}

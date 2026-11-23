@@ -1,0 +1,185 @@
+{
+ "id": "payroll_by_dept",
+ "cases": [
+  {
+   "args": [
+    []
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "dept": "ops",
+      "hours": 40,
+      "rate_cents": 1000
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "ops",
+     40000
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "dept": "eng",
+      "hours": 41,
+      "rate_cents": 1001
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "eng",
+     41541
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "b",
+      "dept": "y",
+      "hours": 5,
+      "rate_cents": 200
+     },
+     {
+      "name": "a",
+      "dept": "x",
+      "hours": 10,
+      "rate_cents": 100
+     },
+     {
+      "name": "c",
+      "dept": "x",
+      "hours": 0,
+      "rate_cents": 500
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "x",
+     1000
+    ],
+    [
+     "y",
+     1000
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "dept": "d",
+      "hours": 41,
+      "rate_cents": 1
+     },
+     {
+      "name": "b",
+      "dept": "d",
+      "hours": 41,
+      "rate_cents": 1
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "d",
+     82
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "dept": "s",
+      "hours": 45,
+      "rate_cents": 2000
+     },
+     {
+      "name": "b",
+      "dept": "t",
+      "hours": 50,
+      "rate_cents": 1000
+     },
+     {
+      "name": "c",
+      "dept": "s",
+      "hours": 20,
+      "rate_cents": 1500
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "s",
+     125000
+    ],
+    [
+     "t",
+     55000
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "z",
+      "dept": "q",
+      "hours": 43,
+      "rate_cents": 333
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "q",
+     14818
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "dept": "m",
+      "hours": 39,
+      "rate_cents": 10
+     },
+     {
+      "name": "b",
+      "dept": "n",
+      "hours": 0,
+      "rate_cents": 99
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "m",
+     390
+    ],
+    [
+     "n",
+     0
+    ]
+   ]
+  }
+ ]
+}

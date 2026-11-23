@@ -1,0 +1,242 @@
+{
+ "id": "text_editor",
+ "cases": [
+  {
+   "args": [
+    [
+     {
+      "kind": "Insert",
+      "text": "hello"
+     },
+     {
+      "kind": "Left",
+      "n": 2
+     },
+     {
+      "kind": "Insert",
+      "text": "XY"
+     }
+    ]
+   ],
+   "expected": "helXYlo"
+  },
+  {
+   "args": [
+    []
+   ],
+   "expected": ""
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Insert",
+      "text": "abc"
+     },
+     {
+      "kind": "Delete",
+      "n": 5
+     }
+    ]
+   ],
+   "expected": ""
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Insert",
+      "text": "abc"
+     },
+     {
+      "kind": "Left",
+      "n": 1
+     },
+     {
+      "kind": "Delete",
+      "n": 1
+     },
+     {
+      "kind": "Insert",
+      "text": "Z"
+     }
+    ]
+   ],
+   "expected": "aZc"
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Insert",
+      "text": "ab"
+     },
+     {
+      "kind": "Insert",
+      "text": "cd"
+     },
+     {
+      "kind": "Undo"
+     },
+     {
+      "kind": "Insert",
+      "text": "e"
+     }
+    ]
+   ],
+   "expected": "abe"
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Insert",
+      "text": "abc"
+     },
+     {
+      "kind": "Left",
+      "n": 3
+     },
+     {
+      "kind": "Delete",
+      "n": 2
+     },
+     {
+      "kind": "Undo"
+     },
+     {
+      "kind": "Undo"
+     },
+     {
+      "kind": "Undo"
+     },
+     {
+      "kind": "Insert",
+      "text": "x"
+     }
+    ]
+   ],
+   "expected": "x"
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Insert",
+      "text": "abcd"
+     },
+     {
+      "kind": "Left",
+      "n": 2
+     },
+     {
+      "kind": "Delete",
+      "n": 1
+     },
+     {
+      "kind": "Right",
+      "n": 9
+     },
+     {
+      "kind": "Insert",
+      "text": "!"
+     },
+     {
+      "kind": "Undo"
+     },
+     {
+      "kind": "Insert",
+      "text": "?"
+     }
+    ]
+   ],
+   "expected": "acd?"
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Insert",
+      "text": "hi"
+     },
+     {
+      "kind": "Undo"
+     },
+     {
+      "kind": "Undo"
+     },
+     {
+      "kind": "Insert",
+      "text": "yo"
+     },
+     {
+      "kind": "Left",
+      "n": 5
+     },
+     {
+      "kind": "Insert",
+      "text": ">"
+     }
+    ]
+   ],
+   "expected": ">yo"
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Insert",
+      "text": "abc"
+     },
+     {
+      "kind": "Left",
+      "n": 2
+     },
+     {
+      "kind": "Insert",
+      "text": "-"
+     },
+     {
+      "kind": "Left",
+      "n": 1
+     },
+     {
+      "kind": "Undo"
+     },
+     {
+      "kind": "Insert",
+      "text": "+"
+     }
+    ]
+   ],
+   "expected": "a+bc"
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Insert",
+      "text": "one two"
+     },
+     {
+      "kind": "Left",
+      "n": 4
+     },
+     {
+      "kind": "Delete",
+      "n": 4
+     },
+     {
+      "kind": "Right",
+      "n": 1
+     },
+     {
+      "kind": "Delete",
+      "n": 1
+     }
+    ]
+   ],
+   "expected": "two"
+  }
+ ]
+}

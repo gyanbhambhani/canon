@@ -1,0 +1,51 @@
+{
+  "id": "next_permutation",
+  "source": "exp1-hard",
+  "fn": "next_permutation",
+  "params": [
+    [
+      "xs",
+      "List[Int]"
+    ]
+  ],
+  "ret": "List[Int]",
+  "desc": "Return the next arrangement of xs in lexicographic order among all distinct arrangements of its elements (xs may contain repeated values). If xs is already the last arrangement (non-increasing order), return its elements in ascending order instead. Empty and one-element lists are returned unchanged.",
+  "examples": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "expected": [
+        1,
+        3,
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          3,
+          2,
+          1
+        ]
+      ],
+      "expected": [
+        1,
+        2,
+        3
+      ]
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

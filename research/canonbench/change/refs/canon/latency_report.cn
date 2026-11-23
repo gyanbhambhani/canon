@@ -1,0 +1,24 @@
+type Request {
+  endpoint: String,
+  ms: Int,
+  status: Int,
+}
+
+fn summarize(ep: String, rs: List[Request]) -> (String, Int, Int, Int) {
+  let n = len(rs)
+  let k = (9 * n + 9) / 10
+  let sorted = sort_by(map(rs, |r| r.ms), |x| x)
+  let p = sorted
+    |> drop(k - 1)
+    |> first()
+    |> unwrap_or(0)
+  let errs = len(filter(rs, |r| r.status >= 500))
+  return (ep, n, p, errs)
+}
+
+fn latency_report(entries: List[Request]) -> List[(String, Int, Int, Int)] {
+  return entries
+    |> group_by(|e| e.endpoint)
+    |> map(|g| summarize(g.0, g.1))
+    |> sort_desc_by(|r| r.2)
+}

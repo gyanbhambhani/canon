@@ -1,0 +1,48 @@
+{
+  "id": "find_all",
+  "source": "exp1-hard",
+  "fn": "find_all",
+  "params": [
+    [
+      "s",
+      "String"
+    ],
+    [
+      "pat",
+      "String"
+    ]
+  ],
+  "ret": "List[Int]",
+  "desc": "Return the 0-based start positions of every occurrence of pat in s, in increasing order, including occurrences that overlap each other. If pat is the empty string, return an empty list.",
+  "examples": [
+    {
+      "args": [
+        "aaaa",
+        "aa"
+      ],
+      "expected": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "args": [
+        "abcabc",
+        "abc"
+      ],
+      "expected": [
+        0,
+        3
+      ]
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

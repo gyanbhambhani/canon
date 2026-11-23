@@ -1,0 +1,24 @@
+{
+  "functions": {
+    "parse_bucket": [],
+    "encode_bucket": [],
+    "refill": [],
+    "wait_time_ms": [],
+    "load_bucket": ["fs"],
+    "try_acquire": ["fs", "time"],
+    "acquire_blocking": ["fs", "time"]
+  },
+  "drive": [
+    { "fn": "parse_bucket", "args": ["4,1699999000000", 10] },
+    { "fn": "parse_bucket", "args": ["garbage", 10] },
+    { "fn": "encode_bucket", "args": [4, 1699999000000] },
+    { "fn": "refill", "args": [1, 1700000000000, 1700000005000, 2, 10] },
+    { "fn": "wait_time_ms", "args": [0, 4] },
+    { "fn": "load_bucket", "args": ["/run/limits/api.bucket", 10] },
+    { "fn": "load_bucket", "args": ["/run/limits/none.bucket", 10] },
+    { "fn": "try_acquire", "args": ["/run/limits/api.bucket", 1, 10] },
+    { "fn": "try_acquire", "args": ["/run/limits/empty.bucket", 1, 10] },
+    { "fn": "acquire_blocking", "args": ["/run/limits/empty.bucket", 2, 10, 3] },
+    { "fn": "acquire_blocking", "args": ["/run/limits/api.bucket", 1, 10, 3] }
+  ]
+}

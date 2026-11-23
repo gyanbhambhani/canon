@@ -1,0 +1,157 @@
+{
+ "id": "student_medians",
+ "cases": [
+  {
+   "args": [
+    []
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "scores": []
+     }
+    ]
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "scores": [
+       90,
+       70,
+       80
+      ]
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     80
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "b",
+      "scores": [
+       1,
+       4,
+       2,
+       3
+      ]
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "b",
+     2.5
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "zed",
+      "scores": [
+       50
+      ]
+     },
+     {
+      "name": "amy",
+      "scores": [
+       40,
+       60
+      ]
+     },
+     {
+      "name": "bob",
+      "scores": [
+       70
+      ]
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "bob",
+     70
+    ],
+    [
+     "amy",
+     50
+    ],
+    [
+     "zed",
+     50
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "c",
+      "scores": [
+       5,
+       5,
+       9,
+       1
+      ]
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "c",
+     5
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "x",
+      "scores": []
+     },
+     {
+      "name": "y",
+      "scores": [
+       3,
+       4
+      ]
+     },
+     {
+      "name": "w",
+      "scores": [
+       100,
+       0
+      ]
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "w",
+     50
+    ],
+    [
+     "y",
+     3.5
+    ]
+   ]
+  }
+ ]
+}

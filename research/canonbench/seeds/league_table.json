@@ -1,0 +1,58 @@
+{
+  "id": "league_table",
+  "source": "exp1-hard",
+  "fn": "league_table",
+  "params": [
+    [
+      "matches",
+      "List[Match]"
+    ]
+  ],
+  "ret": "List[(String, Int, Int, Int)]",
+  "desc": "Build a league table from match results. Every team that appears in any match (as home or away) gets one row (team, points, goal_difference, goals_for). A win is worth 3 points, a draw 1, a loss 0. goals_for is the total goals the team scored in all its matches; goal_difference is goals_for minus the total goals scored against it. Order rows by points (highest first), then goal difference (highest first), then goals for (highest first), then team name in ascending code-point order (so \"B\" comes before \"a\").",
+  "examples": [
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          {
+            "home": "a",
+            "away": "b",
+            "home_goals": 1,
+            "away_goals": 1
+          }
+        ]
+      ],
+      "expected": [
+        [
+          "a",
+          1,
+          0,
+          1
+        ],
+        [
+          "b",
+          1,
+          0,
+          1
+        ]
+      ]
+    }
+  ],
+  "decls": {
+    "canon": "type Match {\n  home: String,\n  away: String,\n  home_goals: Int,\n  away_goals: Int,\n}",
+    "ts": "type Match = { home: string; away: string; home_goals: number; away_goals: number };"
+  },
+  "typeKinds": {
+    "Match": "record"
+  },
+  "tags": [
+    "total",
+    "adt"
+  ]
+}

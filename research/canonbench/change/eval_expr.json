@@ -1,0 +1,18 @@
+{
+ "id": "eval_expr",
+ "requirement": "Support the remainder operator \"%\". It has the same precedence as \"*\" and \"/\" and groups left to right with them. a % b is a - b * (a / b) with \"/\" truncating toward zero, so the result takes the sign of the left operand (\"(1-10)%4\" is -1). A right operand of 0 gives the error \"division by zero\", exactly as for \"/\".",
+ "fn": "eval_expr",
+ "params": [
+  [
+   "s",
+   "String"
+  ]
+ ],
+ "ret": "Result[Int, String]",
+ "desc": "Evaluate an integer arithmetic expression. First remove every space character from s; parse what remains. Grammar: expr = term, then zero or more of (\"+\" or \"-\") term; term = factor, then zero or more of (\"*\", \"/\" or \"%\") factor; factor = a number (one or more decimal digits) or \"(\" expr \")\". Operators of equal precedence group left to right; \"/\" divides and truncates toward zero; \"%\" is the remainder a - b * (a / b) with that truncating division, so it takes the sign of its left operand. There is no unary minus. Syntax errors take priority: scanning left to right, at the first point where the next character cannot continue a valid expression, return the error \"unexpected end\" if the input has run out there, or \"unexpected character: \" followed by that character otherwise (this includes characters left over after a complete expression). Only if the whole input is syntactically valid, evaluate it; if any \"/\" or \"%\" has a right operand that evaluates to 0, return the error \"division by zero\".",
+ "decls": {
+  "canon": "",
+  "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+ },
+ "typeKinds": {}
+}

@@ -1,0 +1,35 @@
+fn pieces(w: String, width: Int) -> List[String] {
+  let cs = split(w, "")
+  var out = []
+  var i = 0
+  while i < len(cs) {
+    out = append(out, cs |> drop(i) |> take(width) |> join(""))
+    i = i + width
+  }
+  return out
+}
+
+fn wrap_text(s: String, width: Int) -> List[String] {
+  var words = []
+  for w in filter(split(s, " "), |w| w != "") {
+    for p in pieces(w, width) {
+      words = append(words, p)
+    }
+  }
+  var lines = []
+  var cur = ""
+  for w in words {
+    if cur == "" {
+      cur = w
+    } else if str_len(cur) + 1 + str_len(w) <= width {
+      cur = cur + " " + w
+    } else {
+      lines = append(lines, cur)
+      cur = w
+    }
+  }
+  if cur != "" {
+    lines = append(lines, cur)
+  }
+  return lines
+}

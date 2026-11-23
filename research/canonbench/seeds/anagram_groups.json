@@ -1,0 +1,52 @@
+{
+  "id": "anagram_groups",
+  "source": "exp1-hard",
+  "fn": "anagram_groups",
+  "params": [
+    [
+      "words",
+      "List[String]"
+    ]
+  ],
+  "ret": "List[List[String]]",
+  "desc": "Two words are anagrams if one is a rearrangement of the other's characters (the same characters with the same counts; identical words are anagrams). Partition words into classes of mutual anagrams. Return only the classes with at least two words, ordered by the position in words of each class's first word; within a class keep the input order. A word that occurs several times counts as several members.",
+  "examples": [
+    {
+      "args": [
+        [
+          "eat",
+          "tea",
+          "tan",
+          "ate",
+          "nat",
+          "bat"
+        ]
+      ],
+      "expected": [
+        [
+          "eat",
+          "tea",
+          "ate"
+        ],
+        [
+          "tan",
+          "nat"
+        ]
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

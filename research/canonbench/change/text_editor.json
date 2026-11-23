@@ -1,0 +1,20 @@
+{
+  "id": "text_editor",
+  "requirement": "Add a Redo operation. Each Undo now also saves the (text, cursor) state from just before it on a redo history; Redo restores the most recently saved redo state (text and cursor), removes it from the redo history and saves the state from just before it on the undo history (so it can be undone again). Every Insert and Delete clears the redo history; Left and Right do not touch it. Redo with an empty redo history does nothing.",
+  "fn": "text_editor",
+  "params": [
+    [
+      "ops",
+      "List[EditOp]"
+    ]
+  ],
+  "ret": "String",
+  "desc": "Simulate a one-line text editor and return its final text. It starts with empty text and the cursor at position 0 (positions run from 0, before the first character, to the text length, after the last). Insert(t) inserts t at the cursor and moves the cursor to just after the inserted text. Delete(n) removes up to n characters immediately before the cursor (fewer if the cursor is closer to the start) and moves the cursor back by the number removed. Left(n) and Right(n) move the cursor n positions, stopping at 0 and at the text length. There are two histories of (text, cursor) states, undo and redo, both starting empty. Every Insert and Delete, even one that changes nothing, saves the state from just before it on the undo history and clears the redo history. Undo, if the undo history is not empty, saves the current state on the redo history, then restores the most recently saved undo state (both text and cursor) and removes it from the undo history; with an empty undo history it does nothing. Redo, if the redo history is not empty, saves the current state on the undo history, then restores the most recently saved redo state and removes it from the redo history; with an empty redo history it does nothing. Left and Right change neither history. n is never negative.",
+  "decls": {
+    "canon": "type EditOp =\n  | Insert(text: String)\n  | Delete(n: Int)\n  | Left(n: Int)\n  | Right(n: Int)\n  | Undo\n  | Redo",
+    "ts": "type EditOp =\n  | { kind: \"Insert\"; text: string }\n  | { kind: \"Delete\"; n: number }\n  | { kind: \"Left\"; n: number }\n  | { kind: \"Right\"; n: number }\n  | { kind: \"Undo\" }\n  | { kind: \"Redo\" };"
+  },
+  "typeKinds": {
+    "EditOp": "sum"
+  }
+}

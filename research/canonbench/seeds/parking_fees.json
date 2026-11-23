@@ -1,0 +1,54 @@
+{
+  "id": "parking_fees",
+  "source": "exp1-hard",
+  "fn": "parking_fees",
+  "params": [
+    [
+      "events",
+      "List[Park]"
+    ]
+  ],
+  "ret": "List[(String, Int)]",
+  "desc": "Compute parking fees from arrival and departure events, processed in order (minutes are integers). Arrive(plate, m) parks the car at minute m; if that plate is already parked, the event is ignored. Leave(plate, m) ends the stay of a parked car; if the plate is not parked, the event is ignored. A stay of d = m - arrival minutes costs 0 if d <= 30; otherwise 200 for every started hour of the time beyond the first 30 minutes (so d = 31 and d = 90 cost 200, d = 91 costs 400), capped at 1000 per stay. Return (plate, total fees) for every plate that completed at least one stay (even if its fees are 0), sorted by plate in ascending character-code order. Cars still parked at the end add nothing.",
+  "examples": [
+    {
+      "args": [
+        [
+          {
+            "kind": "Arrive",
+            "plate": "x",
+            "minute": 0
+          },
+          {
+            "kind": "Leave",
+            "plate": "x",
+            "minute": 45
+          }
+        ]
+      ],
+      "expected": [
+        [
+          "x",
+          200
+        ]
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    }
+  ],
+  "decls": {
+    "canon": "type Park =\n  | Arrive(plate: String, minute: Int)\n  | Leave(plate: String, minute: Int)",
+    "ts": "type Park = { kind: \"Arrive\"; plate: string; minute: number } | { kind: \"Leave\"; plate: string; minute: number };"
+  },
+  "typeKinds": {
+    "Park": "sum"
+  },
+  "tags": [
+    "total",
+    "adt"
+  ]
+}

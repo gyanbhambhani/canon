@@ -1,0 +1,36 @@
+fn at(xs: List[Int], i: Int) -> Int {
+  return xs
+    |> drop(i)
+    |> first()
+    |> unwrap_or(0)
+}
+
+fn next_permutation(xs: List[Int]) -> List[Int] {
+  var pivot_at = -1
+  for p in enumerate(zip(xs, drop(xs, 1))) {
+    let pair = p.1
+    if pair.0 < pair.1 {
+      pivot_at = p.0
+    }
+  }
+  if pivot_at < 0 {
+    return sort_by(xs, |x| x)
+  }
+  let pivot = at(xs, pivot_at)
+  let suffix = drop(xs, pivot_at + 1)
+  var j = 0
+  for q in enumerate(suffix) {
+    if q.1 > pivot {
+      j = q.0
+    }
+  }
+  let swapped = map(enumerate(suffix), |q| (match q.0 == j {
+    true => pivot,
+    false => q.1,
+  }))
+  var out = append(take(xs, pivot_at), at(suffix, j))
+  for x in reverse(swapped) {
+    out = append(out, x)
+  }
+  return out
+}

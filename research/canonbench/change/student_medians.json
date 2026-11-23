@@ -1,0 +1,20 @@
+{
+  "id": "student_medians",
+  "requirement": "The same student name may now appear in several records. Treat all records with the same name as one student: combine all their scores, and return at most one (name, median) pair per name, computed from the combined scores. A name whose records have no scores at all is still left out.",
+  "fn": "student_medians",
+  "params": [
+    [
+      "students",
+      "List[Student]"
+    ]
+  ],
+  "ret": "List[(String, Float)]",
+  "desc": "students may contain several records with the same name; all records with the same name belong to one student, whose scores are all the scores of those records combined. For each student with at least one score, compute the median score: sort the scores ascending; with an odd count take the middle one, with an even count take the average of the two middle ones (as a Float, e.g. 2.5). Students with no scores are left out. Return one (name, median) pair per student, ordered by median (highest first), then by name in ascending code-point order.",
+  "decls": {
+    "canon": "type Student {\n  name: String,\n  scores: List[Int],\n}",
+    "ts": "type Student = { name: string; scores: number[] };"
+  },
+  "typeKinds": {
+    "Student": "record"
+  }
+}

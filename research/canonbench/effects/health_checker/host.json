@@ -1,0 +1,9 @@
+{
+  "files": {
+    "/etc/health/targets": "https://api.example.com\n\nhttps://db.example.com\n  https://cdn.example.com  \n"
+  },
+  "http": {
+    "https://api.example.com/healthz": ["ok"],
+    "https://cdn.example.com/healthz": ["ok"]
+  }
+}

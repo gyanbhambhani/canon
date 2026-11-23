@@ -1,0 +1,24 @@
+type Employee {
+  name: String,
+  dept: String,
+  hours: Int,
+  rate_cents: Int,
+}
+
+fn pay(e: Employee) -> Int {
+  if e.hours <= 40 {
+    return e.hours * e.rate_cents
+  }
+  if e.hours <= 60 {
+    return 40 * e.rate_cents + (e.hours - 40) * e.rate_cents * 3 / 2
+  }
+  return 40 * e.rate_cents + 20 * e.rate_cents * 3 / 2 + (e.hours - 60) * e.rate_cents * 2
+}
+
+fn payroll_by_dept(emps: List[Employee]) -> List[(String, Int)] {
+  return emps
+    |> group_by(|e| e.dept)
+    |> map(|g| (g.0, sum(map(g.1, |e| pay(e)))))
+    |> sort_by(|r| r.0)
+    |> sort_desc_by(|r| r.1)
+}

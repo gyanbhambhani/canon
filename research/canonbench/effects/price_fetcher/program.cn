@@ -1,0 +1,59 @@
+type Quote {
+  symbol: String,
+  price: Float,
+  fetched_at: Int,
+}
+
+fn price_url(symbol: String) -> String {
+  return "https://quotes.example.com/v1/price?symbol=" + symbol
+}
+
+fn parse_price(body: String) -> Option[Float] {
+  return parse_float(trim(body))
+}
+
+fn backoff_delay(attempt: Int, base_ms: Int) -> Int {
+  return base_ms * pow(2, attempt)
+}
+
+fn jittered_delay(attempt: Int, base_ms: Int) -> Int
+  effects: rand
+{
+  let delay = backoff_delay(attempt, base_ms)
+  return delay + random_int(0, delay / 2 + 1)
+}
+
+fn fetch_price_once(symbol: String) -> Option[Float]
+  effects: net
+{
+  return match http_get(price_url(symbol)) {
+    Ok(body) => parse_price(body),
+    Err(_) => None,
+  }
+}
+
+fn fetch_price(symbol: String, retries: Int) -> Option[Float]
+  effects: net, rand, time
+{
+  var attempt = 0
+  while attempt <= retries {
+    let price = fetch_price_once(symbol)
+    if is_some(price) {
+      return price
+    }
+    if attempt < retries {
+      sleep(jittered_delay(attempt, 100))
+    }
+    attempt = attempt + 1
+  }
+  return None
+}
+
+fn fetch_quote(symbol: String, retries: Int) -> Option[Quote]
+  effects: net, rand, time
+{
+  return match fetch_price(symbol, retries) {
+    Some(p) => Some(Quote { symbol: symbol, price: p, fetched_at: now() }),
+    None => None,
+  }
+}

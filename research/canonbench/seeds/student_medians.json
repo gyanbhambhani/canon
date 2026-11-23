@@ -1,0 +1,43 @@
+{
+  "id": "student_medians",
+  "source": "exp1-hard",
+  "fn": "student_medians",
+  "params": [
+    [
+      "students",
+      "List[Student]"
+    ]
+  ],
+  "ret": "List[(String, Float)]",
+  "desc": "For each student with at least one score, compute the median score: sort the scores ascending; with an odd count take the middle one, with an even count take the average of the two middle ones (as a Float, e.g. 2.5). Students with no scores are left out. Return (name, median) pairs ordered by median (highest first), then by name in ascending code-point order.",
+  "examples": [
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          {
+            "name": "a",
+            "scores": []
+          }
+        ]
+      ],
+      "expected": []
+    }
+  ],
+  "decls": {
+    "canon": "type Student {\n  name: String,\n  scores: List[Int],\n}",
+    "ts": "type Student = { name: string; scores: number[] };"
+  },
+  "typeKinds": {
+    "Student": "record"
+  },
+  "tags": [
+    "total",
+    "adt"
+  ]
+}

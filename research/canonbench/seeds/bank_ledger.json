@@ -1,0 +1,64 @@
+{
+  "id": "bank_ledger",
+  "source": "exp1-hard",
+  "fn": "bank_ledger",
+  "params": [
+    [
+      "ops",
+      "List[BankOp]"
+    ]
+  ],
+  "ret": "Result[List[(String, Int)], String]",
+  "desc": "Apply bank operations in order; steps are numbered from 1. Open(name) creates an account with balance 0. Deposit adds amount; Withdraw subtracts it; Transfer moves amount from src to dst. Each operation is checked in this order, and the first failing check stops processing with an error prefixed \"step N: \": Open of an existing name gives \"duplicate account NAME\"; an account that does not exist gives \"unknown account NAME\" (for Transfer, check src before dst); a Transfer with src equal to dst gives \"same account\"; an amount of 0 or less gives \"invalid amount\"; a Withdraw or Transfer of more than the current balance gives \"insufficient funds\". If every operation succeeds, return each account as a (name, balance) pair, in the order the accounts were opened.",
+  "examples": [
+    {
+      "args": [
+        [
+          {
+            "kind": "Open",
+            "name": "a"
+          },
+          {
+            "kind": "Deposit",
+            "name": "a",
+            "amount": 100
+          },
+          {
+            "kind": "Withdraw",
+            "name": "a",
+            "amount": 30
+          }
+        ]
+      ],
+      "expected": {
+        "ok": true,
+        "value": [
+          [
+            "a",
+            70
+          ]
+        ]
+      }
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": {
+        "ok": true,
+        "value": []
+      }
+    }
+  ],
+  "decls": {
+    "canon": "type BankOp =\n  | Open(name: String)\n  | Deposit(name: String, amount: Int)\n  | Withdraw(name: String, amount: Int)\n  | Transfer(src: String, dst: String, amount: Int)",
+    "ts": "type BankOp =\n  | { kind: \"Open\"; name: string }\n  | { kind: \"Deposit\"; name: string; amount: number }\n  | { kind: \"Withdraw\"; name: string; amount: number }\n  | { kind: \"Transfer\"; src: string; dst: string; amount: number };\ntype Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {
+    "BankOp": "sum"
+  },
+  "tags": [
+    "result",
+    "adt"
+  ]
+}

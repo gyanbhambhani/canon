@@ -1,0 +1,51 @@
+{
+  "id": "latency_report",
+  "source": "exp1-hard",
+  "fn": "latency_report",
+  "params": [
+    [
+      "entries",
+      "List[Request]"
+    ]
+  ],
+  "ret": "List[(String, Int, Int, Int)]",
+  "desc": "Group the requests by endpoint. For each endpoint, in order of its first appearance, return (endpoint, count, p90, errors): count is its number of requests; p90 is the nearest-rank 90th percentile of its ms values, i.e. the k-th smallest value (1-based, duplicates counted) where k = ceil(0.9 * count), which in integer arithmetic is (9 * count + 9) / 10 rounded down; errors is the number of its requests with status 500 or above.",
+  "examples": [
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          {
+            "endpoint": "/a",
+            "ms": 120,
+            "status": 200
+          }
+        ]
+      ],
+      "expected": [
+        [
+          "/a",
+          1,
+          120,
+          0
+        ]
+      ]
+    }
+  ],
+  "decls": {
+    "canon": "type Request {\n  endpoint: String,\n  ms: Int,\n  status: Int,\n}",
+    "ts": "type Request = { endpoint: string; ms: number; status: number };"
+  },
+  "typeKinds": {
+    "Request": "record"
+  },
+  "tags": [
+    "total",
+    "adt"
+  ]
+}

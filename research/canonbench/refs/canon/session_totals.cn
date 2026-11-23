@@ -1,0 +1,35 @@
+type Session {
+  user: String,
+  kind: String,
+  time: Int,
+}
+
+fn user_total(evs: List[Session], end: Int) -> Int {
+  var total = 0
+  var since = 0
+  var inside = false
+  for e in evs {
+    if e.kind == "login" && !inside {
+      inside = true
+      since = e.time
+    } else if e.kind == "logout" && inside {
+      inside = false
+      total = total + e.time - since
+    }
+  }
+  if inside {
+    total = total + end - since
+  }
+  return total
+}
+
+fn session_totals(events: List[Session]) -> List[(String, Int)] {
+  let end = match last(events) {
+    Some(e) => e.time,
+    None => 0,
+  }
+  return events
+    |> group_by(|e| e.user)
+    |> map(|g| (g.0, user_total(g.1, end)))
+    |> sort_by(|r| r.0)
+}

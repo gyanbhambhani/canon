@@ -1,0 +1,22 @@
+fn shift_in(c: String, k: Int, alphabet: String) -> String {
+  let letters = split(alphabet, "")
+  let hits = filter(enumerate(letters), |p| p.1 == c)
+  return match first(hits) {
+    Some(p) => letters |> drop(((p.0 + k) % 26 + 26) % 26) |> first() |> unwrap_or(c),
+    None => c,
+  }
+}
+
+fn shift_char(c: String, k: Int) -> String {
+  if c >= "A" && c <= "Z" {
+    return shift_in(c, k, "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+  }
+  return shift_in(c, k, "abcdefghijklmnopqrstuvwxyz")
+}
+
+fn caesar_shift(s: String, k: Int) -> String {
+  return s
+    |> split("")
+    |> map(|c| shift_char(c, k))
+    |> join("")
+}

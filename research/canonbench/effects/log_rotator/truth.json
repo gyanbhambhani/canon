@@ -1,0 +1,25 @@
+{
+  "functions": {
+    "format_timestamp": [],
+    "log_line": [],
+    "rotated_name": [],
+    "should_rotate": [],
+    "append_line": ["fs"],
+    "log_event": ["fs", "time"],
+    "rotate": ["fs", "time"],
+    "rotate_if_needed": ["fs", "time"]
+  },
+  "drive": [
+    { "fn": "format_timestamp", "args": [1700000123456] },
+    { "fn": "log_line", "args": ["INFO", "hello", 1700000123456] },
+    { "fn": "rotated_name", "args": ["/var/log/app.log", 1700000123456] },
+    { "fn": "should_rotate", "args": ["a\nb\nc\n", 2] },
+    { "fn": "append_line", "args": ["/var/log/quiet.log", "t=9 [INFO] more"] },
+    { "fn": "append_line", "args": ["/var/log/new.log", "first"] },
+    { "fn": "log_event", "args": ["/var/log/quiet.log", "WARN", "disk 91%"] },
+    { "fn": "rotate", "args": ["/var/log/quiet.log"] },
+    { "fn": "rotate", "args": ["/var/log/missing.log"] },
+    { "fn": "rotate_if_needed", "args": ["/var/log/app.log", 3] },
+    { "fn": "rotate_if_needed", "args": ["/var/log/quiet.log", 3] }
+  ]
+}

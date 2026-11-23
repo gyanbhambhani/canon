@@ -1,0 +1,37 @@
+fn cell_at(row: List[String], j: Int) -> String {
+  return row
+    |> drop(j)
+    |> first()
+    |> unwrap_or("")
+}
+
+fn pad(s: String, w: Int) -> String {
+  var out = s
+  while str_len(out) < w {
+    out = out + " "
+  }
+  return out
+}
+
+fn trim_end(s: String) -> String {
+  var cs = split(s, "")
+  while len(cs) > 0 && unwrap_or(last(cs), "") == " " {
+    cs = take(cs, len(cs) - 1)
+  }
+  return join(cs, "")
+}
+
+fn col_width(rows: List[List[String]], j: Int) -> Int {
+  return fold(rows, 0, |acc, r| max(acc, str_len(cell_at(r, j))))
+}
+
+fn render(row: List[String], widths: List[Int]) -> String {
+  let cells = map(zip(row, widths), |c, w| pad(c, w))
+  return trim_end(join(cells, " | "))
+}
+
+fn align_columns(rows: List[List[String]]) -> List[String] {
+  let ncols = fold(rows, 0, |acc, r| max(acc, len(r)))
+  let widths = map(range(0, ncols), |j| col_width(rows, j))
+  return map(rows, |r| render(r, widths))
+}

@@ -1,0 +1,90 @@
+fn at(cs: List[String], i: Int) -> String {
+  return cs
+    |> drop(i)
+    |> first()
+    |> unwrap_or("")
+}
+
+fn is_digit(c: String) -> Bool {
+  return str_len(c) == 1 && c >= "0" && c <= "9"
+}
+
+fn unexpected(cs: List[String], i: Int) -> String {
+  if i >= len(cs) {
+    return "unexpected end"
+  }
+  return "unexpected character: " + at(cs, i)
+}
+
+fn factor(cs: List[String], i: Int) -> Result[(Int, Int, Bool), String] {
+  if at(cs, i) == "(" {
+    let r = try expr(cs, i + 1)
+    if at(cs, r.1) != ")" {
+      return Err(unexpected(cs, r.1))
+    }
+    return Ok((r.0, r.1 + 1, r.2))
+  }
+  if !is_digit(at(cs, i)) {
+    return Err(unexpected(cs, i))
+  }
+  var j = i
+  var n = 0
+  while is_digit(at(cs, j)) {
+    n = n * 10 + (cs |> at(j) |> parse_int() |> unwrap_or(0))
+    j = j + 1
+  }
+  return Ok((n, j, false))
+}
+
+fn term(cs: List[String], i: Int) -> Result[(Int, Int, Bool), String] {
+  let f = try factor(cs, i)
+  var v = f.0
+  var j = f.1
+  var z = f.2
+  while at(cs, j) == "*" || at(cs, j) == "/" {
+    let op = at(cs, j)
+    let g = try factor(cs, j + 1)
+    if op == "*" {
+      v = v * g.0
+    } else if g.0 == 0 {
+      z = true
+      v = 0
+    } else {
+      v = v / g.0
+    }
+    z = z || g.2
+    j = g.1
+  }
+  return Ok((v, j, z))
+}
+
+fn expr(cs: List[String], i: Int) -> Result[(Int, Int, Bool), String] {
+  let f = try term(cs, i)
+  var v = f.0
+  var j = f.1
+  var z = f.2
+  while at(cs, j) == "+" || at(cs, j) == "-" {
+    let op = at(cs, j)
+    let g = try term(cs, j + 1)
+    if op == "+" {
+      v = v + g.0
+    } else {
+      v = v - g.0
+    }
+    z = z || g.2
+    j = g.1
+  }
+  return Ok((v, j, z))
+}
+
+fn eval_expr(s: String) -> Result[Int, String] {
+  let cs = filter(split(s, ""), |c| c != " ")
+  let r = try expr(cs, 0)
+  if r.1 < len(cs) {
+    return Err(unexpected(cs, r.1))
+  }
+  if r.2 {
+    return Err("division by zero")
+  }
+  return Ok(r.0)
+}

@@ -1,0 +1,25 @@
+{
+  "functions": {
+    "parse_line": [],
+    "parse_config": [],
+    "fetch_from_cache": [],
+    "cache_is_fresh": [],
+    "read_config": ["fs"],
+    "get_setting": ["fs"],
+    "needs_reload": ["time"],
+    "reload_if_stale": ["fs", "time"]
+  },
+  "drive": [
+    { "fn": "parse_line", "args": ["a = b"] },
+    { "fn": "parse_config", "args": ["x=1\ny = 2\nbad"] },
+    { "fn": "fetch_from_cache", "args": [{ "$map": [["region", "us"]] }, "region"] },
+    { "fn": "cache_is_fresh", "args": [1000, 5000, 3000] },
+    { "fn": "read_config", "args": ["/etc/app/app.conf"] },
+    { "fn": "read_config", "args": ["/etc/app/missing.conf"] },
+    { "fn": "get_setting", "args": ["/etc/app/app.conf", "mode", "slow"] },
+    { "fn": "get_setting", "args": ["/etc/app/missing.conf", "mode", "slow"] },
+    { "fn": "needs_reload", "args": [1699999990000, 60000] },
+    { "fn": "reload_if_stale", "args": ["/etc/app/app.conf", "region", 1600000000000, 60000] },
+    { "fn": "reload_if_stale", "args": ["/etc/app/app.conf", "region", 1699999999000, 60000] }
+  ]
+}

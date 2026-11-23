@@ -1,0 +1,65 @@
+{
+  "id": "parse_config",
+  "source": "exp1-hard",
+  "fn": "parse_config",
+  "params": [
+    [
+      "lines",
+      "List[String]"
+    ]
+  ],
+  "ret": "Result[List[Setting], String]",
+  "desc": "Parse INI-style configuration lines. Trim each line (remove leading and trailing whitespace) before looking at it. Skip a line that is then empty or starts with \"#\". A line starting with \"[\" is a section header: it must end with \"]\" and the text between the brackets, trimmed, must be non-empty; that trimmed text becomes the current section. Any other line is a setting: it must contain \"=\"; the key is the text before the first \"=\", trimmed, and the value is everything after the first \"=\", trimmed (it may contain more \"=\" characters, and may be empty). The key must not be empty. Settings before any header belong to section \"\". Return the settings in order of first appearance; if a (section, key) pair appears again (even after switching to another section and back), replace its value but keep its original position. Stop at the first bad line with the error \"line N: bad header\", \"line N: missing =\" or \"line N: empty key\", where N is the 1-based line number.",
+  "examples": [
+    {
+      "args": [
+        [
+          "name = app",
+          "[db]",
+          "host = localhost",
+          "port=5432"
+        ]
+      ],
+      "expected": {
+        "ok": true,
+        "value": [
+          {
+            "section": "",
+            "key": "name",
+            "value": "app"
+          },
+          {
+            "section": "db",
+            "key": "host",
+            "value": "localhost"
+          },
+          {
+            "section": "db",
+            "key": "port",
+            "value": "5432"
+          }
+        ]
+      }
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": {
+        "ok": true,
+        "value": []
+      }
+    }
+  ],
+  "decls": {
+    "canon": "type Setting {\n  section: String,\n  key: String,\n  value: String,\n}",
+    "ts": "type Setting = { section: string; key: string; value: string };\ntype Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {
+    "Setting": "record"
+  },
+  "tags": [
+    "result",
+    "adt"
+  ]
+}

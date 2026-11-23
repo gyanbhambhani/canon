@@ -1,0 +1,52 @@
+type Key =
+  | Digit(d: Int)
+  | Enter
+  | Clear
+
+fn door_lock(code: String, events: List[Key]) -> String {
+  var state = "locked"
+  var buf = ""
+  var fails = 0
+  let size = str_len(code)
+  for k in events {
+    let kind = match k {
+      Digit(_) => "digit",
+      Enter => "enter",
+      Clear => "clear",
+    }
+    let digit = match k {
+      Digit(d) => to_string(d),
+      _ => "",
+    }
+    if state == "open" {
+      if kind == "enter" {
+        state = "locked"
+        buf = ""
+      }
+    } else if state == "locked" {
+      if kind == "digit" {
+        buf = buf + digit
+        if str_len(buf) > size {
+          buf = buf
+            |> split("")
+            |> drop(str_len(buf) - size)
+            |> join("")
+        }
+      } else if kind == "clear" {
+        buf = ""
+      } else {
+        if buf == code {
+          state = "open"
+          fails = 0
+        } else {
+          fails = fails + 1
+          if fails >= 3 {
+            state = "blocked"
+          }
+        }
+        buf = ""
+      }
+    }
+  }
+  return state
+}

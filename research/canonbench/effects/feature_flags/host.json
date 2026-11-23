@@ -1,0 +1,8 @@
+{
+  "files": {
+    "/etc/flags/local.flags": "new_checkout: 50\ndark_mode: 100\nbeta_search: 0\nbroken line\n"
+  },
+  "http": {
+    "https://flags.example.com/v2/flags": ["new_checkout: 80\nrecommendations: 30\n"]
+  }
+}

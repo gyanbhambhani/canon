@@ -1,0 +1,29 @@
+fn closer(c: String) -> String {
+  return match c {
+    "(" => ")",
+    "[" => "]",
+    "{" => "}",
+    _ => "",
+  }
+}
+
+fn bracket_depth(s: String) -> Result[Int, String] {
+  var stack = []
+  var best = 0
+  for p in enumerate(split(s, "")) {
+    let c = p.1
+    if closer(c) != "" {
+      stack = append(stack, closer(c))
+      best = max(best, len(stack))
+    } else if c == ")" || c == "]" || c == "}" {
+      if unwrap_or(last(stack), "") != c {
+        return Err("mismatch at " + to_string(p.0))
+      }
+      stack = take(stack, len(stack) - 1)
+    }
+  }
+  if len(stack) > 0 {
+    return Err("unclosed at end")
+  }
+  return Ok(best)
+}

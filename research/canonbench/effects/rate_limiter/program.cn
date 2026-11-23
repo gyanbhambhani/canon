@@ -1,0 +1,76 @@
+type Bucket {
+  tokens: Int,
+  last_ms: Int,
+}
+
+fn parse_bucket(text: String, capacity: Int) -> Bucket {
+  let fields = split(trim(text), ",")
+  if len(fields) != 2 {
+    return Bucket { tokens: capacity, last_ms: 0 }
+  }
+  let tokens = fields
+    |> first()
+    |> unwrap_or("")
+    |> parse_int()
+  let last_ms = fields
+    |> last()
+    |> unwrap_or("")
+    |> parse_int()
+  return match (tokens, last_ms) {
+    (Some(t), Some(l)) => Bucket { tokens: t, last_ms: l },
+    _ => Bucket { tokens: capacity, last_ms: 0 },
+  }
+}
+
+fn encode_bucket(tokens: Int, last_ms: Int) -> String {
+  return to_string(tokens) + "," + to_string(last_ms)
+}
+
+fn refill(tokens: Int, last_ms: Int, now_ms: Int, rate_per_s: Int, capacity: Int) -> Int {
+  return min(capacity, tokens + (now_ms - last_ms) * rate_per_s / 1000)
+}
+
+fn wait_time_ms(tokens: Int, rate_per_s: Int) -> Int {
+  if tokens > 0 {
+    return 0
+  }
+  return 1000 / rate_per_s
+}
+
+fn load_bucket(path: String, capacity: Int) -> Bucket
+  effects: fs
+{
+  return match read_file(path) {
+    Ok(text) => parse_bucket(text, capacity),
+    Err(_) => Bucket { tokens: capacity, last_ms: 0 },
+  }
+}
+
+fn try_acquire(path: String, rate_per_s: Int, capacity: Int) -> Bool
+  effects: fs, time
+{
+  let bucket = load_bucket(path, capacity)
+  let now_ms = now()
+  let tokens = refill(bucket.tokens, bucket.last_ms, now_ms, rate_per_s, capacity)
+  if tokens < 1 {
+    return false
+  }
+  return match write_file(path, encode_bucket(tokens - 1, now_ms)) {
+    Ok(_) => true,
+    Err(_) => false,
+  }
+}
+
+fn acquire_blocking(path: String, rate_per_s: Int, capacity: Int, max_waits: Int) -> Bool
+  effects: fs, time
+{
+  var waits = 0
+  while waits <= max_waits {
+    if try_acquire(path, rate_per_s, capacity) {
+      return true
+    }
+    sleep(wait_time_ms(0, rate_per_s))
+    waits = waits + 1
+  }
+  return false
+}

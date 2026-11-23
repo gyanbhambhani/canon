@@ -1,0 +1,9 @@
+{
+  "files": {
+    "/etc/cron/jobs": "cleanup, 3600, 1699990000000\nreindex, 60, 1699999990000\nbilling, 86400, 1690000000000\nnightly_backup, 86400, 1699999000000\nbroken line\n"
+  },
+  "http": {
+    "https://runner.example.com/jobs/cleanup/run": ["started"],
+    "https://runner.example.com/jobs/billing/run": [{ "error": "500 internal error" }]
+  }
+}

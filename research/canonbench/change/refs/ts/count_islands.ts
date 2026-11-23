@@ -1,0 +1,28 @@
+export function count_islands(grid: string[]): [number, number] {
+  const seen = new Set<string>();
+  let count = 0;
+  let largest = 0;
+  for (let r = 0; r < grid.length; r++) {
+    for (let c = 0; c < grid[r].length; c++) {
+      if (grid[r][c] !== "#" || seen.has(r + "," + c)) continue;
+      count++;
+      let size = 0;
+      const stack: [number, number][] = [[r, c]];
+      seen.add(r + "," + c);
+      while (stack.length > 0) {
+        const [y, x] = stack.pop()!;
+        size++;
+        for (const [dy, dx] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+          const ny = y + dy;
+          const nx = x + dx;
+          if (grid[ny]?.[nx] === "#" && !seen.has(ny + "," + nx)) {
+            seen.add(ny + "," + nx);
+            stack.push([ny, nx]);
+          }
+        }
+      }
+      largest = Math.max(largest, size);
+    }
+  }
+  return [count, largest];
+}

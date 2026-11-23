@@ -1,0 +1,50 @@
+fn unit_rank(c: String) -> Int {
+  return match c {
+    "d" => 1,
+    "h" => 2,
+    "m" => 3,
+    "s" => 4,
+    _ => 0,
+  }
+}
+
+fn unit_secs(r: Int) -> Int {
+  return match r {
+    1 => 86400,
+    2 => 3600,
+    3 => 60,
+    _ => 1,
+  }
+}
+
+fn parse_duration(s: String) -> Result[Int, String] {
+  if s == "" {
+    return Err("empty")
+  }
+  var total = 0
+  var digits = ""
+  var last_rank = 0
+  for c in split(s, "") {
+    if c >= "0" && c <= "9" {
+      digits = digits + c
+    } else {
+      let r = unit_rank(c)
+      if r == 0 {
+        return Err("unknown unit: " + c)
+      }
+      if digits == "" {
+        return Err("missing number before " + c)
+      }
+      if r <= last_rank {
+        return Err("unit out of order: " + c)
+      }
+      total = total + unwrap_or(parse_int(digits), 0) * unit_secs(r)
+      last_rank = r
+      digits = ""
+    }
+  }
+  if digits != "" {
+    return Err("missing unit")
+  }
+  return Ok(total)
+}

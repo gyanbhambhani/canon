@@ -1,0 +1,53 @@
+fn format_timestamp(ms: Int) -> String {
+  return "t=" + to_string(ms / 1000)
+}
+
+fn log_line(level: String, message: String, ms: Int) -> String {
+  return format_timestamp(ms) + " [" + level + "] " + message
+}
+
+fn rotated_name(path: String, ms: Int) -> String {
+  return path + "." + to_string(ms / 1000)
+}
+
+fn should_rotate(text: String, max_lines: Int) -> Bool {
+  let lines = filter(split(text, "\n"), |l| l != "")
+  return len(lines) > max_lines
+}
+
+fn append_line(path: String, line: String) -> Result[Unit, Error]
+  effects: fs
+{
+  let existing = match read_file(path) {
+    Ok(text) => text,
+    Err(_) => "",
+  }
+  return write_file(path, existing + line + "\n")
+}
+
+fn log_event(path: String, level: String, message: String) -> Result[Unit, Error]
+  effects: fs, time
+{
+  return append_line(path, log_line(level, message, now()))
+}
+
+fn rotate(path: String) -> Result[String, Error]
+  effects: fs, time
+{
+  let text = try read_file(path)
+  let target = rotated_name(path, now())
+  try write_file(target, text)
+  try write_file(path, "")
+  return Ok(target)
+}
+
+fn rotate_if_needed(path: String, max_lines: Int) -> Result[Bool, Error]
+  effects: fs, time
+{
+  let text = try read_file(path)
+  if should_rotate(text, max_lines) {
+    try rotate(path)
+    return Ok(true)
+  }
+  return Ok(false)
+}

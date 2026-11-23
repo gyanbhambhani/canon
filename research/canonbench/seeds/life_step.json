@@ -1,0 +1,65 @@
+{
+  "id": "life_step",
+  "source": "exp1-hard",
+  "fn": "life_step",
+  "params": [
+    [
+      "grid",
+      "List[String]"
+    ],
+    [
+      "steps",
+      "Int"
+    ]
+  ],
+  "ret": "List[String]",
+  "desc": "grid is a rectangle of rows of equal length; \"#\" is a live cell and \".\" a dead one. Apply steps generations (steps >= 0) of Conway's Game of Life and return the grid. In each generation every cell counts its live neighbours among the 8 surrounding cells (cells beyond the edge of the grid count as dead and never come alive; the grid does not grow): a live cell with 2 or 3 live neighbours stays alive, a dead cell with exactly 3 becomes alive, and every other cell is dead in the next generation. All cells update at the same time.",
+  "examples": [
+    {
+      "args": [
+        [
+          ".....",
+          "..#..",
+          "..#..",
+          "..#..",
+          "....."
+        ],
+        1
+      ],
+      "expected": [
+        ".....",
+        ".....",
+        ".###.",
+        ".....",
+        "....."
+      ]
+    },
+    {
+      "args": [
+        [
+          ".....",
+          "..#..",
+          "..#..",
+          "..#..",
+          "....."
+        ],
+        2
+      ],
+      "expected": [
+        ".....",
+        "..#..",
+        "..#..",
+        "..#..",
+        "....."
+      ]
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

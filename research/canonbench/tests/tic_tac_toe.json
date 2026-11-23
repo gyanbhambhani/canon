@@ -1,0 +1,105 @@
+{
+ "id": "tic_tac_toe",
+ "cases": [
+  {
+   "args": [
+    [
+     "...",
+     "...",
+     "..."
+    ]
+   ],
+   "expected": "in progress"
+  },
+  {
+   "args": [
+    [
+     "XXX",
+     "OO.",
+     "..."
+    ]
+   ],
+   "expected": "X wins"
+  },
+  {
+   "args": [
+    [
+     "OOO",
+     "XX.",
+     "X.."
+    ]
+   ],
+   "expected": "O wins"
+  },
+  {
+   "args": [
+    [
+     "OOO",
+     "XX.",
+     "XX."
+    ]
+   ],
+   "expected": "invalid"
+  },
+  {
+   "args": [
+    [
+     "O..",
+     "...",
+     "..."
+    ]
+   ],
+   "expected": "invalid"
+  },
+  {
+   "args": [
+    [
+     "XXX",
+     "OOO",
+     "..."
+    ]
+   ],
+   "expected": "invalid"
+  },
+  {
+   "args": [
+    [
+     "XOX",
+     "XOO",
+     "OXX"
+    ]
+   ],
+   "expected": "draw"
+  },
+  {
+   "args": [
+    [
+     "XXX",
+     "XOO",
+     "XOO"
+    ]
+   ],
+   "expected": "X wins"
+  },
+  {
+   "args": [
+    [
+     "XOX",
+     "OXO",
+     "OXX"
+    ]
+   ],
+   "expected": "X wins"
+  },
+  {
+   "args": [
+    [
+     "XX.",
+     "X..",
+     "O.."
+    ]
+   ],
+   "expected": "invalid"
+  }
+ ]
+}

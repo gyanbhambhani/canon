@@ -1,0 +1,72 @@
+type Entry {
+  fetched_at: Int,
+  body: String,
+}
+
+fn cache_path(dir: String, url: String) -> String {
+  let name = url
+    |> split("://")
+    |> join("_")
+    |> split("/")
+    |> join("_")
+  return dir + "/" + name
+}
+
+fn encode_entry(fetched_at: Int, body: String) -> String {
+  return to_string(fetched_at) + "\n" + body
+}
+
+fn decode_entry(text: String) -> Option[Entry] {
+  let lines = split(text, "\n")
+  let header = lines
+    |> first()
+    |> unwrap_or("")
+    |> parse_int()
+  return match header {
+    Some(ts) => Some(Entry { fetched_at: ts, body: join(drop(lines, 1), "\n") }),
+    None => None,
+  }
+}
+
+fn is_expired(fetched_at: Int, now_ms: Int, ttl_ms: Int) -> Bool {
+  return now_ms - fetched_at > ttl_ms
+}
+
+fn read_cached(dir: String, url: String, ttl_ms: Int) -> Option[String]
+  effects: fs, time
+{
+  let entry = match read_file(cache_path(dir, url)) {
+    Ok(text) => decode_entry(text),
+    Err(_) => None,
+  }
+  return match entry {
+    Some(e) => if_fresh(e.fetched_at, e.body, ttl_ms),
+    None => None,
+  }
+}
+
+fn if_fresh(fetched_at: Int, body: String, ttl_ms: Int) -> Option[String]
+  effects: time
+{
+  if is_expired(fetched_at, now(), ttl_ms) {
+    return None
+  }
+  return Some(body)
+}
+
+fn fetch_and_store(dir: String, url: String) -> Result[String, Error]
+  effects: fs, net, time
+{
+  let body = try http_get(url)
+  try write_file(cache_path(dir, url), encode_entry(now(), body))
+  return Ok(body)
+}
+
+fn get_cached(dir: String, url: String, ttl_ms: Int) -> Result[String, Error]
+  effects: fs, net, time
+{
+  return match read_cached(dir, url, ttl_ms) {
+    Some(body) => Ok(body),
+    None => fetch_and_store(dir, url),
+  }
+}

@@ -1,0 +1,77 @@
+type Job {
+  name: String,
+  interval_s: Int,
+  last_run: Int,
+}
+
+fn parse_job(line: String) -> Option[Job] {
+  let parts = map(split(line, ","), |p| trim(p))
+  if len(parts) != 3 {
+    return None
+  }
+  let name = unwrap_or(first(parts), "")
+  let interval = parts
+    |> drop(1)
+    |> first()
+    |> unwrap_or("")
+    |> parse_int()
+  let last_run = parts
+    |> last()
+    |> unwrap_or("")
+    |> parse_int()
+  return match (interval, last_run) {
+    (Some(i), Some(l)) => Some(Job { name: name, interval_s: i, last_run: l }),
+    _ => None,
+  }
+}
+
+fn parse_jobs(text: String) -> List[Job] {
+  var jobs = []
+  for line in split(text, "\n") {
+    jobs = match parse_job(line) {
+      Some(j) => append(jobs, j),
+      None => jobs,
+    }
+  }
+  return jobs
+}
+
+fn next_run(interval_s: Int, last_run: Int) -> Int {
+  return last_run + interval_s * 1000
+}
+
+fn is_due(interval_s: Int, last_run: Int, now_ms: Int) -> Bool {
+  return now_ms >= next_run(interval_s, last_run)
+}
+
+fn due_jobs(path: String) -> List[String]
+  effects: fs, time
+{
+  let jobs = match read_file(path) {
+    Ok(text) => parse_jobs(text),
+    Err(_) => [],
+  }
+  let now_ms = now()
+  return map(filter(jobs, |j| is_due(j.interval_s, j.last_run, now_ms)), |j| j.name)
+}
+
+fn trigger(api: String, name: String) -> Bool
+  effects: net
+{
+  return match http_post(api + "/jobs/" + name + "/run", "") {
+    Ok(_) => true,
+    Err(_) => false,
+  }
+}
+
+fn run_due(path: String, api: String) -> Int
+  effects: fs, net, time
+{
+  var started = 0
+  for name in due_jobs(path) {
+    if trigger(api, name) {
+      started = started + 1
+    }
+  }
+  return started
+}

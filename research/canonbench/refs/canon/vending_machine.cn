@@ -1,0 +1,40 @@
+type Event =
+  | Coin(cents: Int)
+  | Select(price: Int)
+  | Refund
+
+fn vending_machine(events: List[Event]) -> List[String] {
+  var out = []
+  var credit = 0
+  for e in events {
+    let coin = match e {
+      Coin(c) => c,
+      _ => -1,
+    }
+    let price = match e {
+      Select(p) => p,
+      _ => -1,
+    }
+    if coin >= 0 {
+      if contains([5, 10, 25, 100], coin) {
+        credit = credit + coin
+      } else {
+        out = append(out, "reject " + to_string(coin))
+      }
+    } else if price >= 0 {
+      if credit >= price {
+        out = append(out, "vend " + to_string(price) + " change " + to_string(credit - price))
+        credit = 0
+      } else {
+        out = append(out, "insufficient " + to_string(credit))
+      }
+    } else if credit > 0 {
+      out = append(out, "refund " + to_string(credit))
+      credit = 0
+    }
+  }
+  if credit > 0 {
+    out = append(out, "refund " + to_string(credit))
+  }
+  return out
+}

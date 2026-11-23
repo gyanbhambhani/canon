@@ -1,0 +1,41 @@
+{
+  "id": "max_subarray",
+  "source": "exp1-hard",
+  "fn": "max_subarray",
+  "params": [
+    [
+      "xs",
+      "List[Int]"
+    ]
+  ],
+  "ret": "Option[(Int, Int, Int)]",
+  "desc": "Find the non-empty contiguous run of xs with the largest sum. Return (sum, start, end), where start and end are the 0-based indices of its first and last element (end inclusive). If several runs share the largest sum, choose the one with the smallest start; among those, the one with the smallest end. Return nothing if xs is empty.",
+  "examples": [
+    {
+      "args": [
+        []
+      ],
+      "expected": null
+    },
+    {
+      "args": [
+        [
+          5
+        ]
+      ],
+      "expected": [
+        5,
+        0,
+        0
+      ]
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "tennis_score",
+  "source": "exp1-hard",
+  "fn": "tennis_score",
+  "params": [
+    [
+      "points",
+      "String"
+    ]
+  ],
+  "ret": "String",
+  "desc": "points lists the winner of each point of one tennis game in order, one character per point: \"A\" or \"B\". Return the score after all points. Point counts 0, 1, 2, 3 are called love, 15, 30, 40. A player wins the game on reaching at least 4 points with a lead of at least 2: return \"game A\" or \"game B\". Otherwise, if both have at least 3 points: equal is \"deuce\" and a one-point lead is \"advantage A\" or \"advantage B\". Otherwise equal counts give the name followed by \"-all\" (e.g. \"love-all\", \"30-all\"), and different counts give A's name, \"-\", B's name (e.g. \"15-love\", \"30-40\"). Read the characters left to right: a character that is neither \"A\" nor \"B\" gives \"error: bad point\", and any character after the game has been won gives \"error: point after game\"; the first of these met wins.",
+  "examples": [
+    {
+      "args": [
+        ""
+      ],
+      "expected": "love-all"
+    },
+    {
+      "args": [
+        "A"
+      ],
+      "expected": "15-love"
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

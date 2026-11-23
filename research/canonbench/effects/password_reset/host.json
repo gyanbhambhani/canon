@@ -1,0 +1,6 @@
+{
+  "files": {},
+  "http": {
+    "https://mail.example.com/v1/messages": ["{\"id\": \"msg_1\"}"]
+  }
+}

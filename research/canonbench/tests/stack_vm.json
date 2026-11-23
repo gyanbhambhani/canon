@@ -1,0 +1,257 @@
+{
+ "id": "stack_vm",
+ "cases": [
+  {
+   "args": [
+    [
+     {
+      "kind": "Push",
+      "n": 2
+     },
+     {
+      "kind": "Push",
+      "n": 3
+     },
+     {
+      "kind": "Add"
+     },
+     {
+      "kind": "Print"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     5
+    ]
+   }
+  },
+  {
+   "args": [
+    []
+   ],
+   "expected": {
+    "ok": true,
+    "value": []
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Push",
+      "n": 5
+     },
+     {
+      "kind": "Push",
+      "n": 3
+     },
+     {
+      "kind": "Sub"
+     },
+     {
+      "kind": "Print"
+     },
+     {
+      "kind": "Push",
+      "n": 4
+     },
+     {
+      "kind": "Push",
+      "n": 10
+     },
+     {
+      "kind": "Swap"
+     },
+     {
+      "kind": "Sub"
+     },
+     {
+      "kind": "Print"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     2,
+     6
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Push",
+      "n": 3
+     },
+     {
+      "kind": "Dup"
+     },
+     {
+      "kind": "Print"
+     },
+     {
+      "kind": "Push",
+      "n": 1
+     },
+     {
+      "kind": "Sub"
+     },
+     {
+      "kind": "Dup"
+     },
+     {
+      "kind": "Jz",
+      "target": 8
+     },
+     {
+      "kind": "Jmp",
+      "target": 1
+     },
+     {
+      "kind": "Halt"
+     },
+     {
+      "kind": "Push",
+      "n": 99
+     },
+     {
+      "kind": "Print"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     3,
+     2,
+     1
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Push",
+      "n": 7
+     },
+     {
+      "kind": "Halt"
+     },
+     {
+      "kind": "Print"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": []
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Push",
+      "n": 6
+     },
+     {
+      "kind": "Dup"
+     },
+     {
+      "kind": "Mul"
+     },
+     {
+      "kind": "Print"
+     },
+     {
+      "kind": "Push",
+      "n": 1
+     },
+     {
+      "kind": "Pop"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     36
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Push",
+      "n": 1
+     },
+     {
+      "kind": "Add"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "stack underflow at 1"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Print"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "stack underflow at 0"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Push",
+      "n": 1
+     },
+     {
+      "kind": "Jz",
+      "target": 7
+     },
+     {
+      "kind": "Push",
+      "n": 2
+     },
+     {
+      "kind": "Print"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "bad jump at 1"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Jmp",
+      "target": 0
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "step limit exceeded"
+   }
+  }
+ ]
+}

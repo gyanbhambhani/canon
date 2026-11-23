@@ -1,0 +1,103 @@
+type BankOp =
+  | Open(name: String)
+  | Deposit(name: String, amount: Int)
+  | Withdraw(name: String, amount: Int)
+  | Transfer(src: String, dst: String, amount: Int)
+  | Close(name: String)
+
+fn balance(accts: List[(String, Int)], name: String) -> Option[Int] {
+  return accts
+    |> filter(|a| a.0 == name)
+    |> map(|a| a.1)
+    |> first()
+}
+
+fn adjust(accts: List[(String, Int)], name: String, delta: Int) -> List[(String, Int)] {
+  return map(accts, |a| add_if(a, name, delta))
+}
+
+fn add_if(a: (String, Int), name: String, delta: Int) -> (String, Int) {
+  if a.0 == name {
+    return (a.0, a.1 + delta)
+  }
+  return a
+}
+
+fn check(accts: List[(String, Int)], op: BankOp) -> Option[String] {
+  let kind = match op {
+    Open(_) => "open",
+    Deposit(_, _) => "deposit",
+    Withdraw(_, _) => "withdraw",
+    Transfer(_, _, _) => "transfer",
+    Close(_) => "close",
+  }
+  let src = match op {
+    Open(n) => n,
+    Deposit(n, _) => n,
+    Withdraw(n, _) => n,
+    Transfer(s, _, _) => s,
+    Close(n) => n,
+  }
+  let dst = match op {
+    Transfer(_, t, _) => t,
+    _ => src,
+  }
+  let amount = match op {
+    Open(_) => 1,
+    Close(_) => 1,
+    Deposit(_, a) => a,
+    Withdraw(_, a) => a,
+    Transfer(_, _, a) => a,
+  }
+  let src_bal = balance(accts, src)
+  if kind == "open" {
+    if src_bal != None {
+      return Some("duplicate account " + src)
+    }
+    return None
+  }
+  if src_bal == None {
+    return Some("unknown account " + src)
+  }
+  if balance(accts, dst) == None {
+    return Some("unknown account " + dst)
+  }
+  if kind == "close" {
+    if unwrap_or(src_bal, 0) != 0 {
+      return Some("account " + src + " not empty")
+    }
+    return None
+  }
+  if kind == "transfer" && src == dst {
+    return Some("same account")
+  }
+  if amount <= 0 {
+    return Some("invalid amount")
+  }
+  if kind != "deposit" && amount > unwrap_or(src_bal, 0) {
+    return Some("insufficient funds")
+  }
+  return None
+}
+
+fn apply(accts: List[(String, Int)], op: BankOp) -> List[(String, Int)] {
+  return match op {
+    Open(n) => append(accts, (n, 0)),
+    Deposit(n, a) => adjust(accts, n, a),
+    Withdraw(n, a) => adjust(accts, n, -a),
+    Transfer(s, t, a) => adjust(adjust(accts, s, -a), t, a),
+    Close(n) => filter(accts, |a| a.0 != n),
+  }
+}
+
+fn bank_ledger(ops: List[BankOp]) -> Result[List[(String, Int)], String] {
+  var accts = []
+  for p in enumerate(ops) {
+    let problem = check(accts, p.1)
+    if problem != None {
+      return Err("step " + to_string(p.0 + 1) + ": " + unwrap_or(problem, ""))
+    }
+    accts = apply(accts, p.1)
+  }
+  return Ok(accts)
+}

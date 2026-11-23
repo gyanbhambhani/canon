@@ -1,0 +1,53 @@
+{
+ "id": "pig_latin",
+ "cases": [
+  {
+   "args": [
+    "the quick brown fox"
+   ],
+   "expected": "ethay ickquay ownbray oxfay"
+  },
+  {
+   "args": [
+    "yellow rhythm my"
+   ],
+   "expected": "ellowyay ythmrhay ymay"
+  },
+  {
+   "args": [
+    "apple squeal"
+   ],
+   "expected": "appleway ealsquay"
+  },
+  {
+   "args": [
+    ""
+   ],
+   "expected": ""
+  },
+  {
+   "args": [
+    "nth y"
+   ],
+   "expected": "nthay yay"
+  },
+  {
+   "args": [
+    "queen u"
+   ],
+   "expected": "eenquay uway"
+  },
+  {
+   "args": [
+    "aqua"
+   ],
+   "expected": "aquaway"
+  },
+  {
+   "args": [
+    "qu xyz"
+   ],
+   "expected": "quay yzxay"
+  }
+ ]
+}

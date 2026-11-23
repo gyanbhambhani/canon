@@ -1,0 +1,49 @@
+fn is_digit(c: String) -> Bool {
+  return c >= "0" && c <= "9"
+}
+
+fn repeat(c: String, n: Int) -> String {
+  var out = ""
+  var i = 0
+  while i < n {
+    out = out + c
+    i = i + 1
+  }
+  return out
+}
+
+fn flush(out: String, ch: String, digits: String) -> Result[String, String] {
+  if digits == "" {
+    return Ok(out + ch)
+  }
+  if (digits |> split("") |> first() |> unwrap_or("")) == "0" {
+    return Err("bad count for " + ch)
+  }
+  return Ok(out + repeat(ch, unwrap_or(parse_int(digits), 0)))
+}
+
+fn rle_decode(s: String) -> Result[String, String] {
+  var out = ""
+  var ch = ""
+  var have = false
+  var digits = ""
+  for c in split(s, "") {
+    if is_digit(c) {
+      if !have {
+        return Err("missing character before count")
+      }
+      digits = digits + c
+    } else {
+      if have {
+        out = try flush(out, ch, digits)
+      }
+      ch = c
+      have = true
+      digits = ""
+    }
+  }
+  if have {
+    out = try flush(out, ch, digits)
+  }
+  return Ok(out)
+}

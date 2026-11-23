@@ -1,0 +1,50 @@
+{
+  "id": "payroll_by_dept",
+  "source": "exp1-hard",
+  "fn": "payroll_by_dept",
+  "params": [
+    [
+      "emps",
+      "List[Employee]"
+    ]
+  ],
+  "ret": "List[(String, Int)]",
+  "desc": "Compute each employee's pay in cents: the first 40 hours are paid at rate_cents per hour; every hour above 40 is overtime, paid at 1.5 times the rate. For an employee with more than 40 hours, overtime pay is (hours - 40) * rate_cents * 3 / 2 rounded down to a whole cent, computed separately for each employee before any summing. Return one (dept, total pay) pair per department that has at least one employee, ordered by total pay (highest first), then by department name in ascending code-point order.",
+  "examples": [
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          {
+            "name": "a",
+            "dept": "ops",
+            "hours": 40,
+            "rate_cents": 1000
+          }
+        ]
+      ],
+      "expected": [
+        [
+          "ops",
+          40000
+        ]
+      ]
+    }
+  ],
+  "decls": {
+    "canon": "type Employee {\n  name: String,\n  dept: String,\n  hours: Int,\n  rate_cents: Int,\n}",
+    "ts": "type Employee = { name: string; dept: string; hours: number; rate_cents: number };"
+  },
+  "typeKinds": {
+    "Employee": "record"
+  },
+  "tags": [
+    "total",
+    "adt"
+  ]
+}

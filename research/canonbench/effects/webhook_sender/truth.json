@@ -1,0 +1,25 @@
+{
+  "functions": {
+    "sign": [],
+    "build_payload": [],
+    "signed_payload": [],
+    "post_once": ["net"],
+    "send_webhook": ["net", "time"],
+    "send_with_retry": ["net", "time"],
+    "delivery_line": [],
+    "deliver": ["fs", "net", "time"]
+  },
+  "drive": [
+    { "fn": "sign", "args": ["event=x", "s3cret"] },
+    { "fn": "build_payload", "args": ["order.paid", 1700000000000] },
+    { "fn": "signed_payload", "args": ["order.paid", "s3cret", 1700000000000] },
+    { "fn": "post_once", "args": ["https://shop.example.com/hooks", "event=ping"] },
+    { "fn": "post_once", "args": ["https://gone.example.com/hooks", "event=ping"] },
+    { "fn": "send_webhook", "args": ["https://shop.example.com/hooks", "order.paid", "s3cret"] },
+    { "fn": "send_with_retry", "args": ["https://slow.example.com/hooks", "order.paid", "s3cret", 3] },
+    { "fn": "send_with_retry", "args": ["https://gone.example.com/hooks", "order.paid", "s3cret", 2] },
+    { "fn": "delivery_line", "args": ["https://shop.example.com/hooks", "order.paid", 2] },
+    { "fn": "deliver", "args": ["https://slow.example.com/hooks", "order.paid", "s3cret", "/var/lib/hooks/deliveries.log"] },
+    { "fn": "deliver", "args": ["https://gone.example.com/hooks", "order.paid", "s3cret", "/var/lib/hooks/new.log"] }
+  ]
+}

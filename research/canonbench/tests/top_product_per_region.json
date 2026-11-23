@@ -1,0 +1,189 @@
+{
+ "id": "top_product_per_region",
+ "cases": [
+  {
+   "args": [
+    []
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "region": "eu",
+      "product": "pen",
+      "units": 3,
+      "price_cents": 150
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "eu",
+     "pen",
+     450
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "region": "us",
+      "product": "a",
+      "units": 1,
+      "price_cents": 1000
+     },
+     {
+      "region": "us",
+      "product": "b",
+      "units": 3,
+      "price_cents": 200
+     },
+     {
+      "region": "us",
+      "product": "b",
+      "units": 3,
+      "price_cents": 200
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "us",
+     "b",
+     1200
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "region": "r",
+      "product": "zeta",
+      "units": 2,
+      "price_cents": 50
+     },
+     {
+      "region": "r",
+      "product": "alpha",
+      "units": 1,
+      "price_cents": 100
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "r",
+     "alpha",
+     100
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "region": "west",
+      "product": "x",
+      "units": 1,
+      "price_cents": 10
+     },
+     {
+      "region": "east",
+      "product": "y",
+      "units": 2,
+      "price_cents": 10
+     },
+     {
+      "region": "west",
+      "product": "z",
+      "units": 1,
+      "price_cents": 30
+     },
+     {
+      "region": "east",
+      "product": "y",
+      "units": 1,
+      "price_cents": 5
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "east",
+     "y",
+     25
+    ],
+    [
+     "west",
+     "z",
+     30
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "region": "n",
+      "product": "q",
+      "units": 0,
+      "price_cents": 100
+     },
+     {
+      "region": "n",
+      "product": "p",
+      "units": 0,
+      "price_cents": 5
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "n",
+     "p",
+     0
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "region": "a",
+      "product": "k",
+      "units": 1,
+      "price_cents": 100
+     },
+     {
+      "region": "b",
+      "product": "k",
+      "units": 1,
+      "price_cents": 1
+     },
+     {
+      "region": "b",
+      "product": "m",
+      "units": 1,
+      "price_cents": 2
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     "k",
+     100
+    ],
+    [
+     "b",
+     "m",
+     2
+    ]
+   ]
+  }
+ ]
+}

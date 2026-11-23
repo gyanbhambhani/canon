@@ -1,0 +1,6 @@
+{
+  "files": {
+    "/etc/app/app.conf": "region = eu-west\nmax_conns = 64\n# comment line\nmode = fast\n"
+  },
+  "http": {}
+}
