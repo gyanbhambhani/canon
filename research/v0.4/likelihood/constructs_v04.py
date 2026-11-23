@@ -395,6 +395,32 @@ _OPT = [
 construct("option-type", "Option type (values stay Some(x)/None): `Option[T]` or `T | None`?", "option", [
     {"option": re.sub(r"@O\[(\w+)\]", r"Option[\1]", s), "union": re.sub(r"@O\[(\w+)\]", r"\1 | None", s)} for s in _OPT])
 
+# 25. effects on function types (owner's addition: close the higher-order effect leak) ---------------
+_FTE = [
+    ("@effects(io)\ndef each(xs: list[str], f: @F) -> None:\n    for x in xs:\n        f(x)\n\n\n"
+     "@effects(io)\ndef main() -> None:\n    each([\"a\", \"b\"], print)\n", "[str]", "None", "io"),
+    ("@effects(net)\ndef fetch_all(urls: list[str], get: @F) -> list[Result[str, Error]]:\n"
+     "    return map(urls, get)\n", "[str]", "Result[str, Error]", "net"),
+    ("@effects(io, time)\ndef timed(label: str, work: @F) -> int:\n    start = now()\n    work()\n"
+     "    print(f\"{label}: {now() - start} ms\")\n    return now() - start\n", "[]", "None", "io, time"),
+]
+
+
+def _fte(args, ret, e, form):
+    if form == "callable-extra":
+        return f"Callable[{args}, {ret}, {e.replace(', ', ' | ')}]"
+    if form == "effects-wrap":
+        return f"Effects[Callable[{args}, {ret}], {e.replace(', ', ' | ')}]"
+    if form == "annotated":
+        return f"Annotated[Callable[{args}, {ret}], effects({e})]"
+    return f"Callable[{args}, Effect[{ret}, {e.replace(', ', ' | ')}]]"
+
+
+construct("fn-type-effects", "Effects in a function type: `Callable[[A], B, io]`, `Effects[Callable[[A], B], io]`, "
+          "`Annotated[Callable[[A], B], effects(io)]`, or `Callable[[A], Effect[B, io]]`?", "callable-extra", [
+              {f: fill(s, F=_fte(a, r, e, f)) for f in ("callable-extra", "effects-wrap", "annotated", "ret-wrap")}
+              for s, a, r, e in _FTE])
+
 
 def programs(c):
     """Yield (context index, variant, text)."""

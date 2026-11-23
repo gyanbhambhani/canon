@@ -216,7 +216,7 @@
   {
    "id": "records",
    "question": "Records: @dataclass class, plain class, NamedTuple, or frozen dataclass?",
-   "chosen": "dataclass",
+   "chosen": "class",
    "rows": [
     {
      "context": 0,
@@ -1567,7 +1567,7 @@
   {
    "id": "blank-lines",
    "question": "Blank lines between top-level definitions: two (PEP 8) or one?",
-   "chosen": "two",
+   "chosen": "one",
    "rows": [
     {
      "context": 0,
@@ -1659,6 +1659,97 @@
      "logprob": -52.84632110595703,
      "tokens": 19,
      "text": "def parse_age(s: str) -> int | None:\n    return parse_int(trim(s))\n"
+    }
+   ]
+  },
+  {
+   "id": "fn-type-effects",
+   "question": "Effects in a function type: `Callable[[A], B, io]`, `Effects[Callable[[A], B], io]`, `Annotated[Callable[[A], B], effects(io)]`, or `Callable[[A], Effect[B, io]]`?",
+   "chosen": "callable-extra",
+   "rows": [
+    {
+     "context": 0,
+     "variant": "callable-extra",
+     "logprob": -80.67943572998047,
+     "tokens": 54,
+     "text": "@effects(io)\ndef each(xs: list[str], f: Callable[[str], None, io]) -> None:\n    for x in xs:\n        f(x)\n\n\n@effects(io)\ndef main() -> None:\n    each([\"a\", \"b\"], print)\n"
+    },
+    {
+     "context": 0,
+     "variant": "effects-wrap",
+     "logprob": -85.4643325805664,
+     "tokens": 56,
+     "text": "@effects(io)\ndef each(xs: list[str], f: Effects[Callable[[str], None], io]) -> None:\n    for x in xs:\n        f(x)\n\n\n@effects(io)\ndef main() -> None:\n    each([\"a\", \"b\"], print)\n"
+    },
+    {
+     "context": 0,
+     "variant": "annotated",
+     "logprob": -82.76483154296875,
+     "tokens": 58,
+     "text": "@effects(io)\ndef each(xs: list[str], f: Annotated[Callable[[str], None], effects(io)]) -> None:\n    for x in xs:\n        f(x)\n\n\n@effects(io)\ndef main() -> None:\n    each([\"a\", \"b\"], print)\n"
+    },
+    {
+     "context": 0,
+     "variant": "ret-wrap",
+     "logprob": -85.54954528808594,
+     "tokens": 56,
+     "text": "@effects(io)\ndef each(xs: list[str], f: Callable[[str], Effect[None, io]]) -> None:\n    for x in xs:\n        f(x)\n\n\n@effects(io)\ndef main() -> None:\n    each([\"a\", \"b\"], print)\n"
+    },
+    {
+     "context": 1,
+     "variant": "callable-extra",
+     "logprob": -106.38815307617188,
+     "tokens": 40,
+     "text": "@effects(net)\ndef fetch_all(urls: list[str], get: Callable[[str], Result[str, Error], net]) -> list[Result[str, Error]]:\n    return map(urls, get)\n"
+    },
+    {
+     "context": 1,
+     "variant": "effects-wrap",
+     "logprob": -113.24207305908203,
+     "tokens": 42,
+     "text": "@effects(net)\ndef fetch_all(urls: list[str], get: Effects[Callable[[str], Result[str, Error]], net]) -> list[Result[str, Error]]:\n    return map(urls, get)\n"
+    },
+    {
+     "context": 1,
+     "variant": "annotated",
+     "logprob": -113.6376953125,
+     "tokens": 44,
+     "text": "@effects(net)\ndef fetch_all(urls: list[str], get: Annotated[Callable[[str], Result[str, Error]], effects(net)]) -> list[Result[str, Error]]:\n    return map(urls, get)\n"
+    },
+    {
+     "context": 1,
+     "variant": "ret-wrap",
+     "logprob": -112.87274169921875,
+     "tokens": 42,
+     "text": "@effects(net)\ndef fetch_all(urls: list[str], get: Callable[[str], Effect[Result[str, Error], net]]) -> list[Result[str, Error]]:\n    return map(urls, get)\n"
+    },
+    {
+     "context": 2,
+     "variant": "callable-extra",
+     "logprob": -107.57029724121094,
+     "tokens": 55,
+     "text": "@effects(io, time)\ndef timed(label: str, work: Callable[[], None, io | time]) -> int:\n    start = now()\n    work()\n    print(f\"{label}: {now() - start} ms\")\n    return now() - start\n"
+    },
+    {
+     "context": 2,
+     "variant": "effects-wrap",
+     "logprob": -109.95836639404297,
+     "tokens": 57,
+     "text": "@effects(io, time)\ndef timed(label: str, work: Effects[Callable[[], None], io | time]) -> int:\n    start = now()\n    work()\n    print(f\"{label}: {now() - start} ms\")\n    return now() - start\n"
+    },
+    {
+     "context": 2,
+     "variant": "annotated",
+     "logprob": -105.86740112304688,
+     "tokens": 59,
+     "text": "@effects(io, time)\ndef timed(label: str, work: Annotated[Callable[[], None], effects(io, time)]) -> int:\n    start = now()\n    work()\n    print(f\"{label}: {now() - start} ms\")\n    return now() - start\n"
+    },
+    {
+     "context": 2,
+     "variant": "ret-wrap",
+     "logprob": -114.72219848632812,
+     "tokens": 57,
+     "text": "@effects(io, time)\ndef timed(label: str, work: Callable[[], Effect[None, io | time]]) -> int:\n    start = now()\n    work()\n    print(f\"{label}: {now() - start} ms\")\n    return now() - start\n"
     }
    ]
   }

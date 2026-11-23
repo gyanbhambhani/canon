@@ -42,3 +42,4 @@ Ratio is e^delta. Totals are not length-normalized: a longer spelling pays for i
 | Re-test in a Python-shaped program: `def` or `fn`? | def | fn | **def** | +10.82 | 4.99e+04x | 3/3 |
 | Blank lines between top-level definitions: two (PEP 8) or one? | one | two | **one** | +0.88 | 2.4x | 3/3 |
 | Option type (values stay Some(x)/None): `Option[T]` or `T \| None`? | option | union | **option** | +2.67 | 14.4x | 2/3 |
+| Effects in a function type: `Callable[[A], B, io]`, `Effects[Callable[[A], B], io]`, `Annotated[Callable[[A], B], effects(io)]`, or `Callable[[A], Effect[B, io]]`? | callable-extra | effects-wrap, annotated, ret-wrap | **callable-extra** | +2.54 | 12.7x | 2/3 |
