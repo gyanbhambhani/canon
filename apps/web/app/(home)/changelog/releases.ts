@@ -8,7 +8,7 @@
  * Flip this to true when canon-lang 0.5.0 is published to npm (and the git tag is pushed). It is
  * the only place the page decides whether v0.5 is called released.
  */
-export const V05_RELEASED = false;
+export const V05_RELEASED = true;
 
 export interface Release {
   /** the anchor, e.g. "v0-5" */
