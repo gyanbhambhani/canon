@@ -234,7 +234,7 @@ export async function runOne(model: Model, taskId: string, arm: Arm, run: number
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
     // the account is out of credit: no run happened; record nothing, so it resumes cleanly
-    if (/credit balance is too low/i.test(message)) throw new CreditError(message);
+    if (/credit balance is too low|no credits remaining|insufficient_quota/i.test(message)) throw new CreditError(message);
     finished = "error";
     error = message;
   }

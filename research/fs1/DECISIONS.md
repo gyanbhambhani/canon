@@ -2,6 +2,20 @@
 
 Judgment calls made while building the harness, newest first. Each entry: date, decision, reason.
 
+## 2026-11-23 — Amendment 3: GPT stopped on credit; partial analysis
+Decision: the coordinator's figure of about 345 GPT runs counted infrastructure failures; 161 are
+real. The 188 failures were moved, unedited, to results/dropped-gpt-infrastructure-failures.jsonl,
+the runner was stopped, and Amendment 3 records what exists. The pre-registered analysis was re-run
+unchanged, labelled partial, on the 29 tasks where all three arms have the same number of GPT runs
+(analysis/partial.ts, config-partial.json). The win-rule line is not reported.
+Reason: the coordinator's instruction to keep the arms paired and give no verdict; the pre-registered
+rerun rule (infrastructure failures are never scored).
+
+Decision: runner/run.ts now treats OpenAI's credit errors like Anthropic's (record nothing, stop the
+model). Its new hash is in Amendment 3.
+Reason: before this, 183 billing errors were written as records instead of nothing. It changes no
+scoring.
+
 ## 2026-11-23 — Qwen2.5-Coder-32B dropped
 Decision: the 32B exploratory run is not made; Amendment 2 in PREREGISTRATION.md says so. Its 60
 infrastructure-failure records moved to results/dropped-qwen32-infrastructure-failures.jsonl (kept,

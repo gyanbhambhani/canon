@@ -190,3 +190,46 @@ any analysis.
 - `analysis/subset-32b.ts` stays in the repository, unused.
 - Everything else in Amendment 1 stands: Opus off and its cells reported as not run, the win rule
   undecidable, and gpt-6.2-sol the one frontier result.
+
+## Amendment 3 (2026-11-23): GPT stopped part-way because the OpenAI account ran out of credit
+
+The OpenAI account ran out of credit during the main run (HTTP 429 "You have no credits remaining").
+The Anthropic account had already run out during the pilot (Amendment 1). Neither API was probed
+again. Every call that failed for lack of credit is an infrastructure failure: it is never scored as
+a wrong answer, and it is not counted among the runs.
+
+**What exists for gpt-6.2-sol.** 349 records were written; 161 are real runs and 188 are
+infrastructure failures (183 "no credits remaining", 3 timeouts, 1 connection error, 1 terminated
+process). The 188 are moved, unedited, to `results/dropped-gpt-infrastructure-failures.jsonl`
+(outside the `results/main-*.jsonl` files the analysis reads). The 161 real runs are in
+`results/main-gpt.jsonl` (96, replicate 1) and `results/main-gpt-r3.jsonl` (65, replicate 3);
+replicate 2 never produced a real run, because its process was queued behind replicate 1. Both
+replicates visited the tasks alphabetically, so the covered tasks are an alphabetical prefix, not a
+random sample.
+
+| GPT real runs per arm | Tasks |
+| --- | --- |
+| 2 each in direct, openapi and canon (replicates 1 and 3) | 20 |
+| 1 each | 9 |
+| unequal across arms | 4: get-profile (1/2/2 direct/openapi/canon), max-quantity-validation (2/1/1), min-price-validation (2/1/1), product-price-label (1/0/0) |
+| none | 27 |
+
+No task reached the pre-registered 3 runs. Of the 540 planned GPT runs, 379 are missing.
+
+**Partial analysis.** The pre-registered analysis (`analysis/analyze.ts`, unchanged) is re-run only on
+what exists, labelled **partial**, restricted to the 29 tasks where all three arms have the same
+number of GPT runs (`analysis/partial.ts` writes `results/partial-gpt.jsonl`; 147 runs; 23 feature,
+6 change, 6 adapted). It uses `analysis/config-partial.json` (frontier = gpt-6.2-sol only). The
+analysis' "win rule" line is **not** reported: the win rule needs both frontier models, so it
+cannot be evaluated. The report gives the measured effects with their 95% intervals and no verdict.
+
+**Opus stays absent.** claude-opus-5-5's main-run cells are "not run"; only its 24 pilot runs exist.
+
+**One change to a pinned file.** `runner/run.ts` now also treats OpenAI's "no credits remaining" and
+`insufficient_quota` as a credit failure (recorded as nothing, the model stops), as it already did
+for Anthropic's. It changes no scoring. Its SHA-256 is now
+`7bf4c6d6218cabd778c02b9468ba18d3f03a329a51683bd310e8feb310f85038`; every other file in
+`MANIFEST.sha256` still matches.
+
+**To complete the run.** Add credit to both accounts and re-run the same commands (failed calls were
+not recorded, so recorded runs are skipped); see REPORT.md.
