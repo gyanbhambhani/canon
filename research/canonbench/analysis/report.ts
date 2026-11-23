@@ -85,7 +85,7 @@ ${qwenLines}
 - **GPT-6.2 Sol:** READ ${verdictLine("READ", "gpt")}, driven by the effects questions (READ-effects ${verdictLine("READ-effects", "gpt")}). WRITE, FIX and CHANGE are ${g("WRITE")?.verdict}, ${g("FIX")?.verdict} and ${g("CHANGE")?.verdict} with every language at ${pct(sec("write", "gpt", "canon")?.passRate)}, ${pct(sec("fix", "gpt", "canon")?.passRate)} and ${pct(sec("change", "gpt", "canon")?.passRate)}: a ceiling (the items are too easy for this model, as the pilot warned). THINK -> Python is ${verdictLine("THINK", "gpt")}: ${thinkFail} Canon programs passed in Canon and failed after compiling to Python (CB-2 and G002, section 8). **Cost: lose, as predicted** (Canon used ${Math.min(...costRows).toFixed(1)} to ${Math.max(...costRows).toFixed(1)} times the tokens per item, mostly the agent reference in every prompt).
 - **The annotations are not why Canon wins READ for GPT.** Removing requires, ensures and effects changed accuracy by ${ablG ? ci(ablG) : "–"}; stripped Canon still beat ${ablG2?.comparison.includes("ts") ? "TypeScript" : "Python"} by ${ablG2 ? ci(ablG2) : "–"}. Most of the gap is two kinds of question where Python and TypeScript are genuinely open to more than one reading (section 4.2): every one of GPT's ${gpe?.wrong} wrong Python and ${gte?.wrong} wrong TypeScript effects answers named *more* functions than the ground truth (Python's urlopen also opens file:// URLs, for example), and its ${gpp?.wrong} Python and ${gtp?.wrong} TypeScript property misses were all "yes" where the executed references say "no". Read it as "Canon programs leave less room for doubt", not "models understand Canon better".
 - **Claude Opus 5.5 (READ only):** at ceiling in every arm; READ ${verdictLine("READ", "opus")}.
-- **Compiler bugs found by the benchmark:** CB-1 (fixed on main before the main run) and CB-2 (open); section 8.`;
+- **Compiler bugs found by the benchmark:** CB-1 (fixed on main before the main run) and CB-2 (fixed on main in e4de1a7 after it was reported, but after this run's compiler pin, so it still counts against THINK here); section 8.`;
 
 // ---------------------------------------------------------------- sections
 const sb = markdown(a);
@@ -138,7 +138,22 @@ ${perArm}
 - Errors removed by automatic fixes, all models and families together: Canon ${heal("canon")}, Python ${heal("py")}, TypeScript ${heal("ts")}. ruff and eslint fix style, rarely type errors; Canon's \`--fix\` applies its mechanical patches (canonical form C001, effects E101/E102, T009).
 - False acceptance, all families together: GPT-6.2 Sol Canon ${fa("gpt", "canon")}, Python ${fa("gpt", "py")}, TypeScript ${fa("gpt", "ts")}; Qwen 7B Canon ${fa("qwen7b", "canon")}, Python ${fa("qwen7b", "py")}, TypeScript ${fa("qwen7b", "ts")}.`;
 
-const fs1 = existsSync(join(BENCH, "..", "fs1", "REPORT.md")) ? "see research/fs1/REPORT.md (folded in below)" : "**pending FS-1** (FS-1 is run by a separate agent on main; its results were not committed when this report was generated)";
+const fs1Path = join(BENCH, "..", "fs1", "REPORT.md");
+// FS-1's report: the merged file if present, else main's copy (the report is generated before merging
+// main, so that THINK's compile step uses the pinned compiler)
+const fs1Text = existsSync(fs1Path)
+  ? readFileSync(fs1Path, "utf8")
+  : (() => {
+      try {
+        return run("git show main:research/fs1/REPORT.md");
+      } catch {
+        return "";
+      }
+    })();
+const fs1Primary = (fs1Text.split("## Primary outcome")[1] ?? "").split("\n## ")[0].trim();
+const fs1 = fs1Primary
+  ? `**partial, no verdict** (FS-1 was run by a separate agent on main; both frontier models stopped on credit there too). FS-1's own primary outcome, quoted from research/fs1/REPORT.md (its numbers come from its own analysis script):\n\n${fs1Primary}\n\nAs the THINK family's full-stack row: GPT-6.2 Sol non-inferior on partial data at the ceiling; Claude Opus 5.5 pilot only; Qwen 7B exploratory. See research/fs1/REPORT.md for change-task success, mismatch rate and validation agreement`
+  : "**pending FS-1** (FS-1 is run by a separate agent on main; its results were not committed when this report was generated)";
 
 const deviations = readFileSync(join(BENCH, "DECISIONS.md"), "utf8")
   .split("\n")
@@ -173,7 +188,7 @@ ${scoreboard}
 | FIX | win | ${q("FIX")?.verdict ?? "–"} | non-inferior | ${g("FIX")?.verdict ?? "–"} | not run |
 | CHANGE | win | ${q("CHANGE")?.verdict ?? "–"} | non-inferior | ${g("CHANGE")?.verdict ?? "–"} | not run |
 | THINK, single programs | win | ${q("THINK")?.verdict ?? "–"} | non-inferior | ${g("THINK")?.verdict ?? "–"} | not run |
-| FULL-STACK | inconclusive | pending FS-1 | win on change tasks and mismatch | pending FS-1 | pending FS-1 |
+| FULL-STACK | inconclusive | ${fs1Primary ? "exploratory, unfinished (FS-1)" : "pending FS-1"} | win on change tasks and mismatch | ${fs1Primary ? "non-inferior on partial data, no verdict (FS-1)" : "pending FS-1"} | ${fs1Primary ? "pilot only (FS-1)" : "pending FS-1"} |
 | Cost | lose | lose | lose | lose | lose |
 
 ### The win rule (plan section 7.3)
@@ -184,7 +199,7 @@ Not decidable: it requires both frontier models, and Claude Opus 5.5 ran READ on
 
 ${runTable}
 
-Qwen 7B ran run-major (run 0 of every family, then run 1, then run 2) and stopped under the pre-registered 07:00 rule; seed scores average over the runs each seed has. Its local server crashed twice with Metal out-of-memory errors (another agent's model server, then a 32B server that never loaded); failed calls were not recorded and were redone.
+Qwen 7B ran run-major (run 0 of every family, then run 1, then run 2) and stopped under the pre-registered 07:00 rule; seed scores average over the runs each seed has. Its local server crashed several times with Metal out-of-memory errors (DECISIONS 35 and 41: a second model server, a 32B server that never loaded, then the FS-1 runner's long contexts on the shared server); a watchdog restarted it, and failed calls were not recorded and were redone.
 
 ## 3. Per family
 
@@ -219,12 +234,12 @@ Brace-syntax rows are the main run's and the pilot's Canon runs on the same seed
 
 ${canonPy}
 
-Notes: the Python column is the Python arm, for reference; its \`import / from\` count is the required header. Rust-isms (let mut, &, format!, null) appear only in brace-Canon drafts; Canon-Py drafts swap them for Python-isms outside Canon-Py's subset (dict literals, slices, \`+=\`, methods). Neither surface got the 7B model to a program that checks.
+Notes: the Python column is the Python arm, for reference; its \`import / from\` count is the required header. Rust-isms (let mut, &, format!, null) appear only in brace-Canon drafts; Canon-Py drafts swap them for Python-isms outside Canon-Py's subset (dict literals, slices, \`+=\`, methods). In WRITE, neither surface got the 7B model to a single program that checks; in FIX and CHANGE, where a working program is given, both surfaces pass some items and Canon-Py does not do better than brace.
 
 ## 8. Compiler issues found
 
 - **CB-1** (Phase 1, verifying references through the Python generator): \`unwrap_or\` temporaries hoisted out of lambdas and while conditions (NameErrors; conditions evaluated once). 4 of 60 Experiment 1 references failed through it. Reported at once; fixed on main in 0a38eba before the main run, which used c2cb47e.
-- **CB-2** (THINK): the Python generator splits a comprehension's tuple target across lines (\`for key,\\n members\\n in ...\`), a SyntaxError; 2 of GPT-6.2 Sol's Canon programs. Open.
+- **CB-2** (THINK): the Python generator splits a comprehension's tuple target across lines (\`for key,\\n members\\n in ...\`), a SyntaxError; 2 of GPT-6.2 Sol's Canon programs. Reported during the run; fixed on main in e4de1a7, after the pinned compiler (c2cb47e) this run used.
 - **G002 on Option of Option** (a documented refusal): GPT-6.2 Sol wrote \`unwrap_or(map_get(m, k), None)\` on a map of optional values in all 3 parking_fees runs; it checks and runs in Canon, and the Python target refuses it. The core reference does not warn about it.
 - **Formatter vs reference** (found by the item authors): the reference says chains of three or more calls are pipelines "one stage per line", but fmt prints a one-line pipeline inside a call argument, a match scrutinee or a binary operand.
 - **One Experiment 1 reference was wrong** (not a compiler bug): vending_machine's Canon reference treated negative coins as a refund; fixed in CanonBench's copy.

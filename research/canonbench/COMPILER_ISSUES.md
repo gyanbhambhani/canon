@@ -64,7 +64,9 @@ while condition is G002). CanonBench pinned c2cb47e, which includes the fix.
 ## CB-2: generated Python breaks a comprehension's tuple target across lines (SyntaxError)
 
 Found 2026-11-23 in the THINK family (GPT-6.2 Sol's Canon programs compiled to Python). Present
-on the pinned compiler (c2cb47e) and on main's built compiler when checked. Not fixed.
+on the pinned compiler (c2cb47e) and on main's built compiler when checked. **Status: fixed on main
+in e4de1a7** after it was reported; CanonBench's numbers use the pinned c2cb47e, so it still counts
+against THINK in REPORT.md.
 
 When a comprehension produced from `filter` / `map` over pairs is wrapped, the printer splits the
 tuple target of `for key, members in ...` over several lines. Python does not allow that, so the

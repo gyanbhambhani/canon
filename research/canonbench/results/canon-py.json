@@ -3,77 +3,125 @@
   "family": "write",
   "arm": "canon (brace)",
   "seeds": 24,
-  "runs": 34,
+  "runs": 82,
   "pass": 0,
   "firstCheck": 0,
-  "parseRuns": 30,
+  "parseRuns": 74,
   "parseFixed": 0,
-  "topCodes": "P001 (32), P004 (1), P005 (1)",
-  "unchangedResubmissions": 27
+  "topCodes": "P001 (80), P004 (1), P005 (1)",
+  "unchangedResubmissions": 67
  },
  "write|canon-py": {
   "family": "write",
   "arm": "canon-py",
   "seeds": 24,
-  "runs": 60,
+  "runs": 72,
   "pass": 0,
   "firstCheck": 0,
-  "parseRuns": 54,
+  "parseRuns": 65,
   "parseFixed": 0,
-  "topCodes": "P001 (59), T002 (1), T001 (1)",
-  "unchangedResubmissions": 36
+  "topCodes": "P001 (70), T002 (2), T001 (2), T008 (1)",
+  "unchangedResubmissions": 40
+ },
+ "fix|canon (brace)": {
+  "family": "fix",
+  "arm": "canon (brace)",
+  "seeds": 7,
+  "runs": 46,
+  "pass": 0.5434782608695652,
+  "firstCheck": 0.9130434782608695,
+  "parseRuns": 1,
+  "parseFixed": 0,
+  "topCodes": "P001 (1)",
+  "unchangedResubmissions": 1
+ },
+ "fix|canon-py": {
+  "family": "fix",
+  "arm": "canon-py",
+  "seeds": 7,
+  "runs": 14,
+  "pass": 0.5,
+  "firstCheck": 0.7142857142857143,
+  "parseRuns": 2,
+  "parseFixed": 0,
+  "topCodes": "P001 (3)",
+  "unchangedResubmissions": 2
+ },
+ "change|canon (brace)": {
+  "family": "change",
+  "arm": "canon (brace)",
+  "seeds": 8,
+  "runs": 24,
+  "pass": 0.25,
+  "firstCheck": 0.25,
+  "parseRuns": 14,
+  "parseFixed": 2,
+  "topCodes": "P001 (13), T001 (2), T002 (1), L001 (1)",
+  "unchangedResubmissions": 13
+ },
+ "change|canon-py": {
+  "family": "change",
+  "arm": "canon-py",
+  "seeds": 8,
+  "runs": 8,
+  "pass": 0.125,
+  "firstCheck": 0.125,
+  "parseRuns": 4,
+  "parseFixed": 0,
+  "topCodes": "P001 (4), T001 (2), T002 (1), L001 (1)",
+  "unchangedResubmissions": 3
  },
  "rustisms": {
   "brace": {
-   "drafts": 70,
+   "drafts": 190,
    "counts": [
     {
      "name": "let mut",
-     "draftsWithIt": 42,
-     "share": 0.6,
-     "occurrences": 110
+     "draftsWithIt": 125,
+     "share": 0.6578947368421053,
+     "occurrences": 339
     },
     {
      "name": "& borrow",
-     "draftsWithIt": 10,
-     "share": 0.14285714285714285,
-     "occurrences": 15
+     "draftsWithIt": 40,
+     "share": 0.21052631578947367,
+     "occurrences": 85
     },
     {
      "name": ".method() call",
-     "draftsWithIt": 45,
-     "share": 0.6428571428571429,
-     "occurrences": 311
+     "draftsWithIt": 125,
+     "share": 0.6578947368421053,
+     "occurrences": 931
     },
     {
      "name": "format!",
-     "draftsWithIt": 12,
-     "share": 0.17142857142857143,
-     "occurrences": 24
+     "draftsWithIt": 36,
+     "share": 0.18947368421052632,
+     "occurrences": 62
     },
     {
      "name": "char literal",
-     "draftsWithIt": 18,
-     "share": 0.2571428571428571,
-     "occurrences": 98
+     "draftsWithIt": 45,
+     "share": 0.23684210526315788,
+     "occurrences": 234
     },
     {
      "name": "null",
-     "draftsWithIt": 3,
-     "share": 0.04285714285714286,
-     "occurrences": 11
+     "draftsWithIt": 9,
+     "share": 0.04736842105263158,
+     "occurrences": 28
     },
     {
      "name": "+=",
-     "draftsWithIt": 12,
-     "share": 0.17142857142857143,
-     "occurrences": 37
+     "draftsWithIt": 31,
+     "share": 0.1631578947368421,
+     "occurrences": 100
     },
     {
      "name": "dict/set literal",
-     "draftsWithIt": 2,
-     "share": 0.02857142857142857,
-     "occurrences": 7
+     "draftsWithIt": 4,
+     "share": 0.021052631578947368,
+     "occurrences": 11
     },
     {
      "name": "slice x[a:b]",
@@ -90,7 +138,7 @@
    ]
   },
   "canonPy": {
-   "drafts": 60,
+   "drafts": 72,
    "counts": [
     {
      "name": "let mut",
@@ -106,9 +154,9 @@
     },
     {
      "name": ".method() call",
-     "draftsWithIt": 48,
-     "share": 0.8,
-     "occurrences": 167
+     "draftsWithIt": 59,
+     "share": 0.8194444444444444,
+     "occurrences": 203
     },
     {
      "name": "format!",
@@ -118,9 +166,9 @@
     },
     {
      "name": "char literal",
-     "draftsWithIt": 7,
-     "share": 0.11666666666666667,
-     "occurrences": 37
+     "draftsWithIt": 8,
+     "share": 0.1111111111111111,
+     "occurrences": 38
     },
     {
      "name": "null",
@@ -130,32 +178,32 @@
     },
     {
      "name": "+=",
-     "draftsWithIt": 26,
-     "share": 0.43333333333333335,
-     "occurrences": 74
+     "draftsWithIt": 33,
+     "share": 0.4583333333333333,
+     "occurrences": 89
     },
     {
      "name": "dict/set literal",
-     "draftsWithIt": 17,
-     "share": 0.2833333333333333,
-     "occurrences": 17
+     "draftsWithIt": 22,
+     "share": 0.3055555555555556,
+     "occurrences": 23
     },
     {
      "name": "slice x[a:b]",
-     "draftsWithIt": 14,
-     "share": 0.23333333333333334,
-     "occurrences": 30
+     "draftsWithIt": 17,
+     "share": 0.2361111111111111,
+     "occurrences": 37
     },
     {
      "name": "import / from",
      "draftsWithIt": 1,
-     "share": 0.016666666666666666,
+     "share": 0.013888888888888888,
      "occurrences": 1
     }
    ]
   },
   "python": {
-   "drafts": 70,
+   "drafts": 190,
    "counts": [
     {
      "name": "let mut",
@@ -171,9 +219,9 @@
     },
     {
      "name": ".method() call",
-     "draftsWithIt": 52,
-     "share": 0.7428571428571429,
-     "occurrences": 212
+     "draftsWithIt": 141,
+     "share": 0.7421052631578947,
+     "occurrences": 555
     },
     {
      "name": "format!",
@@ -183,9 +231,9 @@
     },
     {
      "name": "char literal",
-     "draftsWithIt": 19,
-     "share": 0.2714285714285714,
-     "occurrences": 82
+     "draftsWithIt": 49,
+     "share": 0.2578947368421053,
+     "occurrences": 209
     },
     {
      "name": "null",
@@ -195,27 +243,27 @@
     },
     {
      "name": "+=",
-     "draftsWithIt": 38,
-     "share": 0.5428571428571428,
-     "occurrences": 74
+     "draftsWithIt": 99,
+     "share": 0.5210526315789473,
+     "occurrences": 202
     },
     {
      "name": "dict/set literal",
-     "draftsWithIt": 24,
-     "share": 0.34285714285714286,
-     "occurrences": 78
+     "draftsWithIt": 69,
+     "share": 0.3631578947368421,
+     "occurrences": 218
     },
     {
      "name": "slice x[a:b]",
-     "draftsWithIt": 21,
-     "share": 0.3,
-     "occurrences": 44
+     "draftsWithIt": 59,
+     "share": 0.3105263157894737,
+     "occurrences": 122
     },
     {
      "name": "import / from",
-     "draftsWithIt": 70,
+     "draftsWithIt": 190,
      "share": 1,
-     "occurrences": 144
+     "occurrences": 392
     }
    ]
   }

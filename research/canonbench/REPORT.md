@@ -5,17 +5,17 @@ Run overnight 2026-11-22/23, unattended, by an agent, on branch `worktree-agent-
 ## Summary
 
 - **Qwen2.5-Coder 7B (local, the small-model test):** on the pre-registered rows,
-  - READ: **inconclusive** (-3.7 points [-10.3, +3.1] against TypeScript, Holm p = 1.000, 76 seeds)
-  - WRITE: **lose** (-32.7 points [-46.9, -20.4] against TypeScript, Holm p = 1.000, 49 seeds)
-  - FIX: not run
-  - CHANGE: not run
-  - THINK: **lose** (-36.7 points [-48.3, -25.0] against Python, Holm p = 1.000, 60 seeds)
-  Arm pass rates: WRITE Canon 0.0%, Python 36.7%, TypeScript 32.7%; FIX Canon –, Python –, TypeScript –; CHANGE Canon –, Python –, TypeScript –. The 7B model mostly cannot write Canon's brace syntax: its drafts read like Rust (section 7), fail to parse, and come back unchanged after feedback. The prediction "FIX win, CHANGE win, THINK win" for the 7B did not hold.
+  - READ: **non-inferior** (-1.1 points [-6.3, +4.2] against TypeScript, Holm p = 1.000, 76 seeds)
+  - WRITE: **lose** (-32.8 points [-43.9, -22.2] against TypeScript, Holm p = 1.000, 60 seeds)
+  - FIX: **lose** (-29.9 points [-42.5, -17.1] against Python, Holm p = 1.000, 53 seeds)
+  - CHANGE: **lose** (-35.4 points [-58.3, -10.4] against TypeScript, Holm p = 1.000, 24 seeds)
+  - THINK: **lose** (-36.1 points [-47.2, -25.0] against Python, Holm p = 1.000, 60 seeds)
+  Arm pass rates: WRITE Canon 0.0%, Python 36.1%, TypeScript 32.8%; FIX Canon 48.8%, Python 80.5%, TypeScript 76.9%; CHANGE Canon 35.4%, Python 58.3%, TypeScript 70.8%. The 7B model mostly cannot write Canon's brace syntax: its drafts read like Rust (section 7), fail to parse, and come back unchanged after feedback. The prediction "FIX win, CHANGE win, THINK win" for the 7B did not hold.
 - **The plan's win rule ("Canon is the better language for AI agents") cannot be decided.** It needs both frontier models. Claude Opus 5.5 stopped at 01:18 PST when the Anthropic account ran out of credit, and the owner then took it off the run; Opus finished READ only. GPT-6.2 Sol is the one frontier result.
 - **GPT-6.2 Sol:** READ **win** (+3.6 points [+1.7, +5.8] against TypeScript, Holm p = 0.001, 76 seeds), driven by the effects questions (READ-effects **win** (+8.3 points [+3.6, +13.5] against TypeScript, Holm p = 0.001, 16 seeds)). WRITE, FIX and CHANGE are non-inferior, non-inferior and non-inferior with every language at 100.0%, 100.0% and 100.0%: a ceiling (the items are too easy for this model, as the pilot warned). THINK -> Python is **non-inferior** (-2.8 points [-6.7, +0.0] against Python, Holm p = 1.000, 60 seeds): 5 Canon programs passed in Canon and failed after compiling to Python (CB-2 and G002, section 8). **Cost: lose, as predicted** (Canon used 3.2 to 7.7 times the tokens per item, mostly the agent reference in every prompt).
 - **The annotations are not why Canon wins READ for GPT.** Removing requires, ensures and effects changed accuracy by +0.1 points [+0.0, +0.3]; stripped Canon still beat TypeScript by +3.5 points [+1.5, +5.8]. Most of the gap is two kinds of question where Python and TypeScript are genuinely open to more than one reading (section 4.2): every one of GPT's 48 wrong Python and 16 wrong TypeScript effects answers named *more* functions than the ground truth (Python's urlopen also opens file:// URLs, for example), and its 33 Python and 14 TypeScript property misses were all "yes" where the executed references say "no". Read it as "Canon programs leave less room for doubt", not "models understand Canon better".
 - **Claude Opus 5.5 (READ only):** at ceiling in every arm; READ **non-inferior** (-0.5 points [-2.0, +0.5] against Python, Holm p = 1.000, 76 seeds).
-- **Compiler bugs found by the benchmark:** CB-1 (fixed on main before the main run) and CB-2 (open); section 8.
+- **Compiler bugs found by the benchmark:** CB-1 (fixed on main before the main run) and CB-2 (fixed on main in e4de1a7 after it was reported, but after this run's compiler pin, so it still counts against THINK here); section 8.
 
 ## 1. Scoreboard
 
@@ -26,17 +26,33 @@ Each cell: verdict, Canon minus baseline in percentage points [95% bootstrap int
 
 | Family | mlx-community/Qwen2.5-Coder-7B-Instruct-8bit | claude-opus-5-5 | gpt-6.2-sol |
 | --- | --- | --- | --- |
-| READ | **inconclusive** -3.7 [-10.3, +3.1] p=1.000 n=76 (vs ts) | **non-inferior** -0.5 [-2.0, +0.5] p=1.000 n=76 (vs py) | **win** +3.6 [+1.7, +5.8] p=0.001 n=76 (vs ts) |
-| READ-effects | **inconclusive** +6.3 [-10.9, +23.4] p=1.000 n=16 (vs py) | **non-inferior** +0.8 [+0.0, +2.3] p=1.000 n=16 (vs py) | **win** +8.3 [+3.6, +13.5] p=0.001 n=16 (vs ts) |
-| READ-property | **inconclusive** -1.9 [-11.5, +7.7] p=1.000 n=52 (vs ts) | **non-inferior** -1.9 [-5.8, +0.0] p=1.000 n=52 (vs py) | **non-inferior** +7.1 [+1.3, +14.1] p=0.130 n=52 (vs ts) |
-| READ-output | **non-inferior** +4.2 [-0.8, +10.0] p=0.657 n=60 (vs py) | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=60 (vs py) | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=60 (vs py) |
-| WRITE | **lose** -32.7 [-46.9, -20.4] p=1.000 n=49 (vs ts) | not run | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=60 (vs py) |
-| FIX | not run | not run | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=53 (vs py) |
-| CHANGE | not run | not run | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=24 (vs py) |
-| THINK | **lose** -36.7 [-48.3, -25.0] p=1.000 n=60 (vs py) | not run | **non-inferior** -2.8 [-6.7, +0.0] p=1.000 n=60 (vs py) |
+| READ | **non-inferior** -1.1 [-6.3, +4.2] p=1.000 n=76 (vs ts) | **non-inferior** -0.5 [-2.0, +0.5] p=1.000 n=76 (vs py) | **win** +3.6 [+1.7, +5.8] p=0.001 n=76 (vs ts) |
+| READ-effects | **inconclusive** +1.6 [-14.6, +19.3] p=1.000 n=16 (vs py) | **non-inferior** +0.8 [+0.0, +2.3] p=1.000 n=16 (vs py) | **win** +8.3 [+3.6, +13.5] p=0.001 n=16 (vs ts) |
+| READ-property | **non-inferior** -0.6 [-8.3, +6.4] p=1.000 n=52 (vs ts) | **non-inferior** -1.9 [-5.8, +0.0] p=1.000 n=52 (vs py) | **non-inferior** +7.1 [+1.3, +14.1] p=0.130 n=52 (vs ts) |
+| READ-output | **non-inferior** +4.7 [+0.3, +9.7] p=0.130 n=60 (vs py) | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=60 (vs py) | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=60 (vs py) |
+| WRITE | **lose** -32.8 [-43.9, -22.2] p=1.000 n=60 (vs ts) | not run | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=60 (vs py) |
+| FIX | **lose** -29.9 [-42.5, -17.1] p=1.000 n=53 (vs py) | not run | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=53 (vs py) |
+| CHANGE | **lose** -35.4 [-58.3, -10.4] p=1.000 n=24 (vs ts) | not run | **non-inferior** +0.0 [+0.0, +0.0] p=1.000 n=24 (vs py) |
+| THINK | **lose** -36.1 [-47.2, -25.0] p=1.000 n=60 (vs py) | not run | **non-inferior** -2.8 [-6.7, +0.0] p=1.000 n=60 (vs py) |
 
 
-- FULL-STACK (FS-1): **pending FS-1** (FS-1 is run by a separate agent on main; its results were not committed when this report was generated).
+- FULL-STACK (FS-1): **partial, no verdict** (FS-1 was run by a separate agent on main; both frontier models stopped on credit there too). FS-1's own primary outcome, quoted from research/fs1/REPORT.md (its numbers come from its own analysis script):
+
+Primary comparison (pre-registered): Canon against openapi, end-to-end pass rate, margin 10 pp.
+
+| Model | Data | Canon − openapi | 95% interval | Outcome by the plan's rule |
+| --- | --- | --- | --- | --- |
+| gpt-6.2-sol | partial: 29 paired tasks, 147 runs | 0.0 pp | [0.0, 0.0] | non-inferior (the interval's lower end is above −10 pp) |
+| gpt-6.2-sol | partial, without adapted tasks: 23 tasks | 0.0 pp | [0.0, 0.0] | non-inferior |
+| claude-opus-5-5 | not run (pilot only, 8 tasks) | 0.0 pp | [0.0, 0.0] | pilot only, not a result |
+
+"Non-inferior" here means every arm passed every run of the tasks that exist, so the data show no
+difference at all; it is not evidence that Canon is better, and the tasks run so far are too easy to
+show a loss. **No verdict on the win rule** (non-inferior on pass for both frontier models, and significantly
+better on change-task success or mismatch rate): Opus has no main-run data, and for GPT neither change-task
+success nor mismatch rate differs between arms (all 100% and 0%).
+
+As the THINK family's full-stack row: GPT-6.2 Sol non-inferior on partial data at the ceiling; Claude Opus 5.5 pilot only; Qwen 7B exploratory. See research/fs1/REPORT.md for change-task success, mismatch rate and validation agreement.
 - Cost row: see section 9 (Canon loses on tokens in every cell, as predicted).
 
 ### Predictions (PREREGISTRATION.md section 7) against outcomes
@@ -44,13 +60,13 @@ Each cell: verdict, Canon minus baseline in percentage points [95% bootstrap int
 | Family | Predicted, Qwen 7B | Observed, Qwen 7B | Predicted, frontier | Observed, GPT-6.2 Sol | Observed, Opus 5.5 |
 | --- | --- | --- | --- | --- | --- |
 | READ, effects | win (large) | inconclusive | win (large) | win | non-inferior |
-| READ, property | win | inconclusive | win | non-inferior | non-inferior |
+| READ, property | win | non-inferior | win | non-inferior | non-inferior |
 | READ, output | non-inferior | non-inferior | non-inferior | non-inferior | non-inferior |
 | WRITE | inconclusive or lose | lose | non-inferior | non-inferior | not run |
-| FIX | win | – | non-inferior | non-inferior | not run |
-| CHANGE | win | – | non-inferior | non-inferior | not run |
+| FIX | win | lose | non-inferior | non-inferior | not run |
+| CHANGE | win | lose | non-inferior | non-inferior | not run |
 | THINK, single programs | win | lose | non-inferior | non-inferior | not run |
-| FULL-STACK | inconclusive | pending FS-1 | win on change tasks and mismatch | pending FS-1 | pending FS-1 |
+| FULL-STACK | inconclusive | exploratory, unfinished (FS-1) | win on change tasks and mismatch | non-inferior on partial data, no verdict (FS-1) | pilot only (FS-1) |
 | Cost | lose | lose | lose | lose | lose |
 
 ### The win rule (plan section 7.3)
@@ -61,10 +77,10 @@ Not decidable: it requires both frontier models, and Claude Opus 5.5 ran READ on
 
 | Family | Planned per model (x 3 runs) | Qwen 7B: runs 0 / 1 / 2 recorded | Claude Opus 5.5 | GPT-6.2 Sol |
 | --- | --- | --- | --- | --- |
-| READ | 792 x 3 = 2376 | 792 / 0 / 0 | 792 / 792 / 278 | 792 / 792 / 792 |
-| WRITE | 180 x 3 = 540 | 169 / 0 / 0 | 0 / 0 / 0 | 180 / 180 / 180 |
-| FIX | 303 x 3 = 909 | 0 / 0 / 0 | 0 / 0 / 0 | 303 / 303 / 303 |
-| CHANGE | 72 x 3 = 216 | 0 / 0 / 0 | 0 / 0 / 0 | 72 / 72 / 72 |
+| READ | 792 x 3 = 2376 | 792 / 792 / 792 | 792 / 792 / 278 | 792 / 792 / 792 |
+| WRITE | 180 x 3 = 540 | 180 / 180 / 180 | 0 / 0 / 0 | 180 / 180 / 180 |
+| FIX | 303 x 3 = 909 | 303 / 303 / 146 | 0 / 0 / 0 | 303 / 303 / 303 |
+| CHANGE | 72 x 3 = 216 | 72 / 72 / 0 | 0 / 0 / 0 | 72 / 72 / 72 |
 | THINK -> Python | derived from WRITE | derived | not run (no WRITE) | derived |
 | THINK -> TypeScript | 60 x 2 | not possible in Canon v0.5 (DECISIONS 18) | | |
 | FULL-STACK (FS-1) | 60 tasks x 3 arms | run by a separate agent on main | | |
@@ -72,7 +88,7 @@ Not decidable: it requires both frontier models, and Claude Opus 5.5 ran READ on
 | Exploratory Qwen 32B | 20-seed subset | not run: weights could not be downloaded (DECISIONS 38) | | |
 | Exploratory Canon-Py (Qwen 7B) | pilot seeds x 3, then more | see section 7 | | |
 
-Qwen 7B ran run-major (run 0 of every family, then run 1, then run 2) and stopped under the pre-registered 07:00 rule; seed scores average over the runs each seed has. Its local server crashed twice with Metal out-of-memory errors (another agent's model server, then a 32B server that never loaded); failed calls were not recorded and were redone.
+Qwen 7B ran run-major (run 0 of every family, then run 1, then run 2) and stopped under the pre-registered 07:00 rule; seed scores average over the runs each seed has. Its local server crashed several times with Metal out-of-memory errors (DECISIONS 35 and 41: a second model server, a 32B server that never loaded, then the FS-1 runner's long contexts on the shared server); a watchdog restarted it, and failed calls were not recorded and were redone.
 
 ## 3. Per family
 
@@ -80,23 +96,25 @@ Qwen 7B ran run-major (run 0 of every family, then run 1, then run 2) and stoppe
 
 | Family | Model | arms |
 | --- | --- | --- |
-| READ | qwen7b | canon 35.6, canon-stripped 34.2, py 33.4, ts 39.4 |
+| READ | qwen7b | canon 36.0, canon-stripped 34.0, py 35.0, ts 37.1 |
 | READ | opus | canon 99.3, canon-stripped 99.3, py 99.8, ts 100.0 |
 | READ | gpt | canon 99.3, canon-stripped 99.2, py 89.3, ts 95.8 |
-| READ-effects | qwen7b | canon 57.8, canon-stripped 46.9, py 51.6, ts 54.7 |
+| READ-effects | qwen7b | canon 53.6, canon-stripped 45.8, py 52.1, ts 54.2 |
 | READ-effects | opus | canon 100.0, canon-stripped 100.0, py 99.2, ts 100.0 |
 | READ-effects | gpt | canon 100.0, canon-stripped 99.5, py 75.0, ts 91.7 |
-| READ-property | qwen7b | canon 46.2, canon-stripped 50.0, py 48.1, ts 48.1 |
+| READ-property | qwen7b | canon 46.8, canon-stripped 48.7, py 50.6, ts 47.4 |
 | READ-property | opus | canon 98.1, canon-stripped 98.1, py 100.0, ts 100.0 |
 | READ-property | gpt | canon 98.1, canon-stripped 98.1, py 78.8, ts 91.0 |
-| READ-output | qwen7b | canon 21.7, canon-stripped 20.0, py 17.5, ts 30.8 |
+| READ-output | qwen7b | canon 23.6, canon-stripped 20.8, py 18.9, ts 26.1 |
 | READ-output | opus | canon 100.0, canon-stripped 100.0, py 100.0, ts 100.0 |
 | READ-output | gpt | canon 100.0, canon-stripped 100.0, py 100.0, ts 100.0 |
-| WRITE | qwen7b | canon 0.0, py 36.7, ts 32.7 |
+| WRITE | qwen7b | canon 0.0, py 36.1, ts 32.8 |
 | WRITE | gpt | canon 100.0, py 100.0, ts 100.0 |
+| FIX | qwen7b | canon 50.0, py 79.9, ts 76.6 |
 | FIX | gpt | canon 100.0, py 100.0, ts 100.0 |
+| CHANGE | qwen7b | canon 35.4, py 58.3, ts 70.8 |
 | CHANGE | gpt | canon 100.0, py 100.0, ts 100.0 |
-| THINK | qwen7b | canon->py 0.0, py 36.7 |
+| THINK | qwen7b | canon->py 0.0, py 36.1 |
 | THINK | gpt | canon->py 97.2, py 100.0 |
 
 
@@ -110,14 +128,14 @@ Canon against Canon with requires, ensures and effects removed (the value of the
 
 | Model | Row | Comparison | Difference [95% CI] | n |
 | --- | --- | --- | --- | --- |
-| qwen7b | READ | Canon - stripped Canon (value of the annotations) | +1.4 [-3.4, +6.4] | 76 |
-| qwen7b | READ | stripped Canon - ts (syntax alone) | -5.2 [-11.3, +1.4] | 76 |
-| qwen7b | READ-effects | Canon - stripped Canon (value of the annotations) | +10.9 [-3.1, +23.4] | 16 |
-| qwen7b | READ-effects | stripped Canon - py (syntax alone) | -4.7 [-17.2, +7.8] | 16 |
-| qwen7b | READ-property | Canon - stripped Canon (value of the annotations) | -3.8 [-11.5, +3.8] | 52 |
-| qwen7b | READ-property | stripped Canon - ts (syntax alone) | +1.9 [-5.8, +11.5] | 52 |
-| qwen7b | READ-output | Canon - stripped Canon (value of the annotations) | +1.7 [-4.2, +7.5] | 60 |
-| qwen7b | READ-output | stripped Canon - py (syntax alone) | +2.5 [-4.2, +9.2] | 60 |
+| qwen7b | READ | Canon - stripped Canon (value of the annotations) | +2.0 [-1.2, +5.5] | 76 |
+| qwen7b | READ | stripped Canon - ts (syntax alone) | -3.1 [-7.9, +1.8] | 76 |
+| qwen7b | READ-effects | Canon - stripped Canon (value of the annotations) | +7.8 [-2.6, +18.8] | 16 |
+| qwen7b | READ-effects | stripped Canon - py (syntax alone) | -6.2 [-17.7, +6.3] | 16 |
+| qwen7b | READ-property | Canon - stripped Canon (value of the annotations) | -1.9 [-5.8, +1.3] | 52 |
+| qwen7b | READ-property | stripped Canon - ts (syntax alone) | +1.3 [-4.5, +7.1] | 52 |
+| qwen7b | READ-output | Canon - stripped Canon (value of the annotations) | +2.8 [-1.1, +6.9] | 60 |
+| qwen7b | READ-output | stripped Canon - py (syntax alone) | +1.9 [-3.3, +7.8] | 60 |
 | opus | READ | Canon - stripped Canon (value of the annotations) | +0.0 [+0.0, +0.0] | 76 |
 | opus | READ | stripped Canon - py (syntax alone) | -0.5 [-2.0, +0.5] | 76 |
 | opus | READ-effects | Canon - stripped Canon (value of the annotations) | +0.0 [+0.0, +0.0] | 16 |
@@ -137,7 +155,7 @@ Canon against Canon with requires, ensures and effects removed (the value of the
 
 
 - GPT-6.2 Sol: the annotations added +0.1 points [+0.0, +0.3]; stripped Canon vs the baseline +3.5 points [+1.5, +5.8]. Canon's READ edge for GPT is in the programs' shape, not the printed annotations.
-- Qwen 7B: annotations +1.4 points [-3.4, +6.4] overall; on effects questions +10.9 points [-3.1, +23.4].
+- Qwen 7B: annotations +2.0 points [-1.2, +5.5] overall; on effects questions +7.8 points [-2.6, +18.8].
 
 ### 4.2 How READ answers went wrong (exploratory, not pre-registered)
 
@@ -145,22 +163,22 @@ Over-inclusive = the answer contains every right function plus extra ones. On ef
 
 | Model | Arm | Type | Answers | Wrong | Over-inclusive | Under-inclusive | Mixed / other | False yes | False no | Unparsed |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| qwen7b | canon | effects | 64 | 27 | 10 | 9 | 5 | 0 | 0 | 3 |
-| qwen7b | canon | failure | 22 | 12 | 4 | 6 | 2 | 0 | 0 | 0 |
-| qwen7b | canon | property | 52 | 28 | 0 | 0 | 0 | 0 | 28 | 0 |
-| qwen7b | canon | output | 60 | 46 | 0 | 0 | 43 | 0 | 0 | 3 |
-| qwen7b | canon-stripped | effects | 64 | 34 | 10 | 17 | 4 | 0 | 0 | 3 |
-| qwen7b | canon-stripped | failure | 22 | 12 | 5 | 7 | 0 | 0 | 0 | 0 |
-| qwen7b | canon-stripped | property | 52 | 26 | 0 | 0 | 0 | 0 | 26 | 0 |
-| qwen7b | canon-stripped | output | 60 | 47 | 0 | 0 | 44 | 0 | 0 | 3 |
-| qwen7b | py | effects | 64 | 31 | 5 | 21 | 3 | 0 | 0 | 2 |
-| qwen7b | py | failure | 22 | 12 | 4 | 7 | 0 | 0 | 0 | 1 |
-| qwen7b | py | property | 52 | 27 | 0 | 0 | 0 | 1 | 26 | 0 |
-| qwen7b | py | output | 60 | 49 | 0 | 0 | 47 | 0 | 0 | 2 |
-| qwen7b | ts | effects | 64 | 29 | 5 | 16 | 5 | 0 | 0 | 3 |
-| qwen7b | ts | failure | 22 | 12 | 6 | 6 | 0 | 0 | 0 | 0 |
-| qwen7b | ts | property | 52 | 27 | 0 | 0 | 0 | 0 | 27 | 0 |
-| qwen7b | ts | output | 60 | 41 | 0 | 0 | 40 | 0 | 0 | 1 |
+| qwen7b | canon | effects | 192 | 89 | 37 | 32 | 12 | 0 | 0 | 8 |
+| qwen7b | canon | failure | 66 | 33 | 12 | 16 | 4 | 0 | 0 | 1 |
+| qwen7b | canon | property | 156 | 83 | 0 | 0 | 0 | 0 | 83 | 0 |
+| qwen7b | canon | output | 180 | 135 | 0 | 0 | 127 | 0 | 0 | 8 |
+| qwen7b | canon-stripped | effects | 192 | 104 | 28 | 51 | 15 | 0 | 0 | 10 |
+| qwen7b | canon-stripped | failure | 66 | 35 | 15 | 19 | 1 | 0 | 0 | 0 |
+| qwen7b | canon-stripped | property | 156 | 80 | 0 | 0 | 0 | 0 | 80 | 0 |
+| qwen7b | canon-stripped | output | 180 | 140 | 0 | 0 | 133 | 0 | 0 | 7 |
+| qwen7b | py | effects | 192 | 92 | 15 | 58 | 12 | 0 | 0 | 7 |
+| qwen7b | py | failure | 66 | 33 | 12 | 18 | 1 | 0 | 0 | 2 |
+| qwen7b | py | property | 156 | 77 | 0 | 0 | 0 | 1 | 76 | 0 |
+| qwen7b | py | output | 180 | 145 | 0 | 0 | 139 | 0 | 0 | 6 |
+| qwen7b | ts | effects | 192 | 88 | 17 | 48 | 17 | 0 | 0 | 6 |
+| qwen7b | ts | failure | 66 | 40 | 22 | 17 | 0 | 0 | 0 | 1 |
+| qwen7b | ts | property | 156 | 82 | 0 | 0 | 0 | 0 | 82 | 0 |
+| qwen7b | ts | output | 180 | 128 | 0 | 0 | 125 | 0 | 0 | 3 |
 | opus | canon | effects | 192 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | opus | canon | failure | 66 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | opus | canon | property | 156 | 3 | 0 | 0 | 0 | 3 | 0 | 0 |
@@ -203,10 +221,10 @@ Self-healing = checker errors removed by the arm's automatic fixes (canon check 
 
 | Family | Model | Arm | Runs | Pass % | First check ok % | Self-healing % (errors) | False acceptance % (accepted) | Rounds | Tokens/run | Tokens/pass | USD | Wall s | Regression % |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| read | qwen7b | canon | 198 | 42.9 | – | – (0) | – (0) | – | 3273 | 7624 | 0.00 | 1357 | – |
-| read | qwen7b | canon-stripped | 198 | 39.9 | – | – (0) | – (0) | – | 3262 | 8176 | 0.00 | 1740 | – |
-| read | qwen7b | py | 198 | 39.9 | – | – (0) | – (0) | – | 596 | 1493 | 0.00 | 1693 | – |
-| read | qwen7b | ts | 198 | 44.9 | – | – (0) | – (0) | – | 513 | 1141 | 0.00 | 1894 | – |
+| read | qwen7b | canon | 594 | 42.8 | – | – (0) | – (0) | – | 3272 | 7651 | 0.00 | 6671 | – |
+| read | qwen7b | canon-stripped | 594 | 39.6 | – | – (0) | – (0) | – | 3262 | 8246 | 0.00 | 7066 | – |
+| read | qwen7b | py | 594 | 41.6 | – | – (0) | – (0) | – | 605 | 1456 | 0.00 | 7174 | – |
+| read | qwen7b | ts | 594 | 43.1 | – | – (0) | – (0) | – | 507 | 1175 | 0.00 | 6555 | – |
 | read | opus | canon | 594 | 99.5 | – | – (0) | – (0) | – | 4783 | 4807 | 5.80 | 1874 | – |
 | read | opus | canon-stripped | 476 | 99.4 | – | – (0) | – (0) | – | 4809 | 4839 | 4.80 | 1711 | – |
 | read | opus | py | 396 | 99.7 | – | – (0) | – (0) | – | 940 | 943 | 2.57 | 837 | – |
@@ -215,33 +233,39 @@ Self-healing = checker errors removed by the arm's automatic fixes (canon check 
 | read | gpt | canon-stripped | 594 | 99.3 | – | – (0) | – (0) | – | 3110 | 3131 | 0.39 | 1058 | – |
 | read | gpt | py | 594 | 86.4 | – | – (0) | – (0) | – | 551 | 638 | 0.76 | 1113 | – |
 | read | gpt | ts | 594 | 94.9 | – | – (0) | – (0) | – | 447 | 471 | 0.63 | 1066 | – |
-| write | qwen7b | canon | 60 | 0.0 | 0.0 | 0.0 (240) | – (0) | 3.00 | 16780 | – | 0.00 | 8938 | – |
-| write | qwen7b | py | 60 | 36.7 | 75.0 | 0.0 (199) | 57.7 (52) | 0.53 | 2144 | 5847 | 0.00 | 3910 | – |
-| write | qwen7b | ts | 49 | 32.7 | 83.7 | 0.0 (60) | 65.2 (46) | 0.31 | 1459 | 4469 | 0.00 | 2941 | – |
+| write | qwen7b | canon | 180 | 0.0 | 0.0 | 0.0 (720) | – (0) | 3.00 | 16951 | – | 0.00 | 27780 | – |
+| write | qwen7b | py | 180 | 36.1 | 75.0 | 0.0 (554) | 59.4 (160) | 0.51 | 2100 | 5815 | 0.00 | 10191 | – |
+| write | qwen7b | ts | 180 | 32.8 | 76.1 | 0.0 (327) | 63.6 (162) | 0.47 | 1871 | 5709 | 0.00 | 10210 | – |
 | write | gpt | canon | 180 | 100.0 | 93.9 | 77.1 (131) | 0.0 (180) | 0.06 | 3973 | 3973 | 1.42 | 2265 | – |
 | write | gpt | py | 180 | 100.0 | 100.0 | – (0) | 0.0 (180) | 0.00 | 834 | 834 | 0.80 | 1055 | – |
 | write | gpt | ts | 180 | 100.0 | 100.0 | – (0) | 0.0 (180) | 0.00 | 803 | 803 | 0.82 | 1061 | – |
+| fix | qwen7b | canon | 250 | 48.8 | 72.8 | 2.5 (354) | 41.9 (210) | 0.59 | 6681 | 13692 | 0.00 | 14515 | – |
+| fix | qwen7b | py | 251 | 80.5 | 99.2 | 0.0 (8) | 19.5 (251) | 0.01 | 1198 | 1488 | 0.00 | 9855 | – |
+| fix | qwen7b | ts | 251 | 76.9 | 99.6 | 0.0 (5) | 23.1 (251) | 0.00 | 1029 | 1338 | 0.00 | 8916 | – |
 | fix | gpt | canon | 303 | 100.0 | 99.7 | 33.3 (3) | 0.0 (303) | 0.00 | 3782 | 3782 | 1.53 | 2993 | – |
 | fix | gpt | py | 303 | 100.0 | 100.0 | – (0) | 0.0 (303) | 0.00 | 1133 | 1133 | 1.58 | 2150 | – |
 | fix | gpt | ts | 303 | 100.0 | 100.0 | – (0) | 0.0 (303) | 0.00 | 988 | 988 | 1.36 | 1671 | – |
+| change | qwen7b | canon | 48 | 35.4 | 41.7 | 5.5 (164) | 26.1 (23) | 1.63 | 11575 | 32683 | 0.00 | 6082 | 4.3 |
+| change | qwen7b | py | 48 | 58.3 | 89.6 | 0.0 (16) | 39.1 (46) | 0.19 | 1837 | 3149 | 0.00 | 2839 | 4.3 |
+| change | qwen7b | ts | 48 | 70.8 | 89.6 | 0.0 (23) | 26.1 (46) | 0.19 | 1288 | 1818 | 0.00 | 2281 | 4.3 |
 | change | gpt | canon | 72 | 100.0 | 100.0 | 100.0 (8) | 0.0 (72) | 0.00 | 3728 | 3728 | 0.42 | 599 | 0.0 |
 | change | gpt | py | 72 | 100.0 | 100.0 | – (0) | 0.0 (72) | 0.00 | 1219 | 1219 | 0.46 | 600 | 0.0 |
 | change | gpt | ts | 72 | 100.0 | 100.0 | – (0) | 0.0 (72) | 0.00 | 904 | 904 | 0.33 | 399 | 0.0 |
-| think | qwen7b | canon->py | 60 | 0.0 | 0.0 | 0.0 (240) | – (0) | 3.00 | 16780 | – | 0.00 | 8938 | – |
-| think | qwen7b | py | 60 | 36.7 | 75.0 | 0.0 (199) | – (52) | 0.53 | 2144 | 5847 | 0.00 | 3910 | – |
+| think | qwen7b | canon->py | 180 | 0.0 | 0.0 | 0.0 (720) | – (0) | 3.00 | 16951 | – | 0.00 | 27780 | – |
+| think | qwen7b | py | 180 | 36.1 | 75.0 | 0.0 (554) | – (160) | 0.51 | 2100 | 5815 | 0.00 | 10191 | – |
 | think | gpt | canon->py | 180 | 97.2 | 93.9 | 77.1 (131) | – (180) | 0.06 | 3973 | 4087 | 1.42 | 2265 | – |
 | think | gpt | py | 180 | 100.0 | 100.0 | – (0) | – (180) | 0.00 | 834 | 834 | 0.80 | 1055 | – |
 
 
-- Errors removed by automatic fixes, all models and families together: Canon 110 of 382 (28.8%), Python 0 of 199 (0.0%), TypeScript 0 of 60 (0.0%). ruff and eslint fix style, rarely type errors; Canon's `--fix` applies its mechanical patches (canonical form C001, effects E101/E102, T009).
-- False acceptance, all families together: GPT-6.2 Sol Canon 0.0% of 555 approved, Python 0.0% of 555 approved, TypeScript 0.0% of 555 approved; Qwen 7B Canon –, Python 57.7% of 52 approved, TypeScript 65.2% of 46 approved.
+- Errors removed by automatic fixes, all models and families together: Canon 128 of 1380 (9.3%), Python 0 of 578 (0.0%), TypeScript 0 of 355 (0.0%). ruff and eslint fix style, rarely type errors; Canon's `--fix` applies its mechanical patches (canonical form C001, effects E101/E102, T009).
+- False acceptance, all families together: GPT-6.2 Sol Canon 0.0% of 555 approved, Python 0.0% of 555 approved, TypeScript 0.0% of 555 approved; Qwen 7B Canon 40.3% of 233 approved, Python 35.4% of 457 approved, TypeScript 37.7% of 459 approved.
 
 ## 6. THINK -> Python
 
 THINK delivers Python. Direct = the WRITE Python run; through Canon = the WRITE Canon run's final program compiled by the shipped Python generator, run against the same hidden tests in Python (DECISIONS 19). THINK -> TypeScript is not possible in Canon v0.5 (DECISIONS 18).
 
 - GPT-6.2 Sol: **non-inferior** (-2.8 points [-6.7, +0.0] against Python, Holm p = 1.000, 60 seeds). Of 180 Canon programs, 175 pass in Python; 5 passed in Canon but not after compiling (3 refused by the generator with G002; the rest fail to import, CB-2's SyntaxError).
-- Qwen 7B: **lose** (-36.7 points [-48.3, -25.0] against Python, Holm p = 1.000, 60 seeds); 0 of 60 Canon programs pass in Python (few check clean at all).
+- Qwen 7B: **lose** (-36.1 points [-47.2, -25.0] against Python, Holm p = 1.000, 60 seeds); 0 of 180 Canon programs pass in Python (few check clean at all).
 - The blind readability judge (Direct vs compiled Python, "which would you rather maintain?") did not run: the OpenAI account was out of credit by the time it started, and Opus was off (DECISIONS 39). No readability result exists.
 
 ## 7. Exploratory: Canon-Py on Qwen 7B, and the Rust-isms (PREREGISTRATION.md amendment 2)
@@ -250,33 +274,38 @@ Brace-syntax rows are the main run's and the pilot's Canon runs on the same seed
 
 | Family | Arm | Seeds | Runs | Pass % | First draft checks % | Runs with a parse error (P001) | ...fixed by feedback | Final program unchanged after feedback | Most common remaining codes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| write | canon (brace) | 10 | 20 | 0.0 | 0.0 | 18 | 0 | 17 | P001 (20) |
-| write | canon-py | 10 | 19 | 0.0 | 0.0 | 16 | 0 | 12 | P001 (19) |
-| think | canon->py (brace) | 60 | 60 | 0.0 | | | | | |
+| write | canon (brace) | 24 | 82 | 0.0 | 0.0 | 74 | 0 | 67 | P001 (80), P004 (1), P005 (1) |
+| write | canon-py | 24 | 72 | 0.0 | 0.0 | 65 | 0 | 40 | P001 (70), T002 (2), T001 (2), T008 (1) |
+| fix | canon (brace) | 7 | 46 | 54.3 | 91.3 | 1 | 0 | 1 | P001 (1) |
+| fix | canon-py | 7 | 14 | 50.0 | 71.4 | 2 | 0 | 2 | P001 (3) |
+| change | canon (brace) | 8 | 24 | 25.0 | 25.0 | 14 | 2 | 13 | P001 (13), T001 (2), T002 (1), L001 (1) |
+| change | canon-py | 8 | 8 | 12.5 | 12.5 | 4 | 0 | 3 | P001 (4), T001 (2), T002 (1), L001 (1) |
+| think | canon->py (brace) | 60 | 180 | 0.0 | | | | | |
 | think | canon->py (brace, pilot) | 10 | 10 | 0.0 | | | | | |
+| think | canon-py->py | 24 | 72 | 0.0 | | | | | |
 
-Rust-isms in Qwen 7B's WRITE first drafts (share of drafts with at least one; occurrences in parentheses). Brace Canon: 70 drafts; Canon-Py: 19; Python (for reference): 70.
+Rust-isms in Qwen 7B's WRITE first drafts (share of drafts with at least one; occurrences in parentheses). Brace Canon: 190 drafts; Canon-Py: 72; Python (for reference): 190.
 
 | Pattern | Brace Canon | Canon-Py | Python arm |
 | --- | --- | --- | --- |
-| `let mut` | 60% (110) | 0% (0) | 0% (0) |
-| `& borrow` | 14% (15) | 0% (0) | 0% (0) |
-| `.method() call` | 64% (311) | 74% (64) | 74% (212) |
-| `format!` | 17% (24) | 0% (0) | 0% (0) |
-| `char literal` | 26% (98) | 16% (11) | 27% (82) |
-| `null` | 4% (11) | 0% (0) | 0% (0) |
-| `+=` | 17% (37) | 58% (20) | 54% (74) |
-| `dict/set literal` | 3% (7) | 26% (5) | 34% (78) |
-| `slice x[a:b]` | 0% (0) | 37% (15) | 30% (44) |
-| `import / from` | 0% (0) | 5% (1) | 100% (144) |
+| `let mut` | 66% (339) | 0% (0) | 0% (0) |
+| `& borrow` | 21% (85) | 0% (0) | 0% (0) |
+| `.method() call` | 66% (931) | 82% (203) | 74% (555) |
+| `format!` | 19% (62) | 0% (0) | 0% (0) |
+| `char literal` | 24% (234) | 11% (38) | 26% (209) |
+| `null` | 5% (28) | 0% (0) | 0% (0) |
+| `+=` | 16% (100) | 46% (89) | 52% (202) |
+| `dict/set literal` | 2% (11) | 31% (23) | 36% (218) |
+| `slice x[a:b]` | 0% (0) | 24% (37) | 31% (122) |
+| `import / from` | 0% (0) | 1% (1) | 100% (392) |
 
 
-Notes: the Python column is the Python arm, for reference; its `import / from` count is the required header. Rust-isms (let mut, &, format!, null) appear only in brace-Canon drafts; Canon-Py drafts swap them for Python-isms outside Canon-Py's subset (dict literals, slices, `+=`, methods). Neither surface got the 7B model to a program that checks.
+Notes: the Python column is the Python arm, for reference; its `import / from` count is the required header. Rust-isms (let mut, &, format!, null) appear only in brace-Canon drafts; Canon-Py drafts swap them for Python-isms outside Canon-Py's subset (dict literals, slices, `+=`, methods). In WRITE, neither surface got the 7B model to a single program that checks; in FIX and CHANGE, where a working program is given, both surfaces pass some items and Canon-Py does not do better than brace.
 
 ## 8. Compiler issues found
 
 - **CB-1** (Phase 1, verifying references through the Python generator): `unwrap_or` temporaries hoisted out of lambdas and while conditions (NameErrors; conditions evaluated once). 4 of 60 Experiment 1 references failed through it. Reported at once; fixed on main in 0a38eba before the main run, which used c2cb47e.
-- **CB-2** (THINK): the Python generator splits a comprehension's tuple target across lines (`for key,\n members\n in ...`), a SyntaxError; 2 of GPT-6.2 Sol's Canon programs. Open.
+- **CB-2** (THINK): the Python generator splits a comprehension's tuple target across lines (`for key,\n members\n in ...`), a SyntaxError; 2 of GPT-6.2 Sol's Canon programs. Reported during the run; fixed on main in e4de1a7, after the pinned compiler (c2cb47e) this run used.
 - **G002 on Option of Option** (a documented refusal): GPT-6.2 Sol wrote `unwrap_or(map_get(m, k), None)` on a map of optional values in all 3 parking_fees runs; it checks and runs in Canon, and the Python target refuses it. The core reference does not warn about it.
 - **Formatter vs reference** (found by the item authors): the reference says chains of three or more calls are pipelines "one stage per line", but fmt prints a one-line pipeline inside a call argument, a match scrutinee or a binary operand.
 - **One Experiment 1 reference was wrong** (not a compiler bug): vending_machine's Canon reference treated negative coins as a refund; fixed in CanonBench's copy.
@@ -289,7 +318,7 @@ Minimal reproductions: COMPILER_ISSUES.md.
 | --- | --- | --- | --- | --- | --- | --- |
 | Claude Opus 5.5 | 2124 | 5999194 | 604238 | 19.40 | 150 | 1.5 h |
 | GPT-6.2 Sol | 4314 | 7209235 | 800590 | 11.74 | 150 | 5.7 h |
-| Qwen 7B (local) | | | | 0 | | 9.8 h |
+| Qwen 7B (local) | | | | 0 | | 43.9 h |
 
 Ledgers include the pilot and smoke tests (results/spend-*.json; Opus $4/$20 per million input/output tokens,
 cache reads $0.20, writes $5; GPT-6.2 Sol $2/$10, cached input $0.10). Total API spend: USD 31.14 of the 300 cap.
@@ -299,12 +328,14 @@ Both accounts ran dry for reasons outside CanonBench's ledger (the keys are shar
 
 | Family | Model | Baseline | Ratio [95% CI] | Verdict |
 | --- | --- | --- | --- | --- |
-| read | qwen7b | ts | 6.78 [6.30, 7.32] | lose (more tokens) |
+| read | qwen7b | ts | 6.84 [6.41, 7.32] | lose (more tokens) |
 | read | opus | py | 5.74 [5.36, 6.14] | lose (more tokens) |
 | read | gpt | ts | 7.66 [7.20, 8.15] | lose (more tokens) |
-| write | qwen7b | ts | 17.00 [13.86, 20.14] | lose (more tokens) |
+| write | qwen7b | ts | 14.05 [11.43, 16.97] | lose (more tokens) |
 | write | gpt | py | 4.82 [4.55, 5.10] | lose (more tokens) |
+| fix | qwen7b | py | 4.85 [4.27, 5.56] | lose (more tokens) |
 | fix | gpt | py | 3.49 [3.27, 3.71] | lose (more tokens) |
+| change | qwen7b | ts | 8.59 [5.76, 12.43] | lose (more tokens) |
 | change | gpt | py | 3.23 [2.90, 3.60] | lose (more tokens) |
 
 
@@ -353,6 +384,10 @@ Every entry of DECISIONS.md, by title (details there):
 - The 32B model was never run: its weights could not be downloaded.
 - The readability judge is GPT-6.2 Sol judging its own code.
 - Qwen 7B main-run throughput was lower than planned
+- More 7B server crashes (02:33 and 02:42 PST), with the FS-1 runner now sharing port 8091
+- The Qwen 7B main run stopped at 07:00 under the pre-registered rule
+- REPORT.md is generated by analysis/report.ts
+- The /research page entry
 
 ## 11. Spot check
 

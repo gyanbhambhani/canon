@@ -250,11 +250,11 @@ research/canonbench/
 - [x] Baselines chosen per family; pre-registration and analysis script committed.
 
 **Phase 3: main run**
-- [ ] Qwen runs locally first (no cost), then the API models with the cost check: run 20 items, project the total, and stop if it exceeds the cap.
+- [x] Qwen runs locally first (no cost), then the API models with the cost check: run 20 items, project the total, and stop if it exceeds the cap. (Opus stopped on credit after READ; see research/canonbench/REPORT.md)
 - [ ] FS-1 runs as specified in its own pre-registration.
 
 **Phase 4: report**
-- [ ] The scoreboard, per-family charts, the annotation ablation, self-healing and false-acceptance results, costs, and every miss, written up for `/research` and as a short paper.
+- [x] The scoreboard, per-family charts, the annotation ablation, self-healing and false-acceptance results, costs, and every miss, written up for `/research` and as a short paper. (Tables, no charts; research/canonbench/REPORT.md)
 
 ---
 
