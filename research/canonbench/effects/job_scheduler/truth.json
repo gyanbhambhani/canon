@@ -1,0 +1,23 @@
+{
+  "functions": {
+    "parse_job": [],
+    "parse_jobs": [],
+    "next_run": [],
+    "is_due": [],
+    "due_jobs": ["fs", "time"],
+    "trigger": ["net"],
+    "run_due": ["fs", "net", "time"]
+  },
+  "drive": [
+    { "fn": "parse_job", "args": ["cleanup, 3600, 1699990000000"] },
+    { "fn": "parse_job", "args": ["cleanup, hourly, 1699990000000"] },
+    { "fn": "parse_jobs", "args": ["a,1,2\nnope\nb, 3, 4"] },
+    { "fn": "next_run", "args": [60, 1700000000000] },
+    { "fn": "is_due", "args": [60, 1700000000000, 1700000059000] },
+    { "fn": "due_jobs", "args": ["/etc/cron/jobs"] },
+    { "fn": "due_jobs", "args": ["/etc/cron/none"] },
+    { "fn": "trigger", "args": ["https://runner.example.com", "cleanup"] },
+    { "fn": "trigger", "args": ["https://runner.example.com", "billing"] },
+    { "fn": "run_due", "args": ["/etc/cron/jobs", "https://runner.example.com"] }
+  ]
+}

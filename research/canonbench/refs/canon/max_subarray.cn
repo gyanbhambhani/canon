@@ -1,0 +1,16 @@
+fn max_subarray(xs: List[Int]) -> Option[(Int, Int, Int)] {
+  if len(xs) == 0 {
+    return None
+  }
+  var best = (unwrap_or(first(xs), 0), 0, 0)
+  for p in enumerate(xs) {
+    var s = 0
+    for q in enumerate(drop(xs, p.0)) {
+      s = s + q.1
+      if s > best.0 {
+        best = (s, p.0, p.0 + q.0)
+      }
+    }
+  }
+  return Some(best)
+}

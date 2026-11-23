@@ -1,0 +1,25 @@
+fn decode(s: String) -> String {
+  return join(split(s, "+"), " ")
+}
+
+fn parse_query(s: String) -> Result[List[(String, String)], String] {
+  var out = []
+  for item in split(s, "&") {
+    if item != "" {
+      let parts = split(item, "=")
+      let key = parts
+        |> first()
+        |> unwrap_or("")
+        |> decode()
+      let value = parts
+        |> drop(1)
+        |> join("=")
+        |> decode()
+      if key == "" {
+        return Err("empty key: " + item)
+      }
+      out = append(out, (key, value))
+    }
+  }
+  return Ok(out)
+}

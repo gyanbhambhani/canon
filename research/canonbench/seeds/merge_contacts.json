@@ -1,0 +1,50 @@
+{
+  "id": "merge_contacts",
+  "source": "exp1-hard",
+  "fn": "merge_contacts",
+  "params": [
+    [
+      "contacts",
+      "List[Contact]"
+    ]
+  ],
+  "ret": "List[Contact]",
+  "desc": "Two contacts are linked if their emails, each with leading and trailing whitespace removed, are equal (case-sensitive) and non-empty, or if their phones, each reduced to just its digit characters 0-9, are equal and non-empty. Contacts belong to the same person if they are connected through a chain of links. Return one merged contact per person, ordered by the position of the person's first contact in the input. A merged contact starts as a copy of the person's first contact (field values kept exactly as given, not trimmed); then each field that is the empty string \"\" is filled with that field's value from the earliest later contact of the same person (in input order) where it is not \"\".",
+  "examples": [
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          {
+            "name": "Ann",
+            "email": "a@x",
+            "phone": ""
+          }
+        ]
+      ],
+      "expected": [
+        {
+          "name": "Ann",
+          "email": "a@x",
+          "phone": ""
+        }
+      ]
+    }
+  ],
+  "decls": {
+    "canon": "type Contact {\n  name: String,\n  email: String,\n  phone: String,\n}",
+    "ts": "type Contact = { name: string; email: string; phone: string };"
+  },
+  "typeKinds": {
+    "Contact": "record"
+  },
+  "tags": [
+    "total",
+    "adt"
+  ]
+}

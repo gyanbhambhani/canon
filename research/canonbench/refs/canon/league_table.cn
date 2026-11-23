@@ -1,0 +1,53 @@
+type Match {
+  home: String,
+  away: String,
+  home_goals: Int,
+  away_goals: Int,
+}
+
+fn points(a: Int, b: Int) -> Int {
+  if a > b {
+    return 3
+  }
+  if a == b {
+    return 1
+  }
+  return 0
+}
+
+fn stats(team: String, matches: List[Match]) -> (String, Int, Int, Int) {
+  var pts = 0
+  var gf = 0
+  var ga = 0
+  for m in matches {
+    if m.home == team {
+      gf = gf + m.home_goals
+      ga = ga + m.away_goals
+      pts = pts + points(m.home_goals, m.away_goals)
+    }
+    if m.away == team {
+      gf = gf + m.away_goals
+      ga = ga + m.home_goals
+      pts = pts + points(m.away_goals, m.home_goals)
+    }
+  }
+  return (team, pts, gf - ga, gf)
+}
+
+fn league_table(matches: List[Match]) -> List[(String, Int, Int, Int)] {
+  var teams = []
+  for m in matches {
+    if !contains(teams, m.home) {
+      teams = append(teams, m.home)
+    }
+    if !contains(teams, m.away) {
+      teams = append(teams, m.away)
+    }
+  }
+  return teams
+    |> map(|t| stats(t, matches))
+    |> sort_by(|r| r.0)
+    |> sort_desc_by(|r| r.3)
+    |> sort_desc_by(|r| r.2)
+    |> sort_desc_by(|r| r.1)
+}

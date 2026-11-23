@@ -1,0 +1,51 @@
+{
+  "id": "build_order",
+  "source": "exp1-hard",
+  "fn": "build_order",
+  "params": [
+    [
+      "jobs",
+      "List[Job]"
+    ]
+  ],
+  "ret": "Result[List[String], String]",
+  "desc": "Each job lists the names of the jobs it depends on. Validate, then return an order in which every job comes after all of its dependencies. Checks, in this order: (1) if a name occurs more than once, return the error \"duplicate job: \" followed by the first name whose second occurrence comes earliest in the list; (2) scanning jobs in input order and each job's deps in their listed order, if a dependency is not the name of any job, return \"unknown dependency: \" followed by that name; (3) build the order step by step: at each step, among the jobs not yet placed whose dependencies have all been placed, place the one that comes earliest in the input list. If jobs remain but none can be placed, return \"cycle detected\" (a job depending on itself is a cycle). A dependency may be listed more than once. An empty list gives an empty order.",
+  "examples": [
+    {
+      "args": [
+        []
+      ],
+      "expected": {
+        "ok": true,
+        "value": []
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "name": "a",
+            "deps": []
+          }
+        ]
+      ],
+      "expected": {
+        "ok": true,
+        "value": [
+          "a"
+        ]
+      }
+    }
+  ],
+  "decls": {
+    "canon": "type Job {\n  name: String,\n  deps: List[String],\n}",
+    "ts": "type Job = { name: string; deps: string[] };\ntype Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {
+    "Job": "record"
+  },
+  "tags": [
+    "result",
+    "adt"
+  ]
+}

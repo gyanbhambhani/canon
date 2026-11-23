@@ -1,0 +1,75 @@
+{
+ "id": "glob_match",
+ "cases": [
+  {
+   "args": [
+    "a*c",
+    "abbbc"
+   ],
+   "expected": true
+  },
+  {
+   "args": [
+    "",
+    ""
+   ],
+   "expected": true
+  },
+  {
+   "args": [
+    "",
+    "a"
+   ],
+   "expected": false
+  },
+  {
+   "args": [
+    "*",
+    ""
+   ],
+   "expected": true
+  },
+  {
+   "args": [
+    "a?c",
+    "ac"
+   ],
+   "expected": false
+  },
+  {
+   "args": [
+    "\\*a",
+    "*a"
+   ],
+   "expected": true
+  },
+  {
+   "args": [
+    "\\*a",
+    "xa"
+   ],
+   "expected": false
+  },
+  {
+   "args": [
+    "ab\\",
+    "ab\\"
+   ],
+   "expected": true
+  },
+  {
+   "args": [
+    "*.txt",
+    "notes.txt.bak"
+   ],
+   "expected": false
+  },
+  {
+   "args": [
+    "?*?",
+    "a"
+   ],
+   "expected": false
+  }
+ ]
+}

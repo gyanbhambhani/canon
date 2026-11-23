@@ -1,0 +1,60 @@
+{
+  "id": "free_slots",
+  "source": "exp1-hard",
+  "fn": "free_slots",
+  "params": [
+    [
+      "meetings",
+      "List[Meeting]"
+    ],
+    [
+      "day_start",
+      "Int"
+    ],
+    [
+      "day_end",
+      "Int"
+    ]
+  ],
+  "ret": "List[(Int, Int)]",
+  "desc": "Times are minutes. The working day is the half-open interval [day_start, day_end) and each meeting occupies [start, end). Meetings come in any order, may overlap or touch, and may extend beyond the day or lie entirely outside it; a meeting with end <= start occupies nothing. Return the free intervals of the day as (start, end) pairs: the maximal half-open intervals inside the day not occupied by any meeting, in increasing order. Two meetings that touch (one ends exactly when the next starts) leave no gap between them. If day_end <= day_start, return an empty list.",
+  "examples": [
+    {
+      "args": [
+        [],
+        540,
+        1020
+      ],
+      "expected": [
+        [
+          540,
+          1020
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          {
+            "start": 540,
+            "end": 1020
+          }
+        ],
+        540,
+        1020
+      ],
+      "expected": []
+    }
+  ],
+  "decls": {
+    "canon": "type Meeting {\n  start: Int,\n  end: Int,\n}",
+    "ts": "type Meeting = { start: number; end: number };"
+  },
+  "typeKinds": {
+    "Meeting": "record"
+  },
+  "tags": [
+    "total",
+    "adt"
+  ]
+}

@@ -1,0 +1,125 @@
+{
+ "vending_machine": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "settle_debts": {
+  "inputs": 1000,
+  "disagreements": 6,
+  "examples": [
+   {
+    "args": [
+     [
+      {
+       "payer": "c",
+       "amount_cents": -2
+      }
+     ],
+     [
+      "a",
+      "b",
+      "c",
+      "d"
+     ]
+    ],
+    "canon": {
+     "ok": true,
+     "v": []
+    },
+    "py": {
+     "ok": true,
+     "v": [
+      [
+       "c",
+       "d",
+       1
+      ]
+     ]
+    },
+    "ts": {
+     "ok": true,
+     "v": [
+      [
+       "c",
+       "a",
+       1
+      ]
+     ]
+    }
+   },
+   {
+    "args": [
+     [
+      {
+       "payer": "b",
+       "amount_cents": -1
+      }
+     ],
+     [
+      "dad",
+      "b",
+      "ccacac",
+      "add"
+     ]
+    ],
+    "canon": {
+     "ok": true,
+     "v": []
+    },
+    "py": {
+     "ok": true,
+     "v": [
+      [
+       "b",
+       "add",
+       1
+      ]
+     ]
+    },
+    "ts": {
+     "ok": true,
+     "v": []
+    }
+   },
+   {
+    "args": [
+     [
+      {
+       "payer": "",
+       "amount_cents": -1
+      }
+     ],
+     [
+      "baccc",
+      "cdbaba",
+      "bbac",
+      "",
+      "adbad",
+      "d"
+     ]
+    ],
+    "canon": {
+     "ok": true,
+     "v": []
+    },
+    "py": {
+     "ok": true,
+     "v": [
+      [
+       "",
+       "d",
+       1
+      ]
+     ]
+    },
+    "ts": {
+     "ok": true,
+     "v": []
+    }
+   }
+  ],
+  "failShare": 0
+ }
+}

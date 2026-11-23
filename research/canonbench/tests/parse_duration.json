@@ -1,0 +1,95 @@
+{
+ "id": "parse_duration",
+ "cases": [
+  {
+   "args": [
+    "1h30m15s"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 5415
+   }
+  },
+  {
+   "args": [
+    "2h5s"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 7205
+   }
+  },
+  {
+   "args": [
+    ""
+   ],
+   "expected": {
+    "ok": false,
+    "error": "empty"
+   }
+  },
+  {
+   "args": [
+    "10"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "missing unit"
+   }
+  },
+  {
+   "args": [
+    "m"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "missing number before m"
+   }
+  },
+  {
+   "args": [
+    "5m3h"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unit out of order: h"
+   }
+  },
+  {
+   "args": [
+    "1h2h"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unit out of order: h"
+   }
+  },
+  {
+   "args": [
+    "3d"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unknown unit: d"
+   }
+  },
+  {
+   "args": [
+    "90m"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 5400
+   }
+  },
+  {
+   "args": [
+    "0h05m"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 300
+   }
+  }
+ ]
+}

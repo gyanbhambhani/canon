@@ -1,0 +1,41 @@
+{
+  "id": "bracket_depth",
+  "source": "exp1-hard",
+  "fn": "bracket_depth",
+  "params": [
+    [
+      "s",
+      "String"
+    ]
+  ],
+  "ret": "Result[Int, String]",
+  "desc": "Check the brackets ( ) [ ] { } in s; every other character is ignored. Each closing bracket must match the most recent unclosed opening bracket of the same kind. Return the maximum nesting depth (0 if there are no brackets; \"([])\" has depth 2). Scanning left to right, if a closing bracket does not match (or nothing is open), return the error \"mismatch at N\", where N is its 0-based position in s. If the scan finishes with brackets still open, return the error \"unclosed at end\".",
+  "examples": [
+    {
+      "args": [
+        ""
+      ],
+      "expected": {
+        "ok": true,
+        "value": 0
+      }
+    },
+    {
+      "args": [
+        "abc"
+      ],
+      "expected": {
+        "ok": true,
+        "value": 0
+      }
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {},
+  "tags": [
+    "result"
+  ]
+}

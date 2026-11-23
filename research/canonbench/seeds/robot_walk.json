@@ -1,0 +1,57 @@
+{
+  "id": "robot_walk",
+  "source": "exp1-hard",
+  "fn": "robot_walk",
+  "params": [
+    [
+      "cmds",
+      "List[Cmd]"
+    ],
+    [
+      "obstacles",
+      "List[(Int, Int)]"
+    ]
+  ],
+  "ret": "(Int, Int, String)",
+  "desc": "A robot starts at (0, 0) facing \"N\" on a grid where N is +y, E is +x, S is -y and W is -x. TurnLeft and TurnRight turn it 90 degrees (N, TurnRight gives E). Forward(k) (k >= 0) moves it one cell at a time, up to k cells; if the next cell is in obstacles, it stays where it is and ignores the rest of that Forward command (later commands still run). Return the final (x, y, direction), with direction one of \"N\", \"E\", \"S\", \"W\".",
+  "examples": [
+    {
+      "args": [
+        [
+          {
+            "kind": "Forward",
+            "steps": 3
+          }
+        ],
+        []
+      ],
+      "expected": [
+        0,
+        3,
+        "N"
+      ]
+    },
+    {
+      "args": [
+        [],
+        []
+      ],
+      "expected": [
+        0,
+        0,
+        "N"
+      ]
+    }
+  ],
+  "decls": {
+    "canon": "type Cmd =\n  | Forward(steps: Int)\n  | TurnLeft\n  | TurnRight",
+    "ts": "type Cmd = { kind: \"Forward\"; steps: number } | { kind: \"TurnLeft\" } | { kind: \"TurnRight\" };"
+  },
+  "typeKinds": {
+    "Cmd": "sum"
+  },
+  "tags": [
+    "total",
+    "adt"
+  ]
+}

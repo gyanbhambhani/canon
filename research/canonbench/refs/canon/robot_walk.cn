@@ -1,0 +1,44 @@
+type Cmd =
+  | Forward(steps: Int)
+  | TurnLeft
+  | TurnRight
+
+fn delta(d: Int) -> (Int, Int) {
+  return match d {
+    0 => (0, 1),
+    1 => (1, 0),
+    2 => (0, -1),
+    _ => (-1, 0),
+  }
+}
+
+fn robot_walk(cmds: List[Cmd], obstacles: List[(Int, Int)]) -> (Int, Int, String) {
+  var x = 0
+  var y = 0
+  var d = 0
+  for c in cmds {
+    let steps = match c {
+      Forward(k) => k,
+      _ => 0,
+    }
+    d = match c {
+      TurnLeft => (d + 3) % 4,
+      TurnRight => (d + 1) % 4,
+      _ => d,
+    }
+    let dv = delta(d)
+    var k = 0
+    while k < steps {
+      let next = (x + dv.0, y + dv.1)
+      if contains(obstacles, next) {
+        k = steps
+      } else {
+        x = next.0
+        y = next.1
+        k = k + 1
+      }
+    }
+  }
+  let names = ["N", "E", "S", "W"]
+  return (x, y, names |> drop(d) |> first() |> unwrap_or("N"))
+}

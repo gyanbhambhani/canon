@@ -1,0 +1,46 @@
+type Line {
+  sku: String,
+  qty: Int,
+  unit_cents: Int,
+}
+
+fn line_amount(l: Line) -> Int {
+  let a = l.qty * l.unit_cents
+  if l.qty >= 50 {
+    return a - a / 5
+  }
+  if l.qty >= 10 {
+    return a - a / 10
+  }
+  return a
+}
+
+fn apply_coupon(sub: Int, coupon: String) -> Result[Int, String] {
+  if coupon == "" {
+    return Ok(sub)
+  }
+  if coupon == "SAVE500" {
+    return Ok(max(sub - 500, 0))
+  }
+  if coupon == "PCT10" {
+    return Ok(sub - sub / 10)
+  }
+  if coupon == "BIG20" {
+    if sub < 10000 {
+      return Err("coupon not applicable: BIG20")
+    }
+    return Ok(sub - sub / 5)
+  }
+  return Err("unknown coupon: " + coupon)
+}
+
+fn invoice_total(lines: List[Line], coupon: String) -> Result[Int, String] {
+  for l in lines {
+    if l.qty < 1 {
+      return Err("bad quantity: " + l.sku)
+    }
+  }
+  let sub = sum(map(lines, |l| line_amount(l)))
+  let amount = try apply_coupon(sub, coupon)
+  return Ok(amount + (amount * 8 + 50) / 100)
+}

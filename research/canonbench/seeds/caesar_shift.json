@@ -1,0 +1,41 @@
+{
+  "id": "caesar_shift",
+  "source": "exp1-hard",
+  "fn": "caesar_shift",
+  "params": [
+    [
+      "s",
+      "String"
+    ],
+    [
+      "k",
+      "Int"
+    ]
+  ],
+  "ret": "String",
+  "desc": "Shift every lowercase letter a-z in s forward by k positions in the alphabet, wrapping around from z to a. k may be negative (shift backward) and may be larger than 26 in either direction. Every other character (uppercase letters, digits, spaces, punctuation) is unchanged.",
+  "examples": [
+    {
+      "args": [
+        "abc",
+        1
+      ],
+      "expected": "bcd"
+    },
+    {
+      "args": [
+        "xyz",
+        3
+      ],
+      "expected": "abc"
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

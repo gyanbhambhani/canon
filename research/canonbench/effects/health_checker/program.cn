@@ -1,0 +1,61 @@
+fn classify(latency_ms: Int) -> String {
+  if latency_ms < 0 {
+    return "down"
+  } else if latency_ms <= 1000 {
+    return "healthy"
+  }
+  return "degraded"
+}
+
+fn status_line(url: String, latency_ms: Int) -> String {
+  return classify(latency_ms) + " " + url + " " + to_string(latency_ms)
+}
+
+fn parse_targets(text: String) -> List[String] {
+  return text
+    |> split("\n")
+    |> map(|l| trim(l))
+    |> filter(|l| l != "")
+}
+
+fn probe(url: String) -> Int
+  effects: net, time
+{
+  let started = now()
+  return match http_get(url + "/healthz") {
+    Ok(_) => now() - started,
+    Err(_) => -1,
+  }
+}
+
+fn check_all(urls: List[String]) -> List[String]
+  effects: net, time
+{
+  var lines = []
+  for url in urls {
+    lines = append(lines, status_line(url, probe(url)))
+  }
+  return lines
+}
+
+fn write_status(path: String, urls: List[String]) -> Result[Int, Error]
+  effects: fs, net, time
+{
+  let lines = check_all(urls)
+  try write_file(path, join(lines, "\n") + "\n")
+  return Ok(len(filter(lines, |l| classify_of(l) != "healthy")))
+}
+
+fn classify_of(line: String) -> String {
+  return line
+    |> split(" ")
+    |> first()
+    |> unwrap_or("")
+}
+
+fn check_from_file(targets_path: String, status_path: String) -> Result[Int, Error]
+  effects: fs, net, time
+{
+  let text = try read_file(targets_path)
+  return write_status(status_path, parse_targets(text))
+}

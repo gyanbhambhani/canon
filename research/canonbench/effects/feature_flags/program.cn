@@ -1,0 +1,84 @@
+type Flag {
+  name: String,
+  percent: Int,
+}
+
+fn parse_flag(line: String) -> Option[Flag] {
+  let parts = split(line, ":")
+  if len(parts) != 2 {
+    return None
+  }
+  let name = parts
+    |> first()
+    |> unwrap_or("")
+    |> trim()
+  let percent = parts
+    |> last()
+    |> unwrap_or("")
+    |> trim()
+    |> parse_int()
+  return match percent {
+    Some(p) => Some(Flag { name: name, percent: p }),
+    None => None,
+  }
+}
+
+fn parse_flags(text: String) -> List[Flag] {
+  var flags = []
+  for line in split(text, "\n") {
+    flags = match parse_flag(line) {
+      Some(f) => append(flags, f),
+      None => flags,
+    }
+  }
+  return flags
+}
+
+fn user_bucket(user_id: Int, salt: Int) -> Int {
+  return (user_id * 31 + salt * 17) % 100
+}
+
+fn is_enabled_for(flags_text: String, name: String, user_id: Int) -> Bool {
+  let matching = filter(parse_flags(flags_text), |f| f.name == name)
+  return match first(matching) {
+    Some(f) => user_bucket(user_id, f.percent) < f.percent,
+    None => false,
+  }
+}
+
+fn load_flags(path: String) -> String
+  effects: fs
+{
+  return match read_file(path) {
+    Ok(text) => text,
+    Err(_) => "",
+  }
+}
+
+fn fetch_flags(url: String) -> String
+  effects: net
+{
+  return match http_get(url) {
+    Ok(text) => text,
+    Err(_) => "",
+  }
+}
+
+fn flag_enabled(path: String, name: String, user_id: Int) -> Bool
+  effects: fs
+{
+  return is_enabled_for(load_flags(path), name, user_id)
+}
+
+fn sample_enabled(url: String, name: String) -> Bool
+  effects: net, rand
+{
+  let matching = url
+    |> fetch_flags()
+    |> parse_flags()
+    |> filter(|f| f.name == name)
+  return match first(matching) {
+    Some(f) => random_int(0, 100) < f.percent,
+    None => false,
+  }
+}

@@ -1,0 +1,22 @@
+{
+ "id": "caesar_shift",
+ "requirement": "Uppercase letters A-Z must now be shifted too, by the same k and wrapping from Z to A, and they stay uppercase (so \"Zz\" shifted by 1 is \"Aa\"). Lowercase letters behave as before, and all other characters (digits, spaces, punctuation, non-ASCII letters) are still unchanged.",
+ "fn": "caesar_shift",
+ "params": [
+  [
+   "s",
+   "String"
+  ],
+  [
+   "k",
+   "Int"
+  ]
+ ],
+ "ret": "String",
+ "desc": "Shift every letter a-z and A-Z in s forward by k positions in the alphabet, wrapping around from z to a (and from Z to A); a letter keeps its case. k may be negative (shift backward) and may be larger than 26 in either direction. Every other character (digits, spaces, punctuation, non-ASCII letters) is unchanged.",
+ "decls": {
+  "canon": "",
+  "ts": ""
+ },
+ "typeKinds": {}
+}

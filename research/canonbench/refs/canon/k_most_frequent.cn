@@ -1,0 +1,10 @@
+fn k_most_frequent(xs: List[Int], k: Int) -> List[(Int, Int)] {
+  if k <= 0 {
+    return []
+  }
+  let counted = xs
+    |> group_by(|x| x)
+    |> map(|g| (g.0, len(g.1)))
+    |> sort_by(|p| p.0)
+  return take(sort_desc_by(counted, |p| p.1), k)
+}

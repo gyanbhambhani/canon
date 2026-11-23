@@ -1,0 +1,7 @@
+{
+  "files": {
+    "/var/log/app.log": "t=1 [INFO] boot\nt=2 [INFO] ready\nt=3 [WARN] slow disk\nt=4 [INFO] request\nt=5 [ERROR] timeout\n",
+    "/var/log/quiet.log": "t=1 [INFO] boot\n"
+  },
+  "http": {}
+}

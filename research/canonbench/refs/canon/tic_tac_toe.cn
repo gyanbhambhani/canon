@@ -1,0 +1,44 @@
+fn mark(cells: List[String], i: Int) -> String {
+  return cells
+    |> drop(i)
+    |> first()
+    |> unwrap_or("")
+}
+
+fn has_line(cells: List[String], p: String) -> Bool {
+  let rows = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+  let cols_diags = [[0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
+  let lines = fold(cols_diags, rows, |acc, l| append(acc, l))
+  let full = filter(lines, |l| len(filter(l, |i| mark(cells, i) == p)) == 3)
+  return len(full) > 0
+}
+
+fn tic_tac_toe(board: List[String]) -> String {
+  let cells = split(join(board, ""), "")
+  let nx = len(filter(cells, |c| c == "X"))
+  let no = len(filter(cells, |c| c == "O"))
+  let xw = has_line(cells, "X")
+  let ow = has_line(cells, "O")
+  if nx != no && nx != no + 1 {
+    return "invalid"
+  }
+  if xw && ow {
+    return "invalid"
+  }
+  if xw && nx != no + 1 {
+    return "invalid"
+  }
+  if ow && nx != no {
+    return "invalid"
+  }
+  if xw {
+    return "X wins"
+  }
+  if ow {
+    return "O wins"
+  }
+  if nx + no == 9 {
+    return "draw"
+  }
+  return "in progress"
+}

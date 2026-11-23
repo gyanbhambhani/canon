@@ -1,0 +1,37 @@
+{
+  "id": "spiral_order",
+  "source": "exp1-hard",
+  "fn": "spiral_order",
+  "params": [
+    [
+      "m",
+      "List[List[Int]]"
+    ]
+  ],
+  "ret": "List[Int]",
+  "desc": "m is a rectangular matrix given as a list of rows. Return its elements in counterclockwise spiral order: start at the top-left corner, go down the first column, then right along the bottom row, then up the last column, then left along the top row, and repeat on the remaining inner matrix. Every element appears exactly once. A matrix with no rows, or whose rows are empty, gives an empty list.",
+  "examples": [
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          []
+        ]
+      ],
+      "expected": []
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

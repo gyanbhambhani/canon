@@ -1,0 +1,14 @@
+type Shift {
+  worker: String,
+  start_hour: Int,
+  end_hour: Int,
+}
+
+fn on_duty(shifts: List[Shift], h: Int) -> Int {
+  let ws = map(filter(shifts, |s| s.start_hour <= h && h < s.end_hour), |s| s.worker)
+  return len(group_by(ws, |w| w))
+}
+
+fn coverage_gaps(shifts: List[Shift], required: Int) -> List[Int] {
+  return filter(range(0, 24), |h| on_duty(shifts, h) < required)
+}

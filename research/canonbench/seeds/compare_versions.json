@@ -1,0 +1,47 @@
+{
+  "id": "compare_versions",
+  "source": "exp1-hard",
+  "fn": "compare_versions",
+  "params": [
+    [
+      "a",
+      "String"
+    ],
+    [
+      "b",
+      "String"
+    ]
+  ],
+  "ret": "Result[Int, String]",
+  "desc": "A version is 1 to 4 parts separated by dots, each part one or more decimal digits (leading zeros allowed: \"01\" means 1). If a is not a valid version return \"bad version: \" followed by a; otherwise if b is not valid return \"bad version: \" followed by b. Compare the versions part by part from the left as numbers, treating missing parts as 0 (so \"1.0\" equals \"1\"). Return -1 if a is lower, 1 if a is higher, 0 if they are equal.",
+  "examples": [
+    {
+      "args": [
+        "1.2.3",
+        "1.2.10"
+      ],
+      "expected": {
+        "ok": true,
+        "value": -1
+      }
+    },
+    {
+      "args": [
+        "1.0",
+        "1"
+      ],
+      "expected": {
+        "ok": true,
+        "value": 0
+      }
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {},
+  "tags": [
+    "result"
+  ]
+}

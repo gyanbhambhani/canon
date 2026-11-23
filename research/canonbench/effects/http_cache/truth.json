@@ -1,0 +1,28 @@
+{
+  "functions": {
+    "cache_path": [],
+    "encode_entry": [],
+    "decode_entry": [],
+    "is_expired": [],
+    "read_cached": ["fs", "time"],
+    "if_fresh": ["time"],
+    "fetch_and_store": ["fs", "net", "time"],
+    "get_cached": ["fs", "net", "time"]
+  },
+  "drive": [
+    { "fn": "cache_path", "args": ["/var/cache/http", "https://api.example.com/v1/rates"] },
+    { "fn": "encode_entry", "args": [1700000000000, "a\nb"] },
+    { "fn": "decode_entry", "args": ["1700000000000\na\nb"] },
+    { "fn": "decode_entry", "args": ["junk\nbody"] },
+    { "fn": "is_expired", "args": [1700000000000, 1700000090000, 60000] },
+    { "fn": "read_cached", "args": ["/var/cache/http", "https://api.example.com/rates", 60000] },
+    { "fn": "read_cached", "args": ["/var/cache/http", "https://api.example.com/corrupt", 60000] },
+    { "fn": "read_cached", "args": ["/var/cache/http", "https://api.example.com/none", 60000] },
+    { "fn": "if_fresh", "args": [1699999990000, "cached", 60000] },
+    { "fn": "fetch_and_store", "args": ["/var/cache/http", "https://api.example.com/new"] },
+    { "fn": "fetch_and_store", "args": ["/var/cache/http", "https://api.example.com/unreachable"] },
+    { "fn": "get_cached", "args": ["/var/cache/http", "https://api.example.com/rates", 60000] },
+    { "fn": "get_cached", "args": ["/var/cache/http", "https://api.example.com/old", 60000] },
+    { "fn": "get_cached", "args": ["/var/cache/http", "https://api.example.com/corrupt", 60000] }
+  ]
+}

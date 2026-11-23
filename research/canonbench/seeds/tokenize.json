@@ -1,0 +1,57 @@
+{
+  "id": "tokenize",
+  "source": "exp1-hard",
+  "fn": "tokenize",
+  "params": [
+    [
+      "s",
+      "String"
+    ]
+  ],
+  "ret": "Result[List[Token], String]",
+  "desc": "Split s into tokens, scanning left to right. A space character separates tokens and produces nothing. A maximal run of decimal digits is a Num whose value is that number (leading zeros allowed). An identifier starts with a lowercase letter a-z or \"_\" and continues with as many lowercase letters, digits and \"_\" as possible; it is an Ident. Symbols are Sym tokens: first try the two-character symbols \"==\", \"<=\", \">=\" and \"!=\", then the one-character symbols + - * / = < > ( ) and \",\". A digit run stops at the first non-digit, so \"12ab\" is Num 12 then Ident \"ab\". Any other character (including uppercase letters, tabs and a lone \"!\") gives the error \"unexpected character: C at N\", where C is the character and N its 0-based position in s.",
+  "examples": [
+    {
+      "args": [
+        "x = 42"
+      ],
+      "expected": {
+        "ok": true,
+        "value": [
+          {
+            "kind": "Ident",
+            "name": "x"
+          },
+          {
+            "kind": "Sym",
+            "text": "="
+          },
+          {
+            "kind": "Num",
+            "value": 42
+          }
+        ]
+      }
+    },
+    {
+      "args": [
+        ""
+      ],
+      "expected": {
+        "ok": true,
+        "value": []
+      }
+    }
+  ],
+  "decls": {
+    "canon": "type Token =\n  | Num(value: Int)\n  | Ident(name: String)\n  | Sym(text: String)",
+    "ts": "type Token =\n  | { kind: \"Num\"; value: number }\n  | { kind: \"Ident\"; name: string }\n  | { kind: \"Sym\"; text: string };\ntype Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {
+    "Token": "sum"
+  },
+  "tags": [
+    "result",
+    "adt"
+  ]
+}

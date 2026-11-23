@@ -1,0 +1,235 @@
+{
+ "id": "parking_fees",
+ "cases": [
+  {
+   "args": [
+    [
+     {
+      "kind": "Arrive",
+      "plate": "x",
+      "minute": 0
+     },
+     {
+      "kind": "Leave",
+      "plate": "x",
+      "minute": 45
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "x",
+     200
+    ]
+   ]
+  },
+  {
+   "args": [
+    []
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Arrive",
+      "plate": "x",
+      "minute": 0
+     },
+     {
+      "kind": "Leave",
+      "plate": "x",
+      "minute": 30
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "x",
+     0
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Arrive",
+      "plate": "x",
+      "minute": 10
+     },
+     {
+      "kind": "Leave",
+      "plate": "x",
+      "minute": 100
+     },
+     {
+      "kind": "Arrive",
+      "plate": "x",
+      "minute": 200
+     },
+     {
+      "kind": "Leave",
+      "plate": "x",
+      "minute": 291
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "x",
+     600
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Leave",
+      "plate": "y",
+      "minute": 5
+     },
+     {
+      "kind": "Arrive",
+      "plate": "y",
+      "minute": 10
+     }
+    ]
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Arrive",
+      "plate": "a",
+      "minute": 0
+     },
+     {
+      "kind": "Arrive",
+      "plate": "a",
+      "minute": 50
+     },
+     {
+      "kind": "Leave",
+      "plate": "a",
+      "minute": 100
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     400
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Arrive",
+      "plate": "b",
+      "minute": 0
+     },
+     {
+      "kind": "Leave",
+      "plate": "b",
+      "minute": 1000
+     },
+     {
+      "kind": "Arrive",
+      "plate": "a",
+      "minute": 0
+     },
+     {
+      "kind": "Leave",
+      "plate": "a",
+      "minute": 31
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     200
+    ],
+    [
+     "b",
+     1000
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Arrive",
+      "plate": "z",
+      "minute": 0
+     },
+     {
+      "kind": "Arrive",
+      "plate": "y",
+      "minute": 0
+     },
+     {
+      "kind": "Leave",
+      "plate": "y",
+      "minute": 150
+     },
+     {
+      "kind": "Leave",
+      "plate": "z",
+      "minute": 331
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "y",
+     400
+    ],
+    [
+     "z",
+     1000
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Arrive",
+      "plate": "p",
+      "minute": 0
+     },
+     {
+      "kind": "Leave",
+      "plate": "p",
+      "minute": 30
+     },
+     {
+      "kind": "Arrive",
+      "plate": "q",
+      "minute": 5
+     },
+     {
+      "kind": "Leave",
+      "plate": "p",
+      "minute": 90
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "p",
+     0
+    ]
+   ]
+  }
+ ]
+}

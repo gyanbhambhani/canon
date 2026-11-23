@@ -1,0 +1,189 @@
+{
+ "id": "tokenize",
+ "cases": [
+  {
+   "args": [
+    "x = 42"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "kind": "Ident",
+      "name": "x"
+     },
+     {
+      "kind": "Sym",
+      "text": "="
+     },
+     {
+      "kind": "Num",
+      "value": 42
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    ""
+   ],
+   "expected": {
+    "ok": true,
+    "value": []
+   }
+  },
+  {
+   "args": [
+    "a<=b!=c"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "kind": "Ident",
+      "name": "a"
+     },
+     {
+      "kind": "Sym",
+      "text": "<="
+     },
+     {
+      "kind": "Ident",
+      "name": "b"
+     },
+     {
+      "kind": "Sym",
+      "text": "!="
+     },
+     {
+      "kind": "Ident",
+      "name": "c"
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    "12ab"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "kind": "Num",
+      "value": 12
+     },
+     {
+      "kind": "Ident",
+      "name": "ab"
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    "f(x_1, 007)"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "kind": "Ident",
+      "name": "f"
+     },
+     {
+      "kind": "Sym",
+      "text": "("
+     },
+     {
+      "kind": "Ident",
+      "name": "x_1"
+     },
+     {
+      "kind": "Sym",
+      "text": ","
+     },
+     {
+      "kind": "Num",
+      "value": 7
+     },
+     {
+      "kind": "Sym",
+      "text": ")"
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    "<<==>"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "kind": "Sym",
+      "text": "<"
+     },
+     {
+      "kind": "Sym",
+      "text": "<="
+     },
+     {
+      "kind": "Sym",
+      "text": "="
+     },
+     {
+      "kind": "Sym",
+      "text": ">"
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    "_ 9"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "kind": "Ident",
+      "name": "_"
+     },
+     {
+      "kind": "Num",
+      "value": 9
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    "a ! b"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unexpected character: ! at 2"
+   }
+  },
+  {
+   "args": [
+    "count = Max"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unexpected character: M at 8"
+   }
+  },
+  {
+   "args": [
+    "x;1"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unexpected character: ; at 1"
+   }
+  }
+ ]
+}

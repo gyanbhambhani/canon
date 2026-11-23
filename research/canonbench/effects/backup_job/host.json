@@ -1,0 +1,11 @@
+{
+  "files": {
+    "/srv/db/orders.db": "id,total\n1,120\n2,75\n",
+    "/srv/db/orders.copy": "id,total\n1,120\n2,75\n",
+    "/srv/db/stale.copy": "id,total\n1,120\n"
+  },
+  "http": {
+    "https://backup.example.com/upload?name=orders.db": ["receipt-0001\n"],
+    "https://backup.example.com/upload?name=orders.db.bak.1700000000000": ["receipt-0002\n"]
+  }
+}

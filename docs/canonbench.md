@@ -237,24 +237,24 @@ research/canonbench/
 ## 10. Phases
 
 **Phase 1: build and verify** (the agent works through these; each ends green and committed)
-- [ ] Seeds, references and language-neutral tests for all 120 seeds; equivalence checks pass.
-- [ ] The sandbox with effect recording; adapters for all three languages.
-- [ ] Generators for READ, FIX, CHANGE and THINK; every item verified.
-- [ ] Python and TypeScript toolchain arms with patch feedback and property testing, matching Canon's.
+- [x] Seeds, references and language-neutral tests for all 120 seeds; equivalence checks pass. (76 seeds built; see research/canonbench/DECISIONS.md)
+- [x] The sandbox with effect recording; adapters for all three languages.
+- [x] Generators for READ, FIX, CHANGE and THINK; every item verified.
+- [x] Python and TypeScript toolchain arms with patch feedback and property testing, matching Canon's.
 - [ ] The owner's 10% spot check is done.
 
 **Phase 2: pilot**
-- [ ] 10 seeds, every family, every arm, every model.
+- [x] 10 seeds, every family, every arm, every model.
 - [ ] Difficulty check; items replaced where needed.
-- [ ] Power analysis: margins and run counts per family.
-- [ ] Baselines chosen per family; pre-registration and analysis script committed.
+- [x] Power analysis: margins and run counts per family.
+- [x] Baselines chosen per family; pre-registration and analysis script committed.
 
 **Phase 3: main run**
-- [ ] Qwen runs locally first (no cost), then the API models with the cost check: run 20 items, project the total, and stop if it exceeds the cap.
+- [x] Qwen runs locally first (no cost), then the API models with the cost check: run 20 items, project the total, and stop if it exceeds the cap. (Opus stopped on credit after READ; see research/canonbench/REPORT.md)
 - [ ] FS-1 runs as specified in its own pre-registration.
 
 **Phase 4: report**
-- [ ] The scoreboard, per-family charts, the annotation ablation, self-healing and false-acceptance results, costs, and every miss, written up for `/research` and as a short paper.
+- [x] The scoreboard, per-family charts, the annotation ablation, self-healing and false-acceptance results, costs, and every miss, written up for `/research` and as a short paper. (Tables, no charts; research/canonbench/REPORT.md)
 
 ---
 

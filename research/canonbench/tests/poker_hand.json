@@ -1,0 +1,125 @@
+{
+ "id": "poker_hand",
+ "cases": [
+  {
+   "args": [
+    [
+     "TH",
+     "JH",
+     "QH",
+     "KH",
+     "AH"
+    ]
+   ],
+   "expected": "straight flush"
+  },
+  {
+   "args": [
+    [
+     "3S",
+     "AS",
+     "2D",
+     "4C",
+     "5S"
+    ]
+   ],
+   "expected": "straight"
+  },
+  {
+   "args": [
+    [
+     "QS",
+     "KD",
+     "AH",
+     "2C",
+     "3S"
+    ]
+   ],
+   "expected": "high card"
+  },
+  {
+   "args": [
+    [
+     "9C",
+     "9D",
+     "2D",
+     "9H",
+     "9S"
+    ]
+   ],
+   "expected": "four of a kind"
+  },
+  {
+   "args": [
+    [
+     "3C",
+     "8S",
+     "3D",
+     "3H",
+     "8D"
+    ]
+   ],
+   "expected": "full house"
+  },
+  {
+   "args": [
+    [
+     "2H",
+     "7H",
+     "9H",
+     "JH",
+     "KH"
+    ]
+   ],
+   "expected": "flush"
+  },
+  {
+   "args": [
+    [
+     "5C",
+     "5D",
+     "5H",
+     "8S",
+     "2D"
+    ]
+   ],
+   "expected": "three of a kind"
+  },
+  {
+   "args": [
+    [
+     "5C",
+     "8H",
+     "5D",
+     "8S",
+     "2D"
+    ]
+   ],
+   "expected": "two pair"
+  },
+  {
+   "args": [
+    [
+     "5C",
+     "5D",
+     "9H",
+     "8S",
+     "2D"
+    ]
+   ],
+   "expected": "one pair"
+  },
+  {
+   "args": [
+    [
+     "AH",
+     "AH",
+     "2C",
+     "3D",
+     "4S"
+    ]
+   ],
+   "expected": "invalid"
+  }
+ ]
+}

@@ -1,0 +1,43 @@
+fn at(xs: List[Int], i: Int) -> Int {
+  return xs
+    |> drop(i)
+    |> first()
+    |> unwrap_or(0)
+}
+
+fn min_coins(coins: List[Int], amount: Int) -> Option[(Int, List[Int])] {
+  if amount < 0 {
+    return None
+  }
+  var best = [0]
+  for a in range(1, amount + 1) {
+    var b = -1
+    for c in coins {
+      if a - c >= 0 {
+        let p = at(best, a - c)
+        if p >= 0 && (b < 0 || p + 1 < b) {
+          b = p + 1
+        }
+      }
+    }
+    best = append(best, b)
+  }
+  if at(best, amount) < 0 {
+    return None
+  }
+  let desc = sort_desc_by(coins, |c| c)
+  var used = []
+  var a = amount
+  var cap = amount
+  while a > 0 {
+    let rest = a
+    let limit = cap
+    let need = at(best, rest) - 1
+    let pick = first(filter(desc, |c| c <= limit && rest - c >= 0 && at(best, rest - c) == need))
+    let c = unwrap_or(pick, rest)
+    used = append(used, c)
+    a = a - c
+    cap = c
+  }
+  return Some((len(used), used))
+}

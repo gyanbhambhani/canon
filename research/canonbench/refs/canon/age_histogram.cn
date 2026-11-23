@@ -1,0 +1,23 @@
+type Person {
+  name: String,
+  age: Int,
+}
+
+fn age_histogram(people: List[Person], width: Int) -> Result[List[(String, Int)], String] {
+  if width < 1 {
+    return Err("bad width")
+  }
+  for p in people {
+    if p.age < 0 {
+      return Err("negative age: " + p.name)
+    }
+  }
+  if len(people) == 0 {
+    return Ok([])
+  }
+  let bs = map(people, |p| p.age / width)
+  let lo = fold(bs, unwrap_or(first(bs), 0), |a, b| min(a, b))
+  let hi = fold(bs, lo, |a, b| max(a, b))
+  let label = |b| to_string(b * width) + "-" + to_string(b * width + width - 1)
+  return Ok(map(range(lo, hi + 1), |b| (label(b), len(filter(bs, |x| x == b)))))
+}

@@ -1,0 +1,62 @@
+fn token_alphabet() -> List[String] {
+  return ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
+}
+
+fn pick_char(index: Int) -> String {
+  let alphabet = token_alphabet()
+  return alphabet
+    |> drop(index % len(alphabet))
+    |> first()
+    |> unwrap_or("a")
+}
+
+fn random_suffix(length: Int) -> String
+  effects: rand
+{
+  var suffix = ""
+  for i in range(0, length) {
+    suffix = suffix + pick_char(random_int(0, len(token_alphabet())))
+  }
+  return suffix
+}
+
+fn encode_token(user: String, issued_at: Int, suffix: String) -> String {
+  return user + "." + to_string(issued_at) + "." + suffix
+}
+
+fn issue_token(user: String) -> String
+  effects: rand, time
+{
+  let issued_at = now()
+  return encode_token(user, issued_at, random_suffix(12))
+}
+
+fn token_expired(token: String, now_ms: Int, ttl_ms: Int) -> Bool {
+  let issued = token
+    |> split(".")
+    |> drop(1)
+    |> first()
+  return match issued {
+    Some(text) => now_ms - unwrap_or(parse_int(text), 0) >= ttl_ms,
+    None => true,
+  }
+}
+
+fn check_token(token: String, ttl_ms: Int) -> Bool
+  effects: time
+{
+  return !token_expired(token, now(), ttl_ms)
+}
+
+fn refresh_token(token: String, ttl_ms: Int) -> String
+  effects: rand, time
+{
+  if check_token(token, ttl_ms) {
+    return token
+  }
+  let user = token
+    |> split(".")
+    |> first()
+    |> unwrap_or("anonymous")
+  return issue_token(user)
+}

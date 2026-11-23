@@ -1,0 +1,263 @@
+{
+ "id": "merge_contacts",
+ "cases": [
+  {
+   "args": [
+    []
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "Ann",
+      "email": "a@x",
+      "phone": ""
+     }
+    ]
+   ],
+   "expected": [
+    {
+     "name": "Ann",
+     "email": "a@x",
+     "phone": ""
+    }
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "Ann",
+      "email": " a@x ",
+      "phone": ""
+     },
+     {
+      "name": "",
+      "email": "a@x",
+      "phone": "555-1234"
+     }
+    ]
+   ],
+   "expected": [
+    {
+     "name": "Ann",
+     "email": " a@x ",
+     "phone": "555-1234"
+    }
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "Bo",
+      "email": "",
+      "phone": "(555) 12-34"
+     },
+     {
+      "name": "Bob",
+      "email": "bo@y",
+      "phone": "5551234"
+     }
+    ]
+   ],
+   "expected": [
+    {
+     "name": "Bo",
+     "email": "bo@y",
+     "phone": "(555) 12-34"
+    }
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "A",
+      "email": "a@x",
+      "phone": ""
+     },
+     {
+      "name": "B",
+      "email": "b@x",
+      "phone": "999"
+     },
+     {
+      "name": "",
+      "email": "a@x",
+      "phone": "9-9-9"
+     }
+    ]
+   ],
+   "expected": [
+    {
+     "name": "A",
+     "email": "a@x",
+     "phone": "999"
+    }
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "A",
+      "email": "",
+      "phone": "n/a"
+     },
+     {
+      "name": "B",
+      "email": "  ",
+      "phone": "n/a"
+     }
+    ]
+   ],
+   "expected": [
+    {
+     "name": "A",
+     "email": "",
+     "phone": "n/a"
+    },
+    {
+     "name": "B",
+     "email": "  ",
+     "phone": "n/a"
+    }
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "P",
+      "email": "p@1",
+      "phone": ""
+     },
+     {
+      "name": "Q",
+      "email": "q@1",
+      "phone": ""
+     },
+     {
+      "name": "",
+      "email": "p@1",
+      "phone": "1"
+     },
+     {
+      "name": "",
+      "email": "q@1",
+      "phone": "2"
+     }
+    ]
+   ],
+   "expected": [
+    {
+     "name": "P",
+     "email": "p@1",
+     "phone": "1"
+    },
+    {
+     "name": "Q",
+     "email": "q@1",
+     "phone": "2"
+    }
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "X",
+      "email": "",
+      "phone": ""
+     },
+     {
+      "name": "A",
+      "email": "a@",
+      "phone": "1"
+     },
+     {
+      "name": "B",
+      "email": "b@",
+      "phone": "2"
+     },
+     {
+      "name": "C",
+      "email": "a@",
+      "phone": "2"
+     }
+    ]
+   ],
+   "expected": [
+    {
+     "name": "X",
+     "email": "",
+     "phone": ""
+    },
+    {
+     "name": "A",
+     "email": "a@",
+     "phone": "1"
+    }
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "",
+      "email": "e@",
+      "phone": "1"
+     },
+     {
+      "name": "Z",
+      "email": "",
+      "phone": "1"
+     },
+     {
+      "name": "Y",
+      "email": "e@",
+      "phone": ""
+     }
+    ]
+   ],
+   "expected": [
+    {
+     "name": "Z",
+     "email": "e@",
+     "phone": "1"
+    }
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "m",
+      "email": "A@x",
+      "phone": ""
+     },
+     {
+      "name": "n",
+      "email": "a@x",
+      "phone": ""
+     }
+    ]
+   ],
+   "expected": [
+    {
+     "name": "m",
+     "email": "A@x",
+     "phone": ""
+    },
+    {
+     "name": "n",
+     "email": "a@x",
+     "phone": ""
+    }
+   ]
+  }
+ ]
+}

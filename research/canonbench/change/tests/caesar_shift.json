@@ -1,0 +1,98 @@
+{
+ "id": "caesar_shift",
+ "cases": [
+  {
+   "args": [
+    "Hello, World!",
+    1
+   ],
+   "expected": "Ifmmp, Xpsme!"
+  },
+  {
+   "args": [
+    "Zz",
+    1
+   ],
+   "expected": "Aa"
+  },
+  {
+   "args": [
+    "ABC xyz",
+    -1
+   ],
+   "expected": "ZAB wxy"
+  },
+  {
+   "args": [
+    "Attack At Dawn",
+    13
+   ],
+   "expected": "Nggnpx Ng Qnja"
+  },
+  {
+   "args": [
+    "MiXeD 123",
+    52
+   ],
+   "expected": "MiXeD 123"
+  },
+  {
+   "args": [
+    "Q",
+    -27
+   ],
+   "expected": "P"
+  },
+  {
+   "args": [
+    "\u00c9aA",
+    2
+   ],
+   "expected": "\u00c9cC"
+  }
+ ],
+ "regression": [
+  {
+   "args": [
+    "abc",
+    1
+   ],
+   "expected": "bcd"
+  },
+  {
+   "args": [
+    "xyz",
+    3
+   ],
+   "expected": "abc"
+  },
+  {
+   "args": [
+    "abc",
+    -1
+   ],
+   "expected": "zab"
+  },
+  {
+   "args": [
+    "abc",
+    52
+   ],
+   "expected": "abc"
+  },
+  {
+   "args": [
+    "",
+    5
+   ],
+   "expected": ""
+  },
+  {
+   "args": [
+    "a-z",
+    -27
+   ],
+   "expected": "z-y"
+  }
+ ]
+}

@@ -1,0 +1,35 @@
+type Stock {
+  sku: String,
+  qty: Int,
+}
+
+type Txn {
+  sku: String,
+  delta: Int,
+}
+
+fn update(s: Stock, sku: String, delta: Int) -> Stock {
+  if s.sku == sku {
+    return Stock { sku: s.sku, qty: s.qty + delta }
+  }
+  return s
+}
+
+fn inventory_ledger(stock: List[Stock], txns: List[Txn]) -> Result[List[Stock], String] {
+  var cur = stock
+  for p in enumerate(txns) {
+    let n = to_string(p.0 + 1)
+    let t = p.1
+    let hit = filter(cur, |s| s.sku == t.sku)
+    if len(hit) == 0 {
+      return Err("txn " + n + ": unknown sku " + t.sku)
+    }
+    let q = sum(map(hit, |s| s.qty)) + t.delta
+    if q < 0 {
+      return Err("txn " + n + ": " + t.sku + " would go negative")
+    }
+    cur = map(cur, |s| update(s, t.sku, t.delta))
+  }
+  let out = sort_by(filter(cur, |s| s.qty > 0), |s| s.sku)
+  return Ok(out)
+}

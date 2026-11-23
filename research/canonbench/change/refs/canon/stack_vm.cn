@@ -1,0 +1,108 @@
+type Instr =
+  | Push(n: Int)
+  | Pop
+  | Add
+  | Sub
+  | Mul
+  | Div
+  | Mod
+  | Dup
+  | Swap
+  | Jz(target: Int)
+  | Jmp(target: Int)
+  | Print
+  | Halt
+
+fn needs(ins: Instr) -> Int {
+  return match ins {
+    Push(_) => 0,
+    Pop => 1,
+    Add => 2,
+    Sub => 2,
+    Mul => 2,
+    Div => 2,
+    Mod => 2,
+    Dup => 1,
+    Swap => 2,
+    Jz(_) => 1,
+    Jmp(_) => 0,
+    Print => 1,
+    Halt => 0,
+  }
+}
+
+fn jump_target(ins: Instr) -> Option[Int] {
+  return match ins {
+    Jz(t) => Some(t),
+    Jmp(t) => Some(t),
+    _ => None,
+  }
+}
+
+fn stack_vm(prog: List[Instr]) -> Result[List[Int], String] {
+  let n = len(prog)
+  var stack = []
+  var out = []
+  var pc = 0
+  var steps = 0
+  while pc < n {
+    if steps == 1000 {
+      return Err("step limit exceeded")
+    }
+    steps = steps + 1
+    let ins = prog
+      |> drop(pc)
+      |> first()
+      |> unwrap_or(Halt)
+    let size = len(stack)
+    if size < needs(ins) {
+      return Err("stack underflow at " + to_string(pc))
+    }
+    let target = unwrap_or(jump_target(ins), 0)
+    if target < 0 || target >= n {
+      return Err("bad jump at " + to_string(pc))
+    }
+    let b = unwrap_or(last(stack), 0)
+    if (ins == Div || ins == Mod) && b == 0 {
+      return Err("division by zero at " + to_string(pc))
+    }
+    let a = stack
+      |> take(size - 1)
+      |> last()
+      |> unwrap_or(0)
+    let rest1 = take(stack, size - 1)
+    let rest2 = take(stack, size - 2)
+    stack = match ins {
+      Push(v) => append(stack, v),
+      Pop => rest1,
+      Add => append(rest2, a + b),
+      Sub => append(rest2, a - b),
+      Mul => append(rest2, a * b),
+      Div => append(rest2, a / b),
+      Mod => append(rest2, a % b),
+      Dup => append(stack, b),
+      Swap => append(append(rest2, b), a),
+      Jz(_) => rest1,
+      Jmp(_) => stack,
+      Print => rest1,
+      Halt => stack,
+    }
+    if ins == Print {
+      out = append(out, b)
+    }
+    pc = match ins {
+      Jz(t) => if_zero(b, t, pc + 1),
+      Jmp(t) => t,
+      Halt => n,
+      _ => pc + 1,
+    }
+  }
+  return Ok(out)
+}
+
+fn if_zero(v: Int, yes: Int, no: Int) -> Int {
+  if v == 0 {
+    return yes
+  }
+  return no
+}

@@ -1,0 +1,72 @@
+{
+  "id": "k_most_frequent",
+  "source": "exp1-hard",
+  "fn": "k_most_frequent",
+  "params": [
+    [
+      "xs",
+      "List[Int]"
+    ],
+    [
+      "k",
+      "Int"
+    ]
+  ],
+  "ret": "List[(Int, Int)]",
+  "desc": "Return (value, count) pairs for the k most frequent distinct values of xs, ordered by count from highest to lowest; values with equal counts are ordered from smallest to largest value. If k exceeds the number of distinct values, return all of them; if k <= 0, return an empty list.",
+  "examples": [
+    {
+      "args": [
+        [
+          1,
+          1,
+          2,
+          2,
+          3
+        ],
+        2
+      ],
+      "expected": [
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          2
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          4,
+          4,
+          1,
+          1,
+          1,
+          2
+        ],
+        2
+      ],
+      "expected": [
+        [
+          1,
+          3
+        ],
+        [
+          4,
+          2
+        ]
+      ]
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

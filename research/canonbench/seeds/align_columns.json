@@ -1,0 +1,52 @@
+{
+  "id": "align_columns",
+  "source": "exp1-hard",
+  "fn": "align_columns",
+  "params": [
+    [
+      "rows",
+      "List[List[String]]"
+    ]
+  ],
+  "ret": "List[String]",
+  "desc": "rows is a table whose rows may have different numbers of cells. The width of column j is the length of the longest cell at position j over all rows that have such a cell. Render each row from its own cells only (a row never gets extra cells): pad each cell on the right with spaces to its column's width, join the padded cells with \" | \", then remove every trailing space from the end of the line (leading spaces stay). A row with no cells renders as \"\". Return one line per row, in order.",
+  "examples": [
+    {
+      "args": [
+        [
+          [
+            "name",
+            "age"
+          ],
+          [
+            "bob",
+            "7"
+          ],
+          [
+            "alexandra",
+            "30"
+          ]
+        ]
+      ],
+      "expected": [
+        "name      | age",
+        "bob       | 7",
+        "alexandra | 30"
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

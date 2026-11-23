@@ -1,0 +1,207 @@
+{
+ "id": "session_totals",
+ "cases": [
+  {
+   "args": [
+    []
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "user": "a",
+      "kind": "login",
+      "time": 10
+     },
+     {
+      "user": "a",
+      "kind": "logout",
+      "time": 25
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     15
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "user": "a",
+      "kind": "login",
+      "time": 0
+     },
+     {
+      "user": "a",
+      "kind": "login",
+      "time": 5
+     },
+     {
+      "user": "a",
+      "kind": "logout",
+      "time": 10
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     10
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "user": "b",
+      "kind": "logout",
+      "time": 3
+     },
+     {
+      "user": "a",
+      "kind": "login",
+      "time": 4
+     },
+     {
+      "user": "a",
+      "kind": "logout",
+      "time": 9
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     5
+    ],
+    [
+     "b",
+     0
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "user": "a",
+      "kind": "login",
+      "time": 0
+     },
+     {
+      "user": "b",
+      "kind": "login",
+      "time": 10
+     },
+     {
+      "user": "b",
+      "kind": "logout",
+      "time": 30
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     30
+    ],
+    [
+     "b",
+     20
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "user": "u",
+      "kind": "login",
+      "time": 1
+     },
+     {
+      "user": "u",
+      "kind": "logout",
+      "time": 2
+     },
+     {
+      "user": "u",
+      "kind": "logout",
+      "time": 3
+     },
+     {
+      "user": "u",
+      "kind": "login",
+      "time": 10
+     },
+     {
+      "user": "u",
+      "kind": "logout",
+      "time": 20
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "u",
+     11
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "user": "z",
+      "kind": "login",
+      "time": 5
+     },
+     {
+      "user": "y",
+      "kind": "login",
+      "time": 7
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "y",
+     0
+    ],
+    [
+     "z",
+     2
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "user": "a",
+      "kind": "login",
+      "time": 5
+     },
+     {
+      "user": "a",
+      "kind": "logout",
+      "time": 5
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     0
+    ]
+   ]
+  }
+ ]
+}

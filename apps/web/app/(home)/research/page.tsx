@@ -170,6 +170,8 @@ const LINKS: { label: string; desc: string; href: string }[] = [
   { label: "v0 report", desc: "Verdicts and metrics for the first study", href: blob("research/benchmark/REPORT.md") },
   { label: "v0 pre-registration", desc: "The criteria, committed before the run", href: blob("research/benchmark/PREREGISTRATION.md") },
   { label: "Likelihood study", desc: "Method, scores and models", href: blob("research/likelihood/REPORT.md") },
+  { label: "CanonBench report", desc: "Scoreboard, ablation, costs and misses", href: blob("research/canonbench/REPORT.md") },
+  { label: "CanonBench pre-registration", desc: "Committed before the main run", href: blob("research/canonbench/PREREGISTRATION.md") },
   { label: "Design notes", desc: "Why Canon is built this way", href: "/docs/design-notes" },
 ];
 
@@ -285,6 +287,22 @@ export default function Research() {
         <P>
           Trimming the reference saved almost nothing, because cached prompt tokens are cheap. Canon answers averaged {d.outputTokensCanon} output tokens against{" "}
           {d.outputTokensTs} for TypeScript. Shorter answers are the lever.
+        </P>
+      </Section>
+
+      {/* CanonBench, November 2026 (numbers live in the report, generated from the raw runs) */}
+      <Section id="canonbench">
+        <H2>CanonBench, November 2026.</H2>
+        <P>
+          A pre-registered benchmark of what agents do with code: read it, write it, fix it, change it, and write Canon to ship
+          Python. It ran overnight against Python and TypeScript with GPT-6.2 Sol, Claude Opus 5.5 and Qwen2.5-Coder 7B.
+        </P>
+        <P>
+          GPT-6.2 Sol answered questions about Canon programs more accurately than about Python or TypeScript ones, mostly on
+          which functions can touch the network, files, the clock or randomness. Removing Canon&apos;s annotations did not
+          change that. On writing, fixing and changing code it scored the same in every language, at the ceiling. The small local
+          model could not yet write Canon&apos;s syntax. Claude Opus 5.5 stopped after the reading questions when its credit ran
+          out, so the overall verdict is undecided. The report gives every interval, loss and miss.
         </P>
       </Section>
 

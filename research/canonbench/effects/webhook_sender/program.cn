@@ -1,0 +1,61 @@
+fn sign(body: String, secret: String) -> String {
+  return "sig-" + to_string(str_len(body) * 7 + str_len(secret) * 13)
+}
+
+fn build_payload(event: String, sent_at: Int) -> String {
+  return "event=" + event + "&ts=" + to_string(sent_at)
+}
+
+fn signed_payload(event: String, secret: String, sent_at: Int) -> String {
+  let body = build_payload(event, sent_at)
+  return body + "&sig=" + sign(body, secret)
+}
+
+fn post_once(url: String, body: String) -> Bool
+  effects: net
+{
+  return match http_post(url, body) {
+    Ok(reply) => trim(reply) == "accepted",
+    Err(_) => false,
+  }
+}
+
+fn send_webhook(url: String, event: String, secret: String) -> Bool
+  effects: net, time
+{
+  return post_once(url, signed_payload(event, secret, now()))
+}
+
+fn send_with_retry(url: String, event: String, secret: String, attempts: Int) -> Int
+  effects: net, time
+{
+  for attempt in range(1, attempts + 1) {
+    if send_webhook(url, event, secret) {
+      return attempt
+    }
+    sleep(500 * attempt)
+  }
+  return 0
+}
+
+fn delivery_line(url: String, event: String, attempts: Int) -> String {
+  if attempts == 0 {
+    return "FAILED " + event + " -> " + url
+  }
+  return "OK " + event + " -> " + url + " after " + to_string(attempts)
+}
+
+fn deliver(url: String, event: String, secret: String, log_path: String) -> Bool
+  effects: fs, net, time
+{
+  let attempts = send_with_retry(url, event, secret, 3)
+  let previous = match read_file(log_path) {
+    Ok(text) => text,
+    Err(_) => "",
+  }
+  let logged = match write_file(log_path, previous + delivery_line(url, event, attempts) + "\n") {
+    Ok(_) => true,
+    Err(_) => false,
+  }
+  return attempts > 0 && logged
+}

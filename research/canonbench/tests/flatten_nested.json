@@ -1,0 +1,120 @@
+{
+ "id": "flatten_nested",
+ "cases": [
+  {
+   "args": [
+    "[1,[2,-3],[]]"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      1,
+      2,
+      -3
+     ],
+     2
+    ]
+   }
+  },
+  {
+   "args": [
+    "[]"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [],
+     1
+    ]
+   }
+  },
+  {
+   "args": [
+    " [ [ [ 7 ] ] , 8 ] "
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      7,
+      8
+     ],
+     3
+    ]
+   }
+  },
+  {
+   "args": [
+    "[[],[[]]]"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [],
+     3
+    ]
+   }
+  },
+  {
+   "args": [
+    "[007,-10]"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      7,
+      -10
+     ],
+     1
+    ]
+   }
+  },
+  {
+   "args": [
+    "[1,]"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "invalid at 3"
+   }
+  },
+  {
+   "args": [
+    "[1]]"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "invalid at 3"
+   }
+  },
+  {
+   "args": [
+    ""
+   ],
+   "expected": {
+    "ok": false,
+    "error": "invalid at 0"
+   }
+  },
+  {
+   "args": [
+    "[1,[2]"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "invalid at 6"
+   }
+  },
+  {
+   "args": [
+    "[-,1]"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "invalid at 2"
+   }
+  }
+ ]
+}

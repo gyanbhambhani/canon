@@ -1,0 +1,27 @@
+{
+  "functions": {
+    "parse_flag": [],
+    "parse_flags": [],
+    "user_bucket": [],
+    "is_enabled_for": [],
+    "load_flags": ["fs"],
+    "fetch_flags": ["net"],
+    "flag_enabled": ["fs"],
+    "sample_enabled": ["net", "rand"]
+  },
+  "drive": [
+    { "fn": "parse_flag", "args": ["dark_mode: 100"] },
+    { "fn": "parse_flag", "args": ["dark_mode: lots"] },
+    { "fn": "parse_flags", "args": ["a: 1\nb: 2\nnope"] },
+    { "fn": "user_bucket", "args": [1234, 50] },
+    { "fn": "is_enabled_for", "args": ["new_checkout: 50", "new_checkout", 7] },
+    { "fn": "load_flags", "args": ["/etc/flags/local.flags"] },
+    { "fn": "load_flags", "args": ["/etc/flags/none.flags"] },
+    { "fn": "fetch_flags", "args": ["https://flags.example.com/v2/flags"] },
+    { "fn": "fetch_flags", "args": ["https://flags.example.com/v2/missing"] },
+    { "fn": "flag_enabled", "args": ["/etc/flags/local.flags", "dark_mode", 42] },
+    { "fn": "flag_enabled", "args": ["/etc/flags/local.flags", "new_checkout", 3] },
+    { "fn": "sample_enabled", "args": ["https://flags.example.com/v2/flags", "new_checkout"] },
+    { "fn": "sample_enabled", "args": ["https://flags.example.com/v2/flags", "unknown_flag"] }
+  ]
+}

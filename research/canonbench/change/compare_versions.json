@@ -1,0 +1,22 @@
+{
+ "id": "compare_versions",
+ "requirement": "Versions may now carry a single leading \"v\" or \"V\" prefix, as in \"v1.2.3\" or \"V2\"; the prefix is ignored when validating and comparing. Only one prefix character is allowed and it must be followed by a valid version (so \"v\", \"vv1\" and \"1.v2\" are invalid). Error messages still quote the version exactly as given, prefix included.",
+ "fn": "compare_versions",
+ "params": [
+  [
+   "a",
+   "String"
+  ],
+  [
+   "b",
+   "String"
+  ]
+ ],
+ "ret": "Result[Int, String]",
+ "desc": "A version is an optional single \"v\" or \"V\" prefix followed by 1 to 4 parts separated by dots, each part one or more decimal digits (leading zeros allowed: \"01\" means 1). The prefix is ignored when comparing. If a is not a valid version return \"bad version: \" followed by a (exactly as given); otherwise if b is not valid return \"bad version: \" followed by b. Compare the versions part by part from the left as numbers, treating missing parts as 0 (so \"1.0\" equals \"1\" and \"v1\" equals \"1.0\"). Return -1 if a is lower, 1 if a is higher, 0 if they are equal.",
+ "decls": {
+  "canon": "",
+  "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+ },
+ "typeKinds": {}
+}

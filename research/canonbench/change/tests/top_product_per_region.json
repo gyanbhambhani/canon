@@ -1,0 +1,372 @@
+{
+ "id": "top_product_per_region",
+ "cases": [
+  {
+   "args": [
+    [
+     {
+      "region": "r",
+      "product": "b",
+      "units": 1,
+      "price_cents": 100
+     },
+     {
+      "region": "r",
+      "product": "a",
+      "units": 2,
+      "price_cents": 50
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "r",
+     "a",
+     100
+    ],
+    [
+     "r",
+     "b",
+     100
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "region": "r",
+      "product": "zeta",
+      "units": 2,
+      "price_cents": 50
+     },
+     {
+      "region": "r",
+      "product": "alpha",
+      "units": 1,
+      "price_cents": 100
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "r",
+     "alpha",
+     100
+    ],
+    [
+     "r",
+     "zeta",
+     100
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "region": "west",
+      "product": "z",
+      "units": 1,
+      "price_cents": 30
+     },
+     {
+      "region": "east",
+      "product": "y",
+      "units": 5,
+      "price_cents": 5
+     },
+     {
+      "region": "east",
+      "product": "x",
+      "units": 1,
+      "price_cents": 25
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "east",
+     "x",
+     25
+    ],
+    [
+     "east",
+     "y",
+     25
+    ],
+    [
+     "west",
+     "z",
+     30
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "region": "n",
+      "product": "q",
+      "units": 0,
+      "price_cents": 100
+     },
+     {
+      "region": "n",
+      "product": "p",
+      "units": 0,
+      "price_cents": 5
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "n",
+     "p",
+     0
+    ],
+    [
+     "n",
+     "q",
+     0
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "region": "r",
+      "product": "d",
+      "units": 1,
+      "price_cents": 5
+     },
+     {
+      "region": "r",
+      "product": "c",
+      "units": 1,
+      "price_cents": 5
+     },
+     {
+      "region": "r",
+      "product": "b",
+      "units": 1,
+      "price_cents": 10
+     },
+     {
+      "region": "r",
+      "product": "a",
+      "units": 2,
+      "price_cents": 5
+     },
+     {
+      "region": "r",
+      "product": "d",
+      "units": 1,
+      "price_cents": 5
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "r",
+     "a",
+     10
+    ],
+    [
+     "r",
+     "b",
+     10
+    ],
+    [
+     "r",
+     "d",
+     10
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "region": "b",
+      "product": "k",
+      "units": 1,
+      "price_cents": 1
+     },
+     {
+      "region": "b",
+      "product": "m",
+      "units": 1,
+      "price_cents": 2
+     },
+     {
+      "region": "a",
+      "product": "y",
+      "units": 3,
+      "price_cents": 4
+     },
+     {
+      "region": "a",
+      "product": "x",
+      "units": 4,
+      "price_cents": 3
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     "x",
+     12
+    ],
+    [
+     "a",
+     "y",
+     12
+    ],
+    [
+     "b",
+     "m",
+     2
+    ]
+   ]
+  }
+ ],
+ "regression": [
+  {
+   "args": [
+    []
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "region": "eu",
+      "product": "pen",
+      "units": 3,
+      "price_cents": 150
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "eu",
+     "pen",
+     450
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "region": "us",
+      "product": "a",
+      "units": 1,
+      "price_cents": 1000
+     },
+     {
+      "region": "us",
+      "product": "b",
+      "units": 3,
+      "price_cents": 200
+     },
+     {
+      "region": "us",
+      "product": "b",
+      "units": 3,
+      "price_cents": 200
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "us",
+     "b",
+     1200
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "region": "west",
+      "product": "x",
+      "units": 1,
+      "price_cents": 10
+     },
+     {
+      "region": "east",
+      "product": "y",
+      "units": 2,
+      "price_cents": 10
+     },
+     {
+      "region": "west",
+      "product": "z",
+      "units": 1,
+      "price_cents": 30
+     },
+     {
+      "region": "east",
+      "product": "y",
+      "units": 1,
+      "price_cents": 5
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "east",
+     "y",
+     25
+    ],
+    [
+     "west",
+     "z",
+     30
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "region": "a",
+      "product": "k",
+      "units": 1,
+      "price_cents": 100
+     },
+     {
+      "region": "b",
+      "product": "k",
+      "units": 1,
+      "price_cents": 1
+     },
+     {
+      "region": "b",
+      "product": "m",
+      "units": 1,
+      "price_cents": 2
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "a",
+     "k",
+     100
+    ],
+    [
+     "b",
+     "m",
+     2
+    ]
+   ]
+  }
+ ]
+}

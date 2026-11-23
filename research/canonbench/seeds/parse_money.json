@@ -1,0 +1,41 @@
+{
+  "id": "parse_money",
+  "source": "exp1-hard",
+  "fn": "parse_money",
+  "params": [
+    [
+      "s",
+      "String"
+    ]
+  ],
+  "ret": "Result[Int, String]",
+  "desc": "Parse an amount like \"$1,234.56\" into cents. Format: an optional \"-\", then \"$\", then the dollars, then optionally a \".\" followed by exactly two digits of cents. The dollars are one or more decimal digits, either with no commas, or grouped as 1 to 3 digits followed by one or more groups of a comma and exactly 3 digits; ignoring commas, the dollars may not start with 0 unless they are exactly \"0\". Return dollars * 100 + cents, negated if there is a \"-\". Errors, checked in this order: \"missing $\" if the character after the optional \"-\" is not \"$\" (or there is none); \"bad cents\" if s contains a \".\" and the text after the first \".\" is not exactly two digits; \"bad dollars\" if the text between \"$\" and the first \".\" (or the end) is not valid dollars.",
+  "examples": [
+    {
+      "args": [
+        "$1,234.56"
+      ],
+      "expected": {
+        "ok": true,
+        "value": 123456
+      }
+    },
+    {
+      "args": [
+        "-$12"
+      ],
+      "expected": {
+        "ok": true,
+        "value": -1200
+      }
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {},
+  "tags": [
+    "result"
+  ]
+}

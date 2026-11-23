@@ -1,0 +1,117 @@
+{
+ "id": "align_columns",
+ "cases": [
+  {
+   "args": [
+    [
+     [
+      "name",
+      "age"
+     ],
+     [
+      "bob",
+      "7"
+     ],
+     [
+      "alexandra",
+      "30"
+     ]
+    ]
+   ],
+   "expected": [
+    "name      | age",
+    "bob       | 7",
+    "alexandra | 30"
+   ]
+  },
+  {
+   "args": [
+    []
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     [
+      "a",
+      "bb",
+      "c"
+     ],
+     [
+      "ddd"
+     ]
+    ]
+   ],
+   "expected": [
+    "a   | bb | c",
+    "ddd"
+   ]
+  },
+  {
+   "args": [
+    [
+     [
+      "x",
+      ""
+     ],
+     [
+      "yy",
+      "z"
+     ]
+    ]
+   ],
+   "expected": [
+    "x  |",
+    "yy | z"
+   ]
+  },
+  {
+   "args": [
+    [
+     [],
+     [
+      "a"
+     ]
+    ]
+   ],
+   "expected": [
+    "",
+    "a"
+   ]
+  },
+  {
+   "args": [
+    [
+     [
+      "",
+      "a"
+     ],
+     [
+      "b"
+     ]
+    ]
+   ],
+   "expected": [
+    "  | a",
+    "b"
+   ]
+  },
+  {
+   "args": [
+    [
+     [
+      "abc"
+     ],
+     [
+      "d"
+     ]
+    ]
+   ],
+   "expected": [
+    "abc",
+    "d"
+   ]
+  }
+ ]
+}

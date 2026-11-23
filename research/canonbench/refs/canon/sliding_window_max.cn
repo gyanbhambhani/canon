@@ -1,0 +1,14 @@
+fn window_max(w: List[Int]) -> Int {
+  return fold(w, unwrap_or(first(w), 0), |a, b| max(a, b))
+}
+
+fn sliding_window_max(xs: List[Int], k: Int) -> Result[List[Int], String] {
+  if k < 1 {
+    return Err("window must be positive")
+  }
+  if k > len(xs) {
+    return Err("window larger than input")
+  }
+  let out = map(range(0, len(xs) - k + 1), |i| (xs |> drop(i) |> take(k) |> window_max()))
+  return Ok(out)
+}

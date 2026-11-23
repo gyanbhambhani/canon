@@ -1,0 +1,9 @@
+type Player {
+  name: String,
+  score: Int,
+}
+
+fn competition_rank(players: List[Player]) -> List[(Int, String)] {
+  let sorted = sort_desc_by(sort_by(players, |p| p.name), |p| p.score)
+  return map(sorted, |p| (1 + len(filter(players, |q| q.score > p.score)), p.name))
+}

@@ -1,0 +1,20 @@
+{
+ "id": "latency_report",
+ "requirement": "Order the report rows by p90, slowest first, so the worst endpoints are at the top. Endpoints with equal p90 keep their order of first appearance in entries. The contents of each row are unchanged.",
+ "fn": "latency_report",
+ "params": [
+  [
+   "entries",
+   "List[Request]"
+  ]
+ ],
+ "ret": "List[(String, Int, Int, Int)]",
+ "desc": "Group the requests by endpoint. For each endpoint return (endpoint, count, p90, errors): count is its number of requests; p90 is the nearest-rank 90th percentile of its ms values, i.e. the k-th smallest value (1-based, duplicates counted) where k = ceil(0.9 * count), which in integer arithmetic is (9 * count + 9) / 10 rounded down; errors is the number of its requests with status 500 or above. Order the rows by p90, highest first; endpoints with equal p90 are ordered by their first appearance in entries.",
+ "decls": {
+  "canon": "type Request {\n  endpoint: String,\n  ms: Int,\n  status: Int,\n}",
+  "ts": "type Request = { endpoint: string; ms: number; status: number };"
+ },
+ "typeKinds": {
+  "Request": "record"
+ }
+}

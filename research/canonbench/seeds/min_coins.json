@@ -1,0 +1,54 @@
+{
+  "id": "min_coins",
+  "source": "exp1-hard",
+  "fn": "min_coins",
+  "params": [
+    [
+      "coins",
+      "List[Int]"
+    ],
+    [
+      "amount",
+      "Int"
+    ]
+  ],
+  "ret": "Option[(Int, List[Int])]",
+  "desc": "coins holds positive coin values (unsorted, possibly repeated); each value may be used any number of times. Return (n, used): the smallest number of coins n whose values sum to amount, and the coins used, sorted from largest to smallest. If several such lists exist, return the one that is greatest when compared element by element from the front (the one whose first differing element is larger). amount 0 gives (0, []). Return nothing if amount is negative or cannot be made.",
+  "examples": [
+    {
+      "args": [
+        [
+          1,
+          2,
+          5
+        ],
+        11
+      ],
+      "expected": [
+        3,
+        [
+          5,
+          5,
+          1
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          2
+        ],
+        3
+      ],
+      "expected": null
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

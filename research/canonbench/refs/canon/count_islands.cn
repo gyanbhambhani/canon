@@ -1,0 +1,41 @@
+fn key(r: Int, c: Int) -> Int {
+  return r * 1000 + c
+}
+
+fn count_islands(grid: List[String]) -> (Int, Int) {
+  var cells = []
+  for rp in enumerate(grid) {
+    for cp in enumerate(split(rp.1, "")) {
+      if cp.1 == "#" {
+        cells = append(cells, (rp.0, cp.0))
+      }
+    }
+  }
+  var seen = map_from(map(cells, |p| (key(p.0, p.1), false)))
+  var count = 0
+  var largest = 0
+  for start in cells {
+    if map_get(seen, key(start.0, start.1)) == Some(false) {
+      count = count + 1
+      seen = map_set(seen, key(start.0, start.1), true)
+      var stack = [start]
+      var size = 0
+      while len(stack) > 0 {
+        let top = unwrap_or(last(stack), start)
+        stack = take(stack, len(stack) - 1)
+        size = size + 1
+        let vertical = [(top.0 + 1, top.1), (top.0 - 1, top.1)]
+        let around = append(append(vertical, (top.0, top.1 + 1)), (top.0, top.1 - 1))
+        for nb in around {
+          let k = key(nb.0, nb.1)
+          if nb.0 >= 0 && nb.1 >= 0 && map_get(seen, k) == Some(false) {
+            seen = map_set(seen, k, true)
+            stack = append(stack, nb)
+          }
+        }
+      }
+      largest = max(largest, size)
+    }
+  }
+  return (count, largest)
+}

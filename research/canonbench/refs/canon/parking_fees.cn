@@ -1,0 +1,52 @@
+type Park =
+  | Arrive(plate: String, minute: Int)
+  | Leave(plate: String, minute: Int)
+
+fn fee(d: Int) -> Int {
+  if d <= 30 {
+    return 0
+  }
+  return min(1000, 200 * ((d - 30 + 59) / 60))
+}
+
+fn lookup(xs: List[(String, Int)], plate: String) -> Option[Int] {
+  return xs
+    |> filter(|p| p.0 == plate)
+    |> map(|p| p.1)
+    |> first()
+}
+
+fn parking_fees(events: List[Park]) -> List[(String, Int)] {
+  var parked = []
+  var totals = []
+  for e in events {
+    let info = match e {
+      Arrive(p, m) => (true, p, m),
+      Leave(p, m) => (false, p, m),
+    }
+    let plate = info.1
+    let start = lookup(parked, plate)
+    if info.0 {
+      if start == None {
+        parked = append(parked, (plate, info.2))
+      }
+    } else if start != None {
+      parked = filter(parked, |p| p.0 != plate)
+      let cost = fee(info.2 - unwrap_or(start, 0))
+      let before = lookup(totals, plate)
+      if before == None {
+        totals = append(totals, (plate, cost))
+      } else {
+        totals = map(totals, |t| (t.0, t.1 + bump(t.0 == plate, cost)))
+      }
+    }
+  }
+  return sort_by(totals, |t| t.0)
+}
+
+fn bump(yes: Bool, n: Int) -> Int {
+  if yes {
+    return n
+  }
+  return 0
+}

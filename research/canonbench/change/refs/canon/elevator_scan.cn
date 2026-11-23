@@ -1,0 +1,24 @@
+fn elevator_scan(start: Int, requests: List[Int], direction: String) -> List[Int] {
+  let floors = map(group_by(requests, |f| f), |g| g.0)
+  let above = sort_by(filter(floors, |f| f > start), |f| f)
+  let below = sort_desc_by(filter(floors, |f| f < start), |f| f)
+  var out = filter(floors, |f| f == start)
+  var rest = below
+  let up_gap = unwrap_or(first(above), start) - start
+  let down_gap = start - unwrap_or(first(below), start)
+  let nearest_up = len(below) == 0 || len(above) > 0 && up_gap <= down_gap
+  if direction == "up" || direction == "nearest" && nearest_up {
+    for f in above {
+      out = append(out, f)
+    }
+  } else {
+    rest = above
+    for f in below {
+      out = append(out, f)
+    }
+  }
+  for f in rest {
+    out = append(out, f)
+  }
+  return out
+}

@@ -1,0 +1,35 @@
+{
+  "id": "rle_compress",
+  "source": "exp1-hard",
+  "fn": "rle_compress",
+  "params": [
+    [
+      "s",
+      "String"
+    ]
+  ],
+  "ret": "String",
+  "desc": "Run-length encode s: replace each maximal run of one repeated character by that character, followed by the run's length written in decimal only when the run is 2 or longer (\"aaabcc\" becomes \"a3bc2\"). If the encoded string is not strictly shorter than s, return s unchanged.",
+  "examples": [
+    {
+      "args": [
+        "aaabcc"
+      ],
+      "expected": "a3bc2"
+    },
+    {
+      "args": [
+        ""
+      ],
+      "expected": ""
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

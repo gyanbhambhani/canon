@@ -1,0 +1,66 @@
+type Contact {
+  name: String,
+  email: String,
+  phone: String,
+}
+
+fn digits(s: String) -> String {
+  return s
+    |> split("")
+    |> filter(|c| c >= "0" && c <= "9")
+    |> join("")
+}
+
+fn linked(a: Contact, b: Contact) -> Bool {
+  let ea = trim(a.email)
+  let pa = digits(a.phone)
+  return ea != "" && ea == trim(b.email) || pa != "" && pa == digits(b.phone)
+}
+
+fn at(xs: List[Int], i: Int) -> Int {
+  return xs
+    |> drop(i)
+    |> first()
+    |> unwrap_or(0)
+}
+
+fn lower(m: Int, c: Contact, q: (Int, Contact), labels: List[Int]) -> Int {
+  if linked(c, q.1) {
+    return min(m, at(labels, q.0))
+  }
+  return m
+}
+
+fn or_else(a: String, b: String) -> String {
+  if a == "" {
+    return b
+  }
+  return a
+}
+
+fn fill(a: Contact, c: Contact) -> Contact {
+  let name = or_else(a.name, c.name)
+  let email = or_else(a.email, c.email)
+  return Contact { name: name, email: email, phone: or_else(a.phone, c.phone) }
+}
+
+fn combine(cs: List[Contact]) -> Contact {
+  let base = unwrap_or(first(cs), Contact { name: "", email: "", phone: "" })
+  return fold(drop(cs, 1), base, |a, c| fill(a, c))
+}
+
+fn merge_contacts(contacts: List[Contact]) -> List[Contact] {
+  let idx = enumerate(contacts)
+  var labels = range(0, len(contacts))
+  var changed = true
+  while changed {
+    let cur = labels
+    let next = map(idx, |p| fold(idx, at(cur, p.0), |m, q| lower(m, p.1, q, cur)))
+    changed = next != cur
+    labels = next
+  }
+  return labels
+    |> zip(contacts)
+    |> group_by(|p| p.0)
+    |> map(|g| combine(map(g.1, |p| p.1)))
+}

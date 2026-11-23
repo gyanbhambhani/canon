@@ -1,0 +1,439 @@
+{
+ "id": "order_states",
+ "cases": [
+  {
+   "args": [
+    [
+     {
+      "kind": "Create",
+      "id": "a"
+     },
+     {
+      "kind": "Pay",
+      "id": "a"
+     },
+     {
+      "kind": "Refund",
+      "id": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "a",
+      "refunded"
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Create",
+      "id": "a"
+     },
+     {
+      "kind": "Pay",
+      "id": "a"
+     },
+     {
+      "kind": "Ship",
+      "id": "a"
+     },
+     {
+      "kind": "Refund",
+      "id": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "a",
+      "refunded"
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Create",
+      "id": "a"
+     },
+     {
+      "kind": "Refund",
+      "id": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "cannot refund a from created"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Create",
+      "id": "a"
+     },
+     {
+      "kind": "Pay",
+      "id": "a"
+     },
+     {
+      "kind": "Refund",
+      "id": "a"
+     },
+     {
+      "kind": "Ship",
+      "id": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "cannot ship a from refunded"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Create",
+      "id": "a"
+     },
+     {
+      "kind": "Pay",
+      "id": "a"
+     },
+     {
+      "kind": "Refund",
+      "id": "a"
+     },
+     {
+      "kind": "Refund",
+      "id": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "cannot refund a from refunded"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Refund",
+      "id": "x"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unknown order: x"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Create",
+      "id": "b"
+     },
+     {
+      "kind": "Create",
+      "id": "a"
+     },
+     {
+      "kind": "Pay",
+      "id": "b"
+     },
+     {
+      "kind": "Refund",
+      "id": "b"
+     },
+     {
+      "kind": "Cancel",
+      "id": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "a",
+      "cancelled"
+     ],
+     [
+      "b",
+      "refunded"
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Create",
+      "id": "a"
+     },
+     {
+      "kind": "Cancel",
+      "id": "a"
+     },
+     {
+      "kind": "Refund",
+      "id": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "cannot refund a from cancelled"
+   }
+  }
+ ],
+ "regression": [
+  {
+   "args": [
+    [
+     {
+      "kind": "Create",
+      "id": "a"
+     },
+     {
+      "kind": "Pay",
+      "id": "a"
+     },
+     {
+      "kind": "Ship",
+      "id": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "a",
+      "shipped"
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Create",
+      "id": "b"
+     },
+     {
+      "kind": "Create",
+      "id": "a"
+     },
+     {
+      "kind": "Cancel",
+      "id": "b"
+     },
+     {
+      "kind": "Pay",
+      "id": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "a",
+      "paid"
+     ],
+     [
+      "b",
+      "cancelled"
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Create",
+      "id": "B"
+     },
+     {
+      "kind": "Create",
+      "id": "a"
+     },
+     {
+      "kind": "Create",
+      "id": "A9"
+     },
+     {
+      "kind": "Create",
+      "id": "A10"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "A10",
+      "created"
+     ],
+     [
+      "A9",
+      "created"
+     ],
+     [
+      "B",
+      "created"
+     ],
+     [
+      "a",
+      "created"
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Pay",
+      "id": "x"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unknown order: x"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Create",
+      "id": "a"
+     },
+     {
+      "kind": "Create",
+      "id": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "duplicate order: a"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Create",
+      "id": "a"
+     },
+     {
+      "kind": "Ship",
+      "id": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "cannot ship a from created"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Create",
+      "id": "a"
+     },
+     {
+      "kind": "Pay",
+      "id": "a"
+     },
+     {
+      "kind": "Ship",
+      "id": "a"
+     },
+     {
+      "kind": "Cancel",
+      "id": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "cannot cancel a from shipped"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Create",
+      "id": "a"
+     },
+     {
+      "kind": "Cancel",
+      "id": "a"
+     },
+     {
+      "kind": "Pay",
+      "id": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "cannot pay a from cancelled"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Create",
+      "id": "a"
+     },
+     {
+      "kind": "Pay",
+      "id": "a"
+     },
+     {
+      "kind": "Pay",
+      "id": "a"
+     },
+     {
+      "kind": "Pay",
+      "id": "zz"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "cannot pay a from paid"
+   }
+  }
+ ]
+}

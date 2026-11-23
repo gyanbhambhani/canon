@@ -1,0 +1,25 @@
+{
+  "functions": {
+    "parse_samples": [],
+    "summarize": [],
+    "encode_summary": [],
+    "read_samples": ["fs"],
+    "should_sample": ["rand"],
+    "push_summary": ["fs", "net", "time"],
+    "maybe_push": ["fs", "net", "rand", "time"]
+  },
+  "drive": [
+    { "fn": "parse_samples", "args": ["1\n x \n 3"] },
+    { "fn": "summarize", "args": [[4, 9, 2]] },
+    { "fn": "summarize", "args": [[]] },
+    { "fn": "encode_summary", "args": ["latency", 3, 15, 9, 1700000000000] },
+    { "fn": "read_samples", "args": ["/var/spool/metrics/latency"] },
+    { "fn": "read_samples", "args": ["/var/spool/metrics/none"] },
+    { "fn": "should_sample", "args": [50] },
+    { "fn": "push_summary", "args": ["https://metrics.example.com/push", "latency", "/var/spool/metrics/latency"] },
+    { "fn": "push_summary", "args": ["https://metrics.example.com/push", "latency", "/var/spool/metrics/empty"] },
+    { "fn": "push_summary", "args": ["https://metrics.example.com/down", "latency", "/var/spool/metrics/latency"] },
+    { "fn": "maybe_push", "args": ["https://metrics.example.com/push", "latency", "/var/spool/metrics/latency", 100] },
+    { "fn": "maybe_push", "args": ["https://metrics.example.com/push", "latency", "/var/spool/metrics/latency", 0] }
+  ]
+}

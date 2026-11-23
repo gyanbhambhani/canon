@@ -1,0 +1,65 @@
+fn parse_line(line: String) -> Option[(String, String)] {
+  let parts = split(line, "=")
+  if len(parts) != 2 {
+    return None
+  }
+  let key = parts
+    |> first()
+    |> unwrap_or("")
+    |> trim()
+  let value = parts
+    |> last()
+    |> unwrap_or("")
+    |> trim()
+  return Some((key, value))
+}
+
+fn parse_config(text: String) -> Map[String, String] {
+  var settings = map_from([])
+  for line in split(text, "\n") {
+    settings = match parse_line(line) {
+      Some((k, v)) => map_set(settings, k, v),
+      None => settings,
+    }
+  }
+  return settings
+}
+
+fn fetch_from_cache(cache: Map[String, String], key: String) -> Option[String] {
+  return map_get(cache, key)
+}
+
+fn cache_is_fresh(loaded_at: Int, now_ms: Int, ttl_ms: Int) -> Bool {
+  return now_ms - loaded_at < ttl_ms
+}
+
+fn read_config(path: String) -> Result[Map[String, String], Error]
+  effects: fs
+{
+  let text = try read_file(path)
+  return Ok(parse_config(text))
+}
+
+fn get_setting(path: String, key: String, fallback: String) -> String
+  effects: fs
+{
+  return match read_config(path) {
+    Ok(settings) => unwrap_or(fetch_from_cache(settings, key), fallback),
+    Err(_) => fallback,
+  }
+}
+
+fn needs_reload(loaded_at: Int, ttl_ms: Int) -> Bool
+  effects: time
+{
+  return !cache_is_fresh(loaded_at, now(), ttl_ms)
+}
+
+fn reload_if_stale(path: String, key: String, loaded_at: Int, ttl_ms: Int) -> Option[String]
+  effects: fs, time
+{
+  if needs_reload(loaded_at, ttl_ms) {
+    return Some(get_setting(path, key, ""))
+  }
+  return None
+}

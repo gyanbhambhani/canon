@@ -1,0 +1,13 @@
+{
+  "files": {
+    "/var/cache/http/https_api.example.com_rates": "1699999990000\nUSD=1.00\nEUR=0.92",
+    "/var/cache/http/https_api.example.com_old": "1600000000000\nstale body",
+    "/var/cache/http/https_api.example.com_corrupt": "not-a-time\nbody"
+  },
+  "http": {
+    "https://api.example.com/rates": ["USD=1.00\nEUR=0.93"],
+    "https://api.example.com/old": ["fresh body"],
+    "https://api.example.com/corrupt": ["repaired body"],
+    "https://api.example.com/new": ["new body"]
+  }
+}

@@ -1,0 +1,361 @@
+{
+ "id": "door_lock",
+ "cases": [
+  {
+   "args": [
+    "1",
+    [
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Reset"
+     }
+    ]
+   ],
+   "expected": "locked"
+  },
+  {
+   "args": [
+    "1",
+    [
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Reset"
+     },
+     {
+      "kind": "Digit",
+      "d": 1
+     },
+     {
+      "kind": "Enter"
+     }
+    ]
+   ],
+   "expected": "open"
+  },
+  {
+   "args": [
+    "12",
+    [
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Digit",
+      "d": 1
+     },
+     {
+      "kind": "Reset"
+     },
+     {
+      "kind": "Digit",
+      "d": 2
+     },
+     {
+      "kind": "Enter"
+     }
+    ]
+   ],
+   "expected": "locked"
+  },
+  {
+   "args": [
+    "12",
+    [
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Reset"
+     },
+     {
+      "kind": "Enter"
+     }
+    ]
+   ],
+   "expected": "blocked"
+  },
+  {
+   "args": [
+    "12",
+    [
+     {
+      "kind": "Digit",
+      "d": 1
+     },
+     {
+      "kind": "Reset"
+     },
+     {
+      "kind": "Digit",
+      "d": 2
+     },
+     {
+      "kind": "Enter"
+     }
+    ]
+   ],
+   "expected": "open"
+  },
+  {
+   "args": [
+    "12",
+    [
+     {
+      "kind": "Digit",
+      "d": 1
+     },
+     {
+      "kind": "Digit",
+      "d": 2
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Reset"
+     }
+    ]
+   ],
+   "expected": "open"
+  },
+  {
+   "args": [
+    "1",
+    [
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Reset"
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Enter"
+     }
+    ]
+   ],
+   "expected": "blocked"
+  },
+  {
+   "args": [
+    "1",
+    [
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Reset"
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Enter"
+     }
+    ]
+   ],
+   "expected": "locked"
+  }
+ ],
+ "regression": [
+  {
+   "args": [
+    "123",
+    [
+     {
+      "kind": "Digit",
+      "d": 1
+     },
+     {
+      "kind": "Digit",
+      "d": 2
+     },
+     {
+      "kind": "Digit",
+      "d": 3
+     },
+     {
+      "kind": "Enter"
+     }
+    ]
+   ],
+   "expected": "open"
+  },
+  {
+   "args": [
+    "123",
+    []
+   ],
+   "expected": "locked"
+  },
+  {
+   "args": [
+    "123",
+    [
+     {
+      "kind": "Digit",
+      "d": 9
+     },
+     {
+      "kind": "Digit",
+      "d": 1
+     },
+     {
+      "kind": "Digit",
+      "d": 2
+     },
+     {
+      "kind": "Digit",
+      "d": 3
+     },
+     {
+      "kind": "Enter"
+     }
+    ]
+   ],
+   "expected": "open"
+  },
+  {
+   "args": [
+    "123",
+    [
+     {
+      "kind": "Digit",
+      "d": 1
+     },
+     {
+      "kind": "Digit",
+      "d": 2
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Digit",
+      "d": 1
+     },
+     {
+      "kind": "Digit",
+      "d": 2
+     },
+     {
+      "kind": "Digit",
+      "d": 4
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Enter"
+     }
+    ]
+   ],
+   "expected": "blocked"
+  },
+  {
+   "args": [
+    "123",
+    [
+     {
+      "kind": "Digit",
+      "d": 1
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Digit",
+      "d": 1
+     },
+     {
+      "kind": "Digit",
+      "d": 2
+     },
+     {
+      "kind": "Digit",
+      "d": 3
+     },
+     {
+      "kind": "Enter"
+     },
+     {
+      "kind": "Digit",
+      "d": 9
+     },
+     {
+      "kind": "Enter"
+     }
+    ]
+   ],
+   "expected": "locked"
+  },
+  {
+   "args": [
+    "123",
+    [
+     {
+      "kind": "Digit",
+      "d": 1
+     },
+     {
+      "kind": "Digit",
+      "d": 2
+     },
+     {
+      "kind": "Clear"
+     },
+     {
+      "kind": "Digit",
+      "d": 3
+     },
+     {
+      "kind": "Enter"
+     }
+    ]
+   ],
+   "expected": "locked"
+  }
+ ]
+}

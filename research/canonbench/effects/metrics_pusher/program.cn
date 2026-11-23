@@ -1,0 +1,66 @@
+type Summary {
+  count: Int,
+  total: Int,
+  peak: Int,
+}
+
+fn parse_samples(text: String) -> List[Int] {
+  var samples = []
+  for line in split(text, "\n") {
+    samples = match parse_int(trim(line)) {
+      Some(n) => append(samples, n),
+      None => samples,
+    }
+  }
+  return samples
+}
+
+fn summarize(samples: List[Int]) -> Summary {
+  return Summary {
+    count: len(samples),
+    total: sum(samples),
+    peak: fold(samples, 0, |m, x| max(m, x)),
+  }
+}
+
+fn encode_summary(name: String, count: Int, total: Int, peak: Int, ts: Int) -> String {
+  return join([name, to_string(count), to_string(total), to_string(peak), to_string(ts)], " ")
+}
+
+fn read_samples(path: String) -> List[Int]
+  effects: fs
+{
+  return match read_file(path) {
+    Ok(text) => parse_samples(text),
+    Err(_) => [],
+  }
+}
+
+fn should_sample(rate_percent: Int) -> Bool
+  effects: rand
+{
+  return random() * 100.0 < to_float(rate_percent)
+}
+
+fn push_summary(url: String, name: String, path: String) -> Bool
+  effects: fs, net, time
+{
+  let s = summarize(read_samples(path))
+  if s.count == 0 {
+    return false
+  }
+  let line = encode_summary(name, s.count, s.total, s.peak, now())
+  return match http_post(url, line) {
+    Ok(_) => true,
+    Err(_) => false,
+  }
+}
+
+fn maybe_push(url: String, name: String, path: String, rate_percent: Int) -> Bool
+  effects: fs, net, rand, time
+{
+  if !should_sample(rate_percent) {
+    return false
+  }
+  return push_summary(url, name, path)
+}

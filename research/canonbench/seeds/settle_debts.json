@@ -1,0 +1,61 @@
+{
+  "id": "settle_debts",
+  "source": "exp1-hard",
+  "fn": "settle_debts",
+  "params": [
+    [
+      "expenses",
+      "List[Expense]"
+    ],
+    [
+      "people",
+      "List[String]"
+    ]
+  ],
+  "ret": "List[(String, String, Int)]",
+  "desc": "people is a non-empty list of distinct names, and every payer is one of them. The total of all expenses is shared by everyone: each person owes total / len(people) rounded down, and the remainder cents (total modulo len(people)) are owed one extra cent each by the first people in the list. A person's balance is what they paid minus what they owe. Settle with this greedy procedure: while some balance is not zero, the debtor is the person with the most negative balance and the creditor the person with the most positive balance (ties go to whoever comes first in people); the debtor pays the creditor the smaller of the debt and the credit, and both balances are updated. Return the payments in the order made, as (from, to, amount).",
+  "examples": [
+    {
+      "args": [
+        [],
+        [
+          "a",
+          "b"
+        ]
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        [
+          {
+            "payer": "a",
+            "amount_cents": 100
+          }
+        ],
+        [
+          "a",
+          "b"
+        ]
+      ],
+      "expected": [
+        [
+          "b",
+          "a",
+          50
+        ]
+      ]
+    }
+  ],
+  "decls": {
+    "canon": "type Expense {\n  payer: String,\n  amount_cents: Int,\n}",
+    "ts": "type Expense = { payer: string; amount_cents: number };"
+  },
+  "typeKinds": {
+    "Expense": "record"
+  },
+  "tags": [
+    "total",
+    "adt"
+  ]
+}

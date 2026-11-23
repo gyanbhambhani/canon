@@ -1,0 +1,59 @@
+{
+ "id": "rle_compress",
+ "cases": [
+  {
+   "args": [
+    "aaabcc"
+   ],
+   "expected": "a3bc2"
+  },
+  {
+   "args": [
+    ""
+   ],
+   "expected": ""
+  },
+  {
+   "args": [
+    "abc"
+   ],
+   "expected": "abc"
+  },
+  {
+   "args": [
+    "aabb"
+   ],
+   "expected": "aabb"
+  },
+  {
+   "args": [
+    "aab"
+   ],
+   "expected": "aab"
+  },
+  {
+   "args": [
+    "aaaaaaaaaaaa"
+   ],
+   "expected": "a12"
+  },
+  {
+   "args": [
+    "zzzzzzzzzzzaab"
+   ],
+   "expected": "z11a2b"
+  },
+  {
+   "args": [
+    "   x"
+   ],
+   "expected": " 3x"
+  },
+  {
+   "args": [
+    "aaabbbcccd"
+   ],
+   "expected": "a3b3c3d"
+  }
+ ]
+}

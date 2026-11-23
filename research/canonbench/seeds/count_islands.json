@@ -1,0 +1,43 @@
+{
+  "id": "count_islands",
+  "source": "exp1-hard",
+  "fn": "count_islands",
+  "params": [
+    [
+      "grid",
+      "List[String]"
+    ]
+  ],
+  "ret": "(Int, Int)",
+  "desc": "grid is a rectangle of rows of equal length made of \"#\" (land) and \".\" (water). An island is a maximal group of land cells connected through up, down, left and right neighbours (not diagonals). Return (number of islands, number of cells in the largest island); a grid with no land, including an empty grid, gives (0, 0).",
+  "examples": [
+    {
+      "args": [
+        []
+      ],
+      "expected": [
+        0,
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          "..."
+        ]
+      ],
+      "expected": [
+        0,
+        0
+      ]
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

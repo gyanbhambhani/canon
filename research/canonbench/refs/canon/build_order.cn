@@ -1,0 +1,34 @@
+type Job {
+  name: String,
+  deps: List[String],
+}
+
+fn all_in(xs: List[String], ys: List[String]) -> Bool {
+  return len(filter(xs, |x| !contains(ys, x))) == 0
+}
+
+fn build_order(jobs: List[Job]) -> Result[List[String], String] {
+  var seen = []
+  for j in jobs {
+    if contains(seen, j.name) {
+      return Err("duplicate job: " + j.name)
+    }
+    seen = append(seen, j.name)
+  }
+  for j in jobs {
+    for d in j.deps {
+      if !contains(seen, d) {
+        return Err("unknown dependency: " + d)
+      }
+    }
+  }
+  var done = []
+  while len(done) < len(jobs) {
+    let ready = filter(jobs, |j| !contains(done, j.name) && all_in(j.deps, done))
+    if len(ready) == 0 {
+      return Err("cycle detected")
+    }
+    done = append(done, ready |> map(|j| j.name) |> first() |> unwrap_or(""))
+  }
+  return Ok(done)
+}

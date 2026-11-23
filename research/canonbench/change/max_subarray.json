@@ -1,0 +1,18 @@
+{
+ "id": "max_subarray",
+ "requirement": "Change the tie-break between runs with the same largest sum: prefer the shortest run (fewest elements), and among equally short runs the one with the smallest start. (Previously the smallest start won, then the smallest end.)",
+ "fn": "max_subarray",
+ "params": [
+  [
+   "xs",
+   "List[Int]"
+  ]
+ ],
+ "ret": "Option[(Int, Int, Int)]",
+ "desc": "Find the non-empty contiguous run of xs with the largest sum. Return (sum, start, end), where start and end are the 0-based indices of its first and last element (end inclusive). If several runs share the largest sum, choose the shortest one (fewest elements); among equally short ones, the one with the smallest start. Return nothing if xs is empty.",
+ "decls": {
+  "canon": "",
+  "ts": ""
+ },
+ "typeKinds": {}
+}

@@ -1,0 +1,46 @@
+fn compose_id(ms: Int, worker: Int, seq: Int) -> Int {
+  return (ms - 1600000000000) * 4096 + worker * 64 + seq % 64
+}
+
+fn id_timestamp(id: Int) -> Int {
+  return id / 4096 + 1600000000000
+}
+
+fn id_worker(id: Int) -> Int {
+  return id % 4096 / 64
+}
+
+fn format_id(id: Int) -> String {
+  return "id-" + to_string(id)
+}
+
+fn new_id(worker: Int) -> Int
+  effects: rand, time
+{
+  let ms = now()
+  return compose_id(ms, worker, random_int(0, 64))
+}
+
+fn next_sequence(path: String) -> Result[Int, Error]
+  effects: fs
+{
+  let current = match read_file(path) {
+    Ok(text) => text |> trim() |> parse_int() |> unwrap_or(0),
+    Err(_) => 0,
+  }
+  try write_file(path, to_string(current + 1))
+  return Ok(current + 1)
+}
+
+fn sequential_id(path: String, worker: Int) -> Result[Int, Error]
+  effects: fs, time
+{
+  let seq = try next_sequence(path)
+  return Ok(compose_id(now(), worker, seq))
+}
+
+fn new_request_id() -> String
+  effects: rand, time
+{
+  return format_id(new_id(0))
+}

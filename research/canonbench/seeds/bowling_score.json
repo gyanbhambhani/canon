@@ -1,0 +1,75 @@
+{
+  "id": "bowling_score",
+  "source": "exp1-hard",
+  "fn": "bowling_score",
+  "params": [
+    [
+      "rolls",
+      "List[Int]"
+    ]
+  ],
+  "ret": "Result[Int, String]",
+  "desc": "rolls is the number of pins knocked down by each roll of one ten-pin bowling game. First, if any roll is below 0 or above 10, return the error \"invalid roll\". Then read frames in order. In frames 1 to 9, a 10 on the first roll is a strike and ends the frame; otherwise the frame has two rolls, and if they sum to more than 10 return \"too many pins in frame N\" (N is the frame number). In frame 10: after a strike come two bonus rolls, and unless the first bonus roll is 10, the two bonus rolls may not sum to more than 10; otherwise the frame has two rolls that may not sum to more than 10, plus one bonus roll if they sum to exactly 10 (a spare). A frame-10 violation is \"too many pins in frame 10\". If the rolls run out before the game is complete, return \"incomplete game\"; if rolls are left over after frame 10, return \"too many rolls\". The first problem met while reading left to right wins. Otherwise return the score: each frame scores its pins, plus the next two rolls after a strike, plus the next roll after a spare, in frames 1 to 9; frame 10 scores just the pins of all its rolls.",
+  "examples": [
+    {
+      "args": [
+        [
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10,
+          10
+        ]
+      ],
+      "expected": {
+        "ok": true,
+        "value": 300
+      }
+    },
+    {
+      "args": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "expected": {
+        "ok": true,
+        "value": 0
+      }
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {},
+  "tags": [
+    "result"
+  ]
+}

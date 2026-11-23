@@ -1,0 +1,200 @@
+{
+ "id": "age_histogram",
+ "cases": [
+  {
+   "args": [
+    [],
+    10
+   ],
+   "expected": {
+    "ok": true,
+    "value": []
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "age": 5
+     }
+    ],
+    0
+   ],
+   "expected": {
+    "ok": false,
+    "error": "bad width"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "age": -1
+     }
+    ],
+    0
+   ],
+   "expected": {
+    "ok": false,
+    "error": "bad width"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "age": 3
+     },
+     {
+      "name": "b",
+      "age": -2
+     },
+     {
+      "name": "c",
+      "age": -5
+     }
+    ],
+    10
+   ],
+   "expected": {
+    "ok": false,
+    "error": "negative age: b"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "age": 5
+     },
+     {
+      "name": "b",
+      "age": 31
+     },
+     {
+      "name": "c",
+      "age": 9
+     }
+    ],
+    10
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "0-9",
+      2
+     ],
+     [
+      "10-19",
+      0
+     ],
+     [
+      "20-29",
+      0
+     ],
+     [
+      "30-39",
+      1
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "age": 47
+     },
+     {
+      "name": "b",
+      "age": 40
+     }
+    ],
+    5
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "40-44",
+      1
+     ],
+     [
+      "45-49",
+      1
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "age": 2
+     },
+     {
+      "name": "b",
+      "age": 4
+     },
+     {
+      "name": "c",
+      "age": 2
+     }
+    ],
+    1
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "2-2",
+      2
+     ],
+     [
+      "3-3",
+      0
+     ],
+     [
+      "4-4",
+      1
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "age": 0
+     },
+     {
+      "name": "b",
+      "age": 10
+     }
+    ],
+    10
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "0-9",
+      1
+     ],
+     [
+      "10-19",
+      1
+     ]
+    ]
+   }
+  }
+ ]
+}

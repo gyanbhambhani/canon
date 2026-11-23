@@ -1,0 +1,30 @@
+fn all_digits(cs: List[String]) -> Bool {
+  return len(filter(cs, |c| c >= "0" && c <= "9")) == len(cs)
+}
+
+fn part_ok(p: String) -> Bool {
+  let cs = split(p, "")
+  let n = len(cs)
+  if n < 1 || n > 3 || !all_digits(cs) {
+    return false
+  }
+  if n > 1 && unwrap_or(first(cs), "") == "0" {
+    return false
+  }
+  return unwrap_or(parse_int(p), 256) <= 255
+}
+
+fn parse_ipv4(s: String) -> Result[Int, String] {
+  let parts = split(s, ".")
+  if len(parts) != 4 {
+    return Err("expected 4 parts")
+  }
+  var total = 0
+  for p in parts {
+    if !part_ok(p) {
+      return Err("bad part: " + p)
+    }
+    total = total * 256 + unwrap_or(parse_int(p), 0)
+  }
+  return Ok(total)
+}

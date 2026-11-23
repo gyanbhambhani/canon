@@ -1,0 +1,24 @@
+{
+  "id": "robot_walk",
+  "requirement": "Add a Backward(k) command (k >= 0): the robot moves up to k cells one at a time in the direction opposite to the one it faces, without turning. It obeys the same obstacle rule as Forward: if the next cell is an obstacle it stays where it is and ignores the rest of that command.",
+  "fn": "robot_walk",
+  "params": [
+    [
+      "cmds",
+      "List[Cmd]"
+    ],
+    [
+      "obstacles",
+      "List[(Int, Int)]"
+    ]
+  ],
+  "ret": "(Int, Int, String)",
+  "desc": "A robot starts at (0, 0) facing \"N\" on a grid where N is +y, E is +x, S is -y and W is -x. TurnLeft and TurnRight turn it 90 degrees (N, TurnRight gives E). Forward(k) (k >= 0) moves it one cell at a time, up to k cells, in the direction it faces; Backward(k) (k >= 0) does the same in the opposite direction (facing N it moves toward -y) without changing the direction it faces. For both, if the next cell is in obstacles, it stays where it is and ignores the rest of that command (later commands still run). Return the final (x, y, direction), with direction one of \"N\", \"E\", \"S\", \"W\".",
+  "decls": {
+    "canon": "type Cmd =\n  | Forward(steps: Int)\n  | Backward(steps: Int)\n  | TurnLeft\n  | TurnRight",
+    "ts": "type Cmd = { kind: \"Forward\"; steps: number } | { kind: \"Backward\"; steps: number } | { kind: \"TurnLeft\" } | { kind: \"TurnRight\" };"
+  },
+  "typeKinds": {
+    "Cmd": "sum"
+  }
+}

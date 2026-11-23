@@ -1,0 +1,23 @@
+type Sale {
+  region: String,
+  product: String,
+  units: Int,
+  price_cents: Int,
+}
+
+fn best(region: String, sales: List[Sale]) -> (String, String, Int) {
+  let totals = sales
+    |> group_by(|s| s.product)
+    |> map(|g| (g.0, sum(map(g.1, |s| s.units * s.price_cents))))
+    |> sort_by(|p| p.0)
+    |> sort_desc_by(|p| p.1)
+  let top = unwrap_or(first(totals), ("", 0))
+  return (region, top.0, top.1)
+}
+
+fn top_product_per_region(sales: List[Sale]) -> List[(String, String, Int)] {
+  return sales
+    |> group_by(|s| s.region)
+    |> sort_by(|g| g.0)
+    |> map(|g| best(g.0, g.1))
+}

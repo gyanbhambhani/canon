@@ -1,0 +1,8 @@
+{
+  "files": {},
+  "http": {
+    "https://quotes.example.com/v1/price?symbol=ACME": ["101.25\n"],
+    "https://quotes.example.com/v1/price?symbol=FLAKY": [{ "error": "timed out" }, { "error": "timed out" }, "42.5"],
+    "https://quotes.example.com/v1/price?symbol=BAD": ["N/A"]
+  }
+}

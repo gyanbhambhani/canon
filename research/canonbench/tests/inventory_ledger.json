@@ -1,0 +1,225 @@
+{
+ "id": "inventory_ledger",
+ "cases": [
+  {
+   "args": [
+    [],
+    []
+   ],
+   "expected": {
+    "ok": true,
+    "value": []
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "b",
+      "qty": 5
+     },
+     {
+      "sku": "a",
+      "qty": 2
+     }
+    ],
+    []
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "sku": "a",
+      "qty": 2
+     },
+     {
+      "sku": "b",
+      "qty": 5
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "a",
+      "qty": 5
+     }
+    ],
+    [
+     {
+      "sku": "a",
+      "delta": -5
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": []
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "a",
+      "qty": 1
+     }
+    ],
+    [
+     {
+      "sku": "a",
+      "delta": -2
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "txn 1: a would go negative"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "a",
+      "qty": 1
+     },
+     {
+      "sku": "b",
+      "qty": 0
+     }
+    ],
+    [
+     {
+      "sku": "a",
+      "delta": 3
+     },
+     {
+      "sku": "c",
+      "delta": 1
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "txn 2: unknown sku c"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "w",
+      "qty": 0
+     }
+    ],
+    [
+     {
+      "sku": "w",
+      "delta": 4
+     },
+     {
+      "sku": "w",
+      "delta": -4
+     },
+     {
+      "sku": "w",
+      "delta": 1
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "sku": "w",
+      "qty": 1
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "p",
+      "qty": 3
+     },
+     {
+      "sku": "q",
+      "qty": 1
+     }
+    ],
+    [
+     {
+      "sku": "p",
+      "delta": -1
+     },
+     {
+      "sku": "q",
+      "delta": -1
+     },
+     {
+      "sku": "p",
+      "delta": -3
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "txn 3: p would go negative"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "z",
+      "qty": 0
+     },
+     {
+      "sku": "m",
+      "qty": 7
+     }
+    ],
+    [
+     {
+      "sku": "m",
+      "delta": -2
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "sku": "m",
+      "qty": 5
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "sku": "a",
+      "qty": 1
+     }
+    ],
+    [
+     {
+      "sku": "b",
+      "delta": 0
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "txn 1: unknown sku b"
+   }
+  }
+ ]
+}

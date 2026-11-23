@@ -1,0 +1,7 @@
+{
+  "files": {},
+  "http": {
+    "https://analytics.example.com/assignments": ["ok"],
+    "https://down.example.com/assignments": [{ "error": "503 service unavailable" }]
+  }
+}

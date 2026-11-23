@@ -1,0 +1,24 @@
+{
+  "functions": {
+    "compose_id": [],
+    "id_timestamp": [],
+    "id_worker": [],
+    "format_id": [],
+    "new_id": ["rand", "time"],
+    "next_sequence": ["fs"],
+    "sequential_id": ["fs", "time"],
+    "new_request_id": ["rand", "time"]
+  },
+  "drive": [
+    { "fn": "compose_id", "args": [1700000000000, 3, 70] },
+    { "fn": "id_timestamp", "args": [409600000000195] },
+    { "fn": "id_worker", "args": [409600000000195] },
+    { "fn": "format_id", "args": [12345] },
+    { "fn": "new_id", "args": [5] },
+    { "fn": "next_sequence", "args": ["/var/lib/ids/counter"] },
+    { "fn": "next_sequence", "args": ["/var/lib/ids/corrupt"] },
+    { "fn": "next_sequence", "args": ["/var/lib/ids/fresh"] },
+    { "fn": "sequential_id", "args": ["/var/lib/ids/counter", 2] },
+    { "fn": "new_request_id", "args": [] }
+  ]
+}

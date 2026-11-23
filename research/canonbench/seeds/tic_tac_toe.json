@@ -1,0 +1,43 @@
+{
+  "id": "tic_tac_toe",
+  "source": "exp1-hard",
+  "fn": "tic_tac_toe",
+  "params": [
+    [
+      "board",
+      "List[String]"
+    ]
+  ],
+  "ret": "String",
+  "desc": "board is 3 rows of 3 characters, each \"X\", \"O\" or \".\" (empty). X moves first and players alternate. Return \"invalid\" if the position cannot arise in a legal game: the number of Xs must equal the number of Os or exceed it by exactly one; both players cannot have a line; if X has a line, X must have exactly one more mark than O; if O has a line, the counts must be equal. A line is a full row, column or diagonal of one player's marks. Otherwise return \"X wins\" or \"O wins\" if that player has a line, \"draw\" if the board is full, and \"in progress\" otherwise.",
+  "examples": [
+    {
+      "args": [
+        [
+          "...",
+          "...",
+          "..."
+        ]
+      ],
+      "expected": "in progress"
+    },
+    {
+      "args": [
+        [
+          "XXX",
+          "OO.",
+          "..."
+        ]
+      ],
+      "expected": "X wins"
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

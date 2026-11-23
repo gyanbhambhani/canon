@@ -1,0 +1,55 @@
+{
+  "id": "age_histogram",
+  "source": "exp1-hard",
+  "fn": "age_histogram",
+  "params": [
+    [
+      "people",
+      "List[Person]"
+    ],
+    [
+      "width",
+      "Int"
+    ]
+  ],
+  "ret": "Result[List[(String, Int)], String]",
+  "desc": "Count people into age buckets of the given width: bucket b holds ages b*width through b*width + width - 1 and is labelled with those two numbers joined by \"-\" (for width 10: \"0-9\", \"10-19\", ...). Checks first, in this order: if width is below 1 return the error \"bad width\"; if any age is negative return \"negative age: \" followed by the name of the first such person. Otherwise return (label, count) for every bucket from the lowest occupied bucket to the highest occupied bucket inclusive, in increasing order, including empty buckets in between with count 0. No people gives an empty list.",
+  "examples": [
+    {
+      "args": [
+        [],
+        10
+      ],
+      "expected": {
+        "ok": true,
+        "value": []
+      }
+    },
+    {
+      "args": [
+        [
+          {
+            "name": "a",
+            "age": 5
+          }
+        ],
+        0
+      ],
+      "expected": {
+        "ok": false,
+        "error": "bad width"
+      }
+    }
+  ],
+  "decls": {
+    "canon": "type Person {\n  name: String,\n  age: Int,\n}",
+    "ts": "type Person = { name: string; age: number };\ntype Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {
+    "Person": "record"
+  },
+  "tags": [
+    "result",
+    "adt"
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "id": "sliding_window_max",
+  "source": "exp1-hard",
+  "fn": "sliding_window_max",
+  "params": [
+    [
+      "xs",
+      "List[Int]"
+    ],
+    [
+      "k",
+      "Int"
+    ]
+  ],
+  "ret": "Result[List[Int], String]",
+  "desc": "Return the maximum of every window of k consecutive elements of xs, in order from the window starting at index 0 (there are len(xs) - k + 1 windows). Errors, checked in this order: \"window must be positive\" if k < 1; \"window larger than input\" if k is greater than the length of xs (so an empty xs with k >= 1 is this error).",
+  "examples": [
+    {
+      "args": [
+        [
+          1,
+          3,
+          -1,
+          -3,
+          5,
+          3,
+          6,
+          7
+        ],
+        3
+      ],
+      "expected": {
+        "ok": true,
+        "value": [
+          3,
+          3,
+          5,
+          5,
+          6,
+          7
+        ]
+      }
+    },
+    {
+      "args": [
+        [
+          4
+        ],
+        1
+      ],
+      "expected": {
+        "ok": true,
+        "value": [
+          4
+        ]
+      }
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {},
+  "tags": [
+    "result"
+  ]
+}

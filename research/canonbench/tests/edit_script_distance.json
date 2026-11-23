@@ -1,0 +1,68 @@
+{
+ "id": "edit_script_distance",
+ "cases": [
+  {
+   "args": [
+    "",
+    ""
+   ],
+   "expected": 0
+  },
+  {
+   "args": [
+    "abc",
+    ""
+   ],
+   "expected": 3
+  },
+  {
+   "args": [
+    "",
+    "ab"
+   ],
+   "expected": 2
+  },
+  {
+   "args": [
+    "ab",
+    "ba"
+   ],
+   "expected": 1
+  },
+  {
+   "args": [
+    "kitten",
+    "sitting"
+   ],
+   "expected": 3
+  },
+  {
+   "args": [
+    "ca",
+    "abc"
+   ],
+   "expected": 3
+  },
+  {
+   "args": [
+    "abcd",
+    "acbd"
+   ],
+   "expected": 1
+  },
+  {
+   "args": [
+    "abc",
+    "abc"
+   ],
+   "expected": 0
+  },
+  {
+   "args": [
+    "abcdef",
+    "badcfe"
+   ],
+   "expected": 3
+  }
+ ]
+}

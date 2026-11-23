@@ -1,0 +1,35 @@
+{
+  "id": "pig_latin",
+  "source": "exp1-hard",
+  "fn": "pig_latin",
+  "params": [
+    [
+      "s",
+      "String"
+    ]
+  ],
+  "ret": "String",
+  "desc": "s holds lowercase words separated by single spaces (s may be \"\", giving \"\"). Translate each word and rejoin with single spaces. The letters a, e, i, o and u are vowels, with two exceptions: a \"u\" directly after a \"q\" is not a vowel, and \"y\" is a vowel except when it is the first letter of the word. If the word starts with a vowel, append \"way\". Otherwise move the letters before the first vowel to the end of the word and append \"ay\". If the word has no vowel at all, just append \"ay\".",
+  "examples": [
+    {
+      "args": [
+        "the quick brown fox"
+      ],
+      "expected": "ethay ickquay ownbray oxfay"
+    },
+    {
+      "args": [
+        "yellow rhythm my"
+      ],
+      "expected": "ellowyay ythmrhay ymay"
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

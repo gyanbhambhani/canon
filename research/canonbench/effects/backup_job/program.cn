@@ -1,0 +1,57 @@
+fn base_name(path: String) -> String {
+  return path
+    |> split("/")
+    |> last()
+    |> unwrap_or(path)
+}
+
+fn backup_name(path: String, dir: String, ms: Int) -> String {
+  return dir + "/" + base_name(path) + ".bak." + to_string(ms)
+}
+
+fn fingerprint(text: String) -> Int {
+  return str_len(text) * 31 + len(split(text, "\n"))
+}
+
+fn copy_file(src: String, dst: String) -> Result[Int, Error]
+  effects: fs
+{
+  let text = try read_file(src)
+  try write_file(dst, text)
+  return Ok(fingerprint(text))
+}
+
+fn backup_file(src: String, dir: String) -> Result[String, Error]
+  effects: fs, time
+{
+  let target = backup_name(src, dir, now())
+  try copy_file(src, target)
+  return Ok(target)
+}
+
+fn upload_backup(path: String, url: String) -> Result[String, Error]
+  effects: fs, net
+{
+  let text = try read_file(path)
+  let receipt = try http_post(url + "?name=" + base_name(path), text)
+  return Ok(trim(receipt))
+}
+
+fn verify_copy(src: String, dst: String) -> Bool
+  effects: fs
+{
+  return match (read_file(src), read_file(dst)) {
+    (Ok(a), Ok(b)) => fingerprint(a) == fingerprint(b),
+    _ => false,
+  }
+}
+
+fn run_backup(src: String, dir: String, url: String) -> Result[String, Error]
+  effects: fs, net, time
+{
+  let target = try backup_file(src, dir)
+  if !verify_copy(src, target) {
+    return Err(Error { message: "backup does not match " + src })
+  }
+  return upload_backup(target, url)
+}

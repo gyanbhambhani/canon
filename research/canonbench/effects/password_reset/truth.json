@@ -1,0 +1,25 @@
+{
+  "functions": {
+    "reset_code": ["rand"],
+    "reset_link": [],
+    "expires_at": [],
+    "code_valid": [],
+    "email_body": [],
+    "send_email": ["net"],
+    "start_reset": ["net", "rand", "time"],
+    "is_reset_valid": ["time"]
+  },
+  "drive": [
+    { "fn": "reset_code", "args": [] },
+    { "fn": "reset_link", "args": ["https://app.example.com", "ada", "123456"] },
+    { "fn": "expires_at", "args": [1700000000000, 30] },
+    { "fn": "code_valid", "args": [1700000000000, 30, 1700000600000] },
+    { "fn": "email_body", "args": ["ada", "https://app.example.com/reset?user=ada&code=1"] },
+    { "fn": "send_email", "args": ["https://mail.example.com", "to=ada"] },
+    { "fn": "send_email", "args": ["https://mail.down.example.com", "to=ada"] },
+    { "fn": "start_reset", "args": ["https://mail.example.com", "https://app.example.com", "ada"] },
+    { "fn": "start_reset", "args": ["https://mail.down.example.com", "https://app.example.com", "ada"] },
+    { "fn": "is_reset_valid", "args": [1699999000000, 30] },
+    { "fn": "is_reset_valid", "args": [1600000000000, 30] }
+  ]
+}

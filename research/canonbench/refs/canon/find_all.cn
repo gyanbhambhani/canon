@@ -1,0 +1,9 @@
+fn find_all(s: String, pat: String) -> List[Int] {
+  if pat == "" {
+    return []
+  }
+  let cs = split(s, "")
+  let ps = split(pat, "")
+  let m = len(ps)
+  return filter(range(0, len(cs) - m + 1), |i| take(drop(cs, i), m) == ps)
+}

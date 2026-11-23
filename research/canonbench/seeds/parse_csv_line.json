@@ -1,0 +1,47 @@
+{
+  "id": "parse_csv_line",
+  "source": "exp1-hard",
+  "fn": "parse_csv_line",
+  "params": [
+    [
+      "s",
+      "String"
+    ]
+  ],
+  "ret": "Result[List[String], String]",
+  "desc": "Split one CSV line into fields separated by commas. A field that begins with a double quote is quoted: it runs to the matching closing double quote, may contain commas, and inside it two double quotes in a row stand for one double quote character; the quotes around it are not part of the value. Any other field is unquoted: its value is all its characters up to the next comma or the end (spaces kept). The empty string is one empty field, and a trailing comma gives a final empty field. Errors (positions are 0-based indexes into s; report the first error from the left): \"unexpected quote at N\" for a double quote inside an unquoted field (anywhere but its first character); \"expected comma at N\" for any character other than a comma right after a quoted field's closing quote; \"unterminated quote\" if a quoted field has no closing quote.",
+  "examples": [
+    {
+      "args": [
+        "a,b,c"
+      ],
+      "expected": {
+        "ok": true,
+        "value": [
+          "a",
+          "b",
+          "c"
+        ]
+      }
+    },
+    {
+      "args": [
+        ""
+      ],
+      "expected": {
+        "ok": true,
+        "value": [
+          ""
+        ]
+      }
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {},
+  "tags": [
+    "result"
+  ]
+}

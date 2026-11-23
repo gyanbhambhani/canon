@@ -1,0 +1,43 @@
+{
+  "id": "lis_length",
+  "source": "exp1-hard",
+  "fn": "lis_length",
+  "params": [
+    [
+      "xs",
+      "List[Int]"
+    ]
+  ],
+  "ret": "(Int, Int)",
+  "desc": "Return (length, count) for the longest strictly increasing subsequences of xs. A subsequence is a choice of positions i1 < i2 < ... with xs[i1] < xs[i2] < ...; length is the largest possible number of positions, and count is how many different choices of positions reach that length (equal values at different positions count as different choices). An empty xs gives (0, 0).",
+  "examples": [
+    {
+      "args": [
+        []
+      ],
+      "expected": [
+        0,
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          7
+        ]
+      ],
+      "expected": [
+        1,
+        1
+      ]
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

@@ -1,0 +1,404 @@
+{
+ "id": "bank_ledger",
+ "cases": [
+  {
+   "args": [
+    [
+     {
+      "kind": "Open",
+      "name": "a"
+     },
+     {
+      "kind": "Open",
+      "name": "b"
+     },
+     {
+      "kind": "Close",
+      "name": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "b",
+      0
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Close",
+      "name": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "step 1: unknown account a"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Open",
+      "name": "a"
+     },
+     {
+      "kind": "Deposit",
+      "name": "a",
+      "amount": 5
+     },
+     {
+      "kind": "Close",
+      "name": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "step 3: account a not empty"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Open",
+      "name": "a"
+     },
+     {
+      "kind": "Deposit",
+      "name": "a",
+      "amount": 5
+     },
+     {
+      "kind": "Withdraw",
+      "name": "a",
+      "amount": 5
+     },
+     {
+      "kind": "Close",
+      "name": "a"
+     },
+     {
+      "kind": "Deposit",
+      "name": "a",
+      "amount": 1
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "step 5: unknown account a"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Open",
+      "name": "a"
+     },
+     {
+      "kind": "Open",
+      "name": "b"
+     },
+     {
+      "kind": "Close",
+      "name": "a"
+     },
+     {
+      "kind": "Open",
+      "name": "a"
+     },
+     {
+      "kind": "Deposit",
+      "name": "a",
+      "amount": 3
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "b",
+      0
+     ],
+     [
+      "a",
+      3
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Open",
+      "name": "a"
+     },
+     {
+      "kind": "Open",
+      "name": "b"
+     },
+     {
+      "kind": "Deposit",
+      "name": "a",
+      "amount": 10
+     },
+     {
+      "kind": "Transfer",
+      "src": "a",
+      "dst": "b",
+      "amount": 10
+     },
+     {
+      "kind": "Close",
+      "name": "a"
+     },
+     {
+      "kind": "Transfer",
+      "src": "b",
+      "dst": "a",
+      "amount": 1
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "step 6: unknown account a"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Open",
+      "name": "a"
+     },
+     {
+      "kind": "Close",
+      "name": "a"
+     },
+     {
+      "kind": "Close",
+      "name": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "step 3: unknown account a"
+   }
+  }
+ ],
+ "regression": [
+  {
+   "args": [
+    [
+     {
+      "kind": "Open",
+      "name": "a"
+     },
+     {
+      "kind": "Deposit",
+      "name": "a",
+      "amount": 100
+     },
+     {
+      "kind": "Withdraw",
+      "name": "a",
+      "amount": 30
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "a",
+      70
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    []
+   ],
+   "expected": {
+    "ok": true,
+    "value": []
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Open",
+      "name": "a"
+     },
+     {
+      "kind": "Open",
+      "name": "b"
+     },
+     {
+      "kind": "Deposit",
+      "name": "a",
+      "amount": 50
+     },
+     {
+      "kind": "Transfer",
+      "src": "a",
+      "dst": "b",
+      "amount": 20
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "a",
+      30
+     ],
+     [
+      "b",
+      20
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Open",
+      "name": "b"
+     },
+     {
+      "kind": "Open",
+      "name": "a"
+     },
+     {
+      "kind": "Deposit",
+      "name": "a",
+      "amount": 10
+     },
+     {
+      "kind": "Transfer",
+      "src": "a",
+      "dst": "b",
+      "amount": 10
+     },
+     {
+      "kind": "Withdraw",
+      "name": "b",
+      "amount": 10
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "b",
+      0
+     ],
+     [
+      "a",
+      0
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Open",
+      "name": "a"
+     },
+     {
+      "kind": "Open",
+      "name": "a"
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "step 2: duplicate account a"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Open",
+      "name": "a"
+     },
+     {
+      "kind": "Deposit",
+      "name": "b",
+      "amount": 5
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "step 2: unknown account b"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Open",
+      "name": "a"
+     },
+     {
+      "kind": "Deposit",
+      "name": "a",
+      "amount": 0
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "step 2: invalid amount"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Open",
+      "name": "a"
+     },
+     {
+      "kind": "Deposit",
+      "name": "a",
+      "amount": 10
+     },
+     {
+      "kind": "Withdraw",
+      "name": "a",
+      "amount": 11
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "step 3: insufficient funds"
+   }
+  }
+ ]
+}

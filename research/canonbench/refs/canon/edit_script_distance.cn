@@ -1,0 +1,44 @@
+fn at(xs: List[Int], i: Int) -> Int {
+  return xs
+    |> drop(i)
+    |> first()
+    |> unwrap_or(0)
+}
+
+fn ch(xs: List[String], i: Int) -> String {
+  if i < 0 {
+    return ""
+  }
+  return xs
+    |> drop(i)
+    |> first()
+    |> unwrap_or("")
+}
+
+fn edit_script_distance(a: String, b: String) -> Int {
+  let ac = split(a, "")
+  let bc = split(b, "")
+  let m = len(bc)
+  var prev2 = []
+  var prev = range(0, m + 1)
+  for i in range(1, len(ac) + 1) {
+    var cur = [i]
+    for j in range(1, m + 1) {
+      let cost = match ch(ac, i - 1) == ch(bc, j - 1) {
+        true => 0,
+        false => 1,
+      }
+      let left = at(cur, j - 1)
+      var v = min(min(at(prev, j) + 1, left + 1), at(prev, j - 1) + cost)
+      let crossed = ch(ac, i - 1) == ch(bc, j - 2) && ch(ac, i - 2) == ch(bc, j - 1)
+      let swap_ok = i > 1 && j > 1 && crossed
+      if swap_ok {
+        v = min(v, at(prev2, j - 2) + 1)
+      }
+      cur = append(cur, v)
+    }
+    prev2 = prev
+    prev = cur
+  }
+  return at(prev, m)
+}

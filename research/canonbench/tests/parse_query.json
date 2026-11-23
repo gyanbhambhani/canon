@@ -1,0 +1,136 @@
+{
+ "id": "parse_query",
+ "cases": [
+  {
+   "args": [
+    "a=1&b=2"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "a",
+      "1"
+     ],
+     [
+      "b",
+      "2"
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    ""
+   ],
+   "expected": {
+    "ok": true,
+    "value": []
+   }
+  },
+  {
+   "args": [
+    "a=1&b=&c"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "a",
+      "1"
+     ],
+     [
+      "b",
+      ""
+     ],
+     [
+      "c",
+      ""
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    "&&x=1&"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "x",
+      "1"
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    "q=hello+world&x=a=b"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "q",
+      "hello world"
+     ],
+     [
+      "x",
+      "a=b"
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    "a=1&a=2"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      "a",
+      "1"
+     ],
+     [
+      "a",
+      "2"
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    "+=+"
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     [
+      " ",
+      " "
+     ]
+    ]
+   }
+  },
+  {
+   "args": [
+    "a=1&=2"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "empty key: =2"
+   }
+  },
+  {
+   "args": [
+    "k=1&=&j"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "empty key: ="
+   }
+  }
+ ]
+}

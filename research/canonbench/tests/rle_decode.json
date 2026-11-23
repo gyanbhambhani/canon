@@ -1,0 +1,86 @@
+{
+ "id": "rle_decode",
+ "cases": [
+  {
+   "args": [
+    "a3bc2"
+   ],
+   "expected": {
+    "ok": true,
+    "value": "aaabcc"
+   }
+  },
+  {
+   "args": [
+    ""
+   ],
+   "expected": {
+    "ok": true,
+    "value": ""
+   }
+  },
+  {
+   "args": [
+    "x12"
+   ],
+   "expected": {
+    "ok": true,
+    "value": "xxxxxxxxxxxx"
+   }
+  },
+  {
+   "args": [
+    "3a"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "missing character before count"
+   }
+  },
+  {
+   "args": [
+    "ab0"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "bad count for b"
+   }
+  },
+  {
+   "args": [
+    "a05"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "bad count for a"
+   }
+  },
+  {
+   "args": [
+    " 2-3"
+   ],
+   "expected": {
+    "ok": true,
+    "value": "  ---"
+   }
+  },
+  {
+   "args": [
+    "a1b1"
+   ],
+   "expected": {
+    "ok": true,
+    "value": "ab"
+   }
+  },
+  {
+   "args": [
+    "a2b03c0"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "bad count for b"
+   }
+  }
+ ]
+}

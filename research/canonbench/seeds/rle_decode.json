@@ -1,0 +1,41 @@
+{
+  "id": "rle_decode",
+  "source": "exp1-hard",
+  "fn": "rle_decode",
+  "params": [
+    [
+      "s",
+      "String"
+    ]
+  ],
+  "ret": "Result[String, String]",
+  "desc": "Decode a run-length encoded string. s is a sequence of groups; each group is one non-digit character followed by an optional count made of one or more decimal digits 0-9. A group with no count stands for its character once; otherwise for its character repeated count times. Return the decoded string (\"\" decodes to \"\"). Errors: if s starts with a digit, return \"missing character before count\"; if a count starts with the digit 0 (such as \"0\" or \"05\"), return \"bad count for X\", where X is that group's character. Report the first error from the left.",
+  "examples": [
+    {
+      "args": [
+        "a3bc2"
+      ],
+      "expected": {
+        "ok": true,
+        "value": "aaabcc"
+      }
+    },
+    {
+      "args": [
+        ""
+      ],
+      "expected": {
+        "ok": true,
+        "value": ""
+      }
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {},
+  "tags": [
+    "result"
+  ]
+}

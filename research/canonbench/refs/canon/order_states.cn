@@ -1,0 +1,67 @@
+type OrderEvent =
+  | Create(id: String)
+  | Pay(id: String)
+  | Ship(id: String)
+  | Cancel(id: String)
+
+fn verb_of(e: OrderEvent) -> (String, String) {
+  return match e {
+    Create(id) => ("create", id),
+    Pay(id) => ("pay", id),
+    Ship(id) => ("ship", id),
+    Cancel(id) => ("cancel", id),
+  }
+}
+
+fn allowed(verb: String, state: String) -> Bool {
+  let pay = verb == "pay" && state == "created"
+  let ship = verb == "ship" && state == "paid"
+  let cancel = verb == "cancel" && (state == "created" || state == "paid")
+  return pay || ship || cancel
+}
+
+fn target(verb: String) -> String {
+  return match verb {
+    "pay" => "paid",
+    "ship" => "shipped",
+    _ => "cancelled",
+  }
+}
+
+fn order_states(events: List[OrderEvent]) -> Result[List[(String, String)], String] {
+  var orders = []
+  for e in events {
+    let vi = verb_of(e)
+    let verb = vi.0
+    let id = vi.1
+    let found = find(orders, id)
+    if verb == "create" {
+      if len(found) > 0 {
+        return Err("duplicate order: " + id)
+      }
+      orders = append(orders, (id, "created"))
+    } else {
+      if len(found) == 0 {
+        return Err("unknown order: " + id)
+      }
+      let state = unwrap_or(first(found), ("", "")).1
+      if !allowed(verb, state) {
+        return Err("cannot " + verb + " " + id + " from " + state)
+      }
+      let next = target(verb)
+      orders = map(orders, |o| set_state(o, id, next))
+    }
+  }
+  return Ok(sort_by(orders, |o| o.0))
+}
+
+fn set_state(o: (String, String), id: String, state: String) -> (String, String) {
+  if o.0 == id {
+    return (id, state)
+  }
+  return o
+}
+
+fn find(orders: List[(String, String)], id: String) -> List[(String, String)] {
+  return filter(orders, |o| o.0 == id)
+}

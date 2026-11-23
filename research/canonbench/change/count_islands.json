@@ -1,0 +1,18 @@
+{
+ "id": "count_islands",
+ "requirement": "Land cells that touch only diagonally must now count as connected: an island is a maximal group of land cells connected through any of the 8 surrounding cells (up, down, left, right and the four diagonals). The return value is unchanged: (number of islands, number of cells in the largest island).",
+ "fn": "count_islands",
+ "params": [
+  [
+   "grid",
+   "List[String]"
+  ]
+ ],
+ "ret": "(Int, Int)",
+ "desc": "grid is a rectangle of rows of equal length made of \"#\" (land) and \".\" (water). An island is a maximal group of land cells connected through any of the 8 neighbouring cells (up, down, left, right and the four diagonals). Return (number of islands, number of cells in the largest island); a grid with no land, including an empty grid, gives (0, 0).",
+ "decls": {
+  "canon": "",
+  "ts": ""
+ },
+ "typeKinds": {}
+}

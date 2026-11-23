@@ -1,0 +1,18 @@
+{
+  "id": "parse_duration",
+  "requirement": "Also accept a days unit \"d\" worth 86400 seconds. It comes first in the unit order, which becomes d, h, m, s (so \"2d3h\" is valid and \"3h2d\" is \"unit out of order: d\"). Every other rule and error message is unchanged.",
+  "fn": "parse_duration",
+  "params": [
+    [
+      "s",
+      "String"
+    ]
+  ],
+  "ret": "Result[Int, String]",
+  "desc": "Parse a duration such as \"1d1h30m15s\" into a number of seconds. s is one or more components; each component is one or more decimal digits (leading zeros allowed) followed by a unit letter: d (86400 seconds), h (3600), m (60) or s (1). Units must appear in the order d, h, m, s, each at most once; any of them may be omitted. Errors: \"empty\" for the empty string. Otherwise scan s from left to right; at each character that is not a digit, check in this order: \"unknown unit: X\" if X is not d, h, m or s; \"missing number before X\" if no digits come directly before X; \"unit out of order: X\" if unit X is not later in the order d, h, m, s than every unit seen before. If s ends with digits that have no unit, return \"missing unit\". Report the first error found.",
+  "decls": {
+    "canon": "",
+    "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {}
+}

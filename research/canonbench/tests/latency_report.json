@@ -1,0 +1,380 @@
+{
+ "id": "latency_report",
+ "cases": [
+  {
+   "args": [
+    []
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     {
+      "endpoint": "/a",
+      "ms": 120,
+      "status": 200
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "/a",
+     1,
+     120,
+     0
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "endpoint": "/x",
+      "ms": 70,
+      "status": 200
+     },
+     {
+      "endpoint": "/x",
+      "ms": 10,
+      "status": 200
+     },
+     {
+      "endpoint": "/x",
+      "ms": 100,
+      "status": 500
+     },
+     {
+      "endpoint": "/x",
+      "ms": 40,
+      "status": 200
+     },
+     {
+      "endpoint": "/x",
+      "ms": 90,
+      "status": 200
+     },
+     {
+      "endpoint": "/x",
+      "ms": 20,
+      "status": 503
+     },
+     {
+      "endpoint": "/x",
+      "ms": 60,
+      "status": 200
+     },
+     {
+      "endpoint": "/x",
+      "ms": 30,
+      "status": 499
+     },
+     {
+      "endpoint": "/x",
+      "ms": 80,
+      "status": 200
+     },
+     {
+      "endpoint": "/x",
+      "ms": 50,
+      "status": 200
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "/x",
+     10,
+     90,
+     2
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "endpoint": "/y",
+      "ms": 5,
+      "status": 200
+     },
+     {
+      "endpoint": "/y",
+      "ms": 11,
+      "status": 200
+     },
+     {
+      "endpoint": "/y",
+      "ms": 2,
+      "status": 200
+     },
+     {
+      "endpoint": "/y",
+      "ms": 9,
+      "status": 200
+     },
+     {
+      "endpoint": "/y",
+      "ms": 1,
+      "status": 200
+     },
+     {
+      "endpoint": "/y",
+      "ms": 7,
+      "status": 200
+     },
+     {
+      "endpoint": "/y",
+      "ms": 3,
+      "status": 200
+     },
+     {
+      "endpoint": "/y",
+      "ms": 10,
+      "status": 200
+     },
+     {
+      "endpoint": "/y",
+      "ms": 4,
+      "status": 200
+     },
+     {
+      "endpoint": "/y",
+      "ms": 8,
+      "status": 200
+     },
+     {
+      "endpoint": "/y",
+      "ms": 6,
+      "status": 200
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "/y",
+     11,
+     10,
+     0
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "endpoint": "/b",
+      "ms": 5,
+      "status": 200
+     },
+     {
+      "endpoint": "/a",
+      "ms": 7,
+      "status": 500
+     },
+     {
+      "endpoint": "/b",
+      "ms": 9,
+      "status": 500
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "/b",
+     2,
+     9,
+     1
+    ],
+    [
+     "/a",
+     1,
+     7,
+     1
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "endpoint": "/c",
+      "ms": 30,
+      "status": 200
+     },
+     {
+      "endpoint": "/c",
+      "ms": 10,
+      "status": 599
+     },
+     {
+      "endpoint": "/c",
+      "ms": 30,
+      "status": 404
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "/c",
+     3,
+     30,
+     1
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "endpoint": "/z",
+      "ms": 20,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 19,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 18,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 17,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 16,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 15,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 14,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 13,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 12,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 11,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 10,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 9,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 8,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 7,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 6,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 5,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 4,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 3,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 2,
+      "status": 201
+     },
+     {
+      "endpoint": "/z",
+      "ms": 1,
+      "status": 201
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "/z",
+     20,
+     18,
+     0
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "endpoint": "/q",
+      "ms": 5,
+      "status": 500
+     },
+     {
+      "endpoint": "/q",
+      "ms": 1,
+      "status": 500
+     },
+     {
+      "endpoint": "/q",
+      "ms": 4,
+      "status": 500
+     },
+     {
+      "endpoint": "/q",
+      "ms": 2,
+      "status": 500
+     },
+     {
+      "endpoint": "/q",
+      "ms": 3,
+      "status": 500
+     }
+    ]
+   ],
+   "expected": [
+    [
+     "/q",
+     5,
+     5,
+     5
+    ]
+   ]
+  }
+ ]
+}

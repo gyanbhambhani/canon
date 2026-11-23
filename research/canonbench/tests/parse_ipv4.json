@@ -1,0 +1,95 @@
+{
+ "id": "parse_ipv4",
+ "cases": [
+  {
+   "args": [
+    "192.168.1.1"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 3232235777
+   }
+  },
+  {
+   "args": [
+    "0.0.0.0"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 0
+   }
+  },
+  {
+   "args": [
+    "255.255.255.255"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 4294967295
+   }
+  },
+  {
+   "args": [
+    "1.2.3"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "expected 4 parts"
+   }
+  },
+  {
+   "args": [
+    "1.2.3.4.5"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "expected 4 parts"
+   }
+  },
+  {
+   "args": [
+    "1.2..4"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "bad part: "
+   }
+  },
+  {
+   "args": [
+    "01.2.3.4"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "bad part: 01"
+   }
+  },
+  {
+   "args": [
+    "1.256.3.999"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "bad part: 256"
+   }
+  },
+  {
+   "args": [
+    "1.2.3.+4"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "bad part: +4"
+   }
+  },
+  {
+   "args": [
+    ""
+   ],
+   "expected": {
+    "ok": false,
+    "error": "expected 4 parts"
+   }
+  }
+ ]
+}

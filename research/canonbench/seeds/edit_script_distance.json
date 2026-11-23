@@ -1,0 +1,41 @@
+{
+  "id": "edit_script_distance",
+  "source": "exp1-hard",
+  "fn": "edit_script_distance",
+  "params": [
+    [
+      "a",
+      "String"
+    ],
+    [
+      "b",
+      "String"
+    ]
+  ],
+  "ret": "Int",
+  "desc": "Return the optimal string alignment distance from a to b: the fewest edits turning a into b, where an edit is inserting one character, deleting one character, replacing one character with another, or swapping two adjacent characters, each costing 1, with the restriction that no part of the string is edited more than once (so a swapped pair cannot be edited again). For example, \"ca\" to \"abc\" costs 3, not 2.",
+  "examples": [
+    {
+      "args": [
+        "",
+        ""
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        "abc",
+        ""
+      ],
+      "expected": 3
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

@@ -1,0 +1,54 @@
+fn variant_name(index: Int) -> String {
+  return match index {
+    0 => "control",
+    1 => "treatment",
+    _ => "holdout",
+  }
+}
+
+fn hash_bucket(user_id: Int, buckets: Int) -> Int {
+  return (user_id * 2654435 + 12345) % buckets
+}
+
+fn sticky_variant(user_id: Int) -> String {
+  return variant_name(hash_bucket(user_id, 3))
+}
+
+fn random_variant() -> String
+  effects: rand
+{
+  return variant_name(random_int(0, 3))
+}
+
+fn assign_variant(user_id: Int, sticky: Bool) -> String
+  effects: rand
+{
+  if sticky {
+    return sticky_variant(user_id)
+  }
+  return random_variant()
+}
+
+fn assignment_payload(experiment: String, user_id: Int, variant: String) -> String {
+  return "experiment=" + experiment + "&user=" + to_string(user_id) + "&variant=" + variant
+}
+
+fn record_assignment(api: String, experiment: String, user_id: Int, variant: String) -> Bool
+  effects: net
+{
+  let body = assignment_payload(experiment, user_id, variant)
+  return match http_post(api + "/assignments", body) {
+    Ok(_) => true,
+    Err(_) => false,
+  }
+}
+
+fn enroll(api: String, experiment: String, user_id: Int, sticky: Bool) -> String
+  effects: net, rand
+{
+  let variant = assign_variant(user_id, sticky)
+  if !record_assignment(api, experiment, user_id, variant) {
+    return "control"
+  }
+  return variant
+}

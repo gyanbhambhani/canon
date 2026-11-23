@@ -1,0 +1,62 @@
+type Setting {
+  section: String,
+  key: String,
+  value: String,
+}
+
+fn upsert(xs: List[Setting], s: Setting) -> List[Setting] {
+  var found = false
+  var out = []
+  for x in xs {
+    if x.section == s.section && x.key == s.key {
+      out = append(out, s)
+      found = true
+    } else {
+      out = append(out, x)
+    }
+  }
+  if !found {
+    out = append(out, s)
+  }
+  return out
+}
+
+fn parse_config(lines: List[String]) -> Result[List[Setting], String] {
+  var out = []
+  var section = ""
+  for p in enumerate(lines) {
+    let line = trim(p.1)
+    let tag = "line " + to_string(p.0 + 1) + ": "
+    let cs = split(line, "")
+    let head = unwrap_or(first(cs), "")
+    if head == "[" {
+      let inner = cs
+        |> drop(1)
+        |> take(len(cs) - 2)
+        |> join("")
+        |> trim()
+      if len(cs) < 2 || unwrap_or(last(cs), "") != "]" || inner == "" {
+        return Err(tag + "bad header")
+      }
+      section = inner
+    } else if line != "" && head != "#" {
+      let parts = split(line, "=")
+      if len(parts) < 2 {
+        return Err(tag + "missing =")
+      }
+      let key = parts
+        |> first()
+        |> unwrap_or("")
+        |> trim()
+      if key == "" {
+        return Err(tag + "empty key")
+      }
+      let value = parts
+        |> drop(1)
+        |> join("=")
+        |> trim()
+      out = upsert(out, Setting { section: section, key: key, value: value })
+    }
+  }
+  return Ok(out)
+}

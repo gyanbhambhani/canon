@@ -1,0 +1,18 @@
+{
+ "id": "bracket_depth",
+ "requirement": "Brackets inside double-quoted strings must now be ignored. A double quote character \" opens a string that runs to the next \"; every character inside it, brackets included, is ignored (there are no escapes). If s ends while a string is still open, return the error \"unclosed string\", which takes priority over \"unclosed at end\". Positions in \"mismatch at N\" still count every character of s.",
+ "fn": "bracket_depth",
+ "params": [
+  [
+   "s",
+   "String"
+  ]
+ ],
+ "ret": "Result[Int, String]",
+ "desc": "Check the brackets ( ) [ ] { } in s; every other character is ignored, and so is everything inside a double-quoted string: a \" character opens a string that runs to the next \" (there are no escapes), and the characters between them, brackets included, are ignored. Each closing bracket must match the most recent unclosed opening bracket of the same kind. Return the maximum nesting depth (0 if there are no brackets; \"([])\" has depth 2). Scanning left to right, if a closing bracket outside a string does not match (or nothing is open), return the error \"mismatch at N\", where N is its 0-based position in s. If the scan finishes inside an unterminated string, return the error \"unclosed string\"; otherwise, if brackets are still open, return the error \"unclosed at end\".",
+ "decls": {
+  "canon": "",
+  "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+ },
+ "typeKinds": {}
+}

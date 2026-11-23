@@ -1,0 +1,59 @@
+fn at(cs: List[String], i: Int) -> String {
+  return cs
+    |> drop(i)
+    |> first()
+    |> unwrap_or("")
+}
+
+fn tokens(pattern: String) -> List[(String, String)] {
+  let cs = split(pattern, "")
+  let n = len(cs)
+  var out = []
+  var i = 0
+  while i < n {
+    let c = at(cs, i)
+    if c == "\\" {
+      if i + 1 < n {
+        out = append(out, ("lit", at(cs, i + 1)))
+        i = i + 2
+      } else {
+        out = append(out, ("lit", "\\"))
+        i = i + 1
+      }
+    } else {
+      let kind = match c {
+        "*" => "star",
+        "?" => "any",
+        _ => "lit",
+      }
+      out = append(out, (kind, c))
+      i = i + 1
+    }
+  }
+  return out
+}
+
+fn next_row(row: List[Bool], tok: (String, String), sc: List[String]) -> List[Bool] {
+  var out = []
+  if tok.0 == "star" {
+    var acc = false
+    for b in row {
+      acc = acc || b
+      out = append(out, acc)
+    }
+    return out
+  }
+  out = [false]
+  for p in zip(row, sc) {
+    out = append(out, p.0 && (tok.0 == "any" || p.1 == tok.1))
+  }
+  return out
+}
+
+fn glob_match(pattern: String, s: String) -> Bool {
+  let sc = split(s, "")
+  let start = append(map(sc, |c| false), true)
+  let row = reverse(start)
+  let final_row = fold(tokens(pattern), row, |r, t| next_row(r, t, sc))
+  return unwrap_or(last(final_row), false)
+}

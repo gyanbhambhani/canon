@@ -1,0 +1,70 @@
+fn rank_of(r: String) -> Int {
+  let found = filter(enumerate(split("23456789TJQKA", "")), |p| p.1 == r)
+  return match first(found) {
+    Some(p) => p.0,
+    None => -1,
+  }
+}
+
+fn card_rank(c: String) -> Int {
+  return c
+    |> split("")
+    |> first()
+    |> unwrap_or("")
+    |> rank_of()
+}
+
+fn valid_card(c: String) -> Bool {
+  let parts = split(c, "")
+  let r = unwrap_or(first(parts), "")
+  let s = unwrap_or(last(parts), "")
+  return len(parts) == 2 && rank_of(r) >= 0 && contains(["C", "D", "H", "S"], s)
+}
+
+fn poker_hand(cards: List[String]) -> String {
+  if len(cards) != 5 || len(group_by(cards, |c| c)) != 5 {
+    return "invalid"
+  }
+  if len(filter(cards, |c| !valid_card(c))) > 0 {
+    return "invalid"
+  }
+  let ranks = sort_by(map(cards, |c| card_rank(c)), |r| r)
+  let suits = map(cards, |c| (c |> split("") |> last() |> unwrap_or("")))
+  let flush = len(group_by(suits, |s| s)) == 1
+  let counts = ranks
+    |> group_by(|r| r)
+    |> map(|g| len(g.1))
+    |> sort_desc_by(|n| n)
+  let spread = unwrap_or(last(ranks), 0) - unwrap_or(first(ranks), 0)
+  let straight = len(counts) == 5 && (spread == 4 || ranks == [0, 1, 2, 3, 12])
+  let top = unwrap_or(first(counts), 0)
+  let second = counts
+    |> drop(1)
+    |> first()
+    |> unwrap_or(0)
+  if straight && flush {
+    return "straight flush"
+  }
+  if top == 4 {
+    return "four of a kind"
+  }
+  if top == 3 && second == 2 {
+    return "full house"
+  }
+  if flush {
+    return "flush"
+  }
+  if straight {
+    return "straight"
+  }
+  if top == 3 {
+    return "three of a kind"
+  }
+  if top == 2 && second == 2 {
+    return "two pair"
+  }
+  if top == 2 {
+    return "one pair"
+  }
+  return "high card"
+}

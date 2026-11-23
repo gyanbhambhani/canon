@@ -1,0 +1,24 @@
+{
+  "functions": {
+    "classify": [],
+    "status_line": [],
+    "parse_targets": [],
+    "probe": ["net", "time"],
+    "check_all": ["net", "time"],
+    "write_status": ["fs", "net", "time"],
+    "classify_of": [],
+    "check_from_file": ["fs", "net", "time"]
+  },
+  "drive": [
+    { "fn": "classify", "args": [1500] },
+    { "fn": "status_line", "args": ["https://api.example.com", 1000] },
+    { "fn": "parse_targets", "args": ["a\n\n b \n"] },
+    { "fn": "probe", "args": ["https://api.example.com"] },
+    { "fn": "probe", "args": ["https://db.example.com"] },
+    { "fn": "check_all", "args": [["https://api.example.com", "https://db.example.com"]] },
+    { "fn": "write_status", "args": ["/var/run/health.status", ["https://cdn.example.com"]] },
+    { "fn": "classify_of", "args": ["down https://db.example.com -1"] },
+    { "fn": "check_from_file", "args": ["/etc/health/targets", "/var/run/health.status"] },
+    { "fn": "check_from_file", "args": ["/etc/health/none", "/var/run/health.status"] }
+  ]
+}

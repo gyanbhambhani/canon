@@ -1,0 +1,151 @@
+{
+ "id": "eval_expr",
+ "cases": [
+  {
+   "args": [
+    "17 % 5"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 2
+   }
+  },
+  {
+   "args": [
+    "2+17%5*3"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 8
+   }
+  },
+  {
+   "args": [
+    "(1-10)%4"
+   ],
+   "expected": {
+    "ok": true,
+    "value": -1
+   }
+  },
+  {
+   "args": [
+    "(1-10)%(0-4)"
+   ],
+   "expected": {
+    "ok": true,
+    "value": -1
+   }
+  },
+  {
+   "args": [
+    "100/7%3"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 2
+   }
+  },
+  {
+   "args": [
+    "5%(2-2)"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "division by zero"
+   }
+  },
+  {
+   "args": [
+    "5%"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unexpected end"
+   }
+  },
+  {
+   "args": [
+    "7 %% 2"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unexpected character: %"
+   }
+  }
+ ],
+ "regression": [
+  {
+   "args": [
+    "2+3*4"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 14
+   }
+  },
+  {
+   "args": [
+    " ( 2+3 ) * 4 "
+   ],
+   "expected": {
+    "ok": true,
+    "value": 20
+   }
+  },
+  {
+   "args": [
+    "20-3-2*2"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 13
+   }
+  },
+  {
+   "args": [
+    "(1-10)/4"
+   ],
+   "expected": {
+    "ok": true,
+    "value": -2
+   }
+  },
+  {
+   "args": [
+    ""
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unexpected end"
+   }
+  },
+  {
+   "args": [
+    "2*(3+4"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unexpected end"
+   }
+  },
+  {
+   "args": [
+    "2+*3"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unexpected character: *"
+   }
+  },
+  {
+   "args": [
+    "4/(2-2)"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "division by zero"
+   }
+  }
+ ]
+}

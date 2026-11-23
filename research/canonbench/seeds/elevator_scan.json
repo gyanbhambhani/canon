@@ -1,0 +1,52 @@
+{
+  "id": "elevator_scan",
+  "source": "exp1-hard",
+  "fn": "elevator_scan",
+  "params": [
+    [
+      "start",
+      "Int"
+    ],
+    [
+      "requests",
+      "List[Int]"
+    ],
+    [
+      "direction",
+      "String"
+    ]
+  ],
+  "ret": "List[Int]",
+  "desc": "An elevator at floor start, moving in direction \"up\" or \"down\", serves requested floors in SCAN order. Return the floors in the order they are served, each distinct floor once even if requested several times. A request for the start floor is served first. Then, moving up, it serves every requested floor above start in ascending order, then reverses and serves every requested floor below start in descending order; moving down, it serves the floors below start in descending order, then the floors above start in ascending order.",
+  "examples": [
+    {
+      "args": [
+        5,
+        [],
+        "up"
+      ],
+      "expected": []
+    },
+    {
+      "args": [
+        5,
+        [
+          5,
+          5
+        ],
+        "down"
+      ],
+      "expected": [
+        5
+      ]
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

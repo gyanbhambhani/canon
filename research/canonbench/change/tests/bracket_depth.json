@@ -1,0 +1,151 @@
+{
+ "id": "bracket_depth",
+ "cases": [
+  {
+   "args": [
+    "f(\")\")"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 1
+   }
+  },
+  {
+   "args": [
+    "\"(((\""
+   ],
+   "expected": {
+    "ok": true,
+    "value": 0
+   }
+  },
+  {
+   "args": [
+    "[\"]\"]"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 1
+   }
+  },
+  {
+   "args": [
+    "(\"[\" + x)]"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "mismatch at 9"
+   }
+  },
+  {
+   "args": [
+    "(\"abc"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unclosed string"
+   }
+  },
+  {
+   "args": [
+    "\"\"{}\"{\""
+   ],
+   "expected": {
+    "ok": true,
+    "value": 1
+   }
+  },
+  {
+   "args": [
+    "x = \"(\" ; ( [ ] )"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 2
+   }
+  },
+  {
+   "args": [
+    "\"a\"]"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "mismatch at 3"
+   }
+  }
+ ],
+ "regression": [
+  {
+   "args": [
+    ""
+   ],
+   "expected": {
+    "ok": true,
+    "value": 0
+   }
+  },
+  {
+   "args": [
+    "abc"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 0
+   }
+  },
+  {
+   "args": [
+    "a(b[c]{d})"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 2
+   }
+  },
+  {
+   "args": [
+    "([{}])"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 3
+   }
+  },
+  {
+   "args": [
+    "{[()()]}()"
+   ],
+   "expected": {
+    "ok": true,
+    "value": 3
+   }
+  },
+  {
+   "args": [
+    "(]"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "mismatch at 1"
+   }
+  },
+  {
+   "args": [
+    "())"
+   ],
+   "expected": {
+    "ok": false,
+    "error": "mismatch at 2"
+   }
+  },
+  {
+   "args": [
+    "(("
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unclosed at end"
+   }
+  }
+ ]
+}

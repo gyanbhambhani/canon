@@ -1,0 +1,9 @@
+{
+  "files": {
+    "/var/spool/metrics/latency": "120\n95\n310\nn/a\n88\n",
+    "/var/spool/metrics/empty": "\n"
+  },
+  "http": {
+    "https://metrics.example.com/push": ["ok"]
+  }
+}

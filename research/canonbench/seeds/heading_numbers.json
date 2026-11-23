@@ -1,0 +1,48 @@
+{
+  "id": "heading_numbers",
+  "source": "exp1-hard",
+  "fn": "heading_numbers",
+  "params": [
+    [
+      "lines",
+      "List[String]"
+    ]
+  ],
+  "ret": "List[String]",
+  "desc": "Number the Markdown headings in lines. A heading line is 1 to 3 \"#\" characters at the very start, then a single space, then a non-empty title (everything after that space, taken as is). Every other line is ignored, including \"#NoSpace\", \"#### Four\" (4 or more \"#\") and \"# \" (empty title). Keep counters for levels 1, 2 and 3, all starting at 0. For a heading of level L, add 1 to counter L and reset the counters of all deeper levels to 0; then output the counters of levels 1 through L joined by \".\", a space, and the title. For example, a level-3 heading right after the first level-1 heading is numbered \"1.0.1\". Return the outputs in order.",
+  "examples": [
+    {
+      "args": [
+        [
+          "# Intro",
+          "text",
+          "## Setup",
+          "## Usage",
+          "### Flags",
+          "# API"
+        ]
+      ],
+      "expected": [
+        "1 Intro",
+        "1.1 Setup",
+        "1.2 Usage",
+        "1.2.1 Flags",
+        "2 API"
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {},
+  "tags": [
+    "total"
+  ]
+}

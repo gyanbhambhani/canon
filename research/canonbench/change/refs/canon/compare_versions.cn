@@ -1,0 +1,58 @@
+fn all_digits(cs: List[String]) -> Bool {
+  return len(filter(cs, |c| c >= "0" && c <= "9")) == len(cs)
+}
+
+fn valid_version(v: String) -> Bool {
+  let parts = split(v, ".")
+  if len(parts) > 4 {
+    return false
+  }
+  for p in parts {
+    let cs = split(p, "")
+    if len(cs) == 0 || !all_digits(cs) {
+      return false
+    }
+  }
+  return true
+}
+
+fn part_at(ns: List[Int], i: Int) -> Int {
+  return ns
+    |> drop(i)
+    |> first()
+    |> unwrap_or(0)
+}
+
+fn sign(d: Int) -> Int {
+  if d < 0 {
+    return -1
+  }
+  return 1
+}
+
+fn strip_prefix(v: String) -> String {
+  let cs = split(v, "")
+  let head = unwrap_or(first(cs), "")
+  if head == "v" || head == "V" {
+    return join(drop(cs, 1), "")
+  }
+  return v
+}
+
+fn compare_versions(a: String, b: String) -> Result[Int, String] {
+  let sa = strip_prefix(a)
+  let sb = strip_prefix(b)
+  if !valid_version(sa) {
+    return Err("bad version: " + a)
+  }
+  if !valid_version(sb) {
+    return Err("bad version: " + b)
+  }
+  let x = map(split(sa, "."), |p| unwrap_or(parse_int(p), 0))
+  let y = map(split(sb, "."), |p| unwrap_or(parse_int(p), 0))
+  let diffs = filter(map(range(0, 4), |i| part_at(x, i) - part_at(y, i)), |d| d != 0)
+  return match first(diffs) {
+    Some(d) => Ok(sign(d)),
+    None => Ok(0),
+  }
+}

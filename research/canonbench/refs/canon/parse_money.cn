@@ -1,0 +1,64 @@
+fn all_digits(cs: List[String]) -> Bool {
+  return len(filter(cs, |c| c >= "0" && c <= "9")) == len(cs)
+}
+
+fn dollars_ok(d: String) -> Bool {
+  let groups = split(d, ",")
+  let plain = split(join(groups, ""), "")
+  if len(plain) == 0 || !all_digits(plain) {
+    return false
+  }
+  if len(plain) > 1 && unwrap_or(first(plain), "") == "0" {
+    return false
+  }
+  if len(groups) == 1 {
+    return true
+  }
+  let g0 = groups
+    |> first()
+    |> unwrap_or("")
+    |> str_len()
+  if g0 < 1 || g0 > 3 {
+    return false
+  }
+  for g in drop(groups, 1) {
+    if str_len(g) != 3 {
+      return false
+    }
+  }
+  return true
+}
+
+fn parse_money(s: String) -> Result[Int, String] {
+  let cs = split(s, "")
+  let neg = unwrap_or(first(cs), "") == "-"
+  var rest = cs
+  if neg {
+    rest = drop(cs, 1)
+  }
+  if unwrap_or(first(rest), "") != "$" {
+    return Err("missing $")
+  }
+  let pieces = rest
+    |> drop(1)
+    |> join("")
+    |> split(".")
+  let dollars = unwrap_or(first(pieces), "")
+  var cents = 0
+  if len(pieces) > 1 {
+    let after = join(drop(pieces, 1), ".")
+    let ccs = split(after, "")
+    if len(ccs) != 2 || !all_digits(ccs) {
+      return Err("bad cents")
+    }
+    cents = unwrap_or(parse_int(after), 0)
+  }
+  if !dollars_ok(dollars) {
+    return Err("bad dollars")
+  }
+  let total = (dollars |> split(",") |> join("") |> parse_int() |> unwrap_or(0)) * 100 + cents
+  if neg {
+    return Ok(0 - total)
+  }
+  return Ok(total)
+}

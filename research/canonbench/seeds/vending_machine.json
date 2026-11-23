@@ -1,0 +1,57 @@
+{
+  "id": "vending_machine",
+  "source": "exp1-hard",
+  "fn": "vending_machine",
+  "params": [
+    [
+      "events",
+      "List[Event]"
+    ]
+  ],
+  "ret": "List[String]",
+  "desc": "Simulate a vending machine that holds a credit, starting at 0, and return the messages it prints, in order. Coin(c): if c is 5, 10, 25 or 100, add it to the credit and print nothing; otherwise print \"reject C\" (C is the coin value) and do not add it. Select(p): if the credit is at least p, print \"vend P change X\" where X is credit minus p, and set the credit to 0; otherwise print \"insufficient X\" where X is the current credit, and keep the credit. Refund: if the credit is above 0, print \"refund X\" and set it to 0; if it is 0, print nothing. After the last event, if the credit is above 0, print \"refund X\" for it.",
+  "examples": [
+    {
+      "args": [
+        [
+          {
+            "kind": "Coin",
+            "cents": 25
+          },
+          {
+            "kind": "Coin",
+            "cents": 25
+          },
+          {
+            "kind": "Coin",
+            "cents": 25
+          },
+          {
+            "kind": "Select",
+            "price": 65
+          }
+        ]
+      ],
+      "expected": [
+        "vend 65 change 10"
+      ]
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": []
+    }
+  ],
+  "decls": {
+    "canon": "type Event =\n  | Coin(cents: Int)\n  | Select(price: Int)\n  | Refund",
+    "ts": "type Event = { kind: \"Coin\"; cents: number } | { kind: \"Select\"; price: number } | { kind: \"Refund\" };"
+  },
+  "typeKinds": {
+    "Event": "sum"
+  },
+  "tags": [
+    "total",
+    "adt"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "eval_expr",
+  "source": "exp1-hard",
+  "fn": "eval_expr",
+  "params": [
+    [
+      "s",
+      "String"
+    ]
+  ],
+  "ret": "Result[Int, String]",
+  "desc": "Evaluate an integer arithmetic expression. First remove every space character from s; parse what remains. Grammar: expr = term, then zero or more of (\"+\" or \"-\") term; term = factor, then zero or more of (\"*\" or \"/\") factor; factor = a number (one or more decimal digits) or \"(\" expr \")\". Operators of equal precedence group left to right; \"/\" divides and truncates toward zero. There is no unary minus. Syntax errors take priority: scanning left to right, at the first point where the next character cannot continue a valid expression, return the error \"unexpected end\" if the input has run out there, or \"unexpected character: \" followed by that character otherwise (this includes characters left over after a complete expression). Only if the whole input is syntactically valid, evaluate it; if any division has a right operand that evaluates to 0, return the error \"division by zero\".",
+  "examples": [
+    {
+      "args": [
+        "2+3*4"
+      ],
+      "expected": {
+        "ok": true,
+        "value": 14
+      }
+    },
+    {
+      "args": [
+        " ( 2+3 ) * 4 "
+      ],
+      "expected": {
+        "ok": true,
+        "value": 20
+      }
+    }
+  ],
+  "decls": {
+    "canon": "",
+    "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {},
+  "tags": [
+    "result"
+  ]
+}

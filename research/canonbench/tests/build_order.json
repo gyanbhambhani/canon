@@ -1,0 +1,217 @@
+{
+ "id": "build_order",
+ "cases": [
+  {
+   "args": [
+    []
+   ],
+   "expected": {
+    "ok": true,
+    "value": []
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "deps": []
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     "a"
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "app",
+      "deps": [
+       "lib",
+       "util"
+      ]
+     },
+     {
+      "name": "lib",
+      "deps": [
+       "util"
+      ]
+     },
+     {
+      "name": "util",
+      "deps": []
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     "util",
+     "lib",
+     "app"
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "c",
+      "deps": []
+     },
+     {
+      "name": "b",
+      "deps": [
+       "c"
+      ]
+     },
+     {
+      "name": "a",
+      "deps": []
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     "c",
+     "b",
+     "a"
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "deps": [
+       "b",
+       "zz"
+      ]
+     },
+     {
+      "name": "b",
+      "deps": [
+       "yy"
+      ]
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "unknown dependency: zz"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "deps": []
+     },
+     {
+      "name": "b",
+      "deps": [
+       "q"
+      ]
+     },
+     {
+      "name": "a",
+      "deps": []
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "duplicate job: a"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "a",
+      "deps": [
+       "b"
+      ]
+     },
+     {
+      "name": "b",
+      "deps": [
+       "a"
+      ]
+     },
+     {
+      "name": "c",
+      "deps": []
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "cycle detected"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "x",
+      "deps": [
+       "x"
+      ]
+     }
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "cycle detected"
+   }
+  },
+  {
+   "args": [
+    [
+     {
+      "name": "d",
+      "deps": [
+       "b",
+       "c"
+      ]
+     },
+     {
+      "name": "b",
+      "deps": [
+       "a"
+      ]
+     },
+     {
+      "name": "c",
+      "deps": [
+       "a",
+       "a"
+      ]
+     },
+     {
+      "name": "a",
+      "deps": []
+     }
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     "a",
+     "b",
+     "c",
+     "d"
+    ]
+   }
+  }
+ ]
+}

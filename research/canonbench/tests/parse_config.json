@@ -1,0 +1,194 @@
+{
+ "id": "parse_config",
+ "cases": [
+  {
+   "args": [
+    [
+     "name = app",
+     "[db]",
+     "host = localhost",
+     "port=5432"
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "section": "",
+      "key": "name",
+      "value": "app"
+     },
+     {
+      "section": "db",
+      "key": "host",
+      "value": "localhost"
+     },
+     {
+      "section": "db",
+      "key": "port",
+      "value": "5432"
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    []
+   ],
+   "expected": {
+    "ok": true,
+    "value": []
+   }
+  },
+  {
+   "args": [
+    [
+     "# c",
+     "",
+     "[a]",
+     "x = 1",
+     "y = 2",
+     "  x = 3  "
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "section": "a",
+      "key": "x",
+      "value": "3"
+     },
+     {
+      "section": "a",
+      "key": "y",
+      "value": "2"
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     "[a]",
+     "k=1",
+     "[b]",
+     "k=2",
+     "[a]",
+     "k=3",
+     "j=4"
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "section": "a",
+      "key": "k",
+      "value": "3"
+     },
+     {
+      "section": "b",
+      "key": "k",
+      "value": "2"
+     },
+     {
+      "section": "a",
+      "key": "j",
+      "value": "4"
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     "url = a=b",
+     "empty ="
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "section": "",
+      "key": "url",
+      "value": "a=b"
+     },
+     {
+      "section": "",
+      "key": "empty",
+      "value": ""
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     "  # indented comment",
+     "[ s p ]",
+     "k = v"
+    ]
+   ],
+   "expected": {
+    "ok": true,
+    "value": [
+     {
+      "section": "s p",
+      "key": "k",
+      "value": "v"
+     }
+    ]
+   }
+  },
+  {
+   "args": [
+    [
+     "[a]",
+     "k=1",
+     "[ ]"
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "line 3: bad header"
+   }
+  },
+  {
+   "args": [
+    [
+     "[a"
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "line 1: bad header"
+   }
+  },
+  {
+   "args": [
+    [
+     "k=1",
+     "",
+     "novalue"
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "line 3: missing ="
+   }
+  },
+  {
+   "args": [
+    [
+     " = 5"
+    ]
+   ],
+   "expected": {
+    "ok": false,
+    "error": "line 1: empty key"
+   }
+  }
+ ]
+}

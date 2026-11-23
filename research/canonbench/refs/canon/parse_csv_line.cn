@@ -1,0 +1,43 @@
+fn parse_csv_line(s: String) -> Result[List[String], String] {
+  var fields = []
+  var cur = ""
+  var state = 0
+  for p in enumerate(split(s, "")) {
+    let i = p.0
+    let c = p.1
+    if state == 0 || state == 1 {
+      if c == "," {
+        fields = append(fields, cur)
+        cur = ""
+        state = 0
+      } else if c == "\"" {
+        if state == 1 {
+          return Err("unexpected quote at " + to_string(i))
+        }
+        state = 2
+      } else {
+        cur = cur + c
+        state = 1
+      }
+    } else if state == 2 {
+      if c == "\"" {
+        state = 3
+      } else {
+        cur = cur + c
+      }
+    } else if c == "\"" {
+      cur = cur + "\""
+      state = 2
+    } else if c == "," {
+      fields = append(fields, cur)
+      cur = ""
+      state = 0
+    } else {
+      return Err("expected comma at " + to_string(i))
+    }
+  }
+  if state == 2 {
+    return Err("unterminated quote")
+  }
+  return Ok(append(fields, cur))
+}

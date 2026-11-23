@@ -1,0 +1,230 @@
+{
+ "id": "robot_walk",
+ "cases": [
+  {
+   "args": [
+    [
+     {
+      "kind": "Forward",
+      "steps": 3
+     }
+    ],
+    []
+   ],
+   "expected": [
+    0,
+    3,
+    "N"
+   ]
+  },
+  {
+   "args": [
+    [],
+    []
+   ],
+   "expected": [
+    0,
+    0,
+    "N"
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "TurnRight"
+     },
+     {
+      "kind": "Forward",
+      "steps": 2
+     },
+     {
+      "kind": "TurnLeft"
+     },
+     {
+      "kind": "Forward",
+      "steps": 1
+     }
+    ],
+    []
+   ],
+   "expected": [
+    2,
+    1,
+    "N"
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Forward",
+      "steps": 5
+     }
+    ],
+    [
+     [
+      0,
+      3
+     ]
+    ]
+   ],
+   "expected": [
+    0,
+    2,
+    "N"
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "TurnLeft"
+     },
+     {
+      "kind": "Forward",
+      "steps": 2
+     },
+     {
+      "kind": "TurnLeft"
+     },
+     {
+      "kind": "Forward",
+      "steps": 1
+     }
+    ],
+    []
+   ],
+   "expected": [
+    -2,
+    -1,
+    "S"
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "TurnRight"
+     },
+     {
+      "kind": "TurnRight"
+     },
+     {
+      "kind": "TurnRight"
+     },
+     {
+      "kind": "TurnRight"
+     },
+     {
+      "kind": "TurnRight"
+     }
+    ],
+    []
+   ],
+   "expected": [
+    0,
+    0,
+    "E"
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Forward",
+      "steps": 2
+     },
+     {
+      "kind": "TurnRight"
+     },
+     {
+      "kind": "Forward",
+      "steps": 3
+     },
+     {
+      "kind": "TurnRight"
+     },
+     {
+      "kind": "Forward",
+      "steps": 1
+     }
+    ],
+    [
+     [
+      2,
+      2
+     ],
+     [
+      1,
+      1
+     ]
+    ]
+   ],
+   "expected": [
+    1,
+    2,
+    "S"
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Forward",
+      "steps": 0
+     },
+     {
+      "kind": "TurnLeft"
+     },
+     {
+      "kind": "TurnLeft"
+     },
+     {
+      "kind": "Forward",
+      "steps": 2
+     }
+    ],
+    [
+     [
+      0,
+      -3
+     ]
+    ]
+   ],
+   "expected": [
+    0,
+    -2,
+    "S"
+   ]
+  },
+  {
+   "args": [
+    [
+     {
+      "kind": "Forward",
+      "steps": 1
+     },
+     {
+      "kind": "TurnRight"
+     },
+     {
+      "kind": "Forward",
+      "steps": 1
+     }
+    ],
+    [
+     [
+      0,
+      1
+     ]
+    ]
+   ],
+   "expected": [
+    1,
+    0,
+    "E"
+   ]
+  }
+ ]
+}

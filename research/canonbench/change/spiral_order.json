@@ -1,0 +1,22 @@
+{
+  "id": "spiral_order",
+  "requirement": "Add a second parameter clockwise: Bool. When it is false the result is the current counterclockwise spiral. When it is true, return the clockwise spiral instead: start at the top-left corner, go right along the first row, then down the last column, then left along the bottom row, then up the first column, and repeat on the remaining inner matrix.",
+  "fn": "spiral_order",
+  "params": [
+    [
+      "m",
+      "List[List[Int]]"
+    ],
+    [
+      "clockwise",
+      "Bool"
+    ]
+  ],
+  "ret": "List[Int]",
+  "desc": "m is a rectangular matrix given as a list of rows. Return its elements in spiral order, starting at the top-left corner. If clockwise is false, the spiral is counterclockwise: go down the first column, then right along the bottom row, then up the last column, then left along the top row, and repeat on the remaining inner matrix. If clockwise is true, the spiral is clockwise: go right along the first row, then down the last column, then left along the bottom row, then up the first column, and repeat on the remaining inner matrix. Every element appears exactly once. A matrix with no rows, or whose rows are empty, gives an empty list.",
+  "decls": {
+    "canon": "",
+    "ts": ""
+  },
+  "typeKinds": {}
+}

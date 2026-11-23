@@ -1,0 +1,123 @@
+{
+ "id": "anagram_groups",
+ "cases": [
+  {
+   "args": [
+    [
+     "eat",
+     "tea",
+     "tan",
+     "ate",
+     "nat",
+     "bat"
+    ]
+   ],
+   "expected": [
+    [
+     "eat",
+     "tea",
+     "ate"
+    ],
+    [
+     "tan",
+     "nat"
+    ]
+   ]
+  },
+  {
+   "args": [
+    []
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     "abc"
+    ]
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     "ab",
+     "ab"
+    ]
+   ],
+   "expected": [
+    [
+     "ab",
+     "ab"
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     "a",
+     "b",
+     "c"
+    ]
+   ],
+   "expected": []
+  },
+  {
+   "args": [
+    [
+     "listen",
+     "x",
+     "silent",
+     "enlist",
+     "y",
+     "x"
+    ]
+   ],
+   "expected": [
+    [
+     "listen",
+     "silent",
+     "enlist"
+    ],
+    [
+     "x",
+     "x"
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     "",
+     ""
+    ]
+   ],
+   "expected": [
+    [
+     "",
+     ""
+    ]
+   ]
+  },
+  {
+   "args": [
+    [
+     "ab",
+     "ba",
+     "abb",
+     "bab"
+    ]
+   ],
+   "expected": [
+    [
+     "ab",
+     "ba"
+    ],
+    [
+     "abb",
+     "bab"
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,50 @@
+fn reset_code() -> String
+  effects: rand
+{
+  var code = ""
+  for i in range(0, 6) {
+    code = code + to_string(random_int(0, 10))
+  }
+  return code
+}
+
+fn reset_link(base_url: String, user: String, code: String) -> String {
+  return base_url + "/reset?user=" + user + "&code=" + code
+}
+
+fn expires_at(issued_ms: Int, ttl_minutes: Int) -> Int {
+  return issued_ms + ttl_minutes * 60000
+}
+
+fn code_valid(issued_ms: Int, ttl_minutes: Int, now_ms: Int) -> Bool {
+  return now_ms < expires_at(issued_ms, ttl_minutes)
+}
+
+fn email_body(user: String, link: String) -> String {
+  return "to=" + user + "&subject=Reset your password&text=" + link
+}
+
+fn send_email(api: String, body: String) -> Bool
+  effects: net
+{
+  return match http_post(api + "/v1/messages", body) {
+    Ok(_) => true,
+    Err(_) => false,
+  }
+}
+
+fn start_reset(api: String, base_url: String, user: String) -> Int
+  effects: net, rand, time
+{
+  let link = reset_link(base_url, user, reset_code())
+  if !send_email(api, email_body(user, link)) {
+    return 0
+  }
+  return expires_at(now(), 30)
+}
+
+fn is_reset_valid(issued_ms: Int, ttl_minutes: Int) -> Bool
+  effects: time
+{
+  return code_valid(issued_ms, ttl_minutes, now())
+}
