@@ -1,0 +1,36 @@
+"""Accounts: random ids and password hashes. The hash format is Django's PBKDF2-SHA256, which
+Canon's JavaScript runtime also reads and writes."""
+
+import base64
+import hashlib
+import hmac
+import re
+import secrets
+import uuid as uuid_module
+
+
+def uuid() -> str:
+    return str(uuid_module.uuid4())
+
+
+ITERATIONS = 600_000
+
+
+def hash_password(password: str) -> str:
+    salt = secrets.token_urlsafe(12)[:16]
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), ITERATIONS)
+    return f"pbkdf2_sha256${ITERATIONS}${salt}${base64.b64encode(digest).decode()}"
+
+
+def verify_password(password: str, hashed: str) -> bool:
+    parts = hashed.split("$")
+    if (
+        len(parts) != 4
+        or parts[0] != "pbkdf2_sha256"
+        or not re.fullmatch(r"[1-9][0-9]{0,6}", parts[1])
+    ):
+        return False
+    digest = hashlib.pbkdf2_hmac(
+        "sha256", password.encode(), parts[2].encode(), int(parts[1])
+    )
+    return hmac.compare_digest(base64.b64encode(digest).decode(), parts[3])

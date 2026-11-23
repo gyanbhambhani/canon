@@ -1,0 +1,39 @@
+"""Outbound HTTP for Canon's net effects: a client bound to one host, handed to each function
+that declares net(<host>), so a function can reach only the hosts it names."""
+
+import urllib.error
+import urllib.request
+from collections.abc import Callable
+
+from .runtime import Err, Error, Ok, Result, Trap
+
+
+class Http:
+    """An HTTP client bound to one host (None: any host, for a plain net effect)."""
+
+    def __init__(self, host: str | None) -> None:
+        self.host = host
+
+    def get(self, url: str) -> Result[str, Error]:
+        return self.send(urllib.request.Request(url))
+
+    def post(self, url: str, body: str) -> Result[str, Error]:
+        return self.send(urllib.request.Request(url, data=body.encode(), method="POST"))
+
+    def send(self, request: urllib.request.Request) -> Result[str, Error]:
+        host = (request.host or "").split(":")[0].lower()
+        if self.host is not None and host != self.host:
+            raise Trap(
+                "R006",
+                f"effect net({host}) denied: this function may call only {self.host}",
+            )
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                return Ok(response.read().decode())
+        except (urllib.error.URLError, ValueError) as e:
+            return Err(Error(message=str(e)))
+
+
+def http(host: str | None) -> Callable[[], Http]:
+    """A FastAPI dependency that hands a route a client for one host."""
+    return lambda: Http(host)

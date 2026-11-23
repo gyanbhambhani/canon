@@ -2,8 +2,19 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "customConditions": ["source"],
-    "types": ["node"]
+    "customConditions": [
+      "source"
+    ],
+    "types": [
+      "node"
+    ]
   },
-  "include": ["scripts/**/*.ts", "tests/**/*.ts", "vitest.config.ts"]
+  "include": [
+    "scripts/**/*.ts",
+    "tests/**/*.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": [
+    "tests/v05/golden/*/expected/**"
+  ]
 }

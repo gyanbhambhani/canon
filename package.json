@@ -16,7 +16,8 @@
     "oracle": "tsx scripts/oracle.ts",
     "stats": "tsx --conditions=source scripts/stats.ts",
     "e2e": "playwright test",
-    "pyenv": "node scripts/pyenv.mjs"
+    "pyenv": "node scripts/pyenv.mjs",
+    "embed-py": "node scripts/embed-py.mjs"
   },
   "devDependencies": {
     "@canon/compiler": "workspace:*",
@@ -26,6 +27,7 @@
     "@types/node": "^22.10.0",
     "canon-lang": "workspace:*",
     "eslint": "^9.39.0",
+    "prettier": "3.10.1",
     "tsx": "^4.20.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.0",

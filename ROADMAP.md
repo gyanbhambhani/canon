@@ -115,17 +115,17 @@ Copied from the Milestones section of docs/v0.5-fullstack.md. M3 and M4 may run 
 
 ## v0.5 M3: Python backend
 
-- [ ] The worked example generates the golden Python files, which pass ruff check, ruff format --check and mypy --strict.
-- [ ] HTTP tests (FastAPI's TestClient) cover 200, 400, 422 and 500 for every endpoint shape: body, path parameter, query parameters, and Result and plain returns. Error bodies are `{"error": ...}`.
-- [ ] Tables persist in SQLite across requests and start empty in tests.
-- [ ] Each generated logic function receives only the tables and hosts its Canon effects name.
+- [x] The worked example generates the golden Python files, which pass ruff check, ruff format --check and mypy --strict.
+- [x] HTTP tests (FastAPI's TestClient) cover 200, 400, 422 and 500 for every endpoint shape: body, path parameter, query parameters, and Result and plain returns. Error bodies are `{"error": ...}`.
+- [x] Tables persist in SQLite across requests and start empty in tests.
+- [x] Each generated logic function receives only the tables and hosts its Canon effects name.
 
 ## v0.5 M4: TypeScript client
 
-- [ ] The worked example generates the golden TypeScript files, which pass tsc --strict, prettier --check and eslint.
-- [ ] Client methods return Result and never throw, including on network failure and 500.
-- [ ] Validators reject exactly what the server's require rejects, checked on 1,000 random inputs per endpoint.
-- [ ] An integration test runs the generated client in Node against the generated backend for every endpoint.
+- [x] The worked example generates the golden TypeScript files, which pass tsc --strict, prettier --check and eslint.
+- [x] Client methods return Result and never throw, including on network failure and 500.
+- [x] Validators reject exactly what the server's require rejects, checked on 1,000 random inputs per endpoint.
+- [x] An integration test runs the generated client in Node against the generated backend for every endpoint.
 
 ## v0.5 M5: Parity, drift and build
 

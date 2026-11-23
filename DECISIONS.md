@@ -2,6 +2,65 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — v0.5 M3: the FastAPI backend
+Decision: a one-module project generates logic.py (as in the spec's golden files); a project of several modules generates one Python module per Canon module (canon/billing/money.cn becomes canon_generated/billing/money.py) and no logic.py. models.py, api.py, store.py and runtime.py are shared. api.py imports a logic module under an alias (`users as users_logic`) only when a route parameter of the same name would hide it.
+Reason: the spec says "plus one module per Canon module where a project has several", and keeping the Canon module structure keeps the one-to-one mapping readable.
+
+Decision: the fixed Python files are real files in packages/compiler/py (runtime.py, store.py, net.py, accounts.py), checked by ruff and mypy --strict, and embedded into the compiler by `pnpm embed-py`; a test keeps them in sync. net.py (the host-bound HTTP client) and accounts.py (uuid and password hashing) are written only when a project uses them.
+Reason: runtime.py had to stay under the spec's 250 lines. net.py and accounts.py are imported only by projects that need them.
+
+Decision: store.py implements `Table` with SQLite (one SQL table per Canon table, rows as Pydantic JSON in insertion order, `$CANON_DATABASE`, default canon.db). A table whose row type's JSON schema changed is dropped and recreated. Every row is validated on insert and save.
+Reason: the spec has no migrations in v0.5. Validation on write is what makes Canon's 53-bit Int hold: Python ints never overflow, and `model_copy` does not validate, so without it an overflowing update was saved and broke every later read. It now fails with 500 and nothing is saved.
+
+Decision: intermediate Int arithmetic in generated Python is not range-checked; values are checked when they enter a record, a table or the wire (SafeInt), and the request fails with 500.
+Reason: checking every operation would put a helper around every `+` and `*` (the spec's golden code has none). An overflow still never reaches storage or the client.
+
+Decision: an api fn's requires is checked only in the route (spec), and the generator may rely on it as a precondition: `take(drop(xs, a), b)` becomes `rows[start : start + b]` only when a and b are provably non-negative from literals, len and count, and the requires' `name >= c` bounds; otherwise it slices with `max(n, 0)`.
+Reason: Canon's take and drop clamp negative counts; Python slicing counts from the end. The spec's golden list_todos relies on its requires (page >= 1).
+
+Decision: the Python line formatter (pyfmt.ts) reimplements the subset of ruff format the generator needs: right-hand splits trying trailers from the right, delimiter splits (comprehension, comma, ternary, logic, comparison, arithmetic priorities), optional parentheses for return, assignment, if, while, for and assert, delimiter-first inside brackets, a def's parameters before its return annotation, and parenthesized imports. Tests run ruff format --check, ruff check (with ruff 0.17's defaults, which include isort, comprehension, simplify and bugbear rules) and mypy --strict on every generated package.
+Reason: the compiler has no dependencies and runs in the browser, so it cannot call ruff.
+
+Decision: Option[T] is `T | None`, so a program with an Option of an Option (or of Unit) anywhere, even inferred (first of a List[Option[Int]]), is G002 for the Python target. Also G002: to_string of anything but Int, Float, String and Bool; read_line, read_file and write_file; a computed URL in a function that declares several hosts; match or try on the right of && or ||, or in a while condition.
+Reason: each needs a design of its own; the error names the construct and the function, and the JavaScript runtime still runs the program.
+
+Decision: a match on an Option becomes a Python match with a class pattern for Some (`case Todo() as t`), a guard (`case x if x is not None`) when the type is a type parameter; a match on a Bool becomes if/else; try (`?`) becomes `result = f()` / `if isinstance(result, Err): return result`; map and filter with a lambda become comprehensions, and `map_from(map(xs, |x| (k, v)))` a dict comprehension; a string built with + and to_string of an Int or String becomes an f-string.
+Reason: the readability bar: these are the idioms a Python developer would write, and ruff's default rules (C4, SIM) flag several of the literal translations.
+
+Decision: a Canon name that is a Python keyword or a builtin the generated code relies on (len, sorted, all, filter, ...) is renamed with a trailing underscore; a binding that would overwrite a visible one in Python's function scope (Canon scopes are per block) gets a numbered name (x_2).
+Reason: Python scopes are per function, so Canon's block-scoped shadowing would otherwise change meaning.
+
+## 2026-11-22 — v0.5 M4: the TypeScript client (built by a parallel agent, reviewed and integrated here)
+Decision: types.ts holds only the wire types reachable from api fn signatures, in module dependency order then source order (with the built-in Error when reachable). A record with no fields is `Record<string, never>`.
+Reason: logic-only types do not cross the wire; eslint rejects an empty interface.
+
+Decision: a validator takes only the parameters its rule mentions, in parameter order. Errors in a method's Result are `E | ValidationError | TransportError`, with ValidationError only when the endpoint has a requires; a Unit return is `Result<null, ...>`.
+Reason: unused parameters fail eslint and `--noUnusedParameters`.
+
+Decision: createClient keeps the golden's `createClient(baseUrl: string)`; tests stub globalThis.fetch.
+Reason: the golden file is the contract, and a fetch option can be added later without breaking callers.
+
+Decision: TypeScript names that are reserved words, or that collide with names the generated code uses (baseUrl, invalid, request, the helpers), get a trailing `_`. String `<`, `<=`, `>`, `>=` use a compareStrings helper (code points, as in Canon and Python). Prettier's literal style is followed (quotes, `1e21`).
+Reason: correctness and prettier --check.
+
+Decision: a rule written `!(x)` generates `if (x)`, and a variable compared with a literal a second time in one rule is wrapped (`String(s)`) so TypeScript does not narrow it into an error.
+Reason: eslint rejects `!!(x)`; TypeScript rejects a comparison it considers impossible after narrowing (TS2367).
+
+Decision: in a validator, Int division by zero gives NaN, so the rule fails and the client returns ValidationError, while the server traps (500).
+Reason: the validator must never throw. The parity suite (M5) excludes division by zero from the agreement it checks.
+
+Decision: 400 and 422 responses whose body is `{"error": {kind, ...}}` become the typed error; any other status, a body that is not JSON, or a network failure becomes TransportError. A null Option query parameter is omitted; a String path parameter is encodeURIComponent'd.
+Reason: methods never throw.
+
+Decision: a String path parameter cannot be "", ".", "..", or contain "/". Starlette decodes %2F before routing, and URLs normalize dot segments, so such a request reaches no route; the client returns TransportError (404). Documented, not checked.
+Reason: a limit of URLs and of the server, not of Canon; checking it would add a validation rule nobody wrote.
+
+Decision: the trim whitespace set is exactly JavaScript's String.prototype.trim set (U+0009 to U+000D, U+0020, U+00A0, U+1680, U+2000 to U+200A, U+2028, U+2029, U+202F, U+205F, U+3000, U+FEFF), shared by runtime.ts and runtime.py. U+0085 (NEL) and U+001C to U+001F are not trimmed, although Python's strip would trim them.
+Reason: one definition on both sides; the validator agreement test feeds both kinds of characters.
+
+Decision: a multi-module project's generated headers say "from the Canon modules in canon/".
+Reason: there is no single source file to name.
+
 ## 2026-11-22 — v0.5 M3/M4: golden files first
 Decision: the worked example's six golden files are the spec's text plus, in each, the hash line the spec requires (`# canon-hash: sha256:<16 hex>`, over the file without that line). They are committed with `it.fails` tests, which become plain tests as each generator lands.
 Reason: the owner's prompt asks for the golden files to be committed as failing tests first, and CLAUDE.md asks for commits only on green. Expected failures satisfy both. The spec's models.py had a placeholder hash, and the other files had none.

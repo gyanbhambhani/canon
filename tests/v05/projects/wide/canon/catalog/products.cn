@@ -1,0 +1,90 @@
+table products: Product key slug
+
+type Product {
+  slug: String,
+  name: String,
+  price_cents: Int,
+  tags: List[String],
+  dims: Option[(Float, Float)],
+  stock: Map[String, Int],
+}
+
+type NewProduct {
+  slug: String,
+  name: String,
+  price_cents: Int,
+  tags: List[String],
+}
+
+type ProductError =
+  | NotFound(slug: String)
+  | Conflict(slug: String, existing_name: String)
+  | Invalid(field_name: String, reason: String, allowed_values: List[String])
+
+fn find(slug: String) -> Result[Product, ProductError]
+  effects: store(products)
+{
+  return match get(products, slug) {
+    Some(p) => Ok(p),
+    None => Err(NotFound(slug)),
+  }
+}
+
+api fn get_product(slug: String, include_stock: Option[Bool]) -> Result[Product, ProductError]
+  route: GET "/products/{slug}"
+  effects: store(products)
+{
+  return find(slug)
+}
+
+api fn list_products(low: Option[Int], tag: Option[String], page: Int, n: Int) -> List[Product]
+  route: GET "/products"
+  effects: store(products)
+  requires: page >= 1 && n >= 1 && n <= 100 && (is_some(tag) || page < 1000)
+{
+  return products
+    |> scan()
+    |> drop((page - 1) * n)
+    |> take(n)
+}
+
+api fn create_product(input: NewProduct) -> Result[Product, ProductError]
+  route: POST "/products"
+  effects: store(products)
+  requires: str_len(trim(input.slug)) >= 3 && str_len(input.slug) <= 64 && input.price_cents >= 0
+{
+  let p = Product {
+    slug: input.slug,
+    name: input.name,
+    price_cents: input.price_cents,
+    tags: input.tags,
+    dims: None,
+    stock: map_from([]),
+  }
+  return Ok(save(products, p))
+}
+
+api fn replace_product(slug: String, input: NewProduct) -> Result[Product, ProductError]
+  route: PUT "/products/{slug}"
+  effects: store(products)
+{
+  let old = try find(slug)
+  let p = Product {
+    slug: slug,
+    name: input.name,
+    price_cents: 0,
+    tags: [],
+    dims: None,
+    stock: old.stock,
+  }
+  return Ok(save(products, p))
+}
+
+api fn delete_product(slug: String) -> Result[Product, ProductError]
+  route: DELETE "/products/{slug}"
+  effects: store(products)
+{
+  let old = try find(slug)
+  let gone = delete(products, slug)
+  return Ok(old)
+}

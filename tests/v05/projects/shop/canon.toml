@@ -1,0 +1,8 @@
+[project]
+name = "shop"
+
+[backend]
+out = "backend/canon_generated"
+
+[frontend]
+out = "frontend/src/canon"

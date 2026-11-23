@@ -1,0 +1,77 @@
+use catalog.products.{Product}
+
+table users: User key id
+
+type User {
+  id: Int,
+  email: String,
+  display_name: String,
+  favorites: List[Product],
+  scores: List[Option[Float]],
+}
+
+type Signup {
+  email: String,
+  password: String,
+  display_name: String,
+}
+
+type Rename {
+  display_name: String,
+  force: Bool,
+}
+
+type AccountError =
+  | EmailTaken(email: String)
+  | Weak
+
+api fn signup(input: Signup) -> Result[User, AccountError]
+  route: POST "/users"
+  effects: store(users)
+  requires: is_email(input.email) && str_len(input.password) >= 8 && input.email != input.password
+{
+  let u = User {
+    id: next_id(users),
+    email: input.email,
+    display_name: input.display_name,
+    favorites: [],
+    scores: [],
+  }
+  insert(users, u)
+  return Ok(u)
+}
+
+fn renamed(u: User, name: String) -> User {
+  return User { id: u.id, email: u.email, display_name: name, favorites: [], scores: [None] }
+}
+
+api fn rename_user(id: Int, input: Rename) -> Result[User, AccountError]
+  route: PATCH "/users/{id}"
+  effects: store(users)
+  requires: str_len(trim(input.display_name)) > 0 || input.force && id > 0
+{
+  return match get(users, id) {
+    Some(u) => Ok(save(users, renamed(u, input.display_name))),
+    None => Err(Weak),
+  }
+}
+
+api fn ping() -> Unit
+  route: GET "/ping"
+{}
+
+api fn score(a: Int, b: Float, label: String) -> Float
+  route: GET "/score"
+  requires: a / 2 > 0 && b / 2.0 > 0.5 && a % 3 * 2 != 1 && label < "zz" && -a < 0
+{
+  return b
+}
+
+type Audit {
+  who: Int,
+  note: String,
+}
+
+fn audit_note(a: Audit) -> String {
+  return a.note
+}

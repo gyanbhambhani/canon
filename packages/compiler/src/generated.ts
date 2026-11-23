@@ -73,6 +73,15 @@ export function sha256Hex(text: string): string {
 
 export type CommentStyle = "#" | "//";
 
+/** A file a generator writes. */
+export interface GeneratedFile {
+  /** Relative to the output folder (the backend's canon_generated/, or the frontend's src/canon/). */
+  path: string;
+  text: string;
+  /** Written once if missing and never overwritten (main.py). */
+  userOwned?: boolean;
+}
+
 const HASH_RE = /^(#|\/\/) canon-hash: sha256:([0-9a-f]{16})$/m;
 
 /**

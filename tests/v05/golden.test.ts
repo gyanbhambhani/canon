@@ -29,16 +29,8 @@ function generated(name: "generateFastapi" | "generateTsClient", file: string): 
 
 describe("golden: the worked example's Python (M3)", () => {
   for (const f of ["models.py", "logic.py", "api.py"]) {
-    it.fails(f, () => {
+    it(f, () => {
       expect(generated("generateFastapi", f)).toBe(expected(`backend/canon_generated/${f}`));
-    });
-  }
-});
-
-describe("golden: the worked example's TypeScript (M4)", () => {
-  for (const f of ["types.ts", "validate.ts", "client.ts"]) {
-    it.fails(f, () => {
-      expect(generated("generateTsClient", f)).toBe(expected(`frontend/src/canon/${f}`));
     });
   }
 });
