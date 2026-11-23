@@ -1,0 +1,13 @@
+{
+  "id": "search-products",
+  "kind": "feature",
+  "title": "Search products by a case-insensitive name substring",
+  "features": [{ "module": "frontend/src/features/searchProducts.ts", "signature": "searchProducts(baseUrl: string, query: string): Promise<Outcome<Product[]>>" }],
+  "validation": [
+    {
+      "feature": "searchProducts",
+      "args": [{ "name": "query", "gen": "string" }],
+      "request": { "method": "GET", "path": "/search", "query": { "q": "$query" } }
+    }
+  ]
+}
