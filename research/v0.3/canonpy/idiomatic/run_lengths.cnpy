@@ -1,0 +1,8 @@
+def run_lengths(s: str) -> list[tuple[str, int]]:
+    runs = []
+    for c in s:
+        if len(runs) > 0 and runs[-1][0] == c:
+            runs[-1] = (c, runs[-1][1] + 1)
+        else:
+            runs.append((c, 1))
+    return runs

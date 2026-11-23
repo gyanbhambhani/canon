@@ -1,0 +1,7 @@
+def parse_sum(s: str) -> int:
+    total = 0
+    for item in s.split(","):
+        n = parse_int(item)
+        if n is not None:
+            total += n
+    return total

@@ -1,0 +1,26 @@
+{
+  "examples": {
+    "programs": 5,
+    "changed": 0,
+    "tokens_v02": 192.2,
+    "tokens_v03": 192.2,
+    "chars_v02": 565.6,
+    "chars_v03": 565.6
+  },
+  "tests/run": {
+    "programs": 27,
+    "changed": 2,
+    "tokens_v02": 124.18518518518519,
+    "tokens_v03": 124.14814814814815,
+    "chars_v02": 352.51851851851853,
+    "chars_v03": 352.3703703703704
+  },
+  "benchmark-v0.2": {
+    "programs": 1000,
+    "changed": 154,
+    "tokens_v02": 94.94,
+    "tokens_v03": 94.932,
+    "chars_v02": 291.689,
+    "chars_v03": 291.398
+  }
+}

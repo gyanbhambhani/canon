@@ -1,0 +1,14 @@
+def count_close(seg: str) -> int:
+    return len(seg.split(")")) - 1
+
+
+def balanced_parens(s: str) -> bool:
+    segs = s.split("(")
+    depth = 0
+    for i, seg in enumerate(segs):
+        if i > 0:
+            depth += 1
+        depth -= count_close(seg)
+        if depth < 0:
+            return False
+    return depth == 0

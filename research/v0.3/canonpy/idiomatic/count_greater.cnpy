@@ -1,0 +1,2 @@
+def count_greater(xs: list[int], limit: int) -> int:
+    return len([x for x in xs if x > limit])

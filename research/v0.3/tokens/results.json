@@ -1,0 +1,1564 @@
+{
+ "tokenizer": "Qwen/Qwen2.5-Coder-1.5B",
+ "headline": {
+  "all": {
+   "claude-opus-5-5|canon": 87.9,
+   "claude-opus-5-5|canon|all_runs_mean": 89.236,
+   "claude-opus-5-5|canon|median": 67.5,
+   "claude-opus-5-5|typescript": 110.6,
+   "claude-opus-5-5|typescript|all_runs_mean": 116.95,
+   "claude-opus-5-5|typescript|median": 91.5,
+   "gpt-6.2-sol|canon": 100.92,
+   "gpt-6.2-sol|canon|all_runs_mean": 100.64399999999999,
+   "gpt-6.2-sol|canon|median": 74.5,
+   "gpt-6.2-sol|typescript": 83.28,
+   "gpt-6.2-sol|typescript|all_runs_mean": 85.07799999999999,
+   "gpt-6.2-sol|typescript|median": 67.5,
+   "python|median": 42.0,
+   "python": 59.66,
+   "python_untyped": 50.7,
+   "n_tasks": 50
+  },
+  "basic": {
+   "claude-opus-5-5|canon": 65.85,
+   "claude-opus-5-5|canon|all_runs_mean": 66.9025,
+   "claude-opus-5-5|canon|median": 56.5,
+   "claude-opus-5-5|typescript": 92.1,
+   "claude-opus-5-5|typescript|all_runs_mean": 98.84,
+   "claude-opus-5-5|typescript|median": 82.5,
+   "gpt-6.2-sol|canon": 77.85,
+   "gpt-6.2-sol|canon|all_runs_mean": 77.6825,
+   "gpt-6.2-sol|canon|median": 65.5,
+   "gpt-6.2-sol|typescript": 67.825,
+   "gpt-6.2-sol|typescript|all_runs_mean": 69.505,
+   "gpt-6.2-sol|typescript|median": 59.0,
+   "python|median": 37.0,
+   "python": 43.25,
+   "python_untyped": 35.525,
+   "n_tasks": 40
+  },
+  "hard": {
+   "claude-opus-5-5|canon": 176.1,
+   "claude-opus-5-5|canon|all_runs_mean": 178.57,
+   "claude-opus-5-5|canon|median": 146.0,
+   "claude-opus-5-5|typescript": 184.6,
+   "claude-opus-5-5|typescript|all_runs_mean": 189.39,
+   "claude-opus-5-5|typescript|median": 165.0,
+   "gpt-6.2-sol|canon": 193.2,
+   "gpt-6.2-sol|canon|all_runs_mean": 192.49,
+   "gpt-6.2-sol|canon|median": 150.0,
+   "gpt-6.2-sol|typescript": 145.1,
+   "gpt-6.2-sol|typescript|all_runs_mean": 147.37,
+   "gpt-6.2-sol|typescript|median": 130.5,
+   "python|median": 129.0,
+   "python": 125.3,
+   "python_untyped": 111.4,
+   "n_tasks": 10
+  }
+ },
+ "per_task": {
+  "sum_evens": {
+   "tier": "basic",
+   "python": 29,
+   "python_untyped": 23,
+   "claude-opus-5-5|canon": 30,
+   "claude-opus-5-5|canon|modal_share": 1.0,
+   "claude-opus-5-5|canon|all_runs_mean": 30.0,
+   "claude-opus-5-5|typescript": 75,
+   "claude-opus-5-5|typescript|modal_share": 0.7,
+   "claude-opus-5-5|typescript|all_runs_mean": 75.6,
+   "gpt-6.2-sol|canon": 30,
+   "gpt-6.2-sol|canon|modal_share": 1.0,
+   "gpt-6.2-sol|canon|all_runs_mean": 30.0,
+   "gpt-6.2-sol|typescript": 53,
+   "gpt-6.2-sol|typescript|modal_share": 0.7,
+   "gpt-6.2-sol|typescript|all_runs_mean": 53.0
+  },
+  "count_vowels": {
+   "tier": "basic",
+   "python": 28,
+   "python_untyped": 23,
+   "claude-opus-5-5|canon": 68,
+   "claude-opus-5-5|canon|modal_share": 0.4,
+   "claude-opus-5-5|canon|all_runs_mean": 73.0,
+   "claude-opus-5-5|typescript": 73,
+   "claude-opus-5-5|typescript|modal_share": 0.5,
+   "claude-opus-5-5|typescript|all_runs_mean": 79.1,
+   "gpt-6.2-sol|canon": 61,
+   "gpt-6.2-sol|canon|modal_share": 0.3,
+   "gpt-6.2-sol|canon|all_runs_mean": 66.6,
+   "gpt-6.2-sol|typescript": 73,
+   "gpt-6.2-sol|typescript|modal_share": 0.7,
+   "gpt-6.2-sol|typescript|all_runs_mean": 73.1
+  },
+  "reverse_words": {
+   "tier": "basic",
+   "python": 22,
+   "python_untyped": 17,
+   "claude-opus-5-5|canon": 29,
+   "claude-opus-5-5|canon|modal_share": 1.0,
+   "claude-opus-5-5|canon|all_runs_mean": 29.0,
+   "claude-opus-5-5|typescript": 22,
+   "claude-opus-5-5|typescript|modal_share": 1.0,
+   "claude-opus-5-5|typescript|all_runs_mean": 22.0,
+   "gpt-6.2-sol|canon": 29,
+   "gpt-6.2-sol|canon|modal_share": 1.0,
+   "gpt-6.2-sol|canon|all_runs_mean": 29.0,
+   "gpt-6.2-sol|typescript": 22,
+   "gpt-6.2-sol|typescript|modal_share": 1.0,
+   "gpt-6.2-sol|typescript|all_runs_mean": 22.0
+  },
+  "fizzbuzz_list": {
+   "tier": "basic",
+   "python": 96,
+   "python_untyped": 86,
+   "claude-opus-5-5|canon": 122,
+   "claude-opus-5-5|canon|modal_share": 0.2,
+   "claude-opus-5-5|canon|all_runs_mean": 114.8,
+   "claude-opus-5-5|typescript": 115,
+   "claude-opus-5-5|typescript|modal_share": 1.0,
+   "claude-opus-5-5|typescript|all_runs_mean": 115.0,
+   "gpt-6.2-sol|canon": 105,
+   "gpt-6.2-sol|canon|modal_share": 0.5,
+   "gpt-6.2-sol|canon|all_runs_mean": 108.0,
+   "gpt-6.2-sol|typescript": 115,
+   "gpt-6.2-sol|typescript|modal_share": 1.0,
+   "gpt-6.2-sol|typescript|all_runs_mean": 115.0
+  },
+  "max_or_none": {
+   "tier": "basic",
+   "python": 28,
+   "python_untyped": 20,
+   "claude-opus-5-5|canon": 51,
+   "claude-opus-5-5|canon|modal_share": 0.8,
+   "claude-opus-5-5|canon|all_runs_mean": 53.0,
+   "claude-opus-5-5|typescript": 83,
+   "claude-opus-5-5|typescript|modal_share": 0.7,
+   "claude-opus-5-5|typescript|all_runs_mean": 84.8,
+   "gpt-6.2-sol|canon": 51,
+   "gpt-6.2-sol|canon|modal_share": 0.2,
+   "gpt-6.2-sol|canon|all_runs_mean": 49.4,
+   "gpt-6.2-sol|typescript": 54,
+   "gpt-6.2-sol|typescript|modal_share": 0.9,
+   "gpt-6.2-sol|typescript|all_runs_mean": 54.7
+  },
+  "is_palindrome": {
+   "tier": "basic",
+   "python": 19,
+   "python_untyped": 14,
+   "claude-opus-5-5|canon": 34,
+   "claude-opus-5-5|canon|modal_share": 0.3,
+   "claude-opus-5-5|canon|all_runs_mean": 37.1,
+   "claude-opus-5-5|typescript": 77,
+   "claude-opus-5-5|typescript|modal_share": 0.9,
+   "claude-opus-5-5|typescript|all_runs_mean": 78.6,
+   "gpt-6.2-sol|canon": 27,
+   "gpt-6.2-sol|canon|modal_share": 1.0,
+   "gpt-6.2-sol|canon|all_runs_mean": 27.0,
+   "gpt-6.2-sol|typescript": 69,
+   "gpt-6.2-sol|typescript|modal_share": 0.9,
+   "gpt-6.2-sol|typescript|all_runs_mean": 69.0
+  },
+  "factorial": {
+   "tier": "basic",
+   "python": 37,
+   "python_untyped": 32,
+   "claude-opus-5-5|canon": 68,
+   "claude-opus-5-5|canon|modal_share": 0.6,
+   "claude-opus-5-5|canon|all_runs_mean": 63.3,
+   "claude-opus-5-5|typescript": 75,
+   "claude-opus-5-5|typescript|modal_share": 0.4,
+   "claude-opus-5-5|typescript|all_runs_mean": 77.1,
+   "gpt-6.2-sol|canon": 60,
+   "gpt-6.2-sol|canon|modal_share": 0.5,
+   "gpt-6.2-sol|canon|all_runs_mean": 60.0,
+   "gpt-6.2-sol|typescript": 106,
+   "gpt-6.2-sol|typescript|modal_share": 0.2,
+   "gpt-6.2-sol|typescript|all_runs_mean": 104.9
+  },
+  "fib": {
+   "tier": "basic",
+   "python": 42,
+   "python_untyped": 37,
+   "claude-opus-5-5|canon": 92,
+   "claude-opus-5-5|canon|modal_share": 0.5,
+   "claude-opus-5-5|canon|all_runs_mean": 91.8,
+   "claude-opus-5-5|typescript": 95,
+   "claude-opus-5-5|typescript|modal_share": 1.0,
+   "claude-opus-5-5|typescript|all_runs_mean": 95.0,
+   "gpt-6.2-sol|canon": 92,
+   "gpt-6.2-sol|canon|modal_share": 0.5,
+   "gpt-6.2-sol|canon|all_runs_mean": 90.6,
+   "gpt-6.2-sol|typescript": 105,
+   "gpt-6.2-sol|typescript|modal_share": 0.2,
+   "gpt-6.2-sol|typescript|all_runs_mean": 121.6
+  },
+  "gcd": {
+   "tier": "basic",
+   "python": 35,
+   "python_untyped": 28,
+   "claude-opus-5-5|canon": 79,
+   "claude-opus-5-5|canon|modal_share": 0.6,
+   "claude-opus-5-5|canon|all_runs_mean": 70.6,
+   "claude-opus-5-5|typescript": 63,
+   "claude-opus-5-5|typescript|modal_share": 1.0,
+   "claude-opus-5-5|typescript|all_runs_mean": 63.0,
+   "gpt-6.2-sol|canon": 57,
+   "gpt-6.2-sol|canon|modal_share": 1.0,
+   "gpt-6.2-sol|canon|all_runs_mean": 57.0,
+   "gpt-6.2-sol|typescript": 55,
+   "gpt-6.2-sol|typescript|modal_share": 0.9,
+   "gpt-6.2-sol|typescript|all_runs_mean": 55.0
+  },
+  "is_prime": {
+   "tier": "basic",
+   "python": 58,
+   "python_untyped": 53,
+   "claude-opus-5-5|canon": 68,
+   "claude-opus-5-5|canon|modal_share": 0.8,
+   "claude-opus-5-5|canon|all_runs_mean": 70.9,
+   "claude-opus-5-5|typescript": 153,
+   "claude-opus-5-5|typescript|modal_share": 0.4,
+   "claude-opus-5-5|typescript|all_runs_mean": 346.7,
+   "gpt-6.2-sol|canon": 87,
+   "gpt-6.2-sol|canon|modal_share": 1.0,
+   "gpt-6.2-sol|canon|all_runs_mean": 87.0,
+   "gpt-6.2-sol|typescript": 119,
+   "gpt-6.2-sol|typescript|modal_share": 0.2,
+   "gpt-6.2-sol|typescript|all_runs_mean": 127.1
+  },
+  "digit_sum": {
+   "tier": "basic",
+   "python": 43,
+   "python_untyped": 38,
+   "claude-opus-5-5|canon": 74,
+   "claude-opus-5-5|canon|modal_share": 0.8,
+   "claude-opus-5-5|canon|all_runs_mean": 74.0,
+   "claude-opus-5-5|typescript": 220,
+   "claude-opus-5-5|typescript|modal_share": 0.1,
+   "claude-opus-5-5|typescript|all_runs_mean": 142.3,
+   "gpt-6.2-sol|canon": 66,
+   "gpt-6.2-sol|canon|modal_share": 0.9,
+   "gpt-6.2-sol|canon|all_runs_mean": 65.1,
+   "gpt-6.2-sol|typescript": 62,
+   "gpt-6.2-sol|typescript|modal_share": 0.3,
+   "gpt-6.2-sol|typescript|all_runs_mean": 72.7
+  },
+  "average": {
+   "tier": "basic",
+   "python": 31,
+   "python_untyped": 25,
+   "claude-opus-5-5|canon": 46,
+   "claude-opus-5-5|canon|modal_share": 1.0,
+   "claude-opus-5-5|canon|all_runs_mean": 46.0,
+   "claude-opus-5-5|typescript": 59,
+   "claude-opus-5-5|typescript|modal_share": 0.9,
+   "claude-opus-5-5|typescript|all_runs_mean": 65.0,
+   "gpt-6.2-sol|canon": 46,
+   "gpt-6.2-sol|canon|modal_share": 0.7,
+   "gpt-6.2-sol|canon|all_runs_mean": 46.0,
+   "gpt-6.2-sol|typescript": 59,
+   "gpt-6.2-sol|typescript|modal_share": 0.7,
+   "gpt-6.2-sol|typescript|all_runs_mean": 64.3
+  },
+  "running_total": {
+   "tier": "basic",
+   "python": 46,
+   "python_untyped": 35,
+   "claude-opus-5-5|canon": 53,
+   "claude-opus-5-5|canon|modal_share": 0.8,
+   "claude-opus-5-5|canon|all_runs_mean": 53.0,
+   "claude-opus-5-5|typescript": 69,
+   "claude-opus-5-5|typescript|modal_share": 0.7,
+   "claude-opus-5-5|typescript|all_runs_mean": 63.9,
+   "gpt-6.2-sol|canon": 60,
+   "gpt-6.2-sol|canon|modal_share": 0.8,
+   "gpt-6.2-sol|canon|all_runs_mean": 59.0,
+   "gpt-6.2-sol|typescript": 52,
+   "gpt-6.2-sol|typescript|modal_share": 1.0,
+   "gpt-6.2-sol|typescript|all_runs_mean": 52.0
+  },
+  "dedupe": {
+   "tier": "basic",
+   "python": 56,
+   "python_untyped": 41,
+   "claude-opus-5-5|canon": 52,
+   "claude-opus-5-5|canon|modal_share": 0.4,
+   "claude-opus-5-5|canon|all_runs_mean": 58.4,
+   "claude-opus-5-5|typescript": 63,
+   "claude-opus-5-5|typescript|modal_share": 1.0,
+   "claude-opus-5-5|typescript|all_runs_mean": 63.0,
+   "gpt-6.2-sol|canon": 33,
+   "gpt-6.2-sol|canon|modal_share": 0.7,
+   "gpt-6.2-sol|canon|all_runs_mean": 33.6,
+   "gpt-6.2-sol|typescript": 63,
+   "gpt-6.2-sol|typescript|modal_share": 0.5,
+   "gpt-6.2-sol|typescript|all_runs_mean": 59.1
+  },
+  "count_word": {
+   "tier": "basic",
+   "python": 23,
+   "python_untyped": 16,
+   "claude-opus-5-5|canon": 38,
+   "claude-opus-5-5|canon|modal_share": 0.5,
+   "claude-opus-5-5|canon|all_runs_mean": 44.7,
+   "claude-opus-5-5|typescript": 75,
+   "claude-opus-5-5|typescript|modal_share": 0.9,
+   "claude-opus-5-5|typescript|all_runs_mean": 75.0,
+   "gpt-6.2-sol|canon": 71,
+   "gpt-6.2-sol|canon|modal_share": 0.7,
+   "gpt-6.2-sol|canon|all_runs_mean": 66.5,
+   "gpt-6.2-sol|typescript": 70,
+   "gpt-6.2-sol|typescript|modal_share": 0.2,
+   "gpt-6.2-sol|typescript|all_runs_mean": 63.1
+  },
+  "longest_word": {
+   "tier": "basic",
+   "python": 41,
+   "python_untyped": 36,
+   "claude-opus-5-5|canon": 51,
+   "claude-opus-5-5|canon|modal_share": 0.4,
+   "claude-opus-5-5|canon|all_runs_mean": 57.7,
+   "claude-opus-5-5|typescript": 112,
+   "claude-opus-5-5|typescript|modal_share": 0.3,
+   "claude-opus-5-5|typescript|all_runs_mean": 92.8,
+   "gpt-6.2-sol|canon": 68,
+   "gpt-6.2-sol|canon|modal_share": 0.5,
+   "gpt-6.2-sol|canon|all_runs_mean": 69.2,
+   "gpt-6.2-sol|typescript": 50,
+   "gpt-6.2-sol|typescript|modal_share": 1.0,
+   "gpt-6.2-sol|typescript|all_runs_mean": 50.0
+  },
+  "clamp": {
+   "tier": "basic",
+   "python": 27,
+   "python_untyped": 18,
+   "claude-opus-5-5|canon": 47,
+   "claude-opus-5-5|canon|modal_share": 0.8,
+   "claude-opus-5-5|canon|all_runs_mean": 45.9,
+   "claude-opus-5-5|typescript": 50,
+   "claude-opus-5-5|typescript|modal_share": 0.7,
+   "claude-opus-5-5|typescript|all_runs_mean": 47.6,
+   "gpt-6.2-sol|canon": 36,
+   "gpt-6.2-sol|canon|modal_share": 0.9,
+   "gpt-6.2-sol|canon|all_runs_mean": 35.2,
+   "gpt-6.2-sol|typescript": 31,
+   "gpt-6.2-sol|typescript|modal_share": 0.9,
+   "gpt-6.2-sol|typescript|all_runs_mean": 30.9
+  },
+  "second_largest": {
+   "tier": "basic",
+   "python": 44,
+   "python_untyped": 36,
+   "claude-opus-5-5|canon": 59,
+   "claude-opus-5-5|canon|modal_share": 0.5,
+   "claude-opus-5-5|canon|all_runs_mean": 63.4,
+   "claude-opus-5-5|typescript": 128,
+   "claude-opus-5-5|typescript|modal_share": 0.4,
+   "claude-opus-5-5|typescript|all_runs_mean": 122.8,
+   "gpt-6.2-sol|canon": 99,
+   "gpt-6.2-sol|canon|modal_share": 0.4,
+   "gpt-6.2-sol|canon|all_runs_mean": 115.1,
+   "gpt-6.2-sol|typescript": 98,
+   "gpt-6.2-sol|typescript|modal_share": 1.0,
+   "gpt-6.2-sol|typescript|all_runs_mean": 98.0
+  },
+  "merge_sorted": {
+   "tier": "basic",
+   "python": 102,
+   "python_untyped": 88,
+   "claude-opus-5-5|canon": 49,
+   "claude-opus-5-5|canon|modal_share": 0.4,
+   "claude-opus-5-5|canon|all_runs_mean": 52.6,
+   "claude-opus-5-5|typescript": 154,
+   "claude-opus-5-5|typescript|modal_share": 0.7,
+   "claude-opus-5-5|typescript|all_runs_mean": 155.5,
+   "gpt-6.2-sol|canon": 169,
+   "gpt-6.2-sol|canon|modal_share": 0.8,
+   "gpt-6.2-sol|canon|all_runs_mean": 165.1,
+   "gpt-6.2-sol|typescript": 143,
+   "gpt-6.2-sol|typescript|modal_share": 0.8,
+   "gpt-6.2-sol|typescript|all_runs_mean": 143.0
+  },
+  "chunk": {
+   "tier": "basic",
+   "python": 37,
+   "python_untyped": 27,
+   "claude-opus-5-5|canon": 65,
+   "claude-opus-5-5|canon|modal_share": 0.6,
+   "claude-opus-5-5|canon|all_runs_mean": 67.8,
+   "claude-opus-5-5|typescript": 91,
+   "claude-opus-5-5|typescript|modal_share": 1.0,
+   "claude-opus-5-5|typescript|all_runs_mean": 91.0,
+   "gpt-6.2-sol|canon": 65,
+   "gpt-6.2-sol|canon|modal_share": 0.6,
+   "gpt-6.2-sol|canon|all_runs_mean": 65.0,
+   "gpt-6.2-sol|typescript": 59,
+   "gpt-6.2-sol|typescript|modal_share": 0.5,
+   "gpt-6.2-sol|typescript|all_runs_mean": 74.2
+  },
+  "flatten": {
+   "tier": "basic",
+   "python": 27,
+   "python_untyped": 19,
+   "claude-opus-5-5|canon": 49,
+   "claude-opus-5-5|canon|modal_share": 0.8,
+   "claude-opus-5-5|canon|all_runs_mean": 50.0,
+   "claude-opus-5-5|typescript": 53,
+   "claude-opus-5-5|typescript|modal_share": 1.0,
+   "claude-opus-5-5|typescript|all_runs_mean": 53.0,
+   "gpt-6.2-sol|canon": 56,
+   "gpt-6.2-sol|canon|modal_share": 0.8,
+   "gpt-6.2-sol|canon|all_runs_mean": 57.3,
+   "gpt-6.2-sol|typescript": 19,
+   "gpt-6.2-sol|typescript|modal_share": 1.0,
+   "gpt-6.2-sol|typescript|all_runs_mean": 19.0
+  },
+  "zip_sum": {
+   "tier": "basic",
+   "python": 33,
+   "python_untyped": 23,
+   "claude-opus-5-5|canon": 65,
+   "claude-opus-5-5|canon|modal_share": 0.5,
+   "claude-opus-5-5|canon|all_runs_mean": 65.0,
+   "claude-opus-5-5|typescript": 83,
+   "claude-opus-5-5|typescript|modal_share": 0.9,
+   "claude-opus-5-5|typescript|all_runs_mean": 82.4,
+   "gpt-6.2-sol|canon": 36,
+   "gpt-6.2-sol|canon|modal_share": 1.0,
+   "gpt-6.2-sol|canon|all_runs_mean": 36.0,
+   "gpt-6.2-sol|typescript": 68,
+   "gpt-6.2-sol|typescript|modal_share": 0.5,
+   "gpt-6.2-sol|typescript|all_runs_mean": 68.9
+  },
+  "index_of": {
+   "tier": "basic",
+   "python": 40,
+   "python_untyped": 30,
+   "claude-opus-5-5|canon": 49,
+   "claude-opus-5-5|canon|modal_share": 1.0,
+   "claude-opus-5-5|canon|all_runs_mean": 49.0,
+   "claude-opus-5-5|typescript": 56,
+   "claude-opus-5-5|typescript|modal_share": 0.8,
+   "claude-opus-5-5|typescript|all_runs_mean": 62.7,
+   "gpt-6.2-sol|canon": 58,
+   "gpt-6.2-sol|canon|modal_share": 0.9,
+   "gpt-6.2-sol|canon|all_runs_mean": 58.0,
+   "gpt-6.2-sol|typescript": 36,
+   "gpt-6.2-sol|typescript|modal_share": 1.0,
+   "gpt-6.2-sol|typescript|all_runs_mean": 36.0
+  },
+  "count_greater": {
+   "tier": "basic",
+   "python": 29,
+   "python_untyped": 21,
+   "claude-opus-5-5|canon": 38,
+   "claude-opus-5-5|canon|modal_share": 1.0,
+   "claude-opus-5-5|canon|all_runs_mean": 38.0,
+   "claude-opus-5-5|typescript": 50,
+   "claude-opus-5-5|typescript|modal_share": 1.0,
+   "claude-opus-5-5|typescript|all_runs_mean": 50.0,
+   "gpt-6.2-sol|canon": 51,
+   "gpt-6.2-sol|canon|modal_share": 1.0,
+   "gpt-6.2-sol|canon|all_runs_mean": 51.0,
+   "gpt-6.2-sol|typescript": 50,
+   "gpt-6.2-sol|typescript|modal_share": 0.7,
+   "gpt-6.2-sol|typescript|all_runs_mean": 50.0
+  },
+  "word_lengths": {
+   "tier": "basic",
+   "python": 25,
+   "python_untyped": 19,
+   "claude-opus-5-5|canon": 39,
+   "claude-opus-5-5|canon|modal_share": 1.0,
+   "claude-opus-5-5|canon|all_runs_mean": 39.0,
+   "claude-opus-5-5|typescript": 44,
+   "claude-opus-5-5|typescript|modal_share": 0.8,
+   "claude-opus-5-5|typescript|all_runs_mean": 47.5,
+   "gpt-6.2-sol|canon": 35,
+   "gpt-6.2-sol|canon|modal_share": 0.8,
+   "gpt-6.2-sol|canon|all_runs_mean": 35.8,
+   "gpt-6.2-sol|typescript": 32,
+   "gpt-6.2-sol|typescript|modal_share": 0.5,
+   "gpt-6.2-sol|typescript|all_runs_mean": 31.4
+  },
+  "repeat_string": {
+   "tier": "basic",
+   "python": 20,
+   "python_untyped": 13,
+   "claude-opus-5-5|canon": 54,
+   "claude-opus-5-5|canon|modal_share": 0.6,
+   "claude-opus-5-5|canon|all_runs_mean": 56.6,
+   "claude-opus-5-5|typescript": 111,
+   "claude-opus-5-5|typescript|modal_share": 0.3,
+   "claude-opus-5-5|typescript|all_runs_mean": 113.6,
+   "gpt-6.2-sol|canon": 97,
+   "gpt-6.2-sol|canon|modal_share": 0.4,
+   "gpt-6.2-sol|canon|all_runs_mean": 92.2,
+   "gpt-6.2-sol|typescript": 21,
+   "gpt-6.2-sol|typescript|modal_share": 1.0,
+   "gpt-6.2-sol|typescript|all_runs_mean": 21.0
+  },
+  "join_ints": {
+   "tier": "basic",
+   "python": 28,
+   "python_untyped": 20,
+   "claude-opus-5-5|canon": 32,
+   "claude-opus-5-5|canon|modal_share": 1.0,
+   "claude-opus-5-5|canon|all_runs_mean": 32.0,
+   "claude-opus-5-5|typescript": 93,
+   "claude-opus-5-5|typescript|modal_share": 0.2,
+   "claude-opus-5-5|typescript|all_runs_mean": 118.5,
+   "gpt-6.2-sol|canon": 32,
+   "gpt-6.2-sol|canon|modal_share": 0.9,
+   "gpt-6.2-sol|canon|all_runs_mean": 32.6,
+   "gpt-6.2-sol|typescript": 36,
+   "gpt-6.2-sol|typescript|modal_share": 0.9,
+   "gpt-6.2-sol|typescript|all_runs_mean": 35.8
+  },
+  "parse_sum": {
+   "tier": "basic",
+   "python": 52,
+   "python_untyped": 47,
+   "claude-opus-5-5|canon": 248,
+   "claude-opus-5-5|canon|modal_share": 0.1,
+   "claude-opus-5-5|canon|all_runs_mean": 241.5,
+   "claude-opus-5-5|typescript": 92,
+   "claude-opus-5-5|typescript|modal_share": 0.3,
+   "claude-opus-5-5|typescript|all_runs_mean": 93.1,
+   "gpt-6.2-sol|canon": 158,
+   "gpt-6.2-sol|canon|modal_share": 0.1,
+   "gpt-6.2-sol|canon|all_runs_mean": 176.5,
+   "gpt-6.2-sol|typescript": 59,
+   "gpt-6.2-sol|typescript|modal_share": 0.7,
+   "gpt-6.2-sol|typescript|all_runs_mean": 62.0
+  },
+  "min_max": {
+   "tier": "basic",
+   "python": 35,
+   "python_untyped": 23,
+   "claude-opus-5-5|canon": 67,
+   "claude-opus-5-5|canon|modal_share": 0.4,
+   "claude-opus-5-5|canon|all_runs_mean": 73.7,
+   "claude-opus-5-5|typescript": 112,
+   "claude-opus-5-5|typescript|modal_share": 1.0,
+   "claude-opus-5-5|typescript|all_runs_mean": 112.0,
+   "gpt-6.2-sol|canon": 67,
+   "gpt-6.2-sol|canon|modal_share": 0.4,
+   "gpt-6.2-sol|canon|all_runs_mean": 82.2,
+   "gpt-6.2-sol|typescript": 87,
+   "gpt-6.2-sol|typescript|modal_share": 0.2,
+   "gpt-6.2-sol|typescript|all_runs_mean": 85.6
+  },
+  "pairs_summing": {
+   "tier": "basic",
+   "python": 65,
+   "python_untyped": 57,
+   "claude-opus-5-5|canon": 75,
+   "claude-opus-5-5|canon|modal_share": 0.3,
+   "claude-opus-5-5|canon|all_runs_mean": 83.4,
+   "claude-opus-5-5|typescript": 98,
+   "claude-opus-5-5|typescript|modal_share": 0.3,
+   "claude-opus-5-5|typescript|all_runs_mean": 191.4,
+   "gpt-6.2-sol|canon": 147,
+   "gpt-6.2-sol|canon|modal_share": 0.1,
+   "gpt-6.2-sol|canon|all_runs_mean": 153.2,
+   "gpt-6.2-sol|typescript": 183,
+   "gpt-6.2-sol|typescript|modal_share": 0.1,
+   "gpt-6.2-sol|typescript|all_runs_mean": 192.0
+  },
+  "rotate_left": {
+   "tier": "basic",
+   "python": 42,
+   "python_untyped": 33,
+   "claude-opus-5-5|canon": 89,
+   "claude-opus-5-5|canon|modal_share": 0.8,
+   "claude-opus-5-5|canon|all_runs_mean": 89.0,
+   "claude-opus-5-5|typescript": 82,
+   "claude-opus-5-5|typescript|modal_share": 0.9,
+   "claude-opus-5-5|typescript|all_runs_mean": 80.0,
+   "gpt-6.2-sol|canon": 80,
+   "gpt-6.2-sol|canon|modal_share": 0.4,
+   "gpt-6.2-sol|canon|all_runs_mean": 82.6,
+   "gpt-6.2-sol|typescript": 54,
+   "gpt-6.2-sol|typescript|modal_share": 0.6,
+   "gpt-6.2-sol|typescript|all_runs_mean": 52.4
+  },
+  "balanced_parens": {
+   "tier": "basic",
+   "python": 66,
+   "python_untyped": 61,
+   "claude-opus-5-5|canon": 114,
+   "claude-opus-5-5|canon|modal_share": 0.2,
+   "claude-opus-5-5|canon|all_runs_mean": 115.0,
+   "claude-opus-5-5|typescript": 99,
+   "claude-opus-5-5|typescript|modal_share": 0.5,
+   "claude-opus-5-5|typescript|all_runs_mean": 97.5,
+   "gpt-6.2-sol|canon": 83,
+   "gpt-6.2-sol|canon|modal_share": 0.4,
+   "gpt-6.2-sol|canon|all_runs_mean": 92.9,
+   "gpt-6.2-sol|typescript": 79,
+   "gpt-6.2-sol|typescript|modal_share": 0.6,
+   "gpt-6.2-sol|typescript|all_runs_mean": 77.4
+  },
+  "collatz_steps": {
+   "tier": "basic",
+   "python": 64,
+   "python_untyped": 59,
+   "claude-opus-5-5|canon": 98,
+   "claude-opus-5-5|canon|modal_share": 0.8,
+   "claude-opus-5-5|canon|all_runs_mean": 98.0,
+   "claude-opus-5-5|typescript": 280,
+   "claude-opus-5-5|typescript|modal_share": 0.1,
+   "claude-opus-5-5|typescript|all_runs_mean": 271.0,
+   "gpt-6.2-sol|canon": 404,
+   "gpt-6.2-sol|canon|modal_share": 0.1,
+   "gpt-6.2-sol|canon|all_runs_mean": 338.5,
+   "gpt-6.2-sol|typescript": 104,
+   "gpt-6.2-sol|typescript|modal_share": 0.4,
+   "gpt-6.2-sol|typescript|all_runs_mean": 108.0
+  },
+  "binary_string": {
+   "tier": "basic",
+   "python": 55,
+   "python_untyped": 50,
+   "claude-opus-5-5|canon": 79,
+   "claude-opus-5-5|canon|modal_share": 1.0,
+   "claude-opus-5-5|canon|all_runs_mean": 79.0,
+   "claude-opus-5-5|typescript": 34,
+   "claude-opus-5-5|typescript|modal_share": 0.4,
+   "claude-opus-5-5|typescript|all_runs_mean": 48.4,
+   "gpt-6.2-sol|canon": 80,
+   "gpt-6.2-sol|canon|modal_share": 0.7,
+   "gpt-6.2-sol|canon|all_runs_mean": 82.0,
+   "gpt-6.2-sol|typescript": 18,
+   "gpt-6.2-sol|typescript|modal_share": 1.0,
+   "gpt-6.2-sol|typescript|all_runs_mean": 18.0
+  },
+  "mean_above": {
+   "tier": "basic",
+   "python": 52,
+   "python_untyped": 44,
+   "claude-opus-5-5|canon": 67,
+   "claude-opus-5-5|canon|modal_share": 1.0,
+   "claude-opus-5-5|canon|all_runs_mean": 67.0,
+   "claude-opus-5-5|typescript": 74,
+   "claude-opus-5-5|typescript|modal_share": 1.0,
+   "claude-opus-5-5|typescript|all_runs_mean": 74.0,
+   "gpt-6.2-sol|canon": 88,
+   "gpt-6.2-sol|canon|modal_share": 0.6,
+   "gpt-6.2-sol|canon|all_runs_mean": 79.6,
+   "gpt-6.2-sol|typescript": 74,
+   "gpt-6.2-sol|typescript|modal_share": 1.0,
+   "gpt-6.2-sol|typescript|all_runs_mean": 74.0
+  },
+  "most_common_word": {
+   "tier": "basic",
+   "python": 96,
+   "python_untyped": 79,
+   "claude-opus-5-5|canon": 85,
+   "claude-opus-5-5|canon|modal_share": 0.3,
+   "claude-opus-5-5|canon|all_runs_mean": 87.9,
+   "claude-opus-5-5|typescript": 178,
+   "claude-opus-5-5|typescript|modal_share": 0.3,
+   "claude-opus-5-5|typescript|all_runs_mean": 169.0,
+   "gpt-6.2-sol|canon": 102,
+   "gpt-6.2-sol|canon|modal_share": 0.6,
+   "gpt-6.2-sol|canon|all_runs_mean": 104.2,
+   "gpt-6.2-sol|typescript": 126,
+   "gpt-6.2-sol|typescript|modal_share": 0.2,
+   "gpt-6.2-sol|typescript|all_runs_mean": 136.3
+  },
+  "triangle_numbers": {
+   "tier": "basic",
+   "python": 37,
+   "python_untyped": 31,
+   "claude-opus-5-5|canon": 48,
+   "claude-opus-5-5|canon|modal_share": 0.9,
+   "claude-opus-5-5|canon|all_runs_mean": 48.9,
+   "claude-opus-5-5|typescript": 88,
+   "claude-opus-5-5|typescript|modal_share": 0.8,
+   "claude-opus-5-5|typescript|all_runs_mean": 84.8,
+   "gpt-6.2-sol|canon": 89,
+   "gpt-6.2-sol|canon|modal_share": 0.4,
+   "gpt-6.2-sol|canon|all_runs_mean": 89.3,
+   "gpt-6.2-sol|typescript": 59,
+   "gpt-6.2-sol|typescript|modal_share": 0.7,
+   "gpt-6.2-sol|typescript|all_runs_mean": 58.9
+  },
+  "count_char": {
+   "tier": "basic",
+   "python": 20,
+   "python_untyped": 13,
+   "claude-opus-5-5|canon": 47,
+   "claude-opus-5-5|canon|modal_share": 0.2,
+   "claude-opus-5-5|canon|all_runs_mean": 50.1,
+   "claude-opus-5-5|typescript": 67,
+   "claude-opus-5-5|typescript|modal_share": 0.3,
+   "claude-opus-5-5|typescript|all_runs_mean": 107.5,
+   "gpt-6.2-sol|canon": 27,
+   "gpt-6.2-sol|canon|modal_share": 1.0,
+   "gpt-6.2-sol|canon|all_runs_mean": 27.0,
+   "gpt-6.2-sol|typescript": 50,
+   "gpt-6.2-sol|typescript|modal_share": 0.7,
+   "gpt-6.2-sol|typescript|all_runs_mean": 50.0
+  },
+  "safe_div": {
+   "tier": "basic",
+   "python": 34,
+   "python_untyped": 25,
+   "claude-opus-5-5|canon": 37,
+   "claude-opus-5-5|canon|modal_share": 1.0,
+   "claude-opus-5-5|canon|all_runs_mean": 37.0,
+   "claude-opus-5-5|typescript": 55,
+   "claude-opus-5-5|typescript|modal_share": 0.8,
+   "claude-opus-5-5|typescript|all_runs_mean": 56.8,
+   "gpt-6.2-sol|canon": 37,
+   "gpt-6.2-sol|canon|modal_share": 1.0,
+   "gpt-6.2-sol|canon|all_runs_mean": 37.0,
+   "gpt-6.2-sol|typescript": 33,
+   "gpt-6.2-sol|typescript|modal_share": 0.9,
+   "gpt-6.2-sol|typescript|all_runs_mean": 33.8
+  },
+  "grade": {
+   "tier": "basic",
+   "python": 66,
+   "python_untyped": 61,
+   "claude-opus-5-5|canon": 79,
+   "claude-opus-5-5|canon|modal_share": 1.0,
+   "claude-opus-5-5|canon|all_runs_mean": 79.0,
+   "claude-opus-5-5|typescript": 83,
+   "claude-opus-5-5|typescript|modal_share": 0.7,
+   "claude-opus-5-5|typescript|all_runs_mean": 84.6,
+   "gpt-6.2-sol|canon": 75,
+   "gpt-6.2-sol|canon|modal_share": 1.0,
+   "gpt-6.2-sol|canon|all_runs_mean": 75.0,
+   "gpt-6.2-sol|typescript": 67,
+   "gpt-6.2-sol|typescript|modal_share": 1.0,
+   "gpt-6.2-sol|typescript|all_runs_mean": 67.0
+  },
+  "total_area": {
+   "tier": "hard",
+   "python": 150,
+   "python_untyped": 138,
+   "claude-opus-5-5|canon": 122,
+   "claude-opus-5-5|canon|modal_share": 1.0,
+   "claude-opus-5-5|canon|all_runs_mean": 122.0,
+   "claude-opus-5-5|typescript": 184,
+   "claude-opus-5-5|typescript|modal_share": 0.8,
+   "claude-opus-5-5|typescript|all_runs_mean": 184.0,
+   "gpt-6.2-sol|canon": 139,
+   "gpt-6.2-sol|canon|modal_share": 0.4,
+   "gpt-6.2-sol|canon|all_runs_mean": 134.4,
+   "gpt-6.2-sol|typescript": 157,
+   "gpt-6.2-sol|typescript|modal_share": 1.0,
+   "gpt-6.2-sol|typescript|all_runs_mean": 157.0
+  },
+  "parse_pairs": {
+   "tier": "hard",
+   "python": 154,
+   "python_untyped": 134,
+   "claude-opus-5-5|canon": 373,
+   "claude-opus-5-5|canon|modal_share": 0.1,
+   "claude-opus-5-5|canon|all_runs_mean": 359.1,
+   "claude-opus-5-5|typescript": 278,
+   "claude-opus-5-5|typescript|modal_share": 0.1,
+   "claude-opus-5-5|typescript|all_runs_mean": 283.4,
+   "gpt-6.2-sol|canon": 338,
+   "gpt-6.2-sol|canon|modal_share": 0.1,
+   "gpt-6.2-sol|canon|all_runs_mean": 329.7,
+   "gpt-6.2-sol|typescript": 228,
+   "gpt-6.2-sol|typescript|modal_share": 0.3,
+   "gpt-6.2-sol|typescript|all_runs_mean": 221.4
+  },
+  "restock": {
+   "tier": "hard",
+   "python": 85,
+   "python_untyped": 77,
+   "claude-opus-5-5|canon": 74,
+   "claude-opus-5-5|canon|modal_share": 1.0,
+   "claude-opus-5-5|canon|all_runs_mean": 74.0,
+   "claude-opus-5-5|typescript": 144,
+   "claude-opus-5-5|typescript|modal_share": 0.4,
+   "claude-opus-5-5|typescript|all_runs_mean": 152.6,
+   "gpt-6.2-sol|canon": 180,
+   "gpt-6.2-sol|canon|modal_share": 0.1,
+   "gpt-6.2-sol|canon|all_runs_mean": 209.2,
+   "gpt-6.2-sol|typescript": 91,
+   "gpt-6.2-sol|typescript|modal_share": 0.4,
+   "gpt-6.2-sol|typescript|all_runs_mean": 107.8
+  },
+  "apply_ops": {
+   "tier": "hard",
+   "python": 153,
+   "python_untyped": 143,
+   "claude-opus-5-5|canon": 202,
+   "claude-opus-5-5|canon|modal_share": 0.1,
+   "claude-opus-5-5|canon|all_runs_mean": 159.2,
+   "claude-opus-5-5|typescript": 178,
+   "claude-opus-5-5|typescript|modal_share": 1.0,
+   "claude-opus-5-5|typescript|all_runs_mean": 178.0,
+   "gpt-6.2-sol|canon": 161,
+   "gpt-6.2-sol|canon|modal_share": 0.5,
+   "gpt-6.2-sol|canon|all_runs_mean": 172.4,
+   "gpt-6.2-sol|typescript": 153,
+   "gpt-6.2-sol|typescript|modal_share": 0.7,
+   "gpt-6.2-sol|typescript|all_runs_mean": 154.5
+  },
+  "rpn": {
+   "tier": "hard",
+   "python": 235,
+   "python_untyped": 224,
+   "claude-opus-5-5|canon": 359,
+   "claude-opus-5-5|canon|modal_share": 0.1,
+   "claude-opus-5-5|canon|all_runs_mean": 424.6,
+   "claude-opus-5-5|typescript": 357,
+   "claude-opus-5-5|typescript|modal_share": 0.1,
+   "claude-opus-5-5|typescript|all_runs_mean": 399.9,
+   "gpt-6.2-sol|canon": 471,
+   "gpt-6.2-sol|canon|modal_share": 0.1,
+   "gpt-6.2-sol|canon|all_runs_mean": 441.7,
+   "gpt-6.2-sol|typescript": 299,
+   "gpt-6.2-sol|typescript|modal_share": 0.4,
+   "gpt-6.2-sol|typescript|all_runs_mean": 306.2
+  },
+  "word_counts_sorted": {
+   "tier": "hard",
+   "python": 77,
+   "python_untyped": 61,
+   "claude-opus-5-5|canon": 72,
+   "claude-opus-5-5|canon|modal_share": 0.4,
+   "claude-opus-5-5|canon|all_runs_mean": 71.2,
+   "claude-opus-5-5|typescript": 152,
+   "claude-opus-5-5|typescript|modal_share": 0.2,
+   "claude-opus-5-5|typescript|all_runs_mean": 143.6,
+   "gpt-6.2-sol|canon": 74,
+   "gpt-6.2-sol|canon|modal_share": 1.0,
+   "gpt-6.2-sol|canon|all_runs_mean": 74.0,
+   "gpt-6.2-sol|typescript": 108,
+   "gpt-6.2-sol|typescript|modal_share": 0.2,
+   "gpt-6.2-sol|typescript|all_runs_mean": 104.4
+  },
+  "transpose": {
+   "tier": "hard",
+   "python": 42,
+   "python_untyped": 33,
+   "claude-opus-5-5|canon": 98,
+   "claude-opus-5-5|canon|modal_share": 0.2,
+   "claude-opus-5-5|canon|all_runs_mean": 112.0,
+   "claude-opus-5-5|typescript": 121,
+   "claude-opus-5-5|typescript|modal_share": 0.8,
+   "claude-opus-5-5|typescript|all_runs_mean": 119.8,
+   "gpt-6.2-sol|canon": 100,
+   "gpt-6.2-sol|canon|modal_share": 0.1,
+   "gpt-6.2-sol|canon|all_runs_mean": 98.4,
+   "gpt-6.2-sol|typescript": 54,
+   "gpt-6.2-sol|typescript|modal_share": 0.3,
+   "gpt-6.2-sol|typescript|all_runs_mean": 61.3
+  },
+  "run_lengths": {
+   "tier": "hard",
+   "python": 81,
+   "python_untyped": 63,
+   "claude-opus-5-5|canon": 143,
+   "claude-opus-5-5|canon|modal_share": 0.4,
+   "claude-opus-5-5|canon|all_runs_mean": 140.2,
+   "claude-opus-5-5|typescript": 128,
+   "claude-opus-5-5|typescript|modal_share": 0.4,
+   "claude-opus-5-5|typescript|all_runs_mean": 129.7,
+   "gpt-6.2-sol|canon": 137,
+   "gpt-6.2-sol|canon|modal_share": 0.4,
+   "gpt-6.2-sol|canon|all_runs_mean": 137.4,
+   "gpt-6.2-sol|typescript": 93,
+   "gpt-6.2-sol|typescript|modal_share": 0.3,
+   "gpt-6.2-sol|typescript|all_runs_mean": 95.1
+  },
+  "validate_user": {
+   "tier": "hard",
+   "python": 108,
+   "python_untyped": 98,
+   "claude-opus-5-5|canon": 149,
+   "claude-opus-5-5|canon|modal_share": 0.3,
+   "claude-opus-5-5|canon|all_runs_mean": 152.0,
+   "claude-opus-5-5|typescript": 107,
+   "claude-opus-5-5|typescript|modal_share": 1.0,
+   "claude-opus-5-5|typescript|all_runs_mean": 107.0,
+   "gpt-6.2-sol|canon": 131,
+   "gpt-6.2-sol|canon|modal_share": 0.2,
+   "gpt-6.2-sol|canon|all_runs_mean": 133.3,
+   "gpt-6.2-sol|typescript": 107,
+   "gpt-6.2-sol|typescript|modal_share": 0.7,
+   "gpt-6.2-sol|typescript|all_runs_mean": 107.0
+  },
+  "report_card": {
+   "tier": "hard",
+   "python": 168,
+   "python_untyped": 143,
+   "claude-opus-5-5|canon": 169,
+   "claude-opus-5-5|canon|modal_share": 0.3,
+   "claude-opus-5-5|canon|all_runs_mean": 171.4,
+   "claude-opus-5-5|typescript": 197,
+   "claude-opus-5-5|typescript|modal_share": 0.4,
+   "claude-opus-5-5|typescript|all_runs_mean": 195.9,
+   "gpt-6.2-sol|canon": 201,
+   "gpt-6.2-sol|canon|modal_share": 0.4,
+   "gpt-6.2-sol|canon|all_runs_mean": 194.4,
+   "gpt-6.2-sol|typescript": 161,
+   "gpt-6.2-sol|typescript|modal_share": 0.6,
+   "gpt-6.2-sol|typescript|all_runs_mean": 159.0
+  }
+ },
+ "attribution": {
+  "claude-opus-5-5|canon": {
+   "all": {
+    "block braces (+ their newline/indent)": 6.06,
+    "block braces -> ':' (net)": 5.94,
+    "signature types": 9.26,
+    "let keyword": 0.9,
+    "var keyword": 0.62,
+    "return keyword": 2.22,
+    "requires/ensures/effects clauses": 3.6,
+    "pipeline layout (line breaks + indent)": 0.6,
+    "|> operators (as ' ')": 0.46,
+    "match arm trailing commas": 0.02,
+    "match `=>` (as ' ')": 0.42,
+    "and/or/not as words vs &&/||/!": 0.02,
+    "type declarations": 2.04,
+    "helper fn headers": 4.9,
+    "comments": 0.0,
+    "indentation whitespace": 8.52,
+    "TOTAL": 87.9
+   },
+   "basic": {
+    "block braces (+ their newline/indent)": 4.525,
+    "block braces -> ':' (net)": 4.475,
+    "signature types": 7.125,
+    "let keyword": 0.55,
+    "var keyword": 0.6,
+    "return keyword": 1.675,
+    "requires/ensures/effects clauses": 4.5,
+    "pipeline layout (line breaks + indent)": 0.425,
+    "|> operators (as ' ')": 0.325,
+    "match arm trailing commas": 0.025,
+    "match `=>` (as ' ')": 0.2,
+    "and/or/not as words vs &&/||/!": 0.0,
+    "type declarations": 0.0,
+    "helper fn headers": 1.625,
+    "comments": 0.0,
+    "indentation whitespace": 6.3,
+    "TOTAL": 65.85
+   },
+   "hard": {
+    "block braces (+ their newline/indent)": 12.2,
+    "block braces -> ':' (net)": 11.8,
+    "signature types": 17.8,
+    "let keyword": 2.3,
+    "var keyword": 0.7,
+    "return keyword": 4.4,
+    "requires/ensures/effects clauses": 0.0,
+    "pipeline layout (line breaks + indent)": 1.3,
+    "|> operators (as ' ')": 1.0,
+    "match arm trailing commas": 0.0,
+    "match `=>` (as ' ')": 1.3,
+    "and/or/not as words vs &&/||/!": 0.1,
+    "type declarations": 10.2,
+    "helper fn headers": 18.0,
+    "comments": 0.0,
+    "indentation whitespace": 17.4,
+    "TOTAL": 176.1
+   },
+   "helpers_per_program": 0.42
+  },
+  "claude-opus-5-5|typescript": {
+   "all": {
+    "block braces (+ their newline/indent)": 10.04,
+    "signature types": 5.58,
+    "local annotations / as / !": 2.34,
+    "const/let keyword": 3.06,
+    "return keyword": 2.16,
+    "semicolons": 0.06,
+    "export": 1.0,
+    "parens around if/while/for conditions": 4.62,
+    "type declarations": 3.76,
+    "  of which Result decl": 1.44,
+    "helper fn headers": 2.06,
+    "comments": 2.4,
+    "indentation whitespace": 12.56,
+    "TOTAL": 110.6
+   },
+   "basic": {
+    "block braces (+ their newline/indent)": 9.275,
+    "signature types": 4.9,
+    "local annotations / as / !": 1.425,
+    "const/let keyword": 2.75,
+    "return keyword": 1.925,
+    "semicolons": 0.025,
+    "export": 1.0,
+    "parens around if/while/for conditions": 4.575,
+    "type declarations": 0.0,
+    "  of which Result decl": 0.0,
+    "helper fn headers": 1.35,
+    "comments": 2.225,
+    "indentation whitespace": 11.025,
+    "TOTAL": 92.1
+   },
+   "hard": {
+    "block braces (+ their newline/indent)": 13.1,
+    "signature types": 8.3,
+    "local annotations / as / !": 6.0,
+    "const/let keyword": 4.3,
+    "return keyword": 3.1,
+    "semicolons": 0.2,
+    "export": 1.0,
+    "parens around if/while/for conditions": 4.8,
+    "type declarations": 18.8,
+    "  of which Result decl": 7.2,
+    "helper fn headers": 4.9,
+    "comments": 3.1,
+    "indentation whitespace": 18.7,
+    "TOTAL": 184.6
+   },
+   "helpers_per_program": 0.2
+  },
+  "gpt-6.2-sol|canon": {
+   "all": {
+    "block braces (+ their newline/indent)": 7.3,
+    "block braces -> ':' (net)": 7.06,
+    "signature types": 9.48,
+    "let keyword": 0.86,
+    "var keyword": 1.18,
+    "return keyword": 2.2,
+    "requires/ensures/effects clauses": 1.56,
+    "pipeline layout (line breaks + indent)": 0.46,
+    "|> operators (as ' ')": 0.36,
+    "match arm trailing commas": 0.02,
+    "match `=>` (as ' ')": 0.4,
+    "and/or/not as words vs &&/||/!": 0.0,
+    "type declarations": 2.04,
+    "helper fn headers": 5.08,
+    "comments": 1.08,
+    "indentation whitespace": 10.58,
+    "TOTAL": 100.92
+   },
+   "basic": {
+    "block braces (+ their newline/indent)": 5.925,
+    "block braces -> ':' (net)": 5.75,
+    "signature types": 7.4,
+    "let keyword": 0.45,
+    "var keyword": 1.2,
+    "return keyword": 1.8,
+    "requires/ensures/effects clauses": 1.95,
+    "pipeline layout (line breaks + indent)": 0.2,
+    "|> operators (as ' ')": 0.15,
+    "match arm trailing commas": 0.025,
+    "match `=>` (as ' ')": 0.1,
+    "and/or/not as words vs &&/||/!": 0.0,
+    "type declarations": 0.0,
+    "helper fn headers": 2.2,
+    "comments": 0.975,
+    "indentation whitespace": 8.65,
+    "TOTAL": 77.85
+   },
+   "hard": {
+    "block braces (+ their newline/indent)": 12.8,
+    "block braces -> ':' (net)": 12.3,
+    "signature types": 17.8,
+    "let keyword": 2.5,
+    "var keyword": 1.1,
+    "return keyword": 3.8,
+    "requires/ensures/effects clauses": 0.0,
+    "pipeline layout (line breaks + indent)": 1.5,
+    "|> operators (as ' ')": 1.2,
+    "match arm trailing commas": 0.0,
+    "match `=>` (as ' ')": 1.6,
+    "and/or/not as words vs &&/||/!": 0.0,
+    "type declarations": 10.2,
+    "helper fn headers": 16.6,
+    "comments": 1.5,
+    "indentation whitespace": 18.3,
+    "TOTAL": 193.2
+   },
+   "helpers_per_program": 0.36
+  },
+  "gpt-6.2-sol|typescript": {
+   "all": {
+    "block braces (+ their newline/indent)": 6.36,
+    "signature types": 4.78,
+    "local annotations / as / !": 1.5,
+    "const/let keyword": 2.04,
+    "return keyword": 1.34,
+    "semicolons": 0.06,
+    "export": 1.0,
+    "parens around if/while/for conditions": 2.56,
+    "type declarations": 3.76,
+    "  of which Result decl": 1.44,
+    "helper fn headers": 0.0,
+    "comments": 1.32,
+    "indentation whitespace": 8.38,
+    "TOTAL": 83.28
+   },
+   "basic": {
+    "block braces (+ their newline/indent)": 5.75,
+    "signature types": 4.475,
+    "local annotations / as / !": 1.075,
+    "const/let keyword": 1.975,
+    "return keyword": 1.175,
+    "semicolons": 0.075,
+    "export": 1.0,
+    "parens around if/while/for conditions": 2.525,
+    "type declarations": 0.0,
+    "  of which Result decl": 0.0,
+    "helper fn headers": 0.0,
+    "comments": 1.25,
+    "indentation whitespace": 7.05,
+    "TOTAL": 67.825
+   },
+   "hard": {
+    "block braces (+ their newline/indent)": 8.8,
+    "signature types": 6.0,
+    "local annotations / as / !": 3.2,
+    "const/let keyword": 2.3,
+    "return keyword": 2.0,
+    "semicolons": 0.0,
+    "export": 1.0,
+    "parens around if/while/for conditions": 2.7,
+    "type declarations": 18.8,
+    "  of which Result decl": 7.2,
+    "helper fn headers": 0.0,
+    "comments": 1.6,
+    "indentation whitespace": 13.7,
+    "TOTAL": 145.1
+   },
+   "helpers_per_program": 0.0
+  },
+  "python": {
+   "all": {
+    "block colons": 0.12,
+    "signature types": 7.6,
+    "local annotations": 1.36,
+    "return keyword": 1.68,
+    "type declarations": 6.1,
+    "  of which Result decl": 2.16,
+    "helper fn headers": 0.36,
+    "comments": 0.0,
+    "indentation whitespace": 5.54,
+    "TOTAL": 59.66
+   },
+   "basic": {
+    "block colons": 0.1,
+    "signature types": 6.975,
+    "local annotations": 0.75,
+    "return keyword": 1.425,
+    "type declarations": 0.0,
+    "  of which Result decl": 0.0,
+    "helper fn headers": 0.0,
+    "comments": 0.0,
+    "indentation whitespace": 4.075,
+    "TOTAL": 43.25
+   },
+   "hard": {
+    "block colons": 0.2,
+    "signature types": 10.1,
+    "local annotations": 3.8,
+    "return keyword": 2.7,
+    "type declarations": 30.5,
+    "  of which Result decl": 10.8,
+    "helper fn headers": 1.8,
+    "comments": 0.0,
+    "indentation whitespace": 11.4,
+    "TOTAL": 125.3
+   },
+   "helpers_per_program": 0.04
+  }
+ },
+ "hypotheticals": {
+  "claude-opus-5-5": {
+   "all": {
+    "baseline": 87.9,
+    "a: &&/||/! for and/or/not": {
+     "saved": 0.02,
+     "pct": 0.022753128555176336
+    },
+    "b: single-expression fns `fn f(..) -> T = e`": {
+     "saved": 1.82,
+     "pct": 2.0705346985210467
+    },
+    "c: indentation blocks (`:`) instead of braces": {
+     "saved": 5.94,
+     "pct": 6.757679180887371
+    },
+    "d: drop `let` (bare `x = e`)": {
+     "saved": 0.9,
+     "pct": 1.023890784982935
+    },
+    "d': drop `let` and `var`": {
+     "saved": 1.52,
+     "pct": 1.7292377701934014
+    },
+    "e: implicit final-expression return": {
+     "saved": 1.38,
+     "pct": 1.569965870307167
+    },
+    "f (extra): compound assignment `x += e`": {
+     "saved": 0.76,
+     "pct": 0.8646188850967007
+    },
+    "a+b+d+e": {
+     "saved": 3.58,
+     "pct": 4.072810011376564
+    },
+    "a+b+c+d+e": {
+     "saved": 8.72,
+     "pct": 9.920364050056884
+    },
+    "a+b+c+d+e+f": {
+     "saved": 9.48,
+     "pct": 10.784982935153582
+    }
+   },
+   "basic": {
+    "baseline": 65.85,
+    "a: &&/||/! for and/or/not": {
+     "saved": 0.0,
+     "pct": 0.0
+    },
+    "b: single-expression fns `fn f(..) -> T = e`": {
+     "saved": 1.4,
+     "pct": 2.1260440394836753
+    },
+    "c: indentation blocks (`:`) instead of braces": {
+     "saved": 4.475,
+     "pct": 6.7957479119210324
+    },
+    "d: drop `let` (bare `x = e`)": {
+     "saved": 0.55,
+     "pct": 0.8352315869400153
+    },
+    "d': drop `let` and `var`": {
+     "saved": 1.15,
+     "pct": 1.7463933181473044
+    },
+    "e: implicit final-expression return": {
+     "saved": 1.1,
+     "pct": 1.6704631738800306
+    },
+    "f (extra): compound assignment `x += e`": {
+     "saved": 0.8,
+     "pct": 1.2148823082763858
+    },
+    "a+b+d+e": {
+     "saved": 2.65,
+     "pct": 4.024297646165528
+    },
+    "a+b+c+d+e": {
+     "saved": 6.5,
+     "pct": 9.870918754745635
+    },
+    "a+b+c+d+e+f": {
+     "saved": 7.3,
+     "pct": 11.085801063022021
+    }
+   },
+   "hard": {
+    "baseline": 176.1,
+    "a: &&/||/! for and/or/not": {
+     "saved": 0.1,
+     "pct": 0.05678591709256105
+    },
+    "b: single-expression fns `fn f(..) -> T = e`": {
+     "saved": 3.5,
+     "pct": 1.9875070982396366
+    },
+    "c: indentation blocks (`:`) instead of braces": {
+     "saved": 11.8,
+     "pct": 6.700738216922203
+    },
+    "d: drop `let` (bare `x = e`)": {
+     "saved": 2.3,
+     "pct": 1.306076093128904
+    },
+    "d': drop `let` and `var`": {
+     "saved": 3.0,
+     "pct": 1.7035775127768313
+    },
+    "e: implicit final-expression return": {
+     "saved": 2.5,
+     "pct": 1.4196479273140261
+    },
+    "f (extra): compound assignment `x += e`": {
+     "saved": 0.6,
+     "pct": 0.34071550255536626
+    },
+    "a+b+d+e": {
+     "saved": 7.3,
+     "pct": 4.145371947756956
+    },
+    "a+b+c+d+e": {
+     "saved": 17.6,
+     "pct": 9.994321408290746
+    },
+    "a+b+c+d+e+f": {
+     "saved": 18.2,
+     "pct": 10.33503691084611
+    }
+   }
+  },
+  "gpt-6.2-sol": {
+   "all": {
+    "baseline": 100.92,
+    "a: &&/||/! for and/or/not": {
+     "saved": 0.0,
+     "pct": 0.0
+    },
+    "b: single-expression fns `fn f(..) -> T = e`": {
+     "saved": 1.12,
+     "pct": 1.109789932619897
+    },
+    "c: indentation blocks (`:`) instead of braces": {
+     "saved": 7.06,
+     "pct": 6.995640110978993
+    },
+    "d: drop `let` (bare `x = e`)": {
+     "saved": 0.86,
+     "pct": 0.8521601268331351
+    },
+    "d': drop `let` and `var`": {
+     "saved": 2.04,
+     "pct": 2.0214030915576693
+    },
+    "e: implicit final-expression return": {
+     "saved": 1.34,
+     "pct": 1.3277843836702339
+    },
+    "f (extra): compound assignment `x += e`": {
+     "saved": 1.04,
+     "pct": 1.0305192231470472
+    },
+    "a+b+d+e": {
+     "saved": 2.98,
+     "pct": 2.9528339278636544
+    },
+    "a+b+c+d+e": {
+     "saved": 9.48,
+     "pct": 9.393579072532699
+    },
+    "a+b+c+d+e+f": {
+     "saved": 10.52,
+     "pct": 10.424098295679746
+    }
+   },
+   "basic": {
+    "baseline": 77.85,
+    "a: &&/||/! for and/or/not": {
+     "saved": 0.0,
+     "pct": 0.0
+    },
+    "b: single-expression fns `fn f(..) -> T = e`": {
+     "saved": 1.075,
+     "pct": 1.3808606294155428
+    },
+    "c: indentation blocks (`:`) instead of braces": {
+     "saved": 5.75,
+     "pct": 7.385998715478485
+    },
+    "d: drop `let` (bare `x = e`)": {
+     "saved": 0.45,
+     "pct": 0.5780346820809249
+    },
+    "d': drop `let` and `var`": {
+     "saved": 1.65,
+     "pct": 2.1194605009633913
+    },
+    "e: implicit final-expression return": {
+     "saved": 1.175,
+     "pct": 1.5093127809890816
+    },
+    "f (extra): compound assignment `x += e`": {
+     "saved": 1.15,
+     "pct": 1.4771997430956967
+    },
+    "a+b+d+e": {
+     "saved": 2.375,
+     "pct": 3.050738599871548
+    },
+    "a+b+c+d+e": {
+     "saved": 7.575,
+     "pct": 9.730250481695569
+    },
+    "a+b+c+d+e+f": {
+     "saved": 8.725,
+     "pct": 11.207450224791266
+    }
+   },
+   "hard": {
+    "baseline": 193.2,
+    "a: &&/||/! for and/or/not": {
+     "saved": 0.0,
+     "pct": 0.0
+    },
+    "b: single-expression fns `fn f(..) -> T = e`": {
+     "saved": 1.3,
+     "pct": 0.6728778467908904
+    },
+    "c: indentation blocks (`:`) instead of braces": {
+     "saved": 12.3,
+     "pct": 6.366459627329193
+    },
+    "d: drop `let` (bare `x = e`)": {
+     "saved": 2.5,
+     "pct": 1.2939958592132506
+    },
+    "d': drop `let` and `var`": {
+     "saved": 3.6,
+     "pct": 1.863354037267081
+    },
+    "e: implicit final-expression return": {
+     "saved": 2.0,
+     "pct": 1.0351966873706004
+    },
+    "f (extra): compound assignment `x += e`": {
+     "saved": 0.6,
+     "pct": 0.31055900621118016
+    },
+    "a+b+d+e": {
+     "saved": 5.4,
+     "pct": 2.7950310559006213
+    },
+    "a+b+c+d+e": {
+     "saved": 17.1,
+     "pct": 8.850931677018636
+    },
+    "a+b+c+d+e+f": {
+     "saved": 17.7,
+     "pct": 9.161490683229815
+    }
+   }
+  }
+ },
+ "output_vs_code": {
+  "claude-opus-5-5|canon": {
+   "runs": 500,
+   "mean_output_all_runs": 451.27,
+   "first_pass_runs": 489,
+   "mean_output_first_pass": 426.6482617586912,
+   "mean_code_tokens_first_pass_qwen": 86.74437627811861,
+   "code_share_first_pass": 0.20331590223888107,
+   "by_tier": {
+    "basic": {
+     "mean_output": 332.1111111111111,
+     "mean_code_qwen": 65.12878787878788
+    },
+    "hard": {
+     "mean_output": 829.1935483870968,
+     "mean_code_qwen": 178.78494623655914
+    }
+   }
+  },
+  "claude-opus-5-5|typescript": {
+   "runs": 500,
+   "mean_output_all_runs": 236.75,
+   "first_pass_runs": 500,
+   "mean_output_first_pass": 236.75,
+   "mean_code_tokens_first_pass_qwen": 116.95,
+   "code_share_first_pass": 0.4939809926082365,
+   "by_tier": {
+    "basic": {
+     "mean_output": 210.2225,
+     "mean_code_qwen": 98.84
+    },
+    "hard": {
+     "mean_output": 342.86,
+     "mean_code_qwen": 189.39
+    }
+   }
+  },
+  "gpt-6.2-sol|canon": {
+   "runs": 500,
+   "mean_output_all_runs": 192.274,
+   "first_pass_runs": 450,
+   "mean_output_first_pass": 176.18,
+   "mean_code_tokens_first_pass_qwen": 98.94222222222223,
+   "code_share_first_pass": 0.5615973562391998,
+   "by_tier": {
+    "basic": {
+     "mean_output": 130.4119241192412,
+     "mean_code_qwen": 75.25474254742548
+    },
+    "hard": {
+     "mean_output": 384.679012345679,
+     "mean_code_qwen": 206.85185185185185
+    }
+   }
+  },
+  "gpt-6.2-sol|typescript": {
+   "runs": 500,
+   "mean_output_all_runs": 124.616,
+   "first_pass_runs": 500,
+   "mean_output_first_pass": 124.616,
+   "mean_code_tokens_first_pass_qwen": 85.078,
+   "code_share_first_pass": 0.6827213198947166,
+   "by_tier": {
+    "basic": {
+     "mean_output": 104.825,
+     "mean_code_qwen": 69.505
+    },
+    "hard": {
+     "mean_output": 203.78,
+     "mean_code_qwen": 147.37
+    }
+   }
+  }
+ },
+ "examples": {
+  "a: &&/||/! for and/or/not": {
+   "chunk": "fn chunk(xs: List[Int], n: Int) -> List[List[Int]]\n  requires: n >= 1\n{\n  return xs\n    |> enumerate()\n    |> group_by(|p| p.0 / n)\n    |> map(|g| map(g.1, |p| p.1))\n}\n",
+   "balanced_parens": "fn count_close(seg: String) -> Int {\n  return len(split(seg, \")\")) - 1\n}\n\nfn balanced_parens(s: String) -> Bool {\n  let segs = split(s, \"(\")\n  var depth = 0\n  for pair in enumerate(segs) {\n    if pair.0 > 0 {\n      depth = depth + 1\n    }\n    depth = depth - count_close(pair.1)\n    if depth < 0 {\n      return false\n    }\n  }\n  return depth == 0\n}\n",
+   "report_card": "type Student {\n  name: String,\n  scores: List[Int],\n}\n\nfn average(scores: List[Int]) -> Int {\n  let n = len(scores)\n  if n == 0 {\n    return 0\n  }\n  return sum(scores) / n\n}\n\nfn grade(avg: Int) -> String {\n  if avg >= 90 {\n    return \"A\"\n  }\n  if avg >= 80 {\n    return \"B\"\n  }\n  if avg >= 70 {\n    return \"C\"\n  }\n  if avg >= 60 {\n    return \"D\"\n  }\n  return \"F\"\n}\n\nfn report_card(students: List[Student]) -> List[(String, String)] {\n  return map(students, |s| (s.name, grade(average(s.scores))))\n}\n"
+  },
+  "b: single-expression fns `fn f(..) -> T = e`": {
+   "chunk": "fn chunk(xs: List[Int], n: Int) -> List[List[Int]]\n  requires: n >= 1 = xs\n  |> enumerate()\n  |> group_by(|p| p.0 / n)\n  |> map(|g| map(g.1, |p| p.1))\n",
+   "balanced_parens": "fn count_close(seg: String) -> Int = len(split(seg, \")\")) - 1\n\nfn balanced_parens(s: String) -> Bool {\n  let segs = split(s, \"(\")\n  var depth = 0\n  for pair in enumerate(segs) {\n    if pair.0 > 0 {\n      depth = depth + 1\n    }\n    depth = depth - count_close(pair.1)\n    if depth < 0 {\n      return false\n    }\n  }\n  return depth == 0\n}\n",
+   "report_card": "type Student {\n  name: String,\n  scores: List[Int],\n}\n\nfn average(scores: List[Int]) -> Int {\n  let n = len(scores)\n  if n == 0 {\n    return 0\n  }\n  return sum(scores) / n\n}\n\nfn grade(avg: Int) -> String {\n  if avg >= 90 {\n    return \"A\"\n  }\n  if avg >= 80 {\n    return \"B\"\n  }\n  if avg >= 70 {\n    return \"C\"\n  }\n  if avg >= 60 {\n    return \"D\"\n  }\n  return \"F\"\n}\n\nfn report_card(students: List[Student]) -> List[(String, String)] = map(students, |s| (s.name, grade(average(s.scores))))\n"
+  },
+  "c: indentation blocks (`:`) instead of braces": {
+   "chunk": "fn chunk(xs: List[Int], n: Int) -> List[List[Int]]\n  requires: n >= 1:\n  return xs\n    |> enumerate()\n    |> group_by(|p| p.0 / n)\n    |> map(|g| map(g.1, |p| p.1))\n",
+   "balanced_parens": "fn count_close(seg: String) -> Int:\n  return len(split(seg, \")\")) - 1\n\nfn balanced_parens(s: String) -> Bool:\n  let segs = split(s, \"(\")\n  var depth = 0\n  for pair in enumerate(segs):\n    if pair.0 > 0:\n      depth = depth + 1\n    depth = depth - count_close(pair.1)\n    if depth < 0:\n      return false\n  return depth == 0\n",
+   "report_card": "type Student:\n  name: String,\n  scores: List[Int],\n\nfn average(scores: List[Int]) -> Int:\n  let n = len(scores)\n  if n == 0:\n    return 0\n  return sum(scores) / n\n\nfn grade(avg: Int) -> String:\n  if avg >= 90:\n    return \"A\"\n  if avg >= 80:\n    return \"B\"\n  if avg >= 70:\n    return \"C\"\n  if avg >= 60:\n    return \"D\"\n  return \"F\"\n\nfn report_card(students: List[Student]) -> List[(String, String)]:\n  return map(students, |s| (s.name, grade(average(s.scores))))\n"
+  },
+  "d: drop `let` (bare `x = e`)": {
+   "chunk": "fn chunk(xs: List[Int], n: Int) -> List[List[Int]]\n  requires: n >= 1\n{\n  return xs\n    |> enumerate()\n    |> group_by(|p| p.0 / n)\n    |> map(|g| map(g.1, |p| p.1))\n}\n",
+   "balanced_parens": "fn count_close(seg: String) -> Int {\n  return len(split(seg, \")\")) - 1\n}\n\nfn balanced_parens(s: String) -> Bool {\n  segs = split(s, \"(\")\n  var depth = 0\n  for pair in enumerate(segs) {\n    if pair.0 > 0 {\n      depth = depth + 1\n    }\n    depth = depth - count_close(pair.1)\n    if depth < 0 {\n      return false\n    }\n  }\n  return depth == 0\n}\n",
+   "report_card": "type Student {\n  name: String,\n  scores: List[Int],\n}\n\nfn average(scores: List[Int]) -> Int {\n  n = len(scores)\n  if n == 0 {\n    return 0\n  }\n  return sum(scores) / n\n}\n\nfn grade(avg: Int) -> String {\n  if avg >= 90 {\n    return \"A\"\n  }\n  if avg >= 80 {\n    return \"B\"\n  }\n  if avg >= 70 {\n    return \"C\"\n  }\n  if avg >= 60 {\n    return \"D\"\n  }\n  return \"F\"\n}\n\nfn report_card(students: List[Student]) -> List[(String, String)] {\n  return map(students, |s| (s.name, grade(average(s.scores))))\n}\n"
+  },
+  "d': drop `let` and `var`": {
+   "chunk": "fn chunk(xs: List[Int], n: Int) -> List[List[Int]]\n  requires: n >= 1\n{\n  return xs\n    |> enumerate()\n    |> group_by(|p| p.0 / n)\n    |> map(|g| map(g.1, |p| p.1))\n}\n",
+   "balanced_parens": "fn count_close(seg: String) -> Int {\n  return len(split(seg, \")\")) - 1\n}\n\nfn balanced_parens(s: String) -> Bool {\n  segs = split(s, \"(\")\n  depth = 0\n  for pair in enumerate(segs) {\n    if pair.0 > 0 {\n      depth = depth + 1\n    }\n    depth = depth - count_close(pair.1)\n    if depth < 0 {\n      return false\n    }\n  }\n  return depth == 0\n}\n",
+   "report_card": "type Student {\n  name: String,\n  scores: List[Int],\n}\n\nfn average(scores: List[Int]) -> Int {\n  n = len(scores)\n  if n == 0 {\n    return 0\n  }\n  return sum(scores) / n\n}\n\nfn grade(avg: Int) -> String {\n  if avg >= 90 {\n    return \"A\"\n  }\n  if avg >= 80 {\n    return \"B\"\n  }\n  if avg >= 70 {\n    return \"C\"\n  }\n  if avg >= 60 {\n    return \"D\"\n  }\n  return \"F\"\n}\n\nfn report_card(students: List[Student]) -> List[(String, String)] {\n  return map(students, |s| (s.name, grade(average(s.scores))))\n}\n"
+  },
+  "e: implicit final-expression return": {
+   "chunk": "fn chunk(xs: List[Int], n: Int) -> List[List[Int]]\n  requires: n >= 1\n{\n  xs\n    |> enumerate()\n    |> group_by(|p| p.0 / n)\n    |> map(|g| map(g.1, |p| p.1))\n}\n",
+   "balanced_parens": "fn count_close(seg: String) -> Int {\n  len(split(seg, \")\")) - 1\n}\n\nfn balanced_parens(s: String) -> Bool {\n  let segs = split(s, \"(\")\n  var depth = 0\n  for pair in enumerate(segs) {\n    if pair.0 > 0 {\n      depth = depth + 1\n    }\n    depth = depth - count_close(pair.1)\n    if depth < 0 {\n      return false\n    }\n  }\n  depth == 0\n}\n",
+   "report_card": "type Student {\n  name: String,\n  scores: List[Int],\n}\n\nfn average(scores: List[Int]) -> Int {\n  let n = len(scores)\n  if n == 0 {\n    return 0\n  }\n  sum(scores) / n\n}\n\nfn grade(avg: Int) -> String {\n  if avg >= 90 {\n    return \"A\"\n  }\n  if avg >= 80 {\n    return \"B\"\n  }\n  if avg >= 70 {\n    return \"C\"\n  }\n  if avg >= 60 {\n    return \"D\"\n  }\n  \"F\"\n}\n\nfn report_card(students: List[Student]) -> List[(String, String)] {\n  map(students, |s| (s.name, grade(average(s.scores))))\n}\n"
+  },
+  "f (extra): compound assignment `x += e`": {
+   "chunk": "fn chunk(xs: List[Int], n: Int) -> List[List[Int]]\n  requires: n >= 1\n{\n  return xs\n    |> enumerate()\n    |> group_by(|p| p.0 / n)\n    |> map(|g| map(g.1, |p| p.1))\n}\n",
+   "balanced_parens": "fn count_close(seg: String) -> Int {\n  return len(split(seg, \")\")) - 1\n}\n\nfn balanced_parens(s: String) -> Bool {\n  let segs = split(s, \"(\")\n  var depth = 0\n  for pair in enumerate(segs) {\n    if pair.0 > 0 {\n      depth += 1\n    }\n    depth -= count_close(pair.1)\n    if depth < 0 {\n      return false\n    }\n  }\n  return depth == 0\n}\n",
+   "report_card": "type Student {\n  name: String,\n  scores: List[Int],\n}\n\nfn average(scores: List[Int]) -> Int {\n  let n = len(scores)\n  if n == 0 {\n    return 0\n  }\n  return sum(scores) / n\n}\n\nfn grade(avg: Int) -> String {\n  if avg >= 90 {\n    return \"A\"\n  }\n  if avg >= 80 {\n    return \"B\"\n  }\n  if avg >= 70 {\n    return \"C\"\n  }\n  if avg >= 60 {\n    return \"D\"\n  }\n  return \"F\"\n}\n\nfn report_card(students: List[Student]) -> List[(String, String)] {\n  return map(students, |s| (s.name, grade(average(s.scores))))\n}\n"
+  },
+  "a+b+d+e": {
+   "chunk": "fn chunk(xs: List[Int], n: Int) -> List[List[Int]]\n  requires: n >= 1 = xs\n  |> enumerate()\n  |> group_by(|p| p.0 / n)\n  |> map(|g| map(g.1, |p| p.1))\n",
+   "balanced_parens": "fn count_close(seg: String) -> Int = len(split(seg, \")\")) - 1\n\nfn balanced_parens(s: String) -> Bool {\n  segs = split(s, \"(\")\n  var depth = 0\n  for pair in enumerate(segs) {\n    if pair.0 > 0 {\n      depth = depth + 1\n    }\n    depth = depth - count_close(pair.1)\n    if depth < 0 {\n      return false\n    }\n  }\n  depth == 0\n}\n",
+   "report_card": "type Student {\n  name: String,\n  scores: List[Int],\n}\n\nfn average(scores: List[Int]) -> Int {\n  n = len(scores)\n  if n == 0 {\n    return 0\n  }\n  sum(scores) / n\n}\n\nfn grade(avg: Int) -> String {\n  if avg >= 90 {\n    return \"A\"\n  }\n  if avg >= 80 {\n    return \"B\"\n  }\n  if avg >= 70 {\n    return \"C\"\n  }\n  if avg >= 60 {\n    return \"D\"\n  }\n  \"F\"\n}\n\nfn report_card(students: List[Student]) -> List[(String, String)] = map(students, |s| (s.name, grade(average(s.scores))))\n"
+  },
+  "a+b+c+d+e": {
+   "chunk": "fn chunk(xs: List[Int], n: Int) -> List[List[Int]]\n  requires: n >= 1 = xs\n  |> enumerate()\n  |> group_by(|p| p.0 / n)\n  |> map(|g| map(g.1, |p| p.1))\n",
+   "balanced_parens": "fn count_close(seg: String) -> Int = len(split(seg, \")\")) - 1\n\nfn balanced_parens(s: String) -> Bool:\n  segs = split(s, \"(\")\n  var depth = 0\n  for pair in enumerate(segs):\n    if pair.0 > 0:\n      depth = depth + 1\n    depth = depth - count_close(pair.1)\n    if depth < 0:\n      return false\n  depth == 0\n",
+   "report_card": "type Student:\n  name: String,\n  scores: List[Int],\n\nfn average(scores: List[Int]) -> Int:\n  n = len(scores)\n  if n == 0:\n    return 0\n  sum(scores) / n\n\nfn grade(avg: Int) -> String:\n  if avg >= 90:\n    return \"A\"\n  if avg >= 80:\n    return \"B\"\n  if avg >= 70:\n    return \"C\"\n  if avg >= 60:\n    return \"D\"\n  \"F\"\n\nfn report_card(students: List[Student]) -> List[(String, String)] = map(students, |s| (s.name, grade(average(s.scores))))\n"
+  },
+  "a+b+c+d+e+f": {
+   "chunk": "fn chunk(xs: List[Int], n: Int) -> List[List[Int]]\n  requires: n >= 1 = xs\n  |> enumerate()\n  |> group_by(|p| p.0 / n)\n  |> map(|g| map(g.1, |p| p.1))\n",
+   "balanced_parens": "fn count_close(seg: String) -> Int = len(split(seg, \")\")) - 1\n\nfn balanced_parens(s: String) -> Bool:\n  segs = split(s, \"(\")\n  var depth = 0\n  for pair in enumerate(segs):\n    if pair.0 > 0:\n      depth += 1\n    depth -= count_close(pair.1)\n    if depth < 0:\n      return false\n  depth == 0\n",
+   "report_card": "type Student:\n  name: String,\n  scores: List[Int],\n\nfn average(scores: List[Int]) -> Int:\n  n = len(scores)\n  if n == 0:\n    return 0\n  sum(scores) / n\n\nfn grade(avg: Int) -> String:\n  if avg >= 90:\n    return \"A\"\n  if avg >= 80:\n    return \"B\"\n  if avg >= 70:\n    return \"C\"\n  if avg >= 60:\n    return \"D\"\n  \"F\"\n\nfn report_card(students: List[Student]) -> List[(String, String)] = map(students, |s| (s.name, grade(average(s.scores))))\n"
+  }
+ }
+}

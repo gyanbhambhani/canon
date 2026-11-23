@@ -1,0 +1,44 @@
+def empty_stack() -> list[int]:
+    return []
+
+
+def is_op(t: str) -> bool:
+    return t == "+" or t == "-" or t == "*" or t == "/"
+
+
+def apply(op: str, a: int, b: int) -> Result[int, str]:
+    if op == "+":
+        return Ok(a + b)
+    if op == "-":
+        return Ok(a - b)
+    if op == "*":
+        return Ok(a * b)
+    if b == 0:
+        return Err("division by zero")
+    return Ok(int(a / b))
+
+
+def step(stack: list[int], t: str) -> Result[list[int], str]:
+    if is_op(t):
+        n = len(stack)
+        if n < 2:
+            return Err("stack underflow")
+        b = stack[-1]
+        a = stack[-2]
+        rest = stack[: n - 2]
+        v = try_(apply(t, a, b))
+        return Ok(rest + [v])
+    match parse_int(t):
+        case None:
+            return Err("bad token: " + t)
+        case v:
+            return Ok(stack + [v])
+
+
+def rpn(tokens: list[str]) -> Result[int, str]:
+    stack = empty_stack()
+    for t in tokens:
+        stack = try_(step(stack, t))
+    if len(stack) != 1:
+        return Err("expected one value")
+    return Ok(stack[0])

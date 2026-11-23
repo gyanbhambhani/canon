@@ -1,0 +1,13 @@
+def parse_pairs(s: str) -> Result[list[tuple[str, int]], str]:
+    if s == "":
+        return Ok([])
+    pairs = []
+    for item in s.split(";"):
+        parts = item.split("=")
+        if len(parts) != 2:
+            return Err("bad item: " + item)
+        value = parse_int(parts[1])
+        if value is None:
+            return Err("bad item: " + item)
+        pairs.append((parts[0], value))
+    return Ok(pairs)

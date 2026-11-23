@@ -1,0 +1,50 @@
+{
+  "runs.jsonl|claude-opus-5-5": {
+    "file": "runs.jsonl",
+    "model": "claude-opus-5-5",
+    "runs": 500,
+    "firstPass": 481,
+    "fixedV02": 13,
+    "fixedV03": 18,
+    "passTestsV03": 18,
+    "residual": [
+      [
+        "P005"
+      ]
+    ],
+    "regressions": 0
+  },
+  "runs.jsonl|gpt-6.2-sol": {
+    "file": "runs.jsonl",
+    "model": "gpt-6.2-sol",
+    "runs": 500,
+    "firstPass": 465,
+    "fixedV02": 30,
+    "fixedV03": 35,
+    "passTestsV03": 35,
+    "residual": [],
+    "regressions": 0
+  },
+  "runs-v0.2.jsonl|claude-opus-5-5": {
+    "file": "runs-v0.2.jsonl",
+    "model": "claude-opus-5-5",
+    "runs": 500,
+    "firstPass": 489,
+    "fixedV02": 5,
+    "fixedV03": 11,
+    "passTestsV03": 11,
+    "residual": [],
+    "regressions": 0
+  },
+  "runs-v0.2.jsonl|gpt-6.2-sol": {
+    "file": "runs-v0.2.jsonl",
+    "model": "gpt-6.2-sol",
+    "runs": 500,
+    "firstPass": 450,
+    "fixedV02": 44,
+    "fixedV03": 50,
+    "passTestsV03": 50,
+    "residual": [],
+    "regressions": 0
+  }
+}

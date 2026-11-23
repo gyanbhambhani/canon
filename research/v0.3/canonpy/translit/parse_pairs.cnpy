@@ -1,0 +1,45 @@
+def strip_digits(v: str) -> str:
+    rest = v
+    for d in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]:
+        rest = "".join(rest.split(d))
+    return rest
+
+
+def is_digits(v: str) -> bool:
+    return len(v) > 0 and strip_digits(v) == ""
+
+
+def is_int(v: str) -> bool:
+    parts = v.split("-")
+    if len(parts) == 1:
+        return is_digits(v)
+    if len(parts) == 2:
+        head = parts[0]
+        tail = parts[-1]
+        return head == "" and is_digits(tail)
+    return False
+
+
+def parse_item(item: str) -> Result[tuple[str, int], str]:
+    parts = item.split("=")
+    if len(parts) != 2:
+        return Err("bad item: " + item)
+    key = parts[0]
+    value = parts[-1]
+    if not is_int(value):
+        return Err("bad item: " + item)
+    match parse_int(value):
+        case None:
+            return Err("bad item: " + item)
+        case n:
+            return Ok((key, n))
+
+
+def parse_pairs(s: str) -> Result[list[tuple[str, int]], str]:
+    if s == "":
+        return Ok([])
+    out = []
+    for item in s.split(";"):
+        p = try_(parse_item(item))
+        out.append(p)
+    return Ok(out)

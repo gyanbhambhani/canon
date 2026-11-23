@@ -1,0 +1,2456 @@
+[
+ {
+  "id": "sum_evens",
+  "tier": "basic",
+  "fn": "sum_evens",
+  "params": [
+   [
+    "xs",
+    "List[Int]"
+   ]
+  ],
+  "ret": "Int",
+  "desc": "Return the sum of the even numbers in xs.",
+  "tests": [
+   [
+    [
+     [
+      1,
+      2,
+      3,
+      4
+     ]
+    ],
+    6
+   ],
+   [
+    [
+     []
+    ],
+    0
+   ],
+   [
+    [
+     [
+      -2,
+      5,
+      8
+     ]
+    ],
+    6
+   ],
+   [
+    [
+     [
+      1,
+      3
+     ]
+    ],
+    0
+   ]
+  ]
+ },
+ {
+  "id": "count_vowels",
+  "tier": "basic",
+  "fn": "count_vowels",
+  "params": [
+   [
+    "s",
+    "String"
+   ]
+  ],
+  "ret": "Int",
+  "desc": "Count the lowercase vowels (a, e, i, o, u) in s. Other characters do not count.",
+  "tests": [
+   [
+    [
+     "hello"
+    ],
+    2
+   ],
+   [
+    [
+     ""
+    ],
+    0
+   ],
+   [
+    [
+     "AEIOU aeiou"
+    ],
+    5
+   ],
+   [
+    [
+     "rhythm"
+    ],
+    0
+   ]
+  ]
+ },
+ {
+  "id": "reverse_words",
+  "tier": "basic",
+  "fn": "reverse_words",
+  "params": [
+   [
+    "s",
+    "String"
+   ]
+  ],
+  "ret": "String",
+  "desc": "Words in s are separated by single spaces. Return the words in reverse order, joined by single spaces.",
+  "tests": [
+   [
+    [
+     "one two three"
+    ],
+    "three two one"
+   ],
+   [
+    [
+     "solo"
+    ],
+    "solo"
+   ],
+   [
+    [
+     "a b"
+    ],
+    "b a"
+   ]
+  ]
+ },
+ {
+  "id": "fizzbuzz_list",
+  "tier": "basic",
+  "fn": "fizzbuzz_list",
+  "params": [
+   [
+    "n",
+    "Int"
+   ]
+  ],
+  "ret": "List[String]",
+  "desc": "Return the FizzBuzz strings for 1 through n: \"FizzBuzz\" for multiples of 15, \"Fizz\" for multiples of 3, \"Buzz\" for multiples of 5, otherwise the number as a string. n >= 0.",
+  "tests": [
+   [
+    [
+     5
+    ],
+    [
+     "1",
+     "2",
+     "Fizz",
+     "4",
+     "Buzz"
+    ]
+   ],
+   [
+    [
+     0
+    ],
+    []
+   ],
+   [
+    [
+     15
+    ],
+    [
+     "1",
+     "2",
+     "Fizz",
+     "4",
+     "Buzz",
+     "Fizz",
+     "7",
+     "8",
+     "Fizz",
+     "Buzz",
+     "11",
+     "Fizz",
+     "13",
+     "14",
+     "FizzBuzz"
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "max_or_none",
+  "tier": "basic",
+  "fn": "max_or_none",
+  "params": [
+   [
+    "xs",
+    "List[Int]"
+   ]
+  ],
+  "ret": "Option[Int]",
+  "desc": "Return the largest element of xs, or nothing if xs is empty.",
+  "tests": [
+   [
+    [
+     [
+      3,
+      9,
+      2
+     ]
+    ],
+    9
+   ],
+   [
+    [
+     []
+    ],
+    null
+   ],
+   [
+    [
+     [
+      -5,
+      -1,
+      -7
+     ]
+    ],
+    -1
+   ]
+  ]
+ },
+ {
+  "id": "is_palindrome",
+  "tier": "basic",
+  "fn": "is_palindrome",
+  "params": [
+   [
+    "s",
+    "String"
+   ]
+  ],
+  "ret": "Bool",
+  "desc": "Return whether s reads the same forwards and backwards, comparing characters exactly.",
+  "tests": [
+   [
+    [
+     "racecar"
+    ],
+    true
+   ],
+   [
+    [
+     ""
+    ],
+    true
+   ],
+   [
+    [
+     "ab"
+    ],
+    false
+   ],
+   [
+    [
+     "Aa"
+    ],
+    false
+   ],
+   [
+    [
+     "abba"
+    ],
+    true
+   ]
+  ]
+ },
+ {
+  "id": "factorial",
+  "tier": "basic",
+  "fn": "factorial",
+  "params": [
+   [
+    "n",
+    "Int"
+   ]
+  ],
+  "ret": "Int",
+  "desc": "Return n! for n >= 0 (0! is 1).",
+  "tests": [
+   [
+    [
+     0
+    ],
+    1
+   ],
+   [
+    [
+     1
+    ],
+    1
+   ],
+   [
+    [
+     5
+    ],
+    120
+   ],
+   [
+    [
+     10
+    ],
+    3628800
+   ]
+  ]
+ },
+ {
+  "id": "fib",
+  "tier": "basic",
+  "fn": "fib",
+  "params": [
+   [
+    "n",
+    "Int"
+   ]
+  ],
+  "ret": "Int",
+  "desc": "Return the n-th Fibonacci number, where fib(0) = 0 and fib(1) = 1. n >= 0.",
+  "tests": [
+   [
+    [
+     0
+    ],
+    0
+   ],
+   [
+    [
+     1
+    ],
+    1
+   ],
+   [
+    [
+     10
+    ],
+    55
+   ],
+   [
+    [
+     20
+    ],
+    6765
+   ]
+  ]
+ },
+ {
+  "id": "gcd",
+  "tier": "basic",
+  "fn": "gcd",
+  "params": [
+   [
+    "a",
+    "Int"
+   ],
+   [
+    "b",
+    "Int"
+   ]
+  ],
+  "ret": "Int",
+  "desc": "Return the greatest common divisor of two non-negative integers. gcd(0, 0) is 0.",
+  "tests": [
+   [
+    [
+     12,
+     18
+    ],
+    6
+   ],
+   [
+    [
+     7,
+     13
+    ],
+    1
+   ],
+   [
+    [
+     0,
+     5
+    ],
+    5
+   ],
+   [
+    [
+     0,
+     0
+    ],
+    0
+   ]
+  ]
+ },
+ {
+  "id": "is_prime",
+  "tier": "basic",
+  "fn": "is_prime",
+  "params": [
+   [
+    "n",
+    "Int"
+   ]
+  ],
+  "ret": "Bool",
+  "desc": "Return whether n is a prime number. Numbers below 2 are not prime.",
+  "tests": [
+   [
+    [
+     2
+    ],
+    true
+   ],
+   [
+    [
+     1
+    ],
+    false
+   ],
+   [
+    [
+     0
+    ],
+    false
+   ],
+   [
+    [
+     17
+    ],
+    true
+   ],
+   [
+    [
+     21
+    ],
+    false
+   ],
+   [
+    [
+     97
+    ],
+    true
+   ]
+  ]
+ },
+ {
+  "id": "digit_sum",
+  "tier": "basic",
+  "fn": "digit_sum",
+  "params": [
+   [
+    "n",
+    "Int"
+   ]
+  ],
+  "ret": "Int",
+  "desc": "Return the sum of the decimal digits of n, for n >= 0.",
+  "tests": [
+   [
+    [
+     0
+    ],
+    0
+   ],
+   [
+    [
+     1234
+    ],
+    10
+   ],
+   [
+    [
+     9999
+    ],
+    36
+   ]
+  ]
+ },
+ {
+  "id": "average",
+  "tier": "basic",
+  "fn": "average",
+  "params": [
+   [
+    "xs",
+    "List[Float]"
+   ]
+  ],
+  "ret": "Float",
+  "desc": "Return the arithmetic mean of xs, or 0.0 if xs is empty.",
+  "tests": [
+   [
+    [
+     [
+      1,
+      2,
+      3
+     ]
+    ],
+    2
+   ],
+   [
+    [
+     []
+    ],
+    0
+   ],
+   [
+    [
+     [
+      0.5
+     ]
+    ],
+    0.5
+   ],
+   [
+    [
+     [
+      1,
+      2
+     ]
+    ],
+    1.5
+   ]
+  ]
+ },
+ {
+  "id": "running_total",
+  "tier": "basic",
+  "fn": "running_total",
+  "params": [
+   [
+    "xs",
+    "List[Int]"
+   ]
+  ],
+  "ret": "List[Int]",
+  "desc": "Return the running totals of xs: element i is the sum of xs[0] through xs[i].",
+  "tests": [
+   [
+    [
+     [
+      1,
+      2,
+      3
+     ]
+    ],
+    [
+     1,
+     3,
+     6
+    ]
+   ],
+   [
+    [
+     []
+    ],
+    []
+   ],
+   [
+    [
+     [
+      5,
+      -5,
+      5
+     ]
+    ],
+    [
+     5,
+     0,
+     5
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "dedupe",
+  "tier": "basic",
+  "fn": "dedupe",
+  "params": [
+   [
+    "xs",
+    "List[Int]"
+   ]
+  ],
+  "ret": "List[Int]",
+  "desc": "Remove repeated values from xs, keeping the first occurrence of each, in the original order.",
+  "tests": [
+   [
+    [
+     [
+      1,
+      2,
+      1,
+      3,
+      2
+     ]
+    ],
+    [
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    [
+     []
+    ],
+    []
+   ],
+   [
+    [
+     [
+      4,
+      4,
+      4
+     ]
+    ],
+    [
+     4
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "count_word",
+  "tier": "basic",
+  "fn": "count_word",
+  "params": [
+   [
+    "s",
+    "String"
+   ],
+   [
+    "w",
+    "String"
+   ]
+  ],
+  "ret": "Int",
+  "desc": "Words in s are separated by single spaces. Count the words in s that are exactly equal to w.",
+  "tests": [
+   [
+    [
+     "the cat and the hat",
+     "the"
+    ],
+    2
+   ],
+   [
+    [
+     "a b c",
+     "d"
+    ],
+    0
+   ],
+   [
+    [
+     "go go go",
+     "go"
+    ],
+    3
+   ]
+  ]
+ },
+ {
+  "id": "longest_word",
+  "tier": "basic",
+  "fn": "longest_word",
+  "params": [
+   [
+    "s",
+    "String"
+   ]
+  ],
+  "ret": "String",
+  "desc": "Words in s are separated by single spaces. Return the longest word; if several share the longest length, return the first of them.",
+  "tests": [
+   [
+    [
+     "a quick brown fox"
+    ],
+    "quick"
+   ],
+   [
+    [
+     "hi"
+    ],
+    "hi"
+   ],
+   [
+    [
+     "ab cd ef"
+    ],
+    "ab"
+   ]
+  ]
+ },
+ {
+  "id": "clamp",
+  "tier": "basic",
+  "fn": "clamp",
+  "params": [
+   [
+    "x",
+    "Int"
+   ],
+   [
+    "lo",
+    "Int"
+   ],
+   [
+    "hi",
+    "Int"
+   ]
+  ],
+  "ret": "Int",
+  "desc": "Return x limited to the range lo through hi (lo <= hi).",
+  "tests": [
+   [
+    [
+     5,
+     0,
+     10
+    ],
+    5
+   ],
+   [
+    [
+     -3,
+     0,
+     10
+    ],
+    0
+   ],
+   [
+    [
+     42,
+     0,
+     10
+    ],
+    10
+   ]
+  ]
+ },
+ {
+  "id": "second_largest",
+  "tier": "basic",
+  "fn": "second_largest",
+  "params": [
+   [
+    "xs",
+    "List[Int]"
+   ]
+  ],
+  "ret": "Option[Int]",
+  "desc": "Return the second largest distinct value in xs, or nothing if there are fewer than two distinct values.",
+  "tests": [
+   [
+    [
+     [
+      3,
+      1,
+      4,
+      4
+     ]
+    ],
+    3
+   ],
+   [
+    [
+     [
+      7
+     ]
+    ],
+    null
+   ],
+   [
+    [
+     [
+      2,
+      2
+     ]
+    ],
+    null
+   ],
+   [
+    [
+     [
+      -1,
+      -5,
+      -3
+     ]
+    ],
+    -3
+   ]
+  ]
+ },
+ {
+  "id": "merge_sorted",
+  "tier": "basic",
+  "fn": "merge_sorted",
+  "params": [
+   [
+    "a",
+    "List[Int]"
+   ],
+   [
+    "b",
+    "List[Int]"
+   ]
+  ],
+  "ret": "List[Int]",
+  "desc": "Both lists are sorted ascending. Return one ascending list holding every element of both.",
+  "tests": [
+   [
+    [
+     [
+      1,
+      4,
+      6
+     ],
+     [
+      2,
+      3,
+      7
+     ]
+    ],
+    [
+     1,
+     2,
+     3,
+     4,
+     6,
+     7
+    ]
+   ],
+   [
+    [
+     [],
+     [
+      1
+     ]
+    ],
+    [
+     1
+    ]
+   ],
+   [
+    [
+     [
+      1,
+      1
+     ],
+     [
+      1
+     ]
+    ],
+    [
+     1,
+     1,
+     1
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "chunk",
+  "tier": "basic",
+  "fn": "chunk",
+  "params": [
+   [
+    "xs",
+    "List[Int]"
+   ],
+   [
+    "n",
+    "Int"
+   ]
+  ],
+  "ret": "List[List[Int]]",
+  "desc": "Split xs into consecutive groups of n elements (n >= 1); the last group may be shorter.",
+  "tests": [
+   [
+    [
+     [
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     2
+    ],
+    [
+     [
+      1,
+      2
+     ],
+     [
+      3,
+      4
+     ],
+     [
+      5
+     ]
+    ]
+   ],
+   [
+    [
+     [],
+     3
+    ],
+    []
+   ],
+   [
+    [
+     [
+      1,
+      2,
+      3
+     ],
+     3
+    ],
+    [
+     [
+      1,
+      2,
+      3
+     ]
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "flatten",
+  "tier": "basic",
+  "fn": "flatten",
+  "params": [
+   [
+    "xss",
+    "List[List[Int]]"
+   ]
+  ],
+  "ret": "List[Int]",
+  "desc": "Concatenate the lists in xss in order.",
+  "tests": [
+   [
+    [
+     [
+      [
+       1,
+       2
+      ],
+      [],
+      [
+       3
+      ]
+     ]
+    ],
+    [
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    [
+     []
+    ],
+    []
+   ]
+  ]
+ },
+ {
+  "id": "zip_sum",
+  "tier": "basic",
+  "fn": "zip_sum",
+  "params": [
+   [
+    "a",
+    "List[Int]"
+   ],
+   [
+    "b",
+    "List[Int]"
+   ]
+  ],
+  "ret": "List[Int]",
+  "desc": "Return the element-wise sums of a and b, as long as the shorter list.",
+  "tests": [
+   [
+    [
+     [
+      1,
+      2,
+      3
+     ],
+     [
+      10,
+      20
+     ]
+    ],
+    [
+     11,
+     22
+    ]
+   ],
+   [
+    [
+     [],
+     [
+      1
+     ]
+    ],
+    []
+   ]
+  ]
+ },
+ {
+  "id": "index_of",
+  "tier": "basic",
+  "fn": "index_of",
+  "params": [
+   [
+    "xs",
+    "List[Int]"
+   ],
+   [
+    "x",
+    "Int"
+   ]
+  ],
+  "ret": "Option[Int]",
+  "desc": "Return the index of the first occurrence of x in xs, or nothing if x is absent.",
+  "tests": [
+   [
+    [
+     [
+      5,
+      7,
+      5
+     ],
+     5
+    ],
+    0
+   ],
+   [
+    [
+     [
+      5,
+      7,
+      5
+     ],
+     7
+    ],
+    1
+   ],
+   [
+    [
+     [
+      1
+     ],
+     9
+    ],
+    null
+   ]
+  ]
+ },
+ {
+  "id": "count_greater",
+  "tier": "basic",
+  "fn": "count_greater",
+  "params": [
+   [
+    "xs",
+    "List[Int]"
+   ],
+   [
+    "limit",
+    "Int"
+   ]
+  ],
+  "ret": "Int",
+  "desc": "Count the elements of xs strictly greater than limit.",
+  "tests": [
+   [
+    [
+     [
+      1,
+      5,
+      10
+     ],
+     4
+    ],
+    2
+   ],
+   [
+    [
+     [],
+     0
+    ],
+    0
+   ],
+   [
+    [
+     [
+      3,
+      3
+     ],
+     3
+    ],
+    0
+   ]
+  ]
+ },
+ {
+  "id": "word_lengths",
+  "tier": "basic",
+  "fn": "word_lengths",
+  "params": [
+   [
+    "s",
+    "String"
+   ]
+  ],
+  "ret": "List[Int]",
+  "desc": "Words in s are separated by single spaces. Return the length of each word, in order.",
+  "tests": [
+   [
+    [
+     "a bb ccc"
+    ],
+    [
+     1,
+     2,
+     3
+    ]
+   ],
+   [
+    [
+     "hello"
+    ],
+    [
+     5
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "repeat_string",
+  "tier": "basic",
+  "fn": "repeat_string",
+  "params": [
+   [
+    "s",
+    "String"
+   ],
+   [
+    "n",
+    "Int"
+   ]
+  ],
+  "ret": "String",
+  "desc": "Return s repeated n times (n >= 0).",
+  "tests": [
+   [
+    [
+     "ab",
+     3
+    ],
+    "ababab"
+   ],
+   [
+    [
+     "x",
+     0
+    ],
+    ""
+   ],
+   [
+    [
+     "",
+     5
+    ],
+    ""
+   ]
+  ]
+ },
+ {
+  "id": "join_ints",
+  "tier": "basic",
+  "fn": "join_ints",
+  "params": [
+   [
+    "xs",
+    "List[Int]"
+   ],
+   [
+    "sep",
+    "String"
+   ]
+  ],
+  "ret": "String",
+  "desc": "Return the decimal forms of the numbers in xs joined by sep.",
+  "tests": [
+   [
+    [
+     [
+      1,
+      2,
+      3
+     ],
+     "-"
+    ],
+    "1-2-3"
+   ],
+   [
+    [
+     [],
+     ","
+    ],
+    ""
+   ],
+   [
+    [
+     [
+      -4
+     ],
+     ","
+    ],
+    "-4"
+   ]
+  ]
+ },
+ {
+  "id": "parse_sum",
+  "tier": "basic",
+  "fn": "parse_sum",
+  "params": [
+   [
+    "s",
+    "String"
+   ]
+  ],
+  "ret": "Int",
+  "desc": "s holds items separated by commas. Return the sum of the items that are valid integers (an optional leading minus sign followed by digits); skip every other item.",
+  "tests": [
+   [
+    [
+     "1,2,3"
+    ],
+    6
+   ],
+   [
+    [
+     "4,x,5"
+    ],
+    9
+   ],
+   [
+    [
+     ""
+    ],
+    0
+   ],
+   [
+    [
+     "-3,10,abc"
+    ],
+    7
+   ]
+  ]
+ },
+ {
+  "id": "min_max",
+  "tier": "basic",
+  "fn": "min_max",
+  "params": [
+   [
+    "xs",
+    "List[Int]"
+   ]
+  ],
+  "ret": "Option[(Int, Int)]",
+  "desc": "Return the smallest and the largest element of xs as a pair, or nothing if xs is empty.",
+  "tests": [
+   [
+    [
+     [
+      3,
+      1,
+      2
+     ]
+    ],
+    [
+     1,
+     3
+    ]
+   ],
+   [
+    [
+     []
+    ],
+    null
+   ],
+   [
+    [
+     [
+      7
+     ]
+    ],
+    [
+     7,
+     7
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "pairs_summing",
+  "tier": "basic",
+  "fn": "pairs_summing",
+  "params": [
+   [
+    "xs",
+    "List[Int]"
+   ],
+   [
+    "target",
+    "Int"
+   ]
+  ],
+  "ret": "Int",
+  "desc": "Count the index pairs i < j with xs[i] + xs[j] equal to target.",
+  "tests": [
+   [
+    [
+     [
+      1,
+      2,
+      3,
+      4
+     ],
+     5
+    ],
+    2
+   ],
+   [
+    [
+     [
+      1,
+      1,
+      1
+     ],
+     2
+    ],
+    3
+   ],
+   [
+    [
+     [],
+     0
+    ],
+    0
+   ]
+  ]
+ },
+ {
+  "id": "rotate_left",
+  "tier": "basic",
+  "fn": "rotate_left",
+  "params": [
+   [
+    "xs",
+    "List[Int]"
+   ],
+   [
+    "k",
+    "Int"
+   ]
+  ],
+  "ret": "List[Int]",
+  "desc": "Rotate xs left by k positions (k >= 0, and k may exceed the length). An empty list stays empty.",
+  "tests": [
+   [
+    [
+     [
+      1,
+      2,
+      3,
+      4
+     ],
+     1
+    ],
+    [
+     2,
+     3,
+     4,
+     1
+    ]
+   ],
+   [
+    [
+     [
+      1,
+      2,
+      3
+     ],
+     5
+    ],
+    [
+     3,
+     1,
+     2
+    ]
+   ],
+   [
+    [
+     [],
+     2
+    ],
+    []
+   ]
+  ]
+ },
+ {
+  "id": "balanced_parens",
+  "tier": "basic",
+  "fn": "balanced_parens",
+  "params": [
+   [
+    "s",
+    "String"
+   ]
+  ],
+  "ret": "Bool",
+  "desc": "Return whether the '(' and ')' characters in s are balanced. Ignore every other character.",
+  "tests": [
+   [
+    [
+     "(a(b)c)"
+    ],
+    true
+   ],
+   [
+    [
+     ")("
+    ],
+    false
+   ],
+   [
+    [
+     ""
+    ],
+    true
+   ],
+   [
+    [
+     "(()"
+    ],
+    false
+   ]
+  ]
+ },
+ {
+  "id": "collatz_steps",
+  "tier": "basic",
+  "fn": "collatz_steps",
+  "params": [
+   [
+    "n",
+    "Int"
+   ]
+  ],
+  "ret": "Int",
+  "desc": "Starting from n >= 1, repeatedly halve even numbers and map odd numbers m to 3m + 1. Return how many steps it takes to reach 1.",
+  "tests": [
+   [
+    [
+     1
+    ],
+    0
+   ],
+   [
+    [
+     6
+    ],
+    8
+   ],
+   [
+    [
+     27
+    ],
+    111
+   ]
+  ]
+ },
+ {
+  "id": "binary_string",
+  "tier": "basic",
+  "fn": "binary_string",
+  "params": [
+   [
+    "n",
+    "Int"
+   ]
+  ],
+  "ret": "String",
+  "desc": "Return the binary representation of n >= 0 without leading zeros (\"0\" for 0).",
+  "tests": [
+   [
+    [
+     0
+    ],
+    "0"
+   ],
+   [
+    [
+     5
+    ],
+    "101"
+   ],
+   [
+    [
+     16
+    ],
+    "10000"
+   ]
+  ]
+ },
+ {
+  "id": "mean_above",
+  "tier": "basic",
+  "fn": "mean_above",
+  "params": [
+   [
+    "xs",
+    "List[Float]"
+   ],
+   [
+    "limit",
+    "Float"
+   ]
+  ],
+  "ret": "Float",
+  "desc": "Return the mean of the elements strictly greater than limit, or 0.0 if there are none.",
+  "tests": [
+   [
+    [
+     [
+      1,
+      5,
+      7
+     ],
+     4
+    ],
+    6
+   ],
+   [
+    [
+     [
+      1
+     ],
+     2
+    ],
+    0
+   ]
+  ]
+ },
+ {
+  "id": "most_common_word",
+  "tier": "basic",
+  "fn": "most_common_word",
+  "params": [
+   [
+    "s",
+    "String"
+   ]
+  ],
+  "ret": "Option[String]",
+  "desc": "Words in s are separated by single spaces. Return the most frequent word; on a tie, the one that appears first in s. Return nothing for the empty string.",
+  "tests": [
+   [
+    [
+     "b a b a c"
+    ],
+    "b"
+   ],
+   [
+    [
+     "x"
+    ],
+    "x"
+   ],
+   [
+    [
+     ""
+    ],
+    null
+   ],
+   [
+    [
+     "p q q"
+    ],
+    "q"
+   ]
+  ]
+ },
+ {
+  "id": "triangle_numbers",
+  "tier": "basic",
+  "fn": "triangle_numbers",
+  "params": [
+   [
+    "n",
+    "Int"
+   ]
+  ],
+  "ret": "List[Int]",
+  "desc": "Return the first n triangular numbers 1, 3, 6, 10, ... (n >= 0).",
+  "tests": [
+   [
+    [
+     4
+    ],
+    [
+     1,
+     3,
+     6,
+     10
+    ]
+   ],
+   [
+    [
+     0
+    ],
+    []
+   ]
+  ]
+ },
+ {
+  "id": "count_char",
+  "tier": "basic",
+  "fn": "count_char",
+  "params": [
+   [
+    "s",
+    "String"
+   ],
+   [
+    "c",
+    "String"
+   ]
+  ],
+  "ret": "Int",
+  "desc": "c is a single character. Count its occurrences in s.",
+  "tests": [
+   [
+    [
+     "banana",
+     "a"
+    ],
+    3
+   ],
+   [
+    [
+     "",
+     "x"
+    ],
+    0
+   ],
+   [
+    [
+     "aaa",
+     "b"
+    ],
+    0
+   ]
+  ]
+ },
+ {
+  "id": "safe_div",
+  "tier": "basic",
+  "fn": "safe_div",
+  "params": [
+   [
+    "a",
+    "Int"
+   ],
+   [
+    "b",
+    "Int"
+   ]
+  ],
+  "ret": "Option[Int]",
+  "desc": "Return a divided by b, truncated toward zero, or nothing if b is 0.",
+  "tests": [
+   [
+    [
+     7,
+     2
+    ],
+    3
+   ],
+   [
+    [
+     -7,
+     2
+    ],
+    -3
+   ],
+   [
+    [
+     1,
+     0
+    ],
+    null
+   ]
+  ]
+ },
+ {
+  "id": "grade",
+  "tier": "basic",
+  "fn": "grade",
+  "params": [
+   [
+    "score",
+    "Int"
+   ]
+  ],
+  "ret": "String",
+  "desc": "Return the letter grade: \"A\" for 90 and above, \"B\" for 80-89, \"C\" for 70-79, \"D\" for 60-69, otherwise \"F\".",
+  "tests": [
+   [
+    [
+     95
+    ],
+    "A"
+   ],
+   [
+    [
+     80
+    ],
+    "B"
+   ],
+   [
+    [
+     79
+    ],
+    "C"
+   ],
+   [
+    [
+     60
+    ],
+    "D"
+   ],
+   [
+    [
+     12
+    ],
+    "F"
+   ]
+  ]
+ },
+ {
+  "id": "total_area",
+  "tier": "hard",
+  "fn": "total_area",
+  "params": [
+   [
+    "shapes",
+    "List[Shape]"
+   ]
+  ],
+  "ret": "Float",
+  "desc": "Return the total area of the shapes. A circle's area is 3.14159 * radius * radius; a rectangle's is width * height; a triangle's is base * height / 2.0.",
+  "tests": [
+   [
+    [
+     [
+      {
+       "kind": "Circle",
+       "radius": 1
+      }
+     ]
+    ],
+    3.14159
+   ],
+   [
+    [
+     [
+      {
+       "kind": "Rect",
+       "width": 2,
+       "height": 3
+      },
+      {
+       "kind": "Triangle",
+       "base": 4,
+       "height": 5
+      }
+     ]
+    ],
+    16
+   ],
+   [
+    [
+     []
+    ],
+    0
+   ]
+  ],
+  "decls": {
+   "canon": "type Shape =\n  | Circle(radius: Float)\n  | Rect(width: Float, height: Float)\n  | Triangle(base: Float, height: Float)",
+   "ts": "type Shape =\n  | { kind: \"Circle\"; radius: number }\n  | { kind: \"Rect\"; width: number; height: number }\n  | { kind: \"Triangle\"; base: number; height: number };"
+  },
+  "typeKinds": {
+   "Shape": "sum"
+  }
+ },
+ {
+  "id": "parse_pairs",
+  "tier": "hard",
+  "fn": "parse_pairs",
+  "params": [
+   [
+    "s",
+    "String"
+   ]
+  ],
+  "ret": "Result[List[(String, Int)], String]",
+  "desc": "Items in s are separated by \";\". Each item must be key=value, with exactly one \"=\" and a value that is an integer (an optional leading minus sign, then digits). Return the (key, value) pairs in order. The empty string gives an empty list. If an item is invalid, return the error \"bad item: \" followed by the first invalid item.",
+  "tests": [
+   [
+    [
+     "a=1;b=-2"
+    ],
+    {
+     "ok": true,
+     "value": [
+      [
+       "a",
+       1
+      ],
+      [
+       "b",
+       -2
+      ]
+     ]
+    }
+   ],
+   [
+    [
+     ""
+    ],
+    {
+     "ok": true,
+     "value": []
+    }
+   ],
+   [
+    [
+     "a=1;oops;c=x"
+    ],
+    {
+     "ok": false,
+     "error": "bad item: oops"
+    }
+   ],
+   [
+    [
+     "k=v"
+    ],
+    {
+     "ok": false,
+     "error": "bad item: k=v"
+    }
+   ],
+   [
+    [
+     "a=1=2"
+    ],
+    {
+     "ok": false,
+     "error": "bad item: a=1=2"
+    }
+   ]
+  ],
+  "decls": {
+   "canon": "",
+   "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {}
+ },
+ {
+  "id": "restock",
+  "tier": "hard",
+  "fn": "restock",
+  "params": [
+   [
+    "items",
+    "List[Item]"
+   ]
+  ],
+  "ret": "List[String]",
+  "desc": "Return the skus of the items whose qty is below min, ordered by shortfall (min - qty) from largest to smallest; items with equal shortfall keep their input order.",
+  "tests": [
+   [
+    [
+     [
+      {
+       "sku": "a",
+       "qty": 1,
+       "min": 5
+      },
+      {
+       "sku": "b",
+       "qty": 0,
+       "min": 2
+      },
+      {
+       "sku": "c",
+       "qty": 9,
+       "min": 3
+      },
+      {
+       "sku": "d",
+       "qty": 2,
+       "min": 6
+      }
+     ]
+    ],
+    [
+     "a",
+     "d",
+     "b"
+    ]
+   ],
+   [
+    [
+     []
+    ],
+    []
+   ]
+  ],
+  "decls": {
+   "canon": "type Item {\n  sku: String,\n  qty: Int,\n  min: Int,\n}",
+   "ts": "type Item = { sku: string; qty: number; min: number };"
+  },
+  "typeKinds": {
+   "Item": "record"
+  }
+ },
+ {
+  "id": "apply_ops",
+  "tier": "hard",
+  "fn": "apply_ops",
+  "params": [
+   [
+    "balance",
+    "Int"
+   ],
+   [
+    "ops",
+    "List[Op]"
+   ]
+  ],
+  "ret": "Result[Int, String]",
+  "desc": "Apply the operations to the starting balance in order. A withdrawal larger than the current balance stops processing and returns the error \"insufficient funds at step N\", where N is the 1-based position of that operation. Otherwise return the final balance.",
+  "tests": [
+   [
+    [
+     10,
+     [
+      {
+       "kind": "Deposit",
+       "amount": 5
+      },
+      {
+       "kind": "Withdraw",
+       "amount": 3
+      }
+     ]
+    ],
+    {
+     "ok": true,
+     "value": 12
+    }
+   ],
+   [
+    [
+     0,
+     [
+      {
+       "kind": "Withdraw",
+       "amount": 1
+      }
+     ]
+    ],
+    {
+     "ok": false,
+     "error": "insufficient funds at step 1"
+    }
+   ],
+   [
+    [
+     5,
+     [
+      {
+       "kind": "Withdraw",
+       "amount": 5
+      },
+      {
+       "kind": "Deposit",
+       "amount": 1
+      },
+      {
+       "kind": "Withdraw",
+       "amount": 2
+      },
+      {
+       "kind": "Withdraw",
+       "amount": 5
+      }
+     ]
+    ],
+    {
+     "ok": false,
+     "error": "insufficient funds at step 3"
+    }
+   ],
+   [
+    [
+     7,
+     []
+    ],
+    {
+     "ok": true,
+     "value": 7
+    }
+   ]
+  ],
+  "decls": {
+   "canon": "type Op =\n  | Deposit(amount: Int)\n  | Withdraw(amount: Int)",
+   "ts": "type Op = { kind: \"Deposit\"; amount: number } | { kind: \"Withdraw\"; amount: number };\ntype Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {
+   "Op": "sum"
+  }
+ },
+ {
+  "id": "rpn",
+  "tier": "hard",
+  "fn": "rpn",
+  "params": [
+   [
+    "tokens",
+    "List[String]"
+   ]
+  ],
+  "ret": "Result[Int, String]",
+  "desc": "Evaluate the tokens as a reverse Polish notation expression over integers. A token is an integer (an optional leading minus sign, then digits) or one of + - * /, where / divides and truncates toward zero. Process tokens left to right. Errors, as exact strings: \"stack underflow\" when an operator has fewer than two values to use, \"division by zero\", \"bad token: \" followed by the token for anything else, and \"expected one value\" if the stack does not hold exactly one value at the end.",
+  "tests": [
+   [
+    [
+     [
+      "3",
+      "4",
+      "+",
+      "2",
+      "*"
+     ]
+    ],
+    {
+     "ok": true,
+     "value": 14
+    }
+   ],
+   [
+    [
+     [
+      "1",
+      "+"
+     ]
+    ],
+    {
+     "ok": false,
+     "error": "stack underflow"
+    }
+   ],
+   [
+    [
+     [
+      "4",
+      "0",
+      "/"
+     ]
+    ],
+    {
+     "ok": false,
+     "error": "division by zero"
+    }
+   ],
+   [
+    [
+     [
+      "2",
+      "x"
+     ]
+    ],
+    {
+     "ok": false,
+     "error": "bad token: x"
+    }
+   ],
+   [
+    [
+     [
+      "1",
+      "2"
+     ]
+    ],
+    {
+     "ok": false,
+     "error": "expected one value"
+    }
+   ],
+   [
+    [
+     [
+      "7",
+      "-2",
+      "/"
+     ]
+    ],
+    {
+     "ok": true,
+     "value": -3
+    }
+   ],
+   [
+    [
+     []
+    ],
+    {
+     "ok": false,
+     "error": "expected one value"
+    }
+   ]
+  ],
+  "decls": {
+   "canon": "",
+   "ts": "type Result<T> = { ok: true; value: T } | { ok: false; error: string };"
+  },
+  "typeKinds": {}
+ },
+ {
+  "id": "word_counts_sorted",
+  "tier": "hard",
+  "fn": "word_counts_sorted",
+  "params": [
+   [
+    "s",
+    "String"
+   ]
+  ],
+  "ret": "List[(String, Int)]",
+  "desc": "Words in s are separated by single spaces; the empty string has no words. Return each distinct word with its count, ordered by count from highest to lowest; words with equal counts keep the order of their first appearance.",
+  "tests": [
+   [
+    [
+     "b a b c a b"
+    ],
+    [
+     [
+      "b",
+      3
+     ],
+     [
+      "a",
+      2
+     ],
+     [
+      "c",
+      1
+     ]
+    ]
+   ],
+   [
+    [
+     ""
+    ],
+    []
+   ],
+   [
+    [
+     "x y"
+    ],
+    [
+     [
+      "x",
+      1
+     ],
+     [
+      "y",
+      1
+     ]
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "transpose",
+  "tier": "hard",
+  "fn": "transpose",
+  "params": [
+   [
+    "m",
+    "List[List[Int]]"
+   ]
+  ],
+  "ret": "List[List[Int]]",
+  "desc": "Return the transpose of the rectangular matrix m (a list of rows). An empty matrix gives an empty list.",
+  "tests": [
+   [
+    [
+     [
+      [
+       1,
+       2,
+       3
+      ],
+      [
+       4,
+       5,
+       6
+      ]
+     ]
+    ],
+    [
+     [
+      1,
+      4
+     ],
+     [
+      2,
+      5
+     ],
+     [
+      3,
+      6
+     ]
+    ]
+   ],
+   [
+    [
+     []
+    ],
+    []
+   ],
+   [
+    [
+     [
+      [
+       7
+      ]
+     ]
+    ],
+    [
+     [
+      7
+     ]
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "run_lengths",
+  "tier": "hard",
+  "fn": "run_lengths",
+  "params": [
+   [
+    "s",
+    "String"
+   ]
+  ],
+  "ret": "List[(String, Int)]",
+  "desc": "Split s into runs of the same character and return each run's character and length, in order.",
+  "tests": [
+   [
+    [
+     "aaabcc"
+    ],
+    [
+     [
+      "a",
+      3
+     ],
+     [
+      "b",
+      1
+     ],
+     [
+      "c",
+      2
+     ]
+    ]
+   ],
+   [
+    [
+     ""
+    ],
+    []
+   ],
+   [
+    [
+     "abab"
+    ],
+    [
+     [
+      "a",
+      1
+     ],
+     [
+      "b",
+      1
+     ],
+     [
+      "a",
+      1
+     ],
+     [
+      "b",
+      1
+     ]
+    ]
+   ]
+  ]
+ },
+ {
+  "id": "validate_user",
+  "tier": "hard",
+  "fn": "validate_user",
+  "params": [
+   [
+    "u",
+    "User"
+   ]
+  ],
+  "ret": "List[String]",
+  "desc": "Return the user's problems, in this order: \"name is empty\" if the name is the empty string; \"age out of range\" if age is below 0 or above 150; \"email must contain @\" if the email has no @ character. Return an empty list for a valid user.",
+  "tests": [
+   [
+    [
+     {
+      "name": "ann",
+      "age": 30,
+      "email": "a@x"
+     }
+    ],
+    []
+   ],
+   [
+    [
+     {
+      "name": "",
+      "age": 200,
+      "email": "nope"
+     }
+    ],
+    [
+     "name is empty",
+     "age out of range",
+     "email must contain @"
+    ]
+   ],
+   [
+    [
+     {
+      "name": "bo",
+      "age": -1,
+      "email": "b@y"
+     }
+    ],
+    [
+     "age out of range"
+    ]
+   ]
+  ],
+  "decls": {
+   "canon": "type User {\n  name: String,\n  age: Int,\n  email: String,\n}",
+   "ts": "type User = { name: string; age: number; email: string };"
+  },
+  "typeKinds": {
+   "User": "record"
+  }
+ },
+ {
+  "id": "report_card",
+  "tier": "hard",
+  "fn": "report_card",
+  "params": [
+   [
+    "students",
+    "List[Student]"
+   ]
+  ],
+  "ret": "List[(String, String)]",
+  "desc": "For each student, in order, compute the average score as the sum divided by the count, truncated toward zero (0 when there are no scores), and give a letter grade: \"A\" for 90 and above, \"B\" for 80-89, \"C\" for 70-79, \"D\" for 60-69, otherwise \"F\". Return (name, grade) pairs.",
+  "tests": [
+   [
+    [
+     [
+      {
+       "name": "ann",
+       "scores": [
+        90,
+        95
+       ]
+      },
+      {
+       "name": "bo",
+       "scores": []
+      },
+      {
+       "name": "cy",
+       "scores": [
+        70,
+        79,
+        81
+       ]
+      }
+     ]
+    ],
+    [
+     [
+      "ann",
+      "A"
+     ],
+     [
+      "bo",
+      "F"
+     ],
+     [
+      "cy",
+      "C"
+     ]
+    ]
+   ]
+  ],
+  "decls": {
+   "canon": "type Student {\n  name: String,\n  scores: List[Int],\n}",
+   "ts": "type Student = { name: string; scores: number[] };"
+  },
+  "typeKinds": {
+   "Student": "record"
+  }
+ }
+]

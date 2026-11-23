@@ -1,0 +1,4 @@
+def min_max(xs: list[int]) -> tuple[int, int] | None:
+    if len(xs) == 0:
+        return None
+    return (min(xs), max(xs))

@@ -1,0 +1,4 @@
+def max_or_none(xs: list[int]) -> int | None:
+    if len(xs) == 0:
+        return None
+    return max(xs)

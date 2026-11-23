@@ -1,0 +1,19 @@
+type Shape = (
+    Circle(radius: float)
+    | Rect(width: float, height: float)
+    | Triangle(base: float, height: float)
+)
+
+
+def area(s: Shape) -> float:
+    match s:
+        case Circle(r):
+            return 3.14159 * r * r
+        case Rect(w, h):
+            return w * h
+        case Triangle(b, h):
+            return b * h / 2.0
+
+
+def total_area(shapes: list[Shape]) -> float:
+    return sum([area(s) for s in shapes])

@@ -1,0 +1,6 @@
+def count_char(s: str, c: str) -> int:
+    return len(s.split(c)) - 1
+
+
+def count_vowels(s: str) -> int:
+    return sum([count_char(s, v) for v in ["a", "e", "i", "o", "u"]])

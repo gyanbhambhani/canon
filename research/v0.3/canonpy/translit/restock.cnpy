@@ -1,0 +1,11 @@
+@dataclass
+class Item:
+    sku: str
+    qty: int
+    min: int
+
+
+def restock(items: list[Item]) -> list[str]:
+    low = [i for i in items if i.qty < i.min]
+    ranked = sorted(low, key=lambda i: i.min - i.qty, reverse=True)
+    return [i.sku for i in ranked]

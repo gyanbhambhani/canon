@@ -1,0 +1,853 @@
+{
+  "model": "Qwen/Qwen2.5-Coder-7B",
+  "header": "# A Canon source file (main.cn). Canon is a small, strictly formatted language.\n",
+  "constructs": [
+    {
+      "id": "logic-words-v03",
+      "question": "Logical operators in v0.2 programs: and/or/not or &&/||/!?",
+      "canon": "words",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "words",
+          "logprob": -127.89572143554688,
+          "tokens": 92,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn count_ok(items: List[Item], banned: List[String]) -> Int {\n  var count = 0\n  for i in items {\n    if i.qty > 0 and not contains(banned, i.sku) or i.price == 0.0 {\n      count = count + 1\n    }\n  }\n  return count\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "symbols",
+          "logprob": -126.51910400390625,
+          "tokens": 92,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn count_ok(items: List[Item], banned: List[String]) -> Int {\n  var count = 0\n  for i in items {\n    if i.qty > 0 && !contains(banned, i.sku) || i.price == 0.0 {\n      count = count + 1\n    }\n  }\n  return count\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "words",
+          "logprob": -139.53208923339844,
+          "tokens": 74,
+          "text": "fn drain(limit: Int, force: Bool) -> Int\n  effects: io\n{\n  var n = 0\n  var done = false\n  while n < limit and not done or force {\n    let line = unwrap_or(read_line(), \"\")\n    done = line == \"\"\n    n = n + 1\n  }\n  return n\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "symbols",
+          "logprob": -138.31504821777344,
+          "tokens": 74,
+          "text": "fn drain(limit: Int, force: Bool) -> Int\n  effects: io\n{\n  var n = 0\n  var done = false\n  while n < limit && !done || force {\n    let line = unwrap_or(read_line(), \"\")\n    done = line == \"\"\n    n = n + 1\n  }\n  return n\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "words",
+          "logprob": -80.33355712890625,
+          "tokens": 42,
+          "text": "fn keep(n: Int) -> Bool {\n  let small = n < 100\n  let ok = n > 0 and not small or n == 1\n  return ok\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "symbols",
+          "logprob": -80.23542022705078,
+          "tokens": 42,
+          "text": "fn keep(n: Int) -> Bool {\n  let small = n < 100\n  let ok = n > 0 && !small || n == 1\n  return ok\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "early-exit",
+      "question": "Stop a loop at the first hit: `break`, a done flag, or `return` (helper fn if needed)?",
+      "canon": "ret",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "brk",
+          "logprob": -118.9939193725586,
+          "tokens": 113,
+          "text": "fn describe(n: Int) -> Unit\n  effects: io\n{\n  var d = 2\n  var hit = false\n  while d * d <= n {\n    if n % d == 0 {\n      hit = true\n      break\n    }\n    d = d + 1\n  }\n  if hit {\n    print(to_string(n) + \" = \" + to_string(d) + \" * \" + to_string(n / d))\n  } else {\n    print(to_string(n) + \" is prime\")\n  }\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "flag",
+          "logprob": -120.87104797363281,
+          "tokens": 117,
+          "text": "fn describe(n: Int) -> Unit\n  effects: io\n{\n  var d = 2\n  var hit = false\n  while not hit and d * d <= n {\n    if n % d == 0 {\n      hit = true\n    } else {\n      d = d + 1\n    }\n  }\n  if hit {\n    print(to_string(n) + \" = \" + to_string(d) + \" * \" + to_string(n / d))\n  } else {\n    print(to_string(n) + \" is prime\")\n  }\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "ret",
+          "logprob": -122.3533935546875,
+          "tokens": 132,
+          "text": "fn smallest_divisor(n: Int) -> Int {\n  var d = 2\n  while d * d <= n {\n    if n % d == 0 {\n      return d\n    }\n    d = d + 1\n  }\n  return 0\n}\n\nfn describe(n: Int) -> Unit\n  effects: io\n{\n  let d = smallest_divisor(n)\n  if d > 0 {\n    print(to_string(n) + \" = \" + to_string(d) + \" * \" + to_string(n / d))\n  } else {\n    print(to_string(n) + \" is prime\")\n  }\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "brk",
+          "logprob": -92.568115234375,
+          "tokens": 91,
+          "text": "fn overdraft_day(amounts: List[Int]) -> Int {\n  var balance = 100\n  var day = 0\n  var hit = false\n  for a in amounts {\n    balance = balance + a\n    if balance < 0 {\n      hit = true\n      break\n    }\n    day = day + 1\n  }\n  if hit {\n    return day\n  }\n  return -1\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "flag",
+          "logprob": -100.11920928955078,
+          "tokens": 99,
+          "text": "fn overdraft_day(amounts: List[Int]) -> Int {\n  var balance = 100\n  var day = 0\n  var hit = false\n  for a in amounts {\n    if not hit {\n      balance = balance + a\n      if balance < 0 {\n        hit = true\n      } else {\n        day = day + 1\n      }\n    }\n  }\n  if hit {\n    return day\n  }\n  return -1\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "ret",
+          "logprob": -74.41805267333984,
+          "tokens": 71,
+          "text": "fn overdraft_day(amounts: List[Int]) -> Int {\n  var balance = 100\n  var day = 0\n  for a in amounts {\n    balance = balance + a\n    if balance < 0 {\n      return day\n    }\n    day = day + 1\n  }\n  return -1\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "brk",
+          "logprob": -116.37353515625,
+          "tokens": 64,
+          "text": "fn read_until_quit() -> List[String]\n  effects: io\n{\n  var lines = []\n  while true {\n    let line = unwrap_or(read_line(), \"quit\")\n    if line == \"quit\" {\n      break\n    }\n    lines = append(lines, line)\n  }\n  return lines\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "flag",
+          "logprob": -121.79503631591797,
+          "tokens": 77,
+          "text": "fn read_until_quit() -> List[String]\n  effects: io\n{\n  var lines = []\n  var done = false\n  while not done {\n    let line = unwrap_or(read_line(), \"quit\")\n    if line == \"quit\" {\n      done = true\n    } else {\n      lines = append(lines, line)\n    }\n  }\n  return lines\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "ret",
+          "logprob": -120.9472427368164,
+          "tokens": 65,
+          "text": "fn read_until_quit() -> List[String]\n  effects: io\n{\n  var lines = []\n  while true {\n    let line = unwrap_or(read_line(), \"quit\")\n    if line == \"quit\" {\n      return lines\n    }\n    lines = append(lines, line)\n  }\n  return lines\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "continue",
+      "question": "Skip the rest of an iteration: `continue`, negated `if` guard, or empty `if` + `else`?",
+      "canon": "guard",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "continue",
+          "logprob": -82.52906799316406,
+          "tokens": 64,
+          "text": "fn total(lines: List[String]) -> Int {\n  var sum = 0\n  for line in lines {\n    if trim(line) == \"\" {\n      continue\n    }\n    let n = unwrap_or(parse_int(trim(line)), 0)\n    sum = sum + n\n  }\n  return sum\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "guard",
+          "logprob": -81.90365600585938,
+          "tokens": 61,
+          "text": "fn total(lines: List[String]) -> Int {\n  var sum = 0\n  for line in lines {\n    if trim(line) != \"\" {\n      let n = unwrap_or(parse_int(trim(line)), 0)\n      sum = sum + n\n    }\n  }\n  return sum\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "else",
+          "logprob": -87.88417053222656,
+          "tokens": 65,
+          "text": "fn total(lines: List[String]) -> Int {\n  var sum = 0\n  for line in lines {\n    if trim(line) == \"\" {\n    } else {\n      let n = unwrap_or(parse_int(trim(line)), 0)\n      sum = sum + n\n    }\n  }\n  return sum\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "continue",
+          "logprob": -159.21388244628906,
+          "tokens": 87,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn restock_report(items: List[Item]) -> Unit\n  effects: io\n{\n  for i in items {\n    if i.qty > 10 {\n      continue\n    }\n    let need = 10 - i.qty\n    print(i.sku + \": order \" + to_string(need))\n  }\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "guard",
+          "logprob": -156.03575134277344,
+          "tokens": 84,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn restock_report(items: List[Item]) -> Unit\n  effects: io\n{\n  for i in items {\n    if i.qty <= 10 {\n      let need = 10 - i.qty\n      print(i.sku + \": order \" + to_string(need))\n    }\n  }\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "else",
+          "logprob": -161.9552001953125,
+          "tokens": 88,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn restock_report(items: List[Item]) -> Unit\n  effects: io\n{\n  for i in items {\n    if i.qty > 10 {\n    } else {\n      let need = 10 - i.qty\n      print(i.sku + \": order \" + to_string(need))\n    }\n  }\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "continue",
+          "logprob": -66.60076904296875,
+          "tokens": 62,
+          "text": "fn odd_square_sum(xs: List[Int]) -> Int {\n  var total = 0\n  for x in xs {\n    if x % 2 == 0 {\n      continue\n    }\n    let sq = x * x\n    total = total + sq\n  }\n  return total\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "guard",
+          "logprob": -63.6829948425293,
+          "tokens": 59,
+          "text": "fn odd_square_sum(xs: List[Int]) -> Int {\n  var total = 0\n  for x in xs {\n    if x % 2 != 0 {\n      let sq = x * x\n      total = total + sq\n    }\n  }\n  return total\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "else",
+          "logprob": -70.09225463867188,
+          "tokens": 63,
+          "text": "fn odd_square_sum(xs: List[Int]) -> Int {\n  var total = 0\n  for x in xs {\n    if x % 2 == 0 {\n    } else {\n      let sq = x * x\n      total = total + sq\n    }\n  }\n  return total\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "single-expr-fn",
+      "question": "One-expression function: block with return, `= e`, one-line block, or implicit final expr?",
+      "canon": "block",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "block",
+          "logprob": -37.83589553833008,
+          "tokens": 34,
+          "text": "fn double(x: Int) -> Int {\n  return x * 2\n}\n\nfn quadruple(x: Int) -> Int {\n  return double(double(x))\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "eq",
+          "logprob": -44.11683654785156,
+          "tokens": 31,
+          "text": "fn double(x: Int) -> Int = x * 2\n\nfn quadruple(x: Int) -> Int {\n  return double(double(x))\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "oneline",
+          "logprob": -41.907470703125,
+          "tokens": 32,
+          "text": "fn double(x: Int) -> Int { return x * 2 }\n\nfn quadruple(x: Int) -> Int {\n  return double(double(x))\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "implicit",
+          "logprob": -40.612945556640625,
+          "tokens": 33,
+          "text": "fn double(x: Int) -> Int {\n  x * 2\n}\n\nfn quadruple(x: Int) -> Int {\n  return double(double(x))\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "block",
+          "logprob": -68.01206970214844,
+          "tokens": 65,
+          "text": "type Person {\n  name: String,\n  age: Int,\n}\n\nfn is_adult(p: Person) -> Bool {\n  return p.age >= 18\n}\n\nfn adults(people: List[Person]) -> List[Person] {\n  return filter(people, |p| is_adult(p))\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "eq",
+          "logprob": -74.87393188476562,
+          "tokens": 62,
+          "text": "type Person {\n  name: String,\n  age: Int,\n}\n\nfn is_adult(p: Person) -> Bool = p.age >= 18\n\nfn adults(people: List[Person]) -> List[Person] {\n  return filter(people, |p| is_adult(p))\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "oneline",
+          "logprob": -74.47291564941406,
+          "tokens": 63,
+          "text": "type Person {\n  name: String,\n  age: Int,\n}\n\nfn is_adult(p: Person) -> Bool { return p.age >= 18 }\n\nfn adults(people: List[Person]) -> List[Person] {\n  return filter(people, |p| is_adult(p))\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "implicit",
+          "logprob": -68.69863891601562,
+          "tokens": 64,
+          "text": "type Person {\n  name: String,\n  age: Int,\n}\n\nfn is_adult(p: Person) -> Bool {\n  p.age >= 18\n}\n\nfn adults(people: List[Person]) -> List[Person] {\n  return filter(people, |p| is_adult(p))\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "block",
+          "logprob": -105.4407730102539,
+          "tokens": 68,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn label(item: Item) -> String {\n  return item.sku + \": \" + to_string(item.qty)\n}\n\nfn labels(items: List[Item]) -> List[String] {\n  return map(items, |i| label(i))\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "eq",
+          "logprob": -114.95849609375,
+          "tokens": 65,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn label(item: Item) -> String = item.sku + \": \" + to_string(item.qty)\n\nfn labels(items: List[Item]) -> List[String] {\n  return map(items, |i| label(i))\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "oneline",
+          "logprob": -111.26781463623047,
+          "tokens": 67,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn label(item: Item) -> String { return item.sku + \": \" + to_string(item.qty) }\n\nfn labels(items: List[Item]) -> List[String] {\n  return map(items, |i| label(i))\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "implicit",
+          "logprob": -110.13811492919922,
+          "tokens": 67,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn label(item: Item) -> String {\n  item.sku + \": \" + to_string(item.qty)\n}\n\nfn labels(items: List[Item]) -> List[String] {\n  return map(items, |i| label(i))\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "effects-place",
+      "question": "Effects clause: own line, inline `effects: io {`, or `with io {` suffix?",
+      "canon": "own-line",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "own-line",
+          "logprob": -66.56546020507812,
+          "tokens": 25,
+          "text": "fn greet(name: String) -> Unit\n  effects: io\n{\n  print(\"hello, \" + name)\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "inline",
+          "logprob": -63.8136100769043,
+          "tokens": 22,
+          "text": "fn greet(name: String) -> Unit effects: io {\n  print(\"hello, \" + name)\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "with",
+          "logprob": -55.30080795288086,
+          "tokens": 21,
+          "text": "fn greet(name: String) -> Unit with io {\n  print(\"hello, \" + name)\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "own-line",
+          "logprob": -119.30712127685547,
+          "tokens": 61,
+          "text": "fn timed_fetch(url: String) -> Result[String, Error]\n  effects: net, time\n{\n  let start = now()\n  let page = try http_get(url)\n  let ms = now() - start\n  return Ok(to_string(ms) + \" ms: \" + page)\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "inline",
+          "logprob": -123.09520721435547,
+          "tokens": 59,
+          "text": "fn timed_fetch(url: String) -> Result[String, Error] effects: net, time {\n  let start = now()\n  let page = try http_get(url)\n  let ms = now() - start\n  return Ok(to_string(ms) + \" ms: \" + page)\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "with",
+          "logprob": -110.90194702148438,
+          "tokens": 58,
+          "text": "fn timed_fetch(url: String) -> Result[String, Error] with net, time {\n  let start = now()\n  let page = try http_get(url)\n  let ms = now() - start\n  return Ok(to_string(ms) + \" ms: \" + page)\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "own-line",
+          "logprob": -69.45130920410156,
+          "tokens": 29,
+          "text": "fn roll(sides: Int) -> Int\n  effects: rand\n{\n  return random_int(1, sides + 1)\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "inline",
+          "logprob": -67.9532470703125,
+          "tokens": 26,
+          "text": "fn roll(sides: Int) -> Int effects: rand {\n  return random_int(1, sides + 1)\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "with",
+          "logprob": -61.2701301574707,
+          "tokens": 25,
+          "text": "fn roll(sides: Int) -> Int with rand {\n  return random_int(1, sides + 1)\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "test-effects",
+      "question": "A test that uses an effect: own-line effects clause, inline clause, or none?",
+      "canon": "none",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "own-line",
+          "logprob": -109.63497924804688,
+          "tokens": 47,
+          "text": "fn greet(name: String) -> Unit\n  effects: io\n{\n  print(\"hello, \" + name)\n}\n\ntest \"greet prints\"\n  effects: io\n{\n  greet(\"ada\")\n  assert(true)\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "inline",
+          "logprob": -113.93646240234375,
+          "tokens": 45,
+          "text": "fn greet(name: String) -> Unit\n  effects: io\n{\n  print(\"hello, \" + name)\n}\n\ntest \"greet prints\" effects: io {\n  greet(\"ada\")\n  assert(true)\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "none",
+          "logprob": -106.05379486083984,
+          "tokens": 42,
+          "text": "fn greet(name: String) -> Unit\n  effects: io\n{\n  print(\"hello, \" + name)\n}\n\ntest \"greet prints\" {\n  greet(\"ada\")\n  assert(true)\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "own-line",
+          "logprob": -140.7666778564453,
+          "tokens": 75,
+          "text": "fn load(path: String) -> String\n  effects: fs\n{\n  return match read_file(path) {\n    Ok(text) => text,\n    Err(_) => \"\",\n  }\n}\n\ntest \"fixture has three lines\"\n  effects: fs\n{\n  let lines = split(load(\"fixtures/a.txt\"), \"\\n\")\n  assert(len(lines) == 3)\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "inline",
+          "logprob": -146.39755249023438,
+          "tokens": 73,
+          "text": "fn load(path: String) -> String\n  effects: fs\n{\n  return match read_file(path) {\n    Ok(text) => text,\n    Err(_) => \"\",\n  }\n}\n\ntest \"fixture has three lines\" effects: fs {\n  let lines = split(load(\"fixtures/a.txt\"), \"\\n\")\n  assert(len(lines) == 3)\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "none",
+          "logprob": -136.66539001464844,
+          "tokens": 70,
+          "text": "fn load(path: String) -> String\n  effects: fs\n{\n  return match read_file(path) {\n    Ok(text) => text,\n    Err(_) => \"\",\n  }\n}\n\ntest \"fixture has three lines\" {\n  let lines = split(load(\"fixtures/a.txt\"), \"\\n\")\n  assert(len(lines) == 3)\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "own-line",
+          "logprob": -109.53595733642578,
+          "tokens": 63,
+          "text": "fn roll(sides: Int) -> Int\n  effects: rand\n{\n  return random_int(1, sides + 1)\n}\n\ntest \"roll stays in range\"\n  effects: rand\n{\n  let r = roll(6)\n  assert(r >= 1 and r <= 6)\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "inline",
+          "logprob": -116.34718322753906,
+          "tokens": 61,
+          "text": "fn roll(sides: Int) -> Int\n  effects: rand\n{\n  return random_int(1, sides + 1)\n}\n\ntest \"roll stays in range\" effects: rand {\n  let r = roll(6)\n  assert(r >= 1 and r <= 6)\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "none",
+          "logprob": -108.04595947265625,
+          "tokens": 58,
+          "text": "fn roll(sides: Int) -> Int\n  effects: rand\n{\n  return random_int(1, sides + 1)\n}\n\ntest \"roll stays in range\" {\n  let r = roll(6)\n  assert(r >= 1 and r <= 6)\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "fn-type-effects",
+      "question": "Effects in a function type: `fn(A) -> B effects: io`, `-> B / io`, `-> io B`, or `-> B with io`?",
+      "canon": "clause",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "clause",
+          "logprob": -113.90441131591797,
+          "tokens": 60,
+          "text": "fn each_line(lines: List[String], emit: fn(String) -> Unit effects: io) -> Int\n  effects: io\n{\n  var n = 0\n  for line in lines {\n    emit(line)\n    n = n + 1\n  }\n  return n\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "slash",
+          "logprob": -114.31507110595703,
+          "tokens": 59,
+          "text": "fn each_line(lines: List[String], emit: fn(String) -> Unit / io) -> Int\n  effects: io\n{\n  var n = 0\n  for line in lines {\n    emit(line)\n    n = n + 1\n  }\n  return n\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "prefix",
+          "logprob": -111.68297576904297,
+          "tokens": 58,
+          "text": "fn each_line(lines: List[String], emit: fn(String) -> io Unit) -> Int\n  effects: io\n{\n  var n = 0\n  for line in lines {\n    emit(line)\n    n = n + 1\n  }\n  return n\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "with",
+          "logprob": -114.97557830810547,
+          "tokens": 59,
+          "text": "fn each_line(lines: List[String], emit: fn(String) -> Unit with io) -> Int\n  effects: io\n{\n  var n = 0\n  for line in lines {\n    emit(line)\n    n = n + 1\n  }\n  return n\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "clause",
+          "logprob": -142.93951416015625,
+          "tokens": 82,
+          "text": "fn fetch_all(urls: List[String], get: fn(String) -> Result[String, Error] effects: net) -> List[String]\n  effects: net\n{\n  var pages = []\n  for u in urls {\n    let page = match get(u) {\n      Ok(text) => text,\n      Err(_) => \"\",\n    }\n    pages = append(pages, page)\n  }\n  return pages\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "slash",
+          "logprob": -141.4990234375,
+          "tokens": 81,
+          "text": "fn fetch_all(urls: List[String], get: fn(String) -> Result[String, Error] / net) -> List[String]\n  effects: net\n{\n  var pages = []\n  for u in urls {\n    let page = match get(u) {\n      Ok(text) => text,\n      Err(_) => \"\",\n    }\n    pages = append(pages, page)\n  }\n  return pages\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "prefix",
+          "logprob": -141.76206970214844,
+          "tokens": 79,
+          "text": "fn fetch_all(urls: List[String], get: fn(String) -> net Result[String, Error]) -> List[String]\n  effects: net\n{\n  var pages = []\n  for u in urls {\n    let page = match get(u) {\n      Ok(text) => text,\n      Err(_) => \"\",\n    }\n    pages = append(pages, page)\n  }\n  return pages\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "with",
+          "logprob": -140.9486846923828,
+          "tokens": 81,
+          "text": "fn fetch_all(urls: List[String], get: fn(String) -> Result[String, Error] with net) -> List[String]\n  effects: net\n{\n  var pages = []\n  for u in urls {\n    let page = match get(u) {\n      Ok(text) => text,\n      Err(_) => \"\",\n    }\n    pages = append(pages, page)\n  }\n  return pages\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "clause",
+          "logprob": -112.59929656982422,
+          "tokens": 59,
+          "text": "fn sample(n: Int, pick: fn(Int) -> Int effects: rand) -> List[Int]\n  effects: rand\n{\n  var out = []\n  for i in range(0, n) {\n    out = append(out, pick(i))\n  }\n  return out\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "slash",
+          "logprob": -113.19388580322266,
+          "tokens": 58,
+          "text": "fn sample(n: Int, pick: fn(Int) -> Int / rand) -> List[Int]\n  effects: rand\n{\n  var out = []\n  for i in range(0, n) {\n    out = append(out, pick(i))\n  }\n  return out\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "prefix",
+          "logprob": -110.4730224609375,
+          "tokens": 57,
+          "text": "fn sample(n: Int, pick: fn(Int) -> rand Int) -> List[Int]\n  effects: rand\n{\n  var out = []\n  for i in range(0, n) {\n    out = append(out, pick(i))\n  }\n  return out\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "with",
+          "logprob": -112.64016723632812,
+          "tokens": 58,
+          "text": "fn sample(n: Int, pick: fn(Int) -> Int with rand) -> List[Int]\n  effects: rand\n{\n  var out = []\n  for i in range(0, n) {\n    out = append(out, pick(i))\n  }\n  return out\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "for-destructure",
+      "question": "Looping over pairs: `for (i, x) in ...`, `for p in ...` with p.0/p.1, or let-unpack?",
+      "canon": "field",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "tuple",
+          "logprob": -93.55506134033203,
+          "tokens": 46,
+          "text": "fn numbered(lines: List[String]) -> Unit\n  effects: io\n{\n  for (i, line) in enumerate(lines) {\n    print(to_string(i + 1) + \". \" + line)\n  }\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "field",
+          "logprob": -100.97261047363281,
+          "tokens": 46,
+          "text": "fn numbered(lines: List[String]) -> Unit\n  effects: io\n{\n  for p in enumerate(lines) {\n    print(to_string(p.0 + 1) + \". \" + p.1)\n  }\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "unpack",
+          "logprob": -108.5391845703125,
+          "tokens": 58,
+          "text": "fn numbered(lines: List[String]) -> Unit\n  effects: io\n{\n  for p in enumerate(lines) {\n    let i = p.0\n    let line = p.1\n    print(to_string(i + 1) + \". \" + line)\n  }\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "tuple",
+          "logprob": -56.115203857421875,
+          "tokens": 52,
+          "text": "fn dot(xs: List[Int], ys: List[Int]) -> Int {\n  var total = 0\n  for (a, b) in zip(xs, ys) {\n    total = total + a * b\n  }\n  return total\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "field",
+          "logprob": -60.42940139770508,
+          "tokens": 52,
+          "text": "fn dot(xs: List[Int], ys: List[Int]) -> Int {\n  var total = 0\n  for p in zip(xs, ys) {\n    total = total + p.0 * p.1\n  }\n  return total\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "unpack",
+          "logprob": -66.84014129638672,
+          "tokens": 64,
+          "text": "fn dot(xs: List[Int], ys: List[Int]) -> Int {\n  var total = 0\n  for p in zip(xs, ys) {\n    let a = p.0\n    let b = p.1\n    total = total + a * b\n  }\n  return total\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "tuple",
+          "logprob": -140.6810760498047,
+          "tokens": 72,
+          "text": "type Order {\n  customer: String,\n  amount: Int,\n}\n\nfn per_customer(orders: List[Order]) -> Unit\n  effects: io\n{\n  for (name, group) in group_by(orders, |o| o.customer) {\n    print(name + \": \" + to_string(len(group)) + \" orders\")\n  }\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "field",
+          "logprob": -142.63868713378906,
+          "tokens": 72,
+          "text": "type Order {\n  customer: String,\n  amount: Int,\n}\n\nfn per_customer(orders: List[Order]) -> Unit\n  effects: io\n{\n  for p in group_by(orders, |o| o.customer) {\n    print(p.0 + \": \" + to_string(len(p.1)) + \" orders\")\n  }\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "unpack",
+          "logprob": -155.07791137695312,
+          "tokens": 84,
+          "text": "type Order {\n  customer: String,\n  amount: Int,\n}\n\nfn per_customer(orders: List[Order]) -> Unit\n  effects: io\n{\n  for p in group_by(orders, |o| o.customer) {\n    let name = p.0\n    let group = p.1\n    print(name + \": \" + to_string(len(group)) + \" orders\")\n  }\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "braces-vs-indent",
+      "question": "Blocks: braces or colon + indentation?",
+      "canon": "braces",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "braces",
+          "logprob": -39.8502311706543,
+          "tokens": 50,
+          "text": "fn clamp(x: Int, lo: Int, hi: Int) -> Int {\n  if x < lo {\n    return lo\n  } else if x > hi {\n    return hi\n  } else {\n    return x\n  }\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "indent",
+          "logprob": -37.68975067138672,
+          "tokens": 45,
+          "text": "fn clamp(x: Int, lo: Int, hi: Int) -> Int:\n  if x < lo:\n    return lo\n  else if x > hi:\n    return hi\n  else:\n    return x\n"
+        },
+        {
+          "context": 1,
+          "variant": "braces",
+          "logprob": -55.00830078125,
+          "tokens": 55,
+          "text": "fn digits(n: Int) -> Int {\n  var count = 1\n  var rest = abs(n)\n  while rest >= 10 {\n    rest = rest / 10\n    count = count + 1\n  }\n  return count\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "indent",
+          "logprob": -56.15754318237305,
+          "tokens": 52,
+          "text": "fn digits(n: Int) -> Int:\n  var count = 1\n  var rest = abs(n)\n  while rest >= 10:\n    rest = rest / 10\n    count = count + 1\n  return count\n"
+        },
+        {
+          "context": 2,
+          "variant": "braces",
+          "logprob": -96.64103698730469,
+          "tokens": 77,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn stock_value(items: List[Item]) -> Float {\n  var total = 0.0\n  for i in items {\n    if i.qty > 0 {\n      total = total + to_float(i.qty) * i.price\n    }\n  }\n  return total\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "indent",
+          "logprob": -98.27951049804688,
+          "tokens": 71,
+          "text": "type Item:\n  sku: String,\n  qty: Int,\n  price: Float,\n\nfn stock_value(items: List[Item]) -> Float:\n  var total = 0.0\n  for i in items:\n    if i.qty > 0:\n      total = total + to_float(i.qty) * i.price\n  return total\n"
+        }
+      ]
+    },
+    {
+      "id": "let-keyword",
+      "question": "Immutable local: `let x = e` or bare `x = e`?",
+      "canon": "let",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "let",
+          "logprob": -121.49069213867188,
+          "tokens": 82,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn summary(items: List[Item]) -> String {\n  let count = len(items)\n  let total = sum(map(items, |i| i.qty))\n  let avg = total / max(count, 1)\n  return to_string(count) + \" items, avg qty \" + to_string(avg)\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "bare",
+          "logprob": -122.25349426269531,
+          "tokens": 79,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn summary(items: List[Item]) -> String {\n  count = len(items)\n  total = sum(map(items, |i| i.qty))\n  avg = total / max(count, 1)\n  return to_string(count) + \" items, avg qty \" + to_string(avg)\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "let",
+          "logprob": -93.8175048828125,
+          "tokens": 65,
+          "text": "fn best_score(words: List[String]) -> Int {\n  var best = 0\n  for w in words {\n    let n = str_len(w)\n    let bonus = n * 2\n    if n + bonus > best {\n      best = n + bonus\n    }\n  }\n  return best\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "bare",
+          "logprob": -93.46554565429688,
+          "tokens": 63,
+          "text": "fn best_score(words: List[String]) -> Int {\n  var best = 0\n  for w in words {\n    n = str_len(w)\n    bonus = n * 2\n    if n + bonus > best {\n      best = n + bonus\n    }\n  }\n  return best\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "let",
+          "logprob": -146.0420684814453,
+          "tokens": 72,
+          "text": "fn load_port(path: String) -> Result[Int, Error]\n  effects: fs\n{\n  let text = try read_file(path)\n  let lines = split(text, \"\\n\")\n  let head = trim(unwrap_or(first(lines), \"\"))\n  let port = unwrap_or(parse_int(head), 8080)\n  return Ok(port)\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "bare",
+          "logprob": -147.68698120117188,
+          "tokens": 68,
+          "text": "fn load_port(path: String) -> Result[Int, Error]\n  effects: fs\n{\n  text = try read_file(path)\n  lines = split(text, \"\\n\")\n  head = trim(unwrap_or(first(lines), \"\"))\n  port = unwrap_or(parse_int(head), 8080)\n  return Ok(port)\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "fn-keyword",
+      "question": "Function keyword: `fn` or `def`?",
+      "canon": "fn",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "fn",
+          "logprob": -151.23397827148438,
+          "tokens": 102,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn restock(items: List[Item], n: Int) -> Float\n  effects: io\n  requires: n >= 0\n{\n  var total = 0.0\n  for i in items {\n    if i.qty < n {\n      print(i.sku)\n      total = total + to_float(n - i.qty) * i.price\n    }\n  }\n  return total\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "def",
+          "logprob": -159.79193115234375,
+          "tokens": 102,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\ndef restock(items: List[Item], n: Int) -> Float\n  effects: io\n  requires: n >= 0\n{\n  var total = 0.0\n  for i in items {\n    if i.qty < n {\n      print(i.sku)\n      total = total + to_float(n - i.qty) * i.price\n    }\n  }\n  return total\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "fn",
+          "logprob": -138.4136962890625,
+          "tokens": 104,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn label(item: Item) -> String {\n  return item.sku + (match item.qty {\n    0 => \" out\",\n    _ => \" in\",\n  })\n}\n\nfn cheapest(items: List[Item]) -> List[String] {\n  return items\n    |> filter(|i| i.qty > 0)\n    |> sort_by(|i| i.price)\n    |> map(|i| label(i))\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "def",
+          "logprob": -139.6825408935547,
+          "tokens": 104,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\ndef label(item: Item) -> String {\n  return item.sku + (match item.qty {\n    0 => \" out\",\n    _ => \" in\",\n  })\n}\n\ndef cheapest(items: List[Item]) -> List[String] {\n  return items\n    |> filter(|i| i.qty > 0)\n    |> sort_by(|i| i.price)\n    |> map(|i| label(i))\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "fn",
+          "logprob": -51.41149139404297,
+          "tokens": 41,
+          "text": "fn square(x: Int) -> Int {\n  return x * x\n}\n\nfn sum_squares(xs: List[Int]) -> Int {\n  return sum(map(xs, |x| square(x)))\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "def",
+          "logprob": -52.34491729736328,
+          "tokens": 41,
+          "text": "def square(x: Int) -> Int {\n  return x * x\n}\n\ndef sum_squares(xs: List[Int]) -> Int {\n  return sum(map(xs, |x| square(x)))\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "range-loop",
+      "question": "Counting loop: `for i in range(0, n)` or `var i` + `while i < n`? (both v0.2)",
+      "canon": "for-range",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "for-range",
+          "logprob": -45.989837646484375,
+          "tokens": 44,
+          "text": "fn square_sum(n: Int) -> Int {\n  var total = 0\n  for i in range(0, n) {\n    total = total + i * i\n  }\n  return total\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "while",
+          "logprob": -43.99067306518555,
+          "tokens": 54,
+          "text": "fn square_sum(n: Int) -> Int {\n  var total = 0\n  var i = 0\n  while i < n {\n    total = total + i * i\n    i = i + 1\n  }\n  return total\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "for-range",
+          "logprob": -80.7363052368164,
+          "tokens": 39,
+          "text": "fn count_up(n: Int) -> Unit\n  effects: io\n{\n  for i in range(1, n + 1) {\n    print(to_string(i))\n  }\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "while",
+          "logprob": -86.42375946044922,
+          "tokens": 49,
+          "text": "fn count_up(n: Int) -> Unit\n  effects: io\n{\n  var i = 1\n  while i < n + 1 {\n    print(to_string(i))\n    i = i + 1\n  }\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "for-range",
+          "logprob": -67.54487609863281,
+          "tokens": 48,
+          "text": "fn steps(k: Int, step: Int) -> List[Int] {\n  var xs = []\n  for i in range(0, k) {\n    xs = append(xs, i * step)\n  }\n  return xs\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "while",
+          "logprob": -67.2335433959961,
+          "tokens": 58,
+          "text": "fn steps(k: Int, step: Int) -> List[Int] {\n  var xs = []\n  var i = 0\n  while i < k {\n    xs = append(xs, i * step)\n    i = i + 1\n  }\n  return xs\n}\n"
+        }
+      ]
+    },
+    {
+      "id": "string-interp",
+      "question": "Building strings: `+` with to_string, or interpolation `\"{x}\"` / `\"${x}\"`?",
+      "canon": "plus",
+      "rows": [
+        {
+          "context": 0,
+          "variant": "plus",
+          "logprob": -66.9102783203125,
+          "tokens": 27,
+          "text": "fn greet(name: String) -> Unit\n  effects: io\n{\n  print(\"hello, \" + name + \"!\")\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "brace",
+          "logprob": -68.77867126464844,
+          "tokens": 25,
+          "text": "fn greet(name: String) -> Unit\n  effects: io\n{\n  print(\"hello, {name}!\")\n}\n"
+        },
+        {
+          "context": 0,
+          "variant": "dollar",
+          "logprob": -69.37199401855469,
+          "tokens": 25,
+          "text": "fn greet(name: String) -> Unit\n  effects: io\n{\n  print(\"hello, ${name}!\")\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "plus",
+          "logprob": -61.25825500488281,
+          "tokens": 31,
+          "text": "fn summary(count: Int, total: Float) -> String {\n  return to_string(count) + \" items, total \" + to_string(total)\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "brace",
+          "logprob": -57.78097152709961,
+          "tokens": 25,
+          "text": "fn summary(count: Int, total: Float) -> String {\n  return \"{count} items, total {total}\"\n}\n"
+        },
+        {
+          "context": 1,
+          "variant": "dollar",
+          "logprob": -57.350467681884766,
+          "tokens": 25,
+          "text": "fn summary(count: Int, total: Float) -> String {\n  return \"${count} items, total ${total}\"\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "plus",
+          "logprob": -86.64366912841797,
+          "tokens": 44,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn line(item: Item) -> String {\n  return item.sku + \" x\" + to_string(item.qty)\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "brace",
+          "logprob": -84.72880554199219,
+          "tokens": 41,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn line(item: Item) -> String {\n  return \"{item.sku} x{item.qty}\"\n}\n"
+        },
+        {
+          "context": 2,
+          "variant": "dollar",
+          "logprob": -84.9382095336914,
+          "tokens": 41,
+          "text": "type Item {\n  sku: String,\n  qty: Int,\n  price: Float,\n}\n\nfn line(item: Item) -> String {\n  return \"${item.sku} x${item.qty}\"\n}\n"
+        }
+      ]
+    }
+  ]
+}

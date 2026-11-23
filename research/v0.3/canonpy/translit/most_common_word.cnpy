@@ -1,0 +1,8 @@
+def most_common_word(s: str) -> str | None:
+    if s == "":
+        return None
+    counts = {}
+    for w in s.split(" "):
+        counts[w] = counts.get(w, 0) + 1
+    best = sorted(counts.items(), key=lambda g: g[1], reverse=True)
+    return best[0][0]

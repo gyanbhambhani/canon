@@ -1,0 +1,13 @@
+@dataclass
+class User:
+    name: str
+    age: int
+    email: str
+
+
+def validate_user(u: User) -> list[str]:
+    name_check = (u.name == "", "name is empty")
+    age_check = (u.age < 0 or u.age > 150, "age out of range")
+    email_check = ("@" not in u.email, "email must contain @")
+    checks = [name_check, age_check, email_check]
+    return [c[1] for c in checks if c[0]]

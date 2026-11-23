@@ -1,0 +1,30 @@
+type Op = Deposit(amount: int) | Withdraw(amount: int)
+
+
+def is_withdrawal(op: Op) -> bool:
+    match op:
+        case Withdraw(_):
+            return True
+        case _:
+            return False
+
+
+def op_amount(op: Op) -> int:
+    match op:
+        case Deposit(a):
+            return a
+        case Withdraw(a):
+            return a
+
+
+def apply_ops(balance: int, ops: list[Op]) -> Result[int, str]:
+    b = balance
+    for i, op in enumerate(ops):
+        amount = op_amount(op)
+        if is_withdrawal(op):
+            if amount > b:
+                return Err("insufficient funds at step " + str(i + 1))
+            b -= amount
+        else:
+            b += amount
+    return Ok(b)

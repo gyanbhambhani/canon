@@ -1,0 +1,16 @@
+@dataclass
+class User:
+    name: str
+    age: int
+    email: str
+
+
+def validate_user(u: User) -> list[str]:
+    problems = []
+    if u.name == "":
+        problems.append("name is empty")
+    if u.age < 0 or u.age > 150:
+        problems.append("age out of range")
+    if "@" not in u.email:
+        problems.append("email must contain @")
+    return problems

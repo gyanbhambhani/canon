@@ -1,0 +1,30 @@
+def strip_digits(s: str) -> str:
+    digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    for d in digits:
+        s = "".join(s.split(d))
+    return s
+
+
+def is_digits(s: str) -> bool:
+    return len(s) > 0 and len(strip_digits(s)) == 0
+
+
+def is_int(s: str) -> bool:
+    parts = s.split("-")
+    if len(parts) == 1:
+        return is_digits(s)
+    elif len(parts) == 2:
+        head = parts[0]
+        tail = parts[-1]
+        return head == "" and is_digits(tail)
+    else:
+        return False
+
+
+def parse_sum(s: str) -> int:
+    total = 0
+    for item in s.split(","):
+        t = item.strip()
+        if is_int(t):
+            total += int(t)
+    return total

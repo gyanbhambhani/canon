@@ -1,0 +1,14 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class Item:
+    sku: str
+    qty: int
+    min: int
+
+
+def restock(items: list[Item]) -> list[str]:
+    low = [item for item in items if item.qty < item.min]
+    low.sort(key=lambda item: item.min - item.qty, reverse=True)
+    return [item.sku for item in low]

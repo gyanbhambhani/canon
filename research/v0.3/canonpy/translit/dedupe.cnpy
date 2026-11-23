@@ -1,0 +1,6 @@
+def dedupe(xs: list[int]) -> list[int]:
+    seen = []
+    for x in xs:
+        if x not in seen:
+            seen.append(x)
+    return seen
