@@ -1,11 +1,11 @@
 ---
 title: Agent reference
-description: The complete Canon v0.3 language reference on one page, small enough to fit in a single prompt. The same text is served raw at /llms.txt.
+description: The complete Canon v0.4 language reference on one page, small enough to fit in a single prompt. The same text is served raw at /llms.txt.
 ---
 
 # Canon language reference
 
-Canon v0.3, complete. Every sample here passes `canon check`.
+Canon v0.4, complete. Every sample here passes `canon check`.
 
 ## Text
 
@@ -13,7 +13,7 @@ Files end in .cn. Braces delimit blocks; indent two spaces; one statement per li
 
 ## Types
 
-Int (53-bit), Float (64-bit), Bool, String, Unit, `List[T]`, `Map[K, V]` (K is Int, Float or String), tuples `(A, B)`, functions `fn(A) -> B`. Built in: `Option[T]` is `Some(value: T) | None`; `Result[T, E]` is `Ok(value: T) | Err(error: E)`; `Error { message: String }`. Generic: `type Box[T] { value: T, }`.
+Int (53-bit), Float (64-bit), Bool, String, Unit, `List[T]`, `Map[K, V]` (K is Int, Float or String), tuples `(A, B)`, functions `fn(A) -> B` (pure) or `fn(A) -> B effects: io` (calling it performs io). Built in: `Option[T]` is `Some(value: T) | None`; `Result[T, E]` is `Ok(value: T) | Err(error: E)`; `Error { message: String }`. Generic: `type Box[T] { value: T, }`.
 
 ```canon name=types
 type Item {
@@ -29,9 +29,9 @@ type Step =
 
 ## Functions and effects
 
-Parameter and return types are always written; locals never are. Optional clauses, one per line, in order: `effects:` (exactly those used, from fs, io, net, rand, time; none means pure), `requires:`, `ensures:` (`result` is the return value). Contracts must be pure (E103). Generic: `fn id[T](x: T) -> T`. Calling, naming (`map(xs, print)`) or using in a lambda an effectful function uses its effect.
+Parameter and return types are always written; locals never are. Optional clauses, one per line, in order: `effects:` (exactly those used, from fs, io, net, rand, time; none means pure), `requires:`, `ensures:` (`result` is the return value). Contracts must be pure (E103). Generic: `fn id[T](x: T) -> T`. Calling, naming or using in a lambda an effectful function uses its effect.
 
-A program performs only the effects its entry point declares (checked, and enforced at run time). Function types carry no effects: `fn apply(f: fn(String) -> Unit, s: String)` is pure yet prints when passed `print`; the caller naming `print` declares io.
+Calling a function value performs its type's effects, so the caller declares them; passing an effectful function where the function type is pure is T011 (so `map(xs, print)` is T011: use a `for` loop). Every signature bounds what its function can do, and a program performs only the effects its entry point declares (checked, and enforced at run time).
 
 ## Statements
 
@@ -109,7 +109,7 @@ Run `canon check --fix --write --json FILE`. It applies every C001, E101, E102 a
 
 `canon run` calls `fn main() -> Unit` (or a main returning a Result; Err prints and exits 1). requires is checked on entry, ensures on every return. `canon test` runs test blocks, then calls each pure, non-generic function with a contract on 200 seeded generated inputs; a failure prints `FAIL fuzz name: a = -19, b = 12` and the trap.
 
-Commands: `canon check [--fix [--write]]`, `fmt [--write]`, `run [--deny fs,net] [--no-contracts]`, `test`; each takes files and `--json`. Exit 0 ok, 1 on diagnostics, failed tests or traps, 2 usage error.
+Commands: `canon check [--fix [--write]]`, `fmt [--write]`, `run [--deny fs,net] [--no-contracts]`, `test`, `build [-o OUT] [--module]`; each takes files and `--json`; `--watch` reruns on save. Exit 0 ok, 1 on diagnostics, failed tests or traps, 2 usage error.
 
 ## Standard library
 
@@ -146,6 +146,6 @@ rand: random() -> Float in [0, 1); random_int(lo: Int, hi: Int) -> Int, hi exclu
 
 `canon check --json` prints `{ ok, canonical, diagnostics }`; each has code, message, line, col, maybe `data` and `fix.diff` (a unified diff to apply as is). `--fix` adds `applied` and `source`.
 
-P001 parse · P002 comment placement · P003 local annotation · P004 non-call statement · P005 stage not a call · C001 not canonical · L001 line over 100 chars fmt cannot break (bind with let) · N001 naming · M001 `use` other than `std.<name>` · E100 unknown effect · E101 undeclared effect · E102 unused effect · E103 effect in a contract · H001 hole · T001 type mismatch · T002 unknown name · T003 argument count · T004 non-exhaustive match · T005 missing return · T006 assigning a non-var · T007 misplaced try · T008 unknown field · T009 Int and Float mixed · T010 break outside a loop.
+P001 parse · P002 comment placement · P003 local annotation · P004 non-call statement · P005 stage not a call · C001 not canonical · L001 line over 100 chars fmt cannot break (bind with let) · N001 naming · M001 `use` other than `std.<name>` · E100 unknown effect · E101 undeclared effect · E102 unused effect · E103 effect in a contract · H001 hole · T001 type mismatch · T002 unknown name · T003 argument count · T004 non-exhaustive match · T005 missing return · T006 assigning a non-var · T007 misplaced try · T008 unknown field · T009 Int and Float mixed · T010 break outside a loop · T011 effectful function where the function type is pure.
 
 Traps print one JSON object (code, message, line, col, stack): R001 requires failed · R002 ensures failed · R003 Int overflow · R004 division by zero · R005 assert failed · R006 effect denied by the host

@@ -121,7 +121,7 @@ test "tuples" {
 
 ## Function types
 
-A function type is written `fn(A, B) -> C`. Named functions and lambdas are both values of function types, and a parameter or local of function type is called by name.
+A function type is written `fn(A, B) -> C`, and `fn(A, B) -> C effects: io, net` when calling it performs effects (the clause sits on the same line as the type). Named functions and lambdas are both values of function types, and a parameter or local of function type is called by name. A function value with effects fits only a function type that allows them (T011 otherwise), and calling one performs its effects, so the caller declares them; [Functions and side effects](/docs/guide/functions-effects-contracts#what-the-guarantee-covers) has an example.
 
 ```canon
 fn twice(f: fn(Int) -> Int, x: Int) -> Int {

@@ -208,7 +208,11 @@ The patch:
 
 ### S001
 
-Retired. v0 rejected a `match` inside a larger expression; since v0.2 `match` may appear in any expression position, and the checker no longer reports S001.
+In brace syntax, retired: v0 rejected a `match` inside a larger expression, and since v0.2 `match` may appear in any expression position. In [Canon-Py](/docs/guide/canon-py), `match` is a statement, so a match nested inside a larger expression cannot be written. Converting such a program with `canon fmt --syntax py` reports S001 at the match, and the fix is to bind the match to a name first. There is no patch, because moving the match out could change the order of effects:
+
+```text
+s001.cn:2:15: error S001: in Canon-Py a match is a statement: return its value or bind it to a name, then use the name
+```
 
 ### L001
 
@@ -280,7 +284,7 @@ The patch:
 
 ### E101
 
-A function or test uses an effect it does not declare: directly, through a function it calls, inside a lambda, or by naming an effectful function as a value (`map(xs, print)`). The patch adds it.
+A function or test uses an effect it does not declare: directly, through a function it calls, inside a lambda, by naming an effectful function as a value, or by calling a function value whose type has effects (`f(s)` where `f: fn(String) -> Unit effects: io`). The patch adds it.
 
 ```canon
 # expect: E101
@@ -630,6 +634,27 @@ fn f(n: Int) -> Int {
 
 ```text
 example.cn:4:5: error T010: break is only allowed inside a for or while loop
+```
+
+### T011
+
+An effectful function is used where the expected function type allows no such effects: passed as an argument, stored in a record field or a list, returned, or wrapped in a lambda whose body calls it. Function types carry effects (`fn(String) -> Unit effects: io`), so a pure function type, such as the parameter of `map`, cannot receive `print`. Choose one fix: declare the effects in the receiving function type (and in the signature of the function that calls it), or stop passing the effectful function. There is no patch, because either fix changes a contract. `--no-fn-effects` turns this check off.
+
+```canon
+# expect: T011
+fn apply(f: fn(String) -> Unit, s: String) -> Unit {
+  f(s)
+}
+
+fn main() -> Unit
+  effects: io
+{
+  apply(print, "x")
+}
+```
+
+```text
+example.cn:8:9: error T011: print performs io, but it is used where the function type fn(String) -> Unit allows no such effects; declare them in that type, e.g. fn(String) -> Unit effects: io
 ```
 
 ## Modules

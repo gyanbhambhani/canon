@@ -171,6 +171,33 @@ PASS double
 
 `canon test` also calls every pure function that has a `requires` or `ensures` contract on generated inputs; see [Functions and side effects](/docs/guide/functions-effects-contracts#contract-fuzzing).
 
+## Watch and build
+
+While you edit, `--watch` reruns a command on every save until Ctrl-C, with one status line per run:
+
+```bash
+canon check --watch hello.cn
+canon run --watch hello.cn      # a new save stops a still-running program first
+```
+
+```text
+[14:03:27] check hello.cn: ok
+```
+
+When the program works, `canon build` turns it into one JavaScript file that runs anywhere Node runs, with nothing installed:
+
+```bash
+canon build hello.cn
+node hello.js
+```
+
+```text
+hello.cn: wrote hello.js
+hello, canon
+```
+
+`canon build --module lib.cn` writes `lib.mjs` instead, an ES module whose `fns` export calls your Canon functions from JavaScript. Every flag is in [Command line](/docs/cli#canon-build).
+
 ## Build from source
 
 To work on Canon itself, clone the repository. You need pnpm.

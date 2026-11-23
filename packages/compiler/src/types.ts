@@ -731,7 +731,9 @@ export function checkTypes(prog: A.Program): TypeResult {
         const fields = fieldsOf(objT);
         const ft = fields?.get(e.name);
         if (!ft) {
-          err("T008", `type ${show(objT)} has no field ${e.name}`, e);
+          err("T008", features().py && /^\d+$/.test(e.name)
+            ? `${show(objT)} has no slot [${e.name}]: only tuples are indexed; for a list use first, last, take or drop, or a for loop`
+            : `type ${show(objT)} has no field ${e.name}`, e);
           return expected ?? fresh();
         }
         return expectType(pos, expected, ft, what, e);

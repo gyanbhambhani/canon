@@ -106,3 +106,20 @@ cd ~/Desktop/canon/packages/cli
 pnpm pack --pack-destination /tmp      # writes /tmp/canon-lang-0.3.0.tgz with workspace:* rewritten
 npm publish /tmp/canon-lang-0.3.0.tgz --access public --auth-type=web
 ```
+
+## 9. Publish canon-lang 0.4.0 (language v0.4)
+
+0.4.0 ships language and toolchain v0.4: effects on function types (T011; `--no-fn-effects`), the
+opt-in Canon-Py syntax (`--syntax py`; brace syntax stays the default until Experiment 1 compares
+them), `canon build` (a standalone JavaScript file, or `--module`), `--watch` on check, test, run
+and build, and `--v0.3`. The tarball includes `dist/runtime-standalone.js`, which `canon build`
+inlines.
+
+```bash
+cd ~/Desktop/canon
+pnpm build
+cd packages/cli
+pnpm pack --pack-destination /tmp      # writes /tmp/canon-lang-0.4.0.tgz with workspace:* rewritten
+tar -tzf /tmp/canon-lang-0.4.0.tgz | grep runtime-standalone.js
+npm publish /tmp/canon-lang-0.4.0.tgz --access public --auth-type=web
+```

@@ -9,6 +9,7 @@
     "pattern-matching",
     "errors-result-try",
     "pipelines",
-    "holes"
+    "holes",
+    "canon-py"
   ]
 }

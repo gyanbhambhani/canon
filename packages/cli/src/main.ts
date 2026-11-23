@@ -52,7 +52,7 @@ language versions and switches (for experiments):
   --v0.3, --v0.2                 the v0.3 or v0.2 language
   --no-wrap --no-break --no-destructure --no-symbols --no-sealed-effects --no-suggestions
   --no-fn-effects                each turns one v0.3 or v0.4 change off
-  --no-capability-guard (run, test)    --no-contract-fuzz (test)
+  --no-capability-guard (run, test, build)    --no-contract-fuzz (test)
 
 exit codes: 0 success, 1 diagnostics / failed tests / traps, 2 usage error
 `;

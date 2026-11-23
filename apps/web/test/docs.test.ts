@@ -20,7 +20,7 @@ const TREE = [
   "index", "quickstart", "agents",
   "guide/files-and-syntax", "guide/types-and-declarations", "guide/functions-effects-contracts",
   "guide/statements-and-mutation", "guide/expressions-and-precedence", "guide/pattern-matching",
-  "guide/errors-result-try", "guide/pipelines", "guide/holes",
+  "guide/errors-result-try", "guide/pipelines", "guide/holes", "guide/canon-py",
   "canonical-form", "diagnostics", "stdlib", "cli", "for-agents", "for-agents-py", "design-notes", "roadmap",
 ];
 

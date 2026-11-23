@@ -158,6 +158,26 @@ fn f(a: Int) -> Int {
 }
 ```
 
+## Canon-Py and v0.4
+
+v0.4 changes no brace-syntax layout rule, so a v0.3 file is already a v0.4 file. Effects on function types are a checking rule (T011), not a layout rule.
+
+[Canon-Py](/docs/guide/canon-py), the opt-in syntax, has its own canonical layout. `canon fmt --syntax py` prints it, and `canon check --syntax py` rejects any other layout with C001:
+- 4-space indentation, one blank line between top-level definitions, double quotes;
+- decorators in the order `@effects`, `@requires`, `@ensures`;
+- `elif` rather than `else:` with a nested `if`;
+- `x += e` for `x = x + e`, `x in xs` for `contains(xs, x)`, `x is None` for `x == None`;
+- an f-string for a `+` chain of string literals and `to_string` calls;
+- `a if c else b` for a match on a Bool;
+- nested calls rather than pipelines.
+
+A statement or signature longer than 100 characters breaks at its brackets, one item per line with a trailing comma, and any item that is still too long breaks the same way.
+
+Converting a brace file to Canon-Py is mechanical, with three exceptions:
+- A match nested inside a larger expression has no Canon-Py spelling (S001): bind it to a name first.
+- Shadowing has none either, because a second `x = ...` assigns. A `let` that shadows a visible name is renamed `x_2`.
+- A name that is a Python keyword (such as `case` or `pass`) is renamed `case_`.
+
 ## Migrating from v0.2
 
 v0.3 changed one spelling and one checking rule. Both migrate mechanically.

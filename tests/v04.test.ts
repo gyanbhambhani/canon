@@ -269,6 +269,12 @@ describe("Canon-Py: diagnostics and patches", () => {
     expect(d.message).toContain("Callable[[str], None, io]");
   });
 
+  it("indexing a list with a literal says lists are not indexed (T008)", () => {
+    const d = diags("def f(xs: list[int]) -> int:\n    return xs[0]\n")[0];
+    expect(d.code).toBe("T008");
+    expect(d.message).toBe("list[int] has no slot [0]: only tuples are indexed; for a list use first, last, take or drop, or a for loop");
+  });
+
   it("a test function is a test; its effects are a decorator", () => {
     const src = '@effects(fs)\ndef test_writes() -> None:\n    r = write_file("/dev/null", "x")\n    assert r == r\n\ndef test_math() -> None:\n    assert 2 * 3 == 6\n';
     expect(codes(src)).toEqual([]);

@@ -1,0 +1,137 @@
+---
+title: Canon-Py (opt-in syntax)
+description: Canon-Py spells Canon in a strict subset of typed Python syntax, with the same checker and guarantees. How to switch, every construct side by side with brace syntax, what Python forms are rejected, and what the evidence for it does and does not show.
+---
+
+Canon-Py is a second spelling of Canon: a strict subset of typed Python syntax that parses to the same program. Its type checker, effect checker, code generator and runtime are the ones brace syntax uses, so a Canon-Py program has every guarantee a brace program has:
+- types on every signature, always checked;
+- effects in every signature, with undeclared ones an error;
+- `Result` instead of exceptions;
+- exhaustive matching with patches;
+- one canonical text;
+- `check --fix`;
+- contract fuzzing;
+- the capability guard.
+
+It is opt-in. Brace syntax stays the default until Experiment 1 compares the two syntaxes on the hard tasks; Canon-Py becomes the default only if agents are at least as correct with it, at lower cost.
+
+## Switching
+
+```bash
+canon fmt --syntax py --write main.cn     # convert a file to Canon-Py
+canon check --syntax py main.cn           # check it as Canon-Py
+canon run --syntax py main.cn
+canon fmt --write main.cn                 # convert it back to brace syntax
+```
+
+The parser reads both syntaxes in every mode, so `fmt` converts either way. The flag decides which syntax `fmt` prints, which one `check` accepts as canonical, and how messages and patches spell types and code. Files keep the `.cn` extension. Agents get their own reference: [Agent reference (Canon-Py)](/docs/for-agents-py), also served at `/llms-py.txt`.
+
+## Side by side
+
+The same program in both syntaxes. `canon fmt` turns either one into the other, and both compile to the same JavaScript.
+
+```canon
+type Shape =
+  | Circle(r: Float)
+  | Rect(w: Float, h: Float)
+
+fn area(s: Shape) -> Float {
+  return match s {
+    Circle(r) => 3.14 * r * r,
+    Rect(w, h) => w * h,
+  }
+}
+
+fn describe(shapes: List[Shape]) -> String
+  requires: len(shapes) > 0
+{
+  var total = 0.0
+  for s in shapes {
+    total = total + area(s)
+  }
+  return to_string(len(shapes)) + " shapes, area " + to_string(total)
+}
+
+fn main() -> Unit
+  effects: io
+{
+  print(describe([Circle(1.0), Rect(2.0, 3.0)]))
+}
+```
+
+```canon syntax=py
+type Shape = Circle(r: float) | Rect(w: float, h: float)
+
+def area(s: Shape) -> float:
+    match s:
+        case Circle(r):
+            return 3.14 * r * r
+        case Rect(w, h):
+            return w * h
+
+@requires(len(shapes) > 0)
+def describe(shapes: list[Shape]) -> str:
+    total = 0.0
+    for s in shapes:
+        total += area(s)
+    return f"{len(shapes)} shapes, area {total}"
+
+@effects(io)
+def main() -> None:
+    print(describe([Circle(1.0), Rect(2.0, 3.0)]))
+```
+
+## The spellings
+
+Every construct has one canonical Canon-Py form; `fmt` turns the other accepted forms into it.
+
+| Construct | Brace syntax | Canon-Py |
+|---|---|---|
+| Function | `fn f(x: Int) -> Int { ... }` | `def f(x: int) -> int:` and an indented block (4 spaces) |
+| Types | `Int Float Bool String Unit List[T] Map[K, V] (A, B)` | `int float bool str None list[T] dict[K, V] tuple[A, B]` |
+| Function types | `fn(A) -> B effects: io` | `Callable[[A], B, io]` |
+| Effects | `effects: io, net` line | `@effects(io, net)` decorator |
+| Contracts | `requires:` / `ensures:` lines | `@requires(...)` / `@ensures(...)` decorators |
+| Records | `type Item { sku: String, }` | `class Item:` with typed fields |
+| Record literal | `Item { sku: "a" }` | `Item(sku="a")` |
+| Sum types | `type Op =` with `\| A(x: Int)` lines | `type Op = A(x: int) \| B` on one line |
+| Bindings | `let x = e`, `var x = e`, `x = e` | `x = e` (mutability is inferred) |
+| Updates | `x = x + e` | `x += e` |
+| Result propagation | `try e` | `e?` |
+| match | an expression: `return match x { P => e, }` | the `match`/`case` statement; each case is one `return e`, `name = e` or call |
+| Two-way choice | `match c { true => a, false => b }` | `a if c else b` |
+| Lambdas | `\|x\| x + 1` | `lambda x: x + 1` |
+| Logic | `&&` `\|\|` `!` | `and` `or` `not` |
+| Literals | `true` `false` | `True` `False` |
+| None test | `x == None` | `x is None` |
+| Membership | `contains(xs, x)` | `x in xs` |
+| Tuple slots | `t.0` | `t[0]` |
+| Strings | `"n=" + to_string(n)` | `f"n={n}"` |
+| Pipelines | `xs \|> f() \|> g() \|> h()` | none: nested calls |
+| Holes | `?` | `...` |
+| Tests | `test "adds two" { assert(...) }` | `def test_adds_two() -> None:` with `assert ...` |
+| Imports | `use std.text` | `import std.text` |
+
+Names live in the block that binds them, as in brace syntax: a name first bound inside an `if` is not visible after it, and T002 says to bind it before the block. Assigning to a parameter rebinds a local copy; callers never see the change, because Canon values are immutable.
+
+## What Canon-Py rejects
+
+Canon-Py is a subset: Python forms that have no Canon meaning are parse errors whose message names the Canon form. These include list indexing (`xs[i]`; the error names `first`, `take` and a `for` loop), methods (`s.split(",")`, reported as T002 "Canon has no methods"), `continue`, `try`/`except`/`raise`, comprehensions, dict literals, keyword arguments to functions, default arguments, docstrings, `//`, `**`, chained comparisons, case guards, and case bodies longer than one statement.
+
+```canon syntax=py
+# expect: P001
+def item(xs: list[str], i: int) -> str:
+    return xs[i]
+```
+
+**Watch the arithmetic.** Canon's `/` on two ints truncates toward zero, and `%` takes the sign of the dividend. Python's `/` is float division, and its `//` and `%` floor. Canon-Py keeps Canon's meaning, so `7 / 2` is `3` and `-7 / 2` is `-3`, and it has no `//`. Most mistakes here surface as type errors (an int where a float is expected), but negative operands do not. The other difference a Python reader may trip on: a variant with no fields is written `Dot`, not `Dot()`, both when built and in a `case`.
+
+## The evidence, and its limits
+
+The case for Canon-Py comes from scoring text with local open-weights code models (Qwen2.5-Coder 1.5B and 7B): how surprising a program is to a model that has read a great deal of Python. Two measurements stand behind it, and each is a proxy.
+1. **Each construct's spelling.** A likelihood study of each construct inside Python-shaped programs picked every spelling in the table. It also found two places where Canon-Py deliberately goes against the model:
+   - contracts stay decorators, where the model preferred bare `assert` lines, because a contract is part of the signature (checked on every return, fuzzed, and blamed with R001/R002);
+   - sum types stay one line, where the model was indifferent.
+2. **Whole programs.** The same benchmark programs, converted by `fmt`, were scored in both syntaxes. With no documentation, Canon-Py is clearly less surprising than brace syntax. With each syntax's own agent reference in the prompt, the two are about even. Both stay well above idiomatic typed Python, mostly because Canon's standard library differs from Python's (no methods or indexing), not because of the syntax.
+
+So the measurements say the Python-shaped surface removes most of the cost of an unfamiliar syntax when an agent has no reference. They do not show that agents write correct Canon-Py more often, or with less reasoning. That is what Experiment 1 tests, and why brace syntax stays the default until it has. The figures, intervals and method are in [docs/v0.4-design.md](https://github.com/gyanbhambhani/canon/blob/main/docs/v0.4-design.md) in the repository.

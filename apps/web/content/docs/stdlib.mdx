@@ -7,6 +7,8 @@ This page lists every built-in function with its signature, its side effect if i
 
 Each pure example below is a test block, so `canon test` runs it. There is no indexing operator, no methods and no character type: reach list items through `first`, `last`, `take`, `drop` and `enumerate`, and strings through `split`.
 
+The function arguments of `map`, `filter`, `fold`, `sort_by`, `sort_desc_by` and `group_by` have pure function types, so they take only pure functions: `map(xs, print)` is T011. To perform an effect for each item, use a `for` loop.
+
 ## Lists
 
 ### len

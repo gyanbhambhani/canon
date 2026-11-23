@@ -28,7 +28,7 @@ A record is a `class` with typed fields only (no methods, no inheritance), built
 
 ## Functions and effects
 
-Every `def` has parameter and return types; locals never do. Decorators, in order: `@effects(...)` (exactly those used, from fs, io, net, rand, time; none means pure), `@requires(cond)`, `@ensures(cond)` (`result` is the return value). Contracts must be pure (E103). Generic: `def first[T](xs: list[T]) -> Option[T]:`. Calling, naming (`each(xs, print)`) or using in a lambda an effectful function uses its effect.
+Every `def` has parameter and return types; locals never do. Decorators, in order: `@effects(...)` (exactly those used, from fs, io, net, rand, time; none means pure), `@requires(cond)`, `@ensures(cond)` (`result` is the return value). Contracts must be pure (E103). Generic: `def first[T](xs: list[T]) -> Option[T]:`. Calling, naming or using in a lambda an effectful function uses its effect.
 
 Function types carry effects: `Callable[[str], None, io]` performs io when called, `Callable[[str], None]` is pure. Calling a function value performs its type's effects; passing an effectful function where a pure function type is expected is T011. So every signature bounds what its function can do, and a program performs only the effects its entry point declares (checked, and enforced at run time).
 

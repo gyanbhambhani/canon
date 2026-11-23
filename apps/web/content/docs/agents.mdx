@@ -21,6 +21,8 @@ https://canon-lake.vercel.app/llms.txt
 
 If your agent can fetch URLs, point it there. If not, paste the text into its instructions. Every example in it passes `canon check`. Agents have learned Canon from this page alone in the benchmarks; [Research](/research) has the data.
 
+To have the agent write [Canon-Py](/docs/guide/canon-py), the opt-in Python-shaped syntax, give it the [Canon-Py reference](/docs/for-agents-py) instead (`https://canon-lake.vercel.app/llms-py.txt`), and add `--syntax py` to every command below.
+
 ## 2. Give the agent the loop
 
 Put this in the instruction file your agent reads at the start of a session: `CLAUDE.md` for Claude Code, `AGENTS.md` for Codex and other tools that read it, or a project rule in Cursor.
@@ -138,7 +140,7 @@ A file with holes does not run. See [Holes](/docs/guide/holes).
 
 The checker holds every program to the effects its entry point declares: `canon run` lets the program perform only the effects `main` lists, and `canon test` lets each test perform only `io`, `time` and `rand` (virtual under the test host) plus the `fs` or `net` it declares. A runtime guard enforces the same bound even if the checker were wrong. So reading `main`'s signature tells you the most a checked program can do.
 
-The bound is on the program, not on each function. A function that takes a function as a parameter, such as `fn apply(f: fn(String) -> Unit, s: String) -> Unit`, declares no effects, yet performs `io` when its caller passes `print`; the caller that names `print` must declare `io`. Effects on function types are planned for v0.4.
+Since v0.4 the bound also holds for each function, because function types carry effects. A function that calls a parameter of type `fn(String) -> Unit effects: io` must itself declare `io`, and passing `print` where the parameter type is pure, `fn(String) -> Unit`, is T011. So a signature tells the agent, and you, everything the function can do.
 
 ## Tips for any agent tool
 

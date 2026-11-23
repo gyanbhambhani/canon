@@ -1,12 +1,12 @@
 ---
 title: Command line
-description: Every canon command and flag - check and check --fix, fmt, run, test with contract fuzzing, the capability guard, the v0.3 ablation switches - with exit codes and real output in text and JSON.
+description: Every canon command and flag - check and check --fix, fmt, run, test with contract fuzzing, build, --watch, --syntax, the capability guard and the ablation switches - with exit codes and real output in text and JSON.
 ---
 
 This page lists every `canon` command, flag and exit code, with output produced by running the CLI. Install the command with `npm i -g canon-lang`, or run it without installing as `npx canon-lang`. `canon --help` prints:
 
 ```text
-canon 0.3.0: a programming language for AI agents
+canon 0.4.0: a programming language for AI agents
 
 usage:
   canon check FILE... [--fix [--write]]
@@ -16,19 +16,28 @@ usage:
                                  check, then run fn main()
   canon test FILE...             run the test blocks (deterministic time and rand),
                                  then fuzz every pure function that has a contract
+  canon build FILE [-o OUT] [--module] [--deny EFFECTS] [--no-contracts]
+                                 check, then write a standalone JavaScript file that
+                                 runs with plain node (default OUT: FILE.js; with
+                                 --module, an ES module exporting fns: FILE.mjs)
 
 options:
   --json                         machine-readable output (every command)
+  --watch                        rerun on every save of FILE until Ctrl-C (check, test, run, build)
   --fix                          apply every mechanical patch (C001, E101, E102, T009) until
                                  none is left; report only what needs judgment (check)
   --write                        with fmt or check --fix: rewrite the files
-  --deny fs,net                  make calls to those effects trap with R006 (run)
-  --no-contracts                 skip requires/ensures checks (run)
+  --deny fs,net                  make calls to those effects trap with R006 (run, build)
+  --no-contracts                 skip requires/ensures checks (run, build)
+  --syntax brace|py              the surface fmt prints and diagnostics use (default: brace);
+                                 both surfaces are always read, so fmt converts either way
   --help, --version
 
-v0.3 switches (each turns one v0.3 change off, for experiments; --v0.2 turns all off):
+language versions and switches (for experiments):
+  --v0.3, --v0.2                 the v0.3 or v0.2 language
   --no-wrap --no-break --no-destructure --no-symbols --no-sealed-effects --no-suggestions
-  --no-capability-guard (run, test)    --no-contract-fuzz (test)
+  --no-fn-effects                each turns one v0.3 or v0.4 change off
+  --no-capability-guard (run, test, build)    --no-contract-fuzz (test)
 
 exit codes: 0 success, 1 diagnostics / failed tests / traps, 2 usage error
 ```
@@ -37,9 +46,9 @@ exit codes: 0 success, 1 diagnostics / failed tests / traps, 2 usage error
 
 | Code | Meaning |
 |---|---|
-| 0 | Success: no diagnostics (after `--fix`, if given), all tests and fuzz checks passed, or the program finished |
+| 0 | Success: no diagnostics (after `--fix`, if given), all tests and fuzz checks passed, the program finished, or the build was written |
 | 1 | Diagnostics, a failed test or fuzz check, a runtime trap, or an `Err` returned from `main` |
-| 2 | Usage error: unknown command, unknown or misplaced flag, unknown effect in `--deny`, `--write` on `check` without `--fix`, missing or unreadable file, or more than one file given to `run` |
+| 2 | Usage error: unknown command, unknown or misplaced flag, unknown effect in `--deny`, an unknown `--syntax`, `--write` on `check` without `--fix`, `-o` without a file, missing or unreadable file, or more than one file given to `run`, `build` or `--watch` |
 
 A usage error prints `canon: ` and the problem on stderr, then the usage text:
 
@@ -47,20 +56,24 @@ A usage error prints `canon: ` and the problem on stderr, then the usage text:
 canon: --write needs --fix (canon check --fix --write)
 ```
 
+With `--watch`, a run that is stopped with Ctrl-C exits 130.
+
 ## Flags by command
 
-| Flag | check | fmt | run | test |
-|---|---|---|---|---|
-| `--json` | yes | yes | yes | yes |
-| `--fix` | yes | | | |
-| `--write` | with `--fix` | yes | | |
-| `--deny EFFECTS` | | | yes | |
-| `--no-contracts` | | | yes | |
-| `--no-capability-guard` | | | yes | yes |
-| `--no-contract-fuzz` | | | | yes |
-| `--v0.2` and the `--no-*` language switches | yes | yes | yes | yes |
+| Flag | check | fmt | run | test | build |
+|---|---|---|---|---|---|
+| `--json` | yes | yes | yes | yes | yes |
+| `--watch` | yes | | yes | yes | yes |
+| `--fix` | yes | | | | |
+| `--write` | with `--fix` | yes | | | |
+| `--deny EFFECTS` | | | yes | | yes |
+| `--no-contracts` | | | yes | | yes |
+| `--no-capability-guard` | | | yes | yes | yes |
+| `--no-contract-fuzz` | | | | yes | |
+| `-o OUT`, `--module` | | | | | yes |
+| `--syntax`, `--v0.3`, `--v0.2` and the `--no-*` language switches | yes | yes | yes | yes | yes |
 
-Flags may come before or after the files, and `--flag=value` works for `--deny`.
+Flags may come before or after the files, and `--flag=value` works for `--deny` and `--syntax`.
 
 ## canon check
 
@@ -78,7 +91,7 @@ Text output prints one line per diagnostic as `path:line:col: severity CODE: mes
 
 ### --fix
 
-`canon check --fix` is the self-healing loop. It applies the patches of C001 (layout), E101 and E102 (effect lists) and T009 (Int and Float mixed), one at a time with a re-check after each, until none is left, and reports only what needs judgment. It never applies T004 (its patch inserts holes) or T001 suggestions (each is a choice). Without `--write` nothing is saved. Here is a draft with a layout problem, a missing effect and mixed arithmetic:
+`canon check --fix` is the self-healing loop. It applies the patches of C001 (layout), E101 and E102 (effect lists) and T009 (Int and Float mixed), one at a time with a re-check after each, until none is left, and reports only what needs judgment. It never applies T004 (its patch inserts holes), T001 suggestions or T011 (each is a choice). Without `--write` nothing is saved. Here is a draft with a layout problem, a missing effect and mixed arithmetic:
 
 ```text
 draft.cn: applied C001, E101, T009 (not written; add --write)
@@ -101,9 +114,10 @@ With `--json`, the object gains `applied` (the codes, in order) and `source` (th
 canon fmt FILE...
 canon fmt --write FILE...
 canon fmt --json FILE...
+canon fmt --syntax py --write FILE...
 ```
 
-Prints each file in the formatter's layout (see [Formatting rules](/docs/canonical-form)). With `--write`, it rewrites each file whose text changes and prints nothing. `fmt` exits 0 even when a file changed; use `check` to fail on that. `fmt` is also how a v0 or v0.2 file migrates to v0.3.
+Prints each file in the formatter's layout (see [Formatting rules](/docs/canonical-form)). With `--write`, it rewrites each file whose text changes and prints nothing. `fmt` exits 0 even when a file changed; use `check` to fail on that. `fmt` is also how a v0 or v0.2 file migrates to the current language, and how a file moves between brace syntax and [Canon-Py](/docs/guide/canon-py): `--syntax py` prints Canon-Py, and the default prints braces.
 
 `--json` prints `{ path, changed, formatted }` per file (an array for several):
 
@@ -145,7 +159,7 @@ A comma-separated list of effects. Any call to a built-in with a denied effect s
 
 ### The capability guard and --no-capability-guard
 
-By default the host performs only the effects `main` declares; anything else stops the program with R006, naming `fn main`. The checker already guarantees this bound, so on a checked program the guard never fires; it holds the bound even if the checker has a bug. The bound is on the whole program: a function's own signature can understate what it does when it is passed an effectful function as a value (see [What the guarantee covers](/docs/guide/functions-effects-contracts#what-the-guarantee-covers)). `--no-capability-guard` turns the guard off, for experiments.
+By default the host performs only the effects `main` declares; anything else stops the program with R006, naming `fn main`. The checker already guarantees this bound, so on a checked program the guard never fires; it holds the bound even if the checker has a bug. Since v0.4 every function's own signature bounds it too, because function types carry effects (see [What the guarantee covers](/docs/guide/functions-effects-contracts#what-the-guarantee-covers)). `--no-capability-guard` turns the guard off, for experiments.
 
 ### --no-contracts
 
@@ -224,9 +238,68 @@ SKIP fuzz apply_twice (a function-typed parameter)
 
 `--no-capability-guard` lets tests perform any effect; `--no-contract-fuzz` runs the test blocks only.
 
-## The v0.3 switches
+## canon build
 
-Every v0.3 change can be turned off on its own, so that an experiment can measure what each one does. They are not meant for everyday use.
+```bash
+canon build FILE
+canon build FILE -o OUT
+canon build FILE --module
+canon build FILE --deny net --no-contracts
+canon build --json FILE
+```
+
+Checks the file (any diagnostic: printed on stderr, exit 1, nothing written), then writes a standalone JavaScript file that runs with plain `node` and needs no installed packages: the runtime is inlined. The built file prints exactly what `canon run` prints, exits the same way, and writes traps as the same JSON line on stderr. `--deny`, `--no-contracts` and `--no-capability-guard` are baked in only when given at build time. Without `-o`, the output is FILE with `.js`.
+
+```text
+$ canon build hello.cn
+hello.cn: wrote hello.js
+$ node hello.js
+hello, canon
+```
+
+The output is a CommonJS-compatible script. Inside a package whose `package.json` says `"type": "module"`, name it `.cjs` with `-o`.
+
+`--module` writes an ES module instead (default name FILE with `.mjs`) that exports the program's functions as `fns` and does not run `main`, for embedding Canon code in a JavaScript program:
+
+```js
+import { fns } from "./lib.mjs";
+console.log(fns.double(21)); // 42
+```
+
+`--json` prints `{ ok, out, module, bytes }`, or `{ ok: false, diagnostics }` when the file does not check.
+
+## --watch
+
+```bash
+canon check --watch FILE
+canon check --watch --fix --write FILE
+canon test --watch FILE
+canon run --watch FILE
+canon build --watch FILE
+```
+
+Runs the command, then reruns it every time FILE is saved, until Ctrl-C. A watch takes one file (a Canon program is one file). Saves are debounced by about 100 ms, and a save that leaves the text unchanged is ignored, so `check --watch --fix --write` does not retrigger on its own writes. Before each run the screen is cleared (when the output is a terminal), and after it one status line is printed:
+
+```text
+[14:03:27] check hello.cn: ok
+[14:03:41] check hello.cn: 1 problem
+```
+
+`run --watch` runs the program in a child process. A new save stops a run that is still going, even an infinite loop, before starting the next one; its status lines are `started` and `exit N`.
+
+## --syntax
+
+```bash
+canon fmt --syntax py --write FILE     # convert to Canon-Py
+canon fmt --write FILE                 # convert to brace syntax
+canon check --syntax py FILE
+```
+
+Picks the surface: `brace` (the default) or `py` ([Canon-Py](/docs/guide/canon-py), the opt-in Python-shaped syntax). The parser reads both surfaces in either mode; the flag decides which one fmt prints, which one `check` accepts as canonical, and how diagnostics, types and patches are spelled. A Canon-Py file checked without `--syntax py` gets C001 with a message that says so. Brace syntax stays the default until Experiment 1 compares the two.
+
+## Language versions and switches
+
+Every v0.3 and v0.4 language change can be turned off on its own, so that an experiment can measure what each one does. They are not meant for everyday use.
 
 | Flag | Commands | Turns off | With it off |
 |---|---|---|---|
@@ -236,11 +309,13 @@ Every v0.3 change can be turned off on its own, so that an experiment can measur
 | `--no-symbols` | all | `&&`, `\|\|`, `!` as the canonical form | fmt prints `and`, `or`, `not`; both spellings parse |
 | `--no-sealed-effects` | all | effect-checked tests, pure contracts (E103) | tests and contracts are unchecked, and the guard does not apply to tests |
 | `--no-suggestions` | all | T001 `data.suggestions` | no suggestions |
-| `--v0.2` | all | all six above | the v0.2 language |
-| `--no-capability-guard` | run, test | the run-time guard | the host allows any effect not denied |
+| `--no-fn-effects` | all | effects on function types (v0.4) | function types carry no effects, and T011 does not exist (v0.3) |
+| `--v0.3` | all | v0.4's change | the v0.3 language |
+| `--v0.2` | all | every switch above | the v0.2 language |
+| `--no-capability-guard` | run, test, build | the run-time guard | the host allows any effect not denied |
 | `--no-contract-fuzz` | test | contract fuzzing | only test blocks run |
 
-`--fix` is opt-in, so leaving it out is its own switch. In the compiler API the language switches are the `features` option of `check`, `fmt` and `compileJs` (`packages/compiler/src/features.ts`). With every switch off, the compiler matches v0.2 byte for byte on the conformance corpus.
+`--fix` is opt-in, so leaving it out is its own switch. In the compiler API the language switches are the `features` option of `check`, `fmt` and `compileJs` (`packages/compiler/src/features.ts`; `V04`, `V04_PY`, `V03` and `V02` are the presets). With every switch off, the compiler matches v0.2 byte for byte on the conformance corpus.
 
 ## --help and --version
 
