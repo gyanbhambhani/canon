@@ -22,6 +22,10 @@ export interface TestOutcome {
   passed: number;
   total: number;
   error?: string;
+  /** cases that returned a value, but the wrong one (Experiment 1's "silent failures") */
+  wrong?: number;
+  /** cases that threw or trapped */
+  crashed?: number;
 }
 
 export interface Language {
@@ -111,12 +115,18 @@ const CALL_ALL = `
 
 function score(task: Task, results: { ok: boolean; v?: unknown; e?: string }[], decode: (v: unknown) => unknown): TestOutcome {
   let passed = 0;
+  let wrong = 0;
+  let crashed = 0;
   let error: string | undefined;
   results.forEach((r, i) => {
     if (r.ok && approxEqual(decode(r.v), task.tests[i][1])) passed++;
-    else if (!r.ok) error ??= r.e;
+    else if (r.ok) wrong++;
+    else {
+      crashed++;
+      error ??= r.e;
+    }
   });
-  return { passed, total: task.tests.length, ...(error ? { error } : {}) };
+  return { passed, total: task.tests.length, wrong, crashed, ...(error ? { error } : {}) };
 }
 
 // ---- Canon

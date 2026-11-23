@@ -25,7 +25,7 @@ export const canonGrammar = {
     number: { match: "\\b\\d+(\\.\\d+)?([eE][+-]?\\d+)?\\b", name: "constant.numeric.canon" },
     keyword: {
       patterns: [
-        { match: "\\b(fn|type|let|var|set|if|else|match|for|while|in|return|use|test|try)\\b", name: "keyword.control.canon" },
+        { match: "\\b(fn|type|let|var|set|if|else|match|for|while|break|in|return|use|test|try)\\b", name: "keyword.control.canon" },
         { match: "\\b(effects|requires|ensures)\\b", name: "storage.modifier.canon" },
         { match: "\\b(and|or|not)\\b", name: "keyword.operator.word.canon" },
         { match: "\\b(true|false)\\b", name: "constant.language.canon" },
@@ -34,6 +34,6 @@ export const canonGrammar = {
     },
     type: { match: "\\b[A-Z][A-Za-z0-9]*\\b", name: "entity.name.type.canon" },
     function: { match: "\\b[a-z_][a-z0-9_]*(?=\\()", name: "entity.name.function.canon" },
-    operator: { match: "\\|>|->|=>|==|!=|<=|>=|[-+*/%<>=|]", name: "keyword.operator.canon" },
+    operator: { match: "\\|>|->|=>|==|!=|<=|>=|&&|\\|\\||[-+*/%<>=|!]", name: "keyword.operator.canon" },
   },
 };

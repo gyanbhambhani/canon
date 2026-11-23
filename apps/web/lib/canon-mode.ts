@@ -2,7 +2,7 @@
 import { StreamLanguage, type StreamParser } from "@codemirror/language";
 import { tags } from "@lezer/highlight";
 
-const KEYWORDS = new Set(["fn", "type", "let", "var", "set", "if", "else", "match", "for", "in", "while", "return", "use", "test", "try", "and", "or", "not"]);
+const KEYWORDS = new Set(["fn", "type", "let", "var", "set", "if", "else", "match", "for", "in", "while", "break", "return", "use", "test", "try", "and", "or", "not"]);
 const MODIFIERS = new Set(["effects", "requires", "ensures", "result"]);
 
 const parser: StreamParser<null> = {
@@ -24,7 +24,7 @@ const parser: StreamParser<null> = {
       if (stream.peek() === "(") return "fnName";
       return "variableName";
     }
-    if (stream.match(/^(\|>|->|=>|==|!=|<=|>=|[-+*/%<>=|])/)) return "operator";
+    if (stream.match(/^(\|>|->|=>|==|!=|<=|>=|&&|\|\||[-+*/%<>=|!])/)) return "operator";
     stream.next();
     return null;
   },

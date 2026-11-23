@@ -8,6 +8,7 @@ export default tseslint.config(
       "**/.next/**",
       "apps/web/out/**",
       "research/**/.venv/**",
+      ".claude/**",
       "**/.source/**",
       "**/node_modules/**",
       "reference/**",

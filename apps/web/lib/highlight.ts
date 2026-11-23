@@ -1,9 +1,9 @@
 /** A small Canon tokenizer for display (landing page). Mirrors the grammar's token classes. */
 export type TokenClass = "kw" | "mod" | "lit" | "str" | "num" | "com" | "type" | "fn" | "hole" | "op" | "plain";
 
-const KEYWORDS = new Set(["fn", "type", "let", "var", "set", "if", "else", "match", "for", "in", "while", "return", "use", "test", "try", "and", "or", "not"]);
+const KEYWORDS = new Set(["fn", "type", "let", "var", "set", "if", "else", "match", "for", "in", "while", "break", "return", "use", "test", "try", "and", "or", "not"]);
 const MODIFIERS = new Set(["effects", "requires", "ensures", "result"]);
-const RE = /(#[^\n]*)|("(?:\\.|[^"\\\n])*"?)|(\?[A-Za-z_][A-Za-z0-9_]*|\?)|(\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)|([A-Za-z_][A-Za-z0-9_]*)|(\|>|->|=>|==|!=|<=|>=|[-+*/%<>=|])|(\s+|.)/gy;
+const RE = /(#[^\n]*)|("(?:\\.|[^"\\\n])*"?)|(\?[A-Za-z_][A-Za-z0-9_]*|\?)|(\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)|([A-Za-z_][A-Za-z0-9_]*)|(\|>|->|=>|==|!=|<=|>=|&&|\|\||[-+*/%<>=|!])|(\s+|.)/gy;
 
 export function tokenize(src: string): [TokenClass, string][] {
   const out: [TokenClass, string][] = [];
