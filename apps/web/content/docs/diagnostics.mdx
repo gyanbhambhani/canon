@@ -1,9 +1,9 @@
 ---
 title: Errors and fixes
-description: Every error code Canon reports, from parse errors to runtime traps, each with an example that triggers it and, where the fix is mechanical, the patch the compiler ships.
+description: Every error code Canon reports, from parse errors to runtime traps, with an example for each, the patch where the fix is mechanical, what check --fix applies, and the ranked suggestions for T001.
 ---
 
-This page lists every error code Canon reports, with an example that triggers each one. Every diagnostic (an error the compiler reports) has a stable code and a position. Wherever the fix is mechanical, it also carries a patch: a unified diff the agent applies as is, without rewriting the file. The message is for people; the patch is for the agent.
+This page lists every error code Canon reports, with an example that triggers each one. Every diagnostic (an error the compiler reports) has a stable code and a position. Wherever the fix is mechanical, it also carries a patch: a unified diff that fixes it without rewriting the file, which `canon check --fix` applies for you. The message is for people; the patch is for the agent.
 
 ## The shape of a diagnostic
 
@@ -37,11 +37,11 @@ This page lists every error code Canon reports, with an example that triggers ea
 | Field | Meaning |
 |---|---|
 | `code` | Stable code, listed below |
-| `severity` | Always `error` in v0 |
+| `severity` | Always `error` |
 | `message` | One line for humans |
 | `line`, `col` | 1-based position |
 | `fix` | Present when the fix is mechanical: `{ kind: "patch", diff }`, a unified diff against the original file |
-| `data` | Extra facts for some codes: `missing`, `unused`, `expected`, `candidates`, and for T001 `suggestions` (candidate patches, `{ label, diff }`, most likely first) |
+| `data` | Extra facts for some codes: `missing` (E101), `unused` (E102), `expected` and `candidates` (H001), `suggestions` (T001: candidate patches, `{ label, diff }`, most likely first) |
 
 Patches are computed against the original file, so one patch fixes the reported problem and any formatting drift together. Apply `fix.diff` as is (for example with `patch -p1`), then check again.
 
@@ -49,13 +49,25 @@ Patches are computed against the original file, so one patch fixes the reported 
 
 | Kind | Codes | Action |
 |---|---|---|
-| Patch | C001, E101, E102, T004, T009 | Apply `fix.diff` mechanically, or let `canon check --fix` apply all of them but T004 |
+| Mechanical | C001, E101, E102, T009 | `canon check --fix` applies them; you never see them |
+| Patch with holes | T004 | Apply `fix.diff`, then fill the holes it adds |
 | Choice | T001 with `data.suggestions` | Pick the candidate that matches your intent and apply its `diff` |
 | Question | H001 | Fill the hole with a value of `data.expected`, often one of `data.candidates` |
 | Rewrite | P001 to P005, L001, N001, E100, E103, M001, the other T codes | Change the code; the message says what was expected |
-| Trap | R001 to R006 | A runtime failure: fix the logic, or the contract it broke |
+| Trap | R000 to R006 | A runtime failure: fix the logic, or the contract it broke |
 
 A parse error (P codes) stops the check at the first problem, because there is no tree to check further. Otherwise every problem in the file is reported in one pass.
+
+## What --fix does
+
+`canon check --fix` applies the patches of C001, E101, E102 and T009 one at a time, re-checking after each, until none is left (at most 32 rounds), then reports what remains. Those four patches only restate what the program already says: its layout, its exact effect list, an explicit `to_float`. It never applies T004 (its patch inserts holes, which are questions) or a T001 suggestion (a choice between meanings). With `--json`, the result adds `applied`, the codes applied in order, and `source`, the fixed text; `--write` saves it. Positions and diffs in the remaining diagnostics refer to that fixed text.
+
+```text
+draft.cn: applied C001, E101, T009 (not written; add --write)
+draft.cn: ok
+```
+
+The exit status is 0 when nothing is left, so a draft whose only problems were mechanical passes. Every first draft that failed in the two benchmarks so far failed only on mechanical codes, which is why this loop exists; [Research](/research) has those runs.
 
 In the examples below, the `# expect:` line is part of the checked file, so it counts in the line numbers.
 
@@ -75,6 +87,8 @@ fn between(a: Int) -> Bool {
 ```text
 example.cn:3:16: error P001: expected end of comparison (comparisons do not chain; use 'and'), found '<'
 ```
+
+The message still names v0.2's `and`; write `1 < a && a < 3`.
 
 ```canon
 # expect: P001
@@ -168,7 +182,7 @@ example.cn:3:13: error P005: each pipeline stage must be a call, like '|> f()'
 
 ### C001
 
-The file is not in canonical form, the one standard layout the formatter prints. The patch applies every rule on the [Formatting rules](/docs/canonical-form) page at once. That includes the old spellings `set x = e`, `for cond { }`, `concat(a, b)` and (v0.2) `and`, `or`, `not`, which still parse but are rewritten to `x = e`, `while cond { }`, `a + b`, `&&`, `||` and `!`.
+The file is not in canonical form, the one standard layout the formatter prints. The patch applies every rule on the [Formatting rules](/docs/canonical-form) page at once. That includes the older spellings `set x = e`, `for cond { }` and `concat(a, b)` (v0) and `and`, `or`, `not` (v0.2), which still parse and are rewritten to `x = e`, `while cond { }`, `a + b`, `&&`, `||` and `!`. `--fix` applies it.
 
 ```canon
 # expect: C001
@@ -194,11 +208,11 @@ The patch:
 
 ### S001
 
-Retired in v0.2. v0 rejected a `match` inside a larger expression; since v0.2 `match` may appear in any expression position, so the checker no longer reports S001.
+Retired. v0 rejected a `match` inside a larger expression; since v0.2 `match` may appear in any expression position, and the checker no longer reports S001.
 
 ### L001
 
-A line longer than 100 characters after formatting. Since v0.3 the formatter breaks a long statement at its outermost list, tuple, record or call brackets (C001 with the patch), so L001 is left for lines it cannot break, such as a long chain of operators. There is no patch: bind a subexpression with `let`.
+A line longer than 100 characters after formatting. The formatter breaks a long statement at its outermost list, tuple, record or call brackets (reported as C001, with the patch), so L001 is left for lines it cannot break: a long chain of operators, or a long pipeline stage. There is no patch: bind a subexpression with `let`. (With `--no-wrap` or `--v0.2`, every long line is L001, as in v0.2.)
 
 ```canon
 # expect: L001
@@ -266,7 +280,7 @@ The patch:
 
 ### E101
 
-A function uses an effect it does not declare, directly or through a function it calls. The patch adds it.
+A function or test uses an effect it does not declare: directly, through a function it calls, inside a lambda, or by naming an effectful function as a value (`map(xs, print)`). The patch adds it.
 
 ```canon
 # expect: E101
@@ -296,7 +310,7 @@ The patch:
 
 ### E102
 
-A function declares an effect it never uses. Effect lists are exact, so the patch removes it.
+A function declares an effect it never uses, or a test declares `io`, `time` or `rand` (which tests never declare). Effect lists are exact, so the patch removes it.
 
 ```canon
 # expect: E102
@@ -345,7 +359,7 @@ example.cn:2:4: error E103: the requires clause of fn wait_for performs effects:
 
 ### Effects in tests
 
-Since v0.3, test blocks are effect-checked too. `io`, `time` and `rand` need no declaration in a test, because `canon test` makes them deterministic; `fs` and `net` are real, so a test that uses them declares them on the line after its name, and E101 (with its patch) or E102 apply as for functions:
+Test blocks are effect-checked too. `io`, `time` and `rand` need no declaration in a test, because `canon test` makes them deterministic; `fs` and `net` are real, so a test that uses them declares them on the line after its name, and E101 (with its patch) or E102 apply as for functions:
 
 ```canon
 test "round trip"
@@ -412,7 +426,30 @@ fn f(n: Int) -> String {
 example.cn:3:10: error T001: type mismatch in operands of +: expected String, found Int
 ```
 
-Where a conversion is the likely fix, `data.suggestions` lists candidate patches, most likely first; here the first is `to_string(n)`. Others are `to_float(n)`, `to_int(x)`, `unwrap_or(e, ?)` for an Option used as its value, `Some(e)`, `Ok(e)` and `[e]`. They are choices, not fixes, so `--fix` never applies them.
+Where a conversion is the likely fix, `data.suggestions` lists candidate patches, most likely first. Here, in `canon check --json`:
+
+```json
+"data": {
+  "suggestions": [
+    {
+      "label": "to_string(n)",
+      "diff": "--- a/example.cn\n+++ b/example.cn\n@@ -1,4 +1,4 @@\n # expect: T001\n fn f(n: Int) -> String {\n-  return \"n = \" + n\n+  return \"n = \" + to_string(n)\n }\n"
+    }
+  ]
+}
+```
+
+| Found | Expected | Suggestion |
+|---|---|---|
+| Int, Float or Bool | String | `to_string(e)` |
+| Int | Float | `to_float(e)` |
+| Float | Int | `to_int(e)` (truncates) |
+| `Option[T]` | T | `unwrap_or(e, ?)`, with a hole for the fallback |
+| T | `Option[T]` | `Some(e)` |
+| T | `Result[T, E]` | `Ok(e)` |
+| T | `List[T]` | `[e]` |
+
+They are choices, not fixes: each changes what the program means, so `--fix` never applies them, and text output does not show them. `--no-suggestions` turns them off.
 
 ### T002
 
@@ -498,7 +535,7 @@ example.cn:2:4: error T005: fn f returns Int but can reach its end without a ret
 
 ### T006
 
-Assignment (`x = e` or `x.field = e`) to a name that is not a `var`: a `let` binding or a parameter. The message still says "set", the v0 spelling.
+Assignment (`x = e` or `x.field = e`) to a name that is not a `var`: a `let` binding or a parameter.
 
 ```canon
 # expect: T006
@@ -579,7 +616,7 @@ The patch:
 
 ### T010
 
-`break` outside a `for` or `while` loop.
+`break` outside a `for` or `while` loop. (With `--no-break`, `break` on its own line is P004 instead, as in v0.2.)
 
 ```canon
 # expect: T010
@@ -599,7 +636,7 @@ example.cn:4:5: error T010: break is only allowed inside a for or while loop
 
 ### M001
 
-A `use` line other than `use std.<name>`. In v0 a program is one file plus the standard library. (`use` lines always sort to the top, so the `# expect:` comment sits below.)
+A `use` line other than `use std.<name>`. A program is one file plus the standard library. (`use` lines always sort to the top, so the `# expect:` comment sits below.)
 
 ```canon
 use agent.tools
@@ -616,7 +653,7 @@ example.cn:1:1: error M001: use agent.tools: modules arrive in v1; only std.<nam
 
 ## Runtime traps
 
-A runtime error stops the program and prints one JSON object on stderr, with the code, message, line, col, and a Canon-level stack listing frames innermost first. `canon run` then exits with status 1. Each program below passes `canon check`; the JSON under it is what `canon run` prints.
+A runtime error stops the program and prints one JSON object on stderr, with the code, message, line, col, and a Canon-level stack listing frames innermost first. `canon run` then exits with status 1. Under `canon test` a trap fails that test (or, during contract fuzzing, is the counterexample) and the runner moves on. Each program below passes `canon check`; the JSON under it is what `canon run` prints.
 
 ### R001
 
@@ -722,7 +759,7 @@ fn main() -> Unit
 
 ### R006
 
-An effect denied by the host. `canon run --deny net,fs` makes those calls trap; the browser playground denies `fs` and `net`. The capability guard also denies any effect the entry point does not declare (`main`, or a test's `fs`/`net`), naming it in the message; the checker makes that unreachable, so seeing it means a checker bug. This program, run with `--deny net`:
+An effect denied by the host. `canon run --deny net,fs` makes those calls trap; the browser playground denies `fs` and `net`. The capability guard also denies any effect the entry point does not declare (`main`'s clause; a test's `fs` and `net`; nothing during contract fuzzing), with a message such as `effect fs denied (write_file): fn main does not declare it`. The checker makes that case unreachable, so seeing it means a checker bug. This program, run with `--deny net`:
 
 ```canon
 fn main() -> Unit

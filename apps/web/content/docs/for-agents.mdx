@@ -1,6 +1,6 @@
 ---
 title: Agent reference
-description: The complete Canon language reference on one page, small enough to fit in a single prompt. The same text is served raw at /llms.txt.
+description: The complete Canon v0.3 language reference on one page, small enough to fit in a single prompt. The same text is served raw at /llms.txt.
 ---
 
 # Canon language reference
@@ -27,11 +27,17 @@ type Step =
   | Answer(text: String)
 ```
 
-## Functions and statements
+## Functions and effects
 
-Parameter and return types are always written; locals never are. Optional clauses, one per line, in order: `effects:` (exactly those used, from fs, io, net, rand, time; none means pure), `requires:`, `ensures:` (`result` is the return value). Contracts must be pure (E103). Generic: `fn id[T](x: T) -> T`.
+Parameter and return types are always written; locals never are. Optional clauses, one per line, in order: `effects:` (exactly those used, from fs, io, net, rand, time; none means pure), `requires:`, `ensures:` (`result` is the return value). Contracts must be pure (E103). Generic: `fn id[T](x: T) -> T`. Calling, naming (`map(xs, print)`) or using in a lambda an effectful function uses its effect.
 
-Statements: `let x = e` (immutable); `var x = e` (mutable); `x = e` or `x.field = e` on a var (field assignment rebinds x to an updated copy); `return e` (always explicit); `if c { } else if c { } else { }`; `for x in xs { }` (Lists only) or `for (i, x) in enumerate(xs) { }` (tuples); `while c { }`; `break` (leaves the innermost loop; there is no continue); a call, or `try` of a call, on its own line. Tests: `test "name" { assert(...) }`; io, time and rand are free in tests, and a test that uses fs or net declares it like a function (`effects: fs` on the line after the name).
+A program performs only the effects its entry point declares (checked, and enforced at run time). Function types carry no effects: `fn apply(f: fn(String) -> Unit, s: String)` is pure yet prints when passed `print`; the caller naming `print` declares io.
+
+## Statements
+
+`let x = e` (immutable); `var x = e` (mutable); `x = e` or `x.field = e` on a var (field assignment rebinds x to an updated copy); `return e` (always explicit); `if c { } else if c { } else { }`; `for x in xs { }` (Lists only); `for (i, x) in enumerate(xs) { }` (names each tuple slot; `_` skips one); `while c { }`; `break` alone on its line leaves the innermost loop (no continue); a call, or `try` of a call, on its own line.
+
+Tests: `test "name" { assert(...) }`. io, time and rand are free in tests (virtual clock and seed); a test using fs or net declares it with `effects: fs` on the line after its name.
 
 ```canon include=types
 fn restock(items: List[Item], n: Int) -> Float
@@ -59,13 +65,17 @@ fn first_short(words: List[String]) -> Int {
   }
   return at
 }
+
+test "first short" {
+  assert(first_short(["canon", "", "is"]) == 2)
+}
 ```
 
 ## Expressions
 
-Precedence, loosest first: `|>` and lambdas; `||`; `&&`; `== != < <= > >=` (never chained); `+ -`; `* / %`; unary `-`, `!` and `try`; calls `f(x)`, fields `a.b`, tuple slots `t.0`.
+Precedence, loosest first: `|>` and lambdas; `||`; `&&`; `== != < <= > >=` (never chained); `+ -`; `* / %`; unary `-`, `!` and `try`; calls `f(x)`, fields `a.b`, tuple slots `t.0`. So `!(a == b)` needs its parentheses.
 
-No methods, no indexing. Literals: `[1, 2]`, `(a, b)`, `P { x: 1, y: 2 }`; there is no unit literal. Lambda bodies are one expression: `|a, b| a + b`; given one n-tuple, an n-parameter lambda unpacks it. `match e { pattern => expr, }` is an expression allowed anywhere: one arm per line, first match wins, exhaustive. Patterns: `_`, a name, a literal, a variant `Some(x)`, a tuple `(a, b)`, nested.
+No methods, no indexing. Literals: `[1, 2]`, `(a, b)`, `P { x: 1, y: 2 }`; no unit literal. Lambda bodies are one expression: `|a, b| a + b`; an n-parameter lambda given one n-tuple unpacks it. `match e { pattern => expr, }` is an expression allowed anywhere: one arm per line, first match wins, exhaustive. Patterns: `_`, a name, a literal, a variant `Some(x)`, a tuple `(a, b)`, nested.
 
 Arithmetic takes two Ints or two Floats; mixing is T009 (use `to_float`). Int division truncates toward zero. `+` also joins two Strings; String with Int is T001 (use `to_string`). `<` etc. take Int, Float or String; `==` is structural on any one type except functions. `&&` and `||` short-circuit. Values are immutable; lambdas capture values.
 
@@ -83,19 +93,21 @@ fn label(item: Item) -> String {
 
 fn cheapest(items: List[Item]) -> List[String] {
   return items
-    |> filter(|i| i.qty > 0)
+    |> filter(|i| i.qty > 0 && i.price > 0.0)
     |> sort_by(|i| i.price)
     |> map(|i| i.sku)
 }
 ```
 
-## Canonical form
+## Canonical form and the fix loop
 
-`check` rejects any file `fmt` would change (C001, with the patch). fmt normalizes spacing, parentheses, commas, `else { if }`, comparisons with true or false, `!!`, number literals, `use`, effect and clause order, and pipeline versus nesting, and breaks a statement over 100 characters at its outermost brackets, one item per line. `canon check --fix` applies every mechanical patch (C001, E101, E102, T009) and returns only the rest.
+`check` rejects any file `fmt` would change (C001, with the patch). fmt fixes spacing, parentheses, commas, `else { if }`, `== true`/`== false`, `!!`, numbers, `use`, effect and clause order, pipeline versus nesting, and old spellings (`and`/`or`/`not`, `set`); it breaks a statement over 100 characters at its outermost list, tuple, record or call brackets, one item per line with trailing commas.
+
+Run `canon check --fix --write --json FILE`. It applies every C001, E101, E102 and T009 patch until none is left and returns only what needs you. T001 may list candidate patches in `data.suggestions` (`to_string(e)`, `unwrap_or(e, ?)`, `Some(e)`, ...): apply the one you mean. T004's patch adds missing arms as holes; apply it, then fill them. Repeat until `"ok": true`.
 
 ## Running and CLI
 
-`canon run` calls `fn main() -> Unit` (or a main returning a Result; Err prints and exits 1). requires is checked on entry, ensures on every return. In `canon test`, time starts at 0 and moves only by sleep, rand is seeded with 42, and every pure function with a contract is also called on generated inputs; a failing input is reported as `FAIL fuzz name`. A program performs only the effects main declares.
+`canon run` calls `fn main() -> Unit` (or a main returning a Result; Err prints and exits 1). requires is checked on entry, ensures on every return. `canon test` runs test blocks, then calls each pure, non-generic function with a contract on 200 seeded generated inputs; a failure prints `FAIL fuzz name: a = -19, b = 12` and the trap.
 
 Commands: `canon check [--fix [--write]]`, `fmt [--write]`, `run [--deny fs,net] [--no-contracts]`, `test`; each takes files and `--json`. Exit 0 ok, 1 on diagnostics, failed tests or traps, 2 usage error.
 
@@ -132,8 +144,8 @@ rand: random() -> Float in [0, 1); random_int(lo: Int, hi: Int) -> Int, hi exclu
 
 ## Diagnostics
 
-`canon check --json` prints `{ ok, canonical, diagnostics }`; each has code, message, line, col, maybe `data` and `fix.diff` (a unified diff to apply as is).
+`canon check --json` prints `{ ok, canonical, diagnostics }`; each has code, message, line, col, maybe `data` and `fix.diff` (a unified diff to apply as is). `--fix` adds `applied` and `source`.
 
-P001 parse · P002 comment placement · P003 local annotation · P004 non-call statement · P005 stage not a call · C001 not canonical · L001 line over 100 chars that fmt cannot break (split it with let) · N001 naming · M001 `use` other than `std.<name>` · E100 unknown effect · E101 undeclared effect · E102 unused effect · E103 effect in a contract · H001 hole · T001 type mismatch · T002 unknown name · T003 argument count · T004 non-exhaustive match · T005 missing return · T006 assigning a non-var · T007 misplaced try · T008 unknown field · T009 Int and Float mixed · T010 break outside a loop. C001, E101, E102, T004 and T009 carry patches; a T001 may list candidate patches in `data.suggestions`.
+P001 parse · P002 comment placement · P003 local annotation · P004 non-call statement · P005 stage not a call · C001 not canonical · L001 line over 100 chars fmt cannot break (bind with let) · N001 naming · M001 `use` other than `std.<name>` · E100 unknown effect · E101 undeclared effect · E102 unused effect · E103 effect in a contract · H001 hole · T001 type mismatch · T002 unknown name · T003 argument count · T004 non-exhaustive match · T005 missing return · T006 assigning a non-var · T007 misplaced try · T008 unknown field · T009 Int and Float mixed · T010 break outside a loop.
 
-Traps print one JSON object (code, message, line, col, stack): R001 requires failed · R002 ensures failed · R003 Int overflow · R004 division by zero · R005 assert failed · R006 effect denied by host
+Traps print one JSON object (code, message, line, col, stack): R001 requires failed · R002 ensures failed · R003 Int overflow · R004 division by zero · R005 assert failed · R006 effect denied by the host

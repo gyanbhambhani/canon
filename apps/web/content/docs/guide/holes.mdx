@@ -94,6 +94,11 @@ A candidate is a function declared in the file whose return type is exactly the 
 
 ## Holes in the agent loop
 
-The agent loop treats diagnostics three ways: apply a patch mechanically, answer a hole, or rewrite code for parse and naming errors. Holes are the middle case. An agent that is unsure of an expression writes a hole, checks, and fills it with one of the candidates or with an expression of the reported type. Patches (the unified diffs the compiler ships as fixes) can create holes too: the [T004](/docs/diagnostics#t004) patch adds each missing match arm with `?` as its value.
+The compiler answers in three ways: a patch it can apply itself (`canon check --fix` applies those), a choice between patches (T001 suggestions), or a question (a hole). Holes are the questions. An agent that is unsure of an expression writes a hole, checks, and fills it with one of the candidates or with any expression of the reported type.
+
+Patches can create holes too, and those patches are never applied by `--fix`, because a hole is a decision left to you:
+
+- The [T004](/docs/diagnostics#t004) patch adds each missing match arm with `?` as its value.
+- The T001 suggestion `unwrap_or(first(xs), ?)`, offered when an Option is used as its value, leaves the fallback as a hole.
 
 A hole is an error, so a file with holes does not run. Fill every hole, then check again.

@@ -2,6 +2,10 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — Release 0.3.0: the npm version tracks the language version
+Decision: every package moves from 0.1.1 to 0.3.0 together, so `canon-lang@0.3.0` is language v0.3 (0.1.x was v0 and v0.2). `tests/release.test.ts` and the `--version` check in `tests/cli.test.ts` are updated to 0.3.0 as part of the bump.
+Reason: a reader seeing `canon-lang 0.2.0` running language v0.3 would be misled; matching numbers make the docs, the changelog and the package agree.
+
 ## 2026-11-22 — Language v0.3: what the evidence decided
 Decision: the v0.3 objective is total surprisal of a correct program under local Qwen2.5-Coder 1.5B and 7B (research/v0.3/surprisal), with tokens per program and nats per token reported beside it. It is used as a proxy for "the language an agent has to think least about", not as a measure of agent accuracy.
 Reason: the owner's brief; and in the v0.2 benchmark about 80% of Claude's Canon output was reasoning, not code (research/v0.3/tokens), so length alone cannot be the objective.

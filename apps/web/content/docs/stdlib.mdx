@@ -1,11 +1,11 @@
 ---
 title: Standard library
-description: Every built-in function with its signature, its side effect, a one-line description and an example.
+description: Every built-in function with its signature, its side effect, what it does and a checked example, grouped by lists, numbers, strings, options, maps, checks and effects.
 ---
 
 This page lists every built-in function with its signature, its side effect if it has one, and an example. The standard library is always in scope; there is nothing to import. Built-ins follow the same rules as user code: no overloading, no methods, and generics only through type parameters. A type parameter named `K` is a key and must be Int, Float or String (T001 otherwise). A function is pure (it has no side effects) unless its effect is listed; a function that uses one must declare it in its own `effects` clause.
 
-Each pure example below is a test block, so `canon test` runs it.
+Each pure example below is a test block, so `canon test` runs it. There is no indexing operator, no methods and no character type: reach list items through `first`, `last`, `take`, `drop` and `enumerate`, and strings through `split`.
 
 ## Lists
 
@@ -409,7 +409,7 @@ test "to_string" {
 }
 ```
 
-Inside generic code, where the type is not known statically, a whole-number Float renders like an Int; this is a known limit of v0.
+Inside generic code, where the type is not known statically, a whole-number Float renders like an Int; this is a known limit.
 
 ### parse_int
 
@@ -617,7 +617,7 @@ test "assert" {
 
 ## Effects
 
-These functions need their effect in the calling function's `effects` clause. Test blocks may call them without one. Under `canon test`, `now()` starts at 0 and advances only through `sleep`, and `random` and `random_int` are seeded with 42, so tests are reproducible.
+These functions need their effect in the calling function's `effects` clause, and the program may use them only if its entry point (`main`, or a test) allows it. In a test block, `io`, `time` and `rand` need no declaration, because `canon test` makes them deterministic: `now()` starts at 0 and advances only through `sleep`, and `random` and `random_int` are seeded with 42. A test that uses `fs` or `net` declares it (`effects: fs` on the line after the test name). See [Functions and side effects](/docs/guide/functions-effects-contracts#effects-in-tests).
 
 ### print
 

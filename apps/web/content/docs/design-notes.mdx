@@ -1,6 +1,6 @@
 ---
 title: Design notes
-description: The hypotheses behind Canon, the seven design laws that decide every feature question, the Wasp lesson, and related work.
+description: The hypotheses behind Canon, the seven design laws, the evidence behind v0.2 and v0.3, the Canon-Py surprisal finding staged for v0.4, the Wasp lesson, and related work.
 ---
 
 This page explains why Canon looks the way it does: the hypotheses it tests, the laws that decide every feature, and related work. One example shows most of the laws:
@@ -29,7 +29,7 @@ People review the result, so Canon borrows familiar forms (braces, `fn`, `let`, 
 
 ### What the evidence says so far
 
-Two benchmarks compared agents writing Canon and TypeScript. Supported: agents learned Canon from the reference alone, wrote correct programs, and reached working code about as fast. Not supported: Canon runs did not produce fewer distinct programs than TypeScript runs, v0.2 did not improve that, and Canon cost more per correct program. Runtime speed is not tested. Convergence remains a hypothesis under test; the data is on the [Research](/research) page.
+Two benchmarks compared agents writing Canon (v0 and v0.2) and TypeScript. Supported: agents learned Canon from the reference alone, wrote correct programs, and reached working code about as fast. Not supported: Canon runs did not produce fewer distinct programs than TypeScript runs, v0.2 did not improve that, and Canon cost more per correct program. Runtime speed is not tested. Convergence remains a hypothesis under test. The data is on the [Research](/research) page, and v0.3 has not been benchmarked yet.
 
 ## Design laws
 
@@ -38,12 +38,36 @@ Seven laws decide every feature question. A feature that breaks one is rejected.
 1. **One text per program.** The formatter is part of the grammar. A file the formatter would change is a compile error (C001), and the error carries the patch. Two programs with the same tree print identically, byte for byte.
 2. **One construct per job.** One list loop, one condition loop, one conditional, one error mechanism. Where two spellings both make sense, a fixed rule picks one, like the [pipeline rule](/docs/guide/pipelines).
 3. **Everything local.** A line can be understood from its function header and the lines above it. No implicit imports, global mutable state, methods or operator overloading.
-4. **Side effects are exact.** A function's `effects` clause lists exactly the side effects it uses (`fs`, `io`, `net`, `rand`, `time`), no more and no fewer. Leaving out the clause means the function has none.
+4. **Side effects are exact.** A function's `effects` clause lists exactly the side effects it uses (`fs`, `io`, `net`, `rand`, `time`), no more and no fewer. Leaving out the clause means it uses none directly. A checked program performs only the effects its entry point declares. (Function types do not yet carry effects, so the bound is exact for the program, not for each higher-order function; see below.)
 5. **Boundaries are typed, interiors are inferred.** Every signature spells out its parameter and return types. Local bindings never carry annotations, so there is one way to write them.
 6. **The grammar is small enough to constrain decoding.** Braces delimit blocks and no rule depends on indentation, so a decoding engine can mask invalid tokens. Publishing that strict grammar is on the [Roadmap](/docs/roadmap).
 7. **The reference has a fixed budget.** The [Agent reference](/docs/for-agents) stays under 4,000 tokens, and a test enforces it. A feature that pushes past the budget must replace something already in it.
 
-Laws yield to data. v0.2 replaced `set x = e` with `x = e`, `for cond` with `while cond`, and `concat` with `+`, after a study of model probabilities found the new spellings far more natural, and allowed `match` in any expression. `canon fmt` rewrites the old spellings. v0.3 followed the same evidence to `&&`, `||` and `!`, added `break` and `for (i, x) in` destructuring, sealed the remaining effect gaps (tests and contracts), and made every mechanical fix apply itself (`canon check --fix`); see the [Roadmap](/docs/roadmap).
+Laws yield to data. Each language version since v0 has been decided by measurement, and the switches in v0.3 exist so the next benchmark can tell which change did what.
+
+## v0.2: spellings models prefer
+
+A study of model probabilities found some of v0's spellings far less natural to models than the alternatives. v0.2 replaced `set x = e` with `x = e`, `for cond` with `while cond`, and `concat` with `+`, and allowed `match` in any expression. `canon fmt` rewrites the old spellings, so no program was stranded.
+
+## v0.3: what the evidence decided
+
+v0.3 started from the two benchmarks' raw runs and new offline measurements, and changed only what they supported. The full argument, with every figure and its source, is `docs/v0.3-proposal.md` in the repository.
+
+- **The compiler fixes what is mechanical.** Every Canon first draft that failed in either benchmark failed only on mechanical codes: layout (C001), almost always the pipeline rule or redundant parentheses, and long lines (L001). So `canon check --fix` now applies every patch that only restates the program (C001, E101, E102, T009), and the formatter breaks long statements, which turns most L001 errors into C001 patches. A replay of the recorded drafts through `--fix`, with no model calls, made every one of them valid with its hidden tests passing. That replay is counterfactual: an agent told that layout fixes itself might write different drafts.
+- **Judgment errors come with choices.** T001 now lists candidate patches (`to_string`, `unwrap_or(e, ?)`, `Some`, `Ok`, ...), ranked, and never applied automatically.
+- **Three spellings models prefer.** `&&`, `||` and `!` replace `and`, `or` and `not` (two likelihood studies favoured the symbols); `break` exists because a done-flag never won against it, while `continue` lost to an `if` guard in every context and was left out; `for (i, x) in` replaces `pair.0` and `pair.1`, the one syntax change that lowered surprisal clearly on the programs it touches.
+- **Sealed effects.** A red-team pass found two holes: test blocks were not effect-checked, and a contract could call `now()` or any effectful function invisibly. Tests are now checked (with `io`, `time` and `rand` virtual under the test host), contracts must be pure (E103), and a run-time capability guard enforces the entry point's effects even if the checker were wrong. Every other smuggling attempt (function values in lists, records, `Some`, generic identity, aliases) was already caught. The honest form of the claim is program-level: a function that receives `print` as a parameter performs `io` without declaring it, and the caller that names `print` declares it instead. Effects on function types are planned for v0.4.
+- **Contracts that test themselves.** `canon test` fuzzes every pure function with a contract on seeded inputs, so a written contract becomes a checked one. It only helps where agents write contracts, which in the benchmarks was a minority of programs.
+
+Rejected on the same evidence: `fn f() -> T = e`, an implicit final return, dropping `let`, and indentation instead of braces (each made programs more surprising to models, not less), `continue`, and a `find` function (a second way to do what `return` from a loop does). Every v0.3 change has a switch (`--no-wrap`, `--no-symbols`, `--v0.2` and the rest on [Command line](/docs/cli#the-v03-switches)), so a pre-registered experiment can attribute any effect to one change.
+
+## The surprisal finding: Canon-Py
+
+The measurement that shaped v0.3 most is the one it did not act on. Its proxy for "the language an agent has to think least about" is the total surprisal of a correct program: how many nats a local code model (Qwen2.5-Coder, two sizes) spends reading it, which combines length and familiarity. The same benchmark tasks were scored as Canon, TypeScript, typed Python, and **Canon-Py**: Canon's rules (full signatures, exact effects as a decorator, contracts, `Result` and `try`, exhaustive `match`, one canonical layout, no classes or imports) written as a strict subset of typed Python.
+
+Canon-Py scored about as natural as plain typed Python, within about 2 nats per program, and far more natural than Canon's own syntax: 14 to 17 nats per program lower even when Canon was given its whole reference and Canon-Py only a short rules page. Canon's restrictions, spelled in Python, cost almost nothing; Canon's syntax costs a lot. No piecemeal edit to Canon's syntax closed the gap; most widened it, because they produced hybrids less familiar than either parent.
+
+This is a proxy, not agent behaviour: a base model's surprisal on hand-written programs does not show that agents write correct code faster or with less reasoning. So Canon-Py is staged for v0.4 behind a cheap pre-registered test, and it is not built. If the test supports it, Canon's rules would keep their checker, runtime and toolchain under a Python-family surface.
 
 ## The Wasp lesson
 

@@ -1,9 +1,9 @@
 ---
 title: Quickstart
-description: Run a Canon program with npx, see a compiler error and its fix, apply the fix, and run again. About five minutes.
+description: Run a Canon program with npx, see a compiler error and its patch, let canon check --fix apply it, and pick a fix for an error that needs judgment. About five minutes.
 ---
 
-This page takes you from nothing to a running Canon program, a compiler error, and its fix. You need Node 20 or later. Save this as `hello.cn`:
+This page takes you from nothing to a running Canon program, a compiler error, its fix, and a test run. You need Node 20 or later. Save this as `hello.cn`:
 
 ```canon
 fn main() -> Unit
@@ -25,7 +25,7 @@ hello, canon
 
 ## Install the canon command
 
-The npm package `canon-lang` provides the `canon` command. Install it once:
+The npm package `canon-lang` provides the `canon` command:
 
 ```bash
 npm i -g canon-lang
@@ -34,7 +34,7 @@ canon --version
 
 The rest of these docs write `canon`. Without the global install, write `npx canon-lang` instead.
 
-## See an error and its fix
+## See an error and its patch
 
 Every function lists the side effects it has, such as `io` for printing. Delete the `effects: io` line, so the file reads:
 
@@ -46,8 +46,6 @@ fn main() -> Unit {
 ```
 
 (In these docs, a `# expect: CODE` line marks an example that must fail with that code. It is not part of your file.)
-
-Check it:
 
 ```bash
 canon check hello.cn
@@ -69,27 +67,79 @@ hello.cn: 1 problem
 
 The error has a stable code (E101), a position (line 1, column 4) and a patch: a unified diff that fixes it. The exit status is 1.
 
-## Apply the fix and run again
+## Let the compiler apply it
 
-Make the edit the patch describes, or let a tool apply it. `--json` puts the patch in `fix.diff`, which `patch -p1` applies as is:
+A missing effect is a mechanical error: there is exactly one right fix. `canon check --fix` applies every such patch, re-checking after each, and `--write` saves the result:
 
 ```bash
-canon check --json hello.cn | jq -r '.diagnostics[0].fix.diff' | patch -p1
-canon check hello.cn
+canon check --fix --write hello.cn
 canon run hello.cn
 ```
 
 ```text
-patching file hello.cn
+hello.cn: applied E101
 hello.cn: ok
 hello, canon
 ```
 
-An agent runs this same loop: check, apply every patch, check again. [Use Canon with your agent](/docs/agents) sets it up.
+`--fix` handles layout (C001), effect lists (E101, E102) and mixed Int and Float arithmetic (T009). Everything else needs a decision, so it is reported, not applied.
+
+## An error that needs judgment
+
+Save this as `label.cn`:
+
+```canon
+# expect: T001
+fn label(n: Int) -> String {
+  return "n = " + n
+}
+```
+
+`canon check --fix label.cn` changes nothing and reports the type error (T001, exit 1). In JSON, the error carries a ranked list of candidate fixes in `data.suggestions`, each with its own patch:
+
+```bash
+canon check --json label.cn
+```
+
+```json
+{
+  "ok": false,
+  "canonical": true,
+  "diagnostics": [
+    {
+      "code": "T001",
+      "severity": "error",
+      "message": "type mismatch in operands of +: expected String, found Int",
+      "line": 2,
+      "col": 10,
+      "data": {
+        "suggestions": [
+          {
+            "label": "to_string(n)",
+            "diff": "--- a/label.cn\n+++ b/label.cn\n@@ -1,3 +1,3 @@\n fn label(n: Int) -> String {\n-  return \"n = \" + n\n+  return \"n = \" + to_string(n)\n }\n"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+Pick the candidate that matches what you meant and apply its diff, by hand or with `patch -p1`:
+
+```bash
+canon check --json label.cn | jq -r '.diagnostics[0].data.suggestions[0].diff' | patch -p1
+canon check label.cn
+```
+
+```text
+patching file label.cn
+label.cn: ok
+```
 
 ## Formatting and tests
 
-Canon accepts one layout per program. The formatter turns any spacing or layout into that one standard text, and `check` rejects any other (code C001, with a patch). Save this as `double.cn`:
+Canon accepts one layout per program. Save this as `double.cn`:
 
 ```canon
 # expect: C001
@@ -100,7 +150,7 @@ test "double" {
 }
 ```
 
-`canon fmt --write double.cn` rewrites it, and `canon test double.cn` runs its `test` blocks:
+`canon check --fix --write double.cn` (or `canon fmt --write double.cn`) rewrites it into the one standard layout:
 
 ```canon
 fn double(n: Int) -> Int {
@@ -112,10 +162,14 @@ test "double" {
 }
 ```
 
+`canon test double.cn` runs its `test` blocks:
+
 ```text
 PASS double
 1 passed, 0 failed
 ```
+
+`canon test` also calls every pure function that has a `requires` or `ensures` contract on generated inputs; see [Functions and side effects](/docs/guide/functions-effects-contracts#contract-fuzzing).
 
 ## Build from source
 
