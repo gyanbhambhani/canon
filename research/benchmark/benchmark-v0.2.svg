@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="330" viewBox="0 0 680 330" font-family="ui-sans-serif, system-ui, sans-serif">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16" y="28" font-size="15" font-weight="600" fill="#111">Distinct programs per task (lower = agents converge), with 95% intervals</text>
+<text x="16" y="70" font-size="13" font-weight="600" fill="#333">claude-opus-5-5</text>
+<text x="190" y="93" font-size="12" text-anchor="end" fill="#333">Canon v0</text>
+<rect x="200" y="78" width="308.3" height="20" fill="#93c5fd" rx="3"/>
+<line x1="449.5" y1="88" x2="571.4" y2="88" stroke="#111" stroke-width="1.5"/>
+<line x1="449.5" y1="83" x2="449.5" y2="93" stroke="#111" stroke-width="1.5"/>
+<line x1="571.4" y1="83" x2="571.4" y2="93" stroke="#111" stroke-width="1.5"/>
+<text x="579.4" y="93" font-size="12" fill="#333">4.30</text>
+<text x="190" y="123" font-size="12" text-anchor="end" fill="#333">Canon v0.2</text>
+<rect x="200" y="108" width="301.2" height="20" fill="#2563eb" rx="3"/>
+<line x1="445.2" y1="118" x2="561.4" y2="118" stroke="#111" stroke-width="1.5"/>
+<line x1="445.2" y1="113" x2="445.2" y2="123" stroke="#111" stroke-width="1.5"/>
+<line x1="561.4" y1="113" x2="561.4" y2="123" stroke="#111" stroke-width="1.5"/>
+<text x="569.4" y="123" font-size="12" fill="#333">4.20</text>
+<text x="190" y="153" font-size="12" text-anchor="end" fill="#333">TypeScript</text>
+<rect x="200" y="138" width="288.3" height="20" fill="#9ca3af" rx="3"/>
+<line x1="430.9" y1="148" x2="549.9" y2="148" stroke="#111" stroke-width="1.5"/>
+<line x1="430.9" y1="143" x2="430.9" y2="153" stroke="#111" stroke-width="1.5"/>
+<line x1="549.9" y1="143" x2="549.9" y2="153" stroke="#111" stroke-width="1.5"/>
+<text x="557.9" y="153" font-size="12" fill="#333">4.02</text>
+<text x="16" y="200" font-size="13" font-weight="600" fill="#333">gpt-6.2-sol</text>
+<text x="190" y="223" font-size="12" text-anchor="end" fill="#333">Canon v0</text>
+<rect x="200" y="208" width="301.2" height="20" fill="#93c5fd" rx="3"/>
+<line x1="443.8" y1="218" x2="562.8" y2="218" stroke="#111" stroke-width="1.5"/>
+<line x1="443.8" y1="213" x2="443.8" y2="223" stroke="#111" stroke-width="1.5"/>
+<line x1="562.8" y1="213" x2="562.8" y2="223" stroke="#111" stroke-width="1.5"/>
+<text x="570.8" y="223" font-size="12" fill="#333">4.20</text>
+<text x="190" y="253" font-size="12" text-anchor="end" fill="#333">Canon v0.2</text>
+<rect x="200" y="238" width="306.9" height="20" fill="#2563eb" rx="3"/>
+<line x1="446.7" y1="248" x2="568.6" y2="248" stroke="#111" stroke-width="1.5"/>
+<line x1="446.7" y1="243" x2="446.7" y2="253" stroke="#111" stroke-width="1.5"/>
+<line x1="568.6" y1="243" x2="568.6" y2="253" stroke="#111" stroke-width="1.5"/>
+<text x="576.6" y="253" font-size="12" fill="#333">4.28</text>
+<text x="190" y="283" font-size="12" text-anchor="end" fill="#333">TypeScript</text>
+<rect x="200" y="268" width="255.3" height="20" fill="#9ca3af" rx="3"/>
+<line x1="400.8" y1="278" x2="512.6" y2="278" stroke="#111" stroke-width="1.5"/>
+<line x1="400.8" y1="273" x2="400.8" y2="283" stroke="#111" stroke-width="1.5"/>
+<line x1="512.6" y1="273" x2="512.6" y2="283" stroke="#111" stroke-width="1.5"/>
+<text x="520.6" y="283" font-size="12" fill="#333">3.56</text>
+</svg>

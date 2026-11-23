@@ -138,3 +138,4 @@ Only after M7, and only when the owner provides model access.
 - Four changes from the M8 data: `x = e` (not `set`), `while cond` (not `for cond`), `+` joins strings (no `concat`), `match` anywhere (S001 retired, and parenthesized as an operand). v0 spellings still parse and fmt migrates them. The reference was trimmed to about 2,000 tokens.
 - The conformance test keeps oracle byte-equality for every file that touches none of the changed constructs.
 - Benchmark v0.2: PREREGISTRATION-v0.2.md is committed before the run; src/report-v02.ts applies it (95% intervals, structural metric, cost, v0.2 vs v0).
+- v0.2 benchmark done (2,000 runs, $7.95 Claude). C1, C2 and C4 are supported; C3, C3s, C6, D1 and D1s are not. The v0.2 changes did not move convergence, and cost is driven by output tokens, not the reference. Results are in the Design notes and on the landing page.

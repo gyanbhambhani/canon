@@ -158,10 +158,10 @@ export default function Home() {
             slip was fixed in one round by applying the compiler&apos;s patch. But convergence did not improve yet.
           </p>
           <p>
-            The data shows why: removing a construct without leaving an obvious replacement pushes models into
-            improvising, and improvisations vary. Where the natural form existed, runs converged; one task came out as the
-            same program 10 times out of 10. Version 0.2 tests the fix: keep the forms models reach for, then ban the
-            alternatives.
+            Version 0.2 swapped in the forms models reach for most naturally (plain assignment, <code>while</code>,{" "}
+            <code>+</code> for strings, <code>match</code> anywhere) and ran the test again, under new rules fixed in
+            advance. Correctness held at 100%, but convergence did not move. Most of the variation is in how a model breaks
+            a problem down, which no grammar fixes, so we report the bet as unproven and keep testing it.
           </p>
           <p className="flex flex-wrap gap-x-6 gap-y-2">
             <Link
