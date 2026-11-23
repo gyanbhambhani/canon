@@ -4,11 +4,13 @@
  * the type they need. See SPEC.md "Runtime semantics" for the rules.
  */
 import type * as A from "./ast.js";
+import { walkStmts } from "./ast.js";
 import { diag, type Diagnostic } from "./diagnostics.js";
 import { features } from "./features.js";
 import { parse } from "./parser.js";
 import { PRELUDE } from "./prelude.js";
 import { Printer } from "./printer.js";
+import { PyPrinter, testIdent } from "./pyprinter.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -16,7 +18,8 @@ import { Printer } from "./printer.js";
 
 export type Type =
   | { t: "con"; name: string; args: Type[] }
-  | { t: "fn"; params: Type[]; ret: Type }
+  /** v0.4: `effects` are what calling the function performs (absent or empty: pure). */
+  | { t: "fn"; params: Type[]; ret: Type; effects?: string[] }
   | { t: "tuple"; items: Type[] }
   | { t: "var"; id: number; ref: Type | null; key: boolean }
   | { t: "rigid"; name: string };
@@ -42,7 +45,7 @@ export function resolve(t: Type): Type {
     case "con":
       return { t: "con", name: t.name, args: t.args.map(resolve) };
     case "fn":
-      return { t: "fn", params: t.params.map(resolve), ret: resolve(t.ret) };
+      return { t: "fn", params: t.params.map(resolve), ret: resolve(t.ret), ...(t.effects?.length ? { effects: t.effects } : {}) };
     case "tuple":
       return { t: "tuple", items: t.items.map(resolve) };
     default:
@@ -50,14 +53,23 @@ export function resolve(t: Type): Type {
   }
 }
 
+const PY_NAMES: Record<string, string> = { Int: "int", Float: "float", Bool: "bool", String: "str", List: "list", Map: "dict" };
+
+/** A type as messages show it: brace syntax, or Canon-Py when the py switch is on. */
 export function show(t: Type): string {
   t = prune(t);
+  const py = features().py;
   switch (t.t) {
     case "con":
-      return t.name + (t.args.length ? `[${t.args.map(show).join(", ")}]` : "");
-    case "fn":
-      return `fn(${t.params.map(show).join(", ")}) -> ${show(t.ret)}`;
+      if (py && t.name === "Unit" && t.args.length === 0) return "None";
+      return (py ? PY_NAMES[t.name] ?? t.name : t.name) + (t.args.length ? `[${t.args.map(show).join(", ")}]` : "");
+    case "fn": {
+      const effs = t.effects?.length ? [...t.effects].sort() : [];
+      if (py) return `Callable[[${t.params.map(show).join(", ")}], ${show(t.ret)}${effs.length ? `, ${effs.join(" | ")}` : ""}]`;
+      return `fn(${t.params.map(show).join(", ")}) -> ${show(t.ret)}${effs.length ? ` effects: ${effs.join(", ")}` : ""}`;
+    }
     case "tuple":
+      if (py) return `tuple[${t.items.map(show).join(", ")}]`;
       return `(${t.items.map(show).join(", ")})`;
     case "var":
       return "_";
@@ -237,6 +249,11 @@ export interface TypeInfo {
   ctors: Map<string, CtorInfo>;
   records: Map<string, RecordDecl>;
   userFns: Map<string, FnSig>;
+  /**
+   * v0.4 (fnEffects): effects each function or test performs by calling function values (a
+   * parameter, a local or a field whose function type declares effects), with the name called.
+   */
+  valueCallEffects: Map<A.Fn | A.Test, Map<string, string>>;
 }
 
 export interface TypeResult {
@@ -267,10 +284,32 @@ interface FnCtx {
   /** v0.3: how many loops enclose the current statement (break needs one). */
   loopDepth: number;
   holes: { node: A.Hole; type: Type }[];
+  /** v0.4: the function or test being checked. */
+  item: A.Fn | A.Test;
+  /** v0.4: effects performed inside each enclosing lambda body (innermost last). */
+  effStack: Set<string>[];
 }
 
-const tyPrinter = new Printer();
-const ESCAPE_RE = /\\(.)/g;
+/** Prints expressions and patterns in messages, in the active surface. */
+const tyPrinter = {
+  ex: (e: A.Expr, min = 0) => (features().py ? new PyPrinter().ex(e, min) : new Printer().ex(e, min)),
+  pat: (p: A.Pattern) => (features().py ? new PyPrinter().pat(p) : new Printer().pat(p)),
+};
+/** How a message tells the agent to build a record, in the active surface. */
+const recordHint = (name: string) => (features().py ? `${name}(field=value, ...)` : `${name} { ... }`);
+
+/** Canon-Py: a hint when a name is unknown because it was bound in an inner block. */
+function scopeHint(item: A.Fn | A.Test, name: string): string {
+  if (!features().py) return "";
+  for (const s of walkStmts(item.body)) {
+    if (s.k === "Let" && s.name === name) {
+      return `; ${name} is bound inside a block above, and names live only in the block that binds them: bind ${name} before that block (for example ${name} = 0) and assign it inside`;
+    }
+  }
+  return "";
+}
+
+const ESCAPE_RE =/\\(.)/g;
 const MAX_SAFE = BigInt(Number.MAX_SAFE_INTEGER);
 
 function exprPos(e: A.Expr): A.Pos {
@@ -325,6 +364,7 @@ export function checkTypes(prog: A.Program): TypeResult {
     ctors,
     records,
     userFns,
+    valueCallEffects: new Map(),
   };
 
   const err = (code: string, message: string, pos: A.Pos) => {
@@ -387,7 +427,10 @@ export function checkTypes(prog: A.Program): TypeResult {
   const toType = (te: A.TypeExpr, scope: Map<string, Type>, report = true): Type => {
     switch (te.k) {
       case "TFn":
-        return { t: "fn", params: te.params.map((p) => toType(p, scope, report)), ret: toType(te.ret, scope, report) };
+        return {
+          t: "fn", params: te.params.map((p) => toType(p, scope, report)), ret: toType(te.ret, scope, report),
+          ...(te.effects?.length && features().fnEffects ? { effects: [...new Set(te.effects)].sort() } : {}),
+        };
       case "TTuple":
         return { t: "tuple", items: te.items.map((p) => toType(p, scope, report)) };
       case "TName": {
@@ -505,6 +548,50 @@ export function checkTypes(prog: A.Program): TypeResult {
     return out;
   };
 
+  /**
+   * v0.4 (fnEffects): calling a function performs its effects. Inside a lambda they become the
+   * lambda's effects; a call of a function value also counts for the enclosing function or test.
+   */
+  const noteEffects = (effs: string[] | undefined, via: string, valueCall: boolean) => {
+    if (!effs?.length || !features().fnEffects) return;
+    for (const s of ctx.effStack) for (const ef of effs) s.add(ef);
+    if (!valueCall) return;
+    let m = info.valueCallEffects.get(ctx.item);
+    if (!m) info.valueCallEffects.set(ctx.item, (m = new Map()));
+    for (const ef of effs) if (!m.has(ef)) m.set(ef, via);
+  };
+
+  /** Effects a value's function types perform beyond what the expected type allows. */
+  const extraEffects = (actual: Type, want: Type): string[] => {
+    const a = prune(actual);
+    const w = prune(want);
+    if (a.t === "fn" && w.t === "fn") {
+      const allowed = new Set(w.effects ?? []);
+      const own = (a.effects ?? []).filter((x) => !allowed.has(x));
+      const inner = a.ret !== w.ret ? extraEffects(a.ret, w.ret) : [];
+      return [...new Set([...own, ...inner])].sort();
+    }
+    if (a.t === "con" && w.t === "con" && a.name === w.name && a.args.length === w.args.length) {
+      return [...new Set(a.args.flatMap((x, i) => extraEffects(x, w.args[i])))].sort();
+    }
+    if (a.t === "tuple" && w.t === "tuple" && a.items.length === w.items.length) {
+      return [...new Set(a.items.flatMap((x, i) => extraEffects(x, w.items[i])))].sort();
+    }
+    return [];
+  };
+
+  /** v0.4 (fnEffects): an effectful function cannot flow where the function type is pure (T011). */
+  const fitEffects = (actual: Type, want: Type | null, node: A.Expr, label: string) => {
+    if (!features().fnEffects || want === null) return;
+    const extra = extraEffects(actual, want);
+    if (!extra.length) return;
+    const how = features().py
+      ? `declare them in that type, e.g. Callable[[str], None, ${extra.join(" | ")}]`
+      : `declare them in that type, e.g. fn(String) -> Unit effects: ${extra.join(", ")}`;
+    err("T011", `${label} performs ${extra.join(", ")}, but it is used where the function type ${show(want)} allows no such effects; ${how}`,
+      exprPos(node));
+  };
+
   /** Unify `got` into `want`, reporting T001 at pos on failure. */
   const expectType = (pos: A.Pos, want: Type | null, got: Type, what = "", node?: A.Expr): Type => {
     if (want === null) return got;
@@ -596,21 +683,27 @@ export function checkTypes(prog: A.Program): TypeResult {
         const b = lookup(name);
         if (b) {
           info.names.set(e, "local");
+          fitEffects(b.type, expected, e, name);
           return expectType(pos, expected, b.type, what, e);
         }
         const sig = userFns.get(name) ?? pre.fns.get(name);
         if (sig) {
           info.names.set(e, sig.builtin ? "builtin" : "user");
           const inst = instantiateSig(sig);
-          return expectType(pos, expected, { t: "fn", params: inst.params, ret: inst.ret }, what, e);
+          const fnT: Type = {
+            t: "fn", params: inst.params, ret: inst.ret,
+            ...(sig.effects.length && features().fnEffects ? { effects: [...sig.effects].sort() } : {}),
+          };
+          fitEffects(fnT, expected, e, name);
+          return expectType(pos, expected, fnT, what, e);
         }
-        err("T002", `unknown name ${name}`, e);
+        err("T002", `unknown name ${name}${scopeHint(ctx.item, name)}`, e);
         return expected ?? fresh();
       }
       case "Ctor": {
         const c = ctors.get(e.name);
         if (!c) {
-          err("T002", records.has(e.name) ? `${e.name} is a record type; build it with ${e.name} { ... }` : `unknown variant ${e.name}`, e);
+          err("T002", records.has(e.name) ? `${e.name} is a record type; build it with ${recordHint(e.name)}` : `unknown variant ${e.name}`, e);
           return expected ?? fresh();
         }
         if (c.fields.length) {
@@ -659,13 +752,15 @@ export function checkTypes(prog: A.Program): TypeResult {
         return expectType(pos, expected, binary(e), what, e);
       case "Try": {
         if (ctx.lambdaDepth > 0) {
-          err("T007", "try cannot be used inside a lambda; bind the Result with let first", e);
+          err("T007", features().py
+            ? "? cannot be used inside a lambda; bind the Result to a name first"
+            : "try cannot be used inside a lambda; bind the Result with let first", e);
           expr(e.expr, null);
           return expected ?? fresh();
         }
         const r = prune(ctx.ret);
         if (ctx.isTest || r.t !== "con" || r.name !== "Result") {
-          err("T007", `try needs the enclosing ${ctx.label} to return a Result`, e);
+          err("T007", `${features().py ? "?" : "try"} needs the enclosing ${ctx.label} to return a Result`, e);
           expr(e.expr, null);
           return expected ?? fresh();
         }
@@ -673,11 +768,11 @@ export function checkTypes(prog: A.Program): TypeResult {
         const val = fresh();
         const errT = fresh();
         if (!unify(inner, con("Result", [val, errT]))) {
-          err("T007", `try needs a Result, found ${show(inner)}`, e);
+          err("T007", `${features().py ? "?" : "try"} needs a Result, found ${show(inner)}`, e);
           return expected ?? fresh();
         }
         if (!unify(errT, r.args[1])) {
-          err("T007", `try returns error type ${show(errT)} early, but ${ctx.label} returns ${show(r)}`, e);
+          err("T007", `${features().py ? "?" : "try"} returns error type ${show(errT)} early, but ${ctx.label} returns ${show(r)}`, e);
         }
         return expectType(pos, expected, val, what, e);
       }
@@ -706,12 +801,19 @@ export function checkTypes(prog: A.Program): TypeResult {
           ret = fresh();
         }
         ctx.lambdaDepth++;
+        const performed = new Set<string>();
+        ctx.effStack.push(performed);
         withScope(() => {
           e.params.forEach((p, i) => bind(p, params[i]));
           expr(e.body, ret, "lambda body");
         });
+        ctx.effStack.pop();
         ctx.lambdaDepth--;
-        const fnT: Type = { t: "fn", params: unpackTuple ? [{ t: "tuple", items: unpackTuple }] : params, ret };
+        const fnT: Type = {
+          t: "fn", params: unpackTuple ? [{ t: "tuple", items: unpackTuple }] : params, ret,
+          ...(performed.size ? { effects: [...performed].sort() } : {}),
+        };
+        fitEffects(fnT, expected, e, "this lambda");
         if (exp && exp.t !== "fn") return expectType(pos, expected, fnT, what, e);
         return exp && exp.t === "fn" ? exp : fnT;
       }
@@ -763,7 +865,7 @@ export function checkTypes(prog: A.Program): TypeResult {
       info.calls.set(e, "ctor");
       const c = ctors.get(callee.name);
       if (!c) {
-        err("T002", records.has(callee.name) ? `${callee.name} is a record type; build it with ${callee.name} { ... }` : `unknown variant ${callee.name}`, callee);
+        err("T002", records.has(callee.name) ? `${callee.name} is a record type; build it with ${recordHint(callee.name)}` : `unknown variant ${callee.name}`, callee);
         for (const a of e.args) expr(a, null);
         return expected ?? fresh();
       }
@@ -795,6 +897,7 @@ export function checkTypes(prog: A.Program): TypeResult {
         for (const a of e.args) expr(a, null);
         return expected ?? fresh();
       }
+      noteEffects(ft.effects, name, true);
       return callFn(e, ft.params, ft.ret, name, expected);
     }
     const sig = userFns.get(name) ?? pre.fns.get(name);
@@ -804,7 +907,9 @@ export function checkTypes(prog: A.Program): TypeResult {
       return expected ?? fresh();
     }
     info.calls.set(e, sig.builtin ? "builtin" : "user");
+    noteEffects(sig.effects, name, false);
     const inst = instantiateSig(sig);
+    fitEffects(inst.ret, expected, e, `the function ${name} returns, which`);
     if (expected) unify(expected, inst.ret);
     const before = diags.length;
     const ret = callFn(e, inst.params, inst.ret, name, expected);
@@ -1048,12 +1153,14 @@ export function checkTypes(prog: A.Program): TypeResult {
         }
         const b = lookup(root.path[0]);
         if (!b) {
-          err("T002", `unknown name ${root.path[0]}`, root);
+          err("T002", `unknown name ${root.path[0]}${scopeHint(ctx.item, root.path[0])}`, root);
           expr(s.value, null);
           return;
         }
         if (!b.mutable) {
-          err("T006", `cannot assign to ${root.path[0]}, which is not a var; declare it with var to mutate it`, s);
+          err("T006", features().py
+            ? `cannot assign to ${root.path[0]}: it is a loop variable or a pattern name; bind a new name instead`
+            : `cannot assign to ${root.path[0]}, which is not a var; declare it with var to mutate it`, s);
           expr(s.value, null);
           return;
         }
@@ -1135,7 +1242,7 @@ export function checkTypes(prog: A.Program): TypeResult {
       const scope = new Map(it.tparams.map((p) => [p, { t: "rigid", name: p } as Type]));
       const params = it.params.map(([, t]) => toType(t, scope));
       const ret = toType(it.ret, scope);
-      ctx = { label: `fn ${it.name}`, fnName: it.name, ret, isTest: false, scopes: [new Map()], lambdaDepth: 0, loopDepth: 0, holes: [] };
+      ctx = { label: `${features().py ? "def" : "fn"} ${it.name}`, fnName: it.name, ret, isTest: false, scopes: [new Map()], lambdaDepth: 0, loopDepth: 0, holes: [], item: it, effStack: [] };
       const seen = new Set<string>();
       it.params.forEach(([n], i) => {
         if (seen.has(n)) err("T001", `parameter ${n} is declared twice`, it);
@@ -1151,11 +1258,11 @@ export function checkTypes(prog: A.Program): TypeResult {
       }
       block(it.body);
       if (!isPrim(ret, "Unit") && !alwaysReturns(it.body)) {
-        err("T005", `fn ${it.name} returns ${show(ret)} but can reach its end without a return`, it);
+        err("T005", `${features().py ? "def" : "fn"} ${it.name} returns ${show(ret)} but can reach its end without a return`, it);
       }
       holeDiags(ctx);
     } else if (it.k === "Test") {
-      ctx = { label: `test ${it.name}`, fnName: null, ret: UNIT, isTest: true, scopes: [new Map()], lambdaDepth: 0, loopDepth: 0, holes: [] };
+      ctx = { label: features().py ? `def ${testIdent(it.name)}` : `test ${it.name}`, fnName: null, ret: UNIT, isTest: true, scopes: [new Map()], lambdaDepth: 0, loopDepth: 0, holes: [], item: it, effStack: [] };
       block(it.body);
       holeDiags(ctx);
     }

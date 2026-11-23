@@ -2,6 +2,45 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — v0.4: effects on function types (fnEffects)
+Decision: function types carry effects: `fn(String) -> Unit effects: io` in brace syntax and `Callable[[str], None, io]` in Canon-Py. Calling a function value performs its type's effects, so the caller's signature must declare them (E101, with the usual patch). An effectful function used where the expected function type does not allow its effects is a new error, T011. The change is behind the `fnEffects` switch (`--no-fn-effects`; off in `--v0.3` and `--v0.2`).
+Reason: the owner asked for the per-function guarantee. Before this, `fn apply(f: fn(String) -> Unit, s: String)` was pure in its signature yet performed io when given `print`, so the guarantee held only for the whole program. Effect types make every signature exact. We chose them over the interim rule (no effectful function values at all) because the type checker already infers function types, so the check is local: a function value's effects come from its declaration, a lambda's from the calls in its body, and a parameter's or field's from its annotation.
+
+Decision: the brace spelling puts the clause after the return type on the same line (`fn(A) -> B effects: io, net`). A clause on its own line still belongs to the enclosing function. In a parameter list, an effect name followed by `:` starts the next parameter.
+Reason: the v0.3 likelihood study preferred the trailing clause under the 1.5B model (+1.27 nats, 2/3 contexts), and it is the spelling of the function-level clause. The 7B model preferred a prefix (`-> io B`), but one spelling for both clauses keeps the reference short. For Canon-Py, research/v0.4/likelihood scored four spellings, and `Callable[[A], B, io]` won (+2.5 nats, 2/3).
+
+Decision: T011 carries no patch.
+Reason: the fix is a choice. The agent can widen the receiving function type (which changes that function's contract and its callers) or stop passing the effectful function. Neither restates what the program already means, so neither is mechanical.
+
+Decision: the standard library's higher-order functions (map, filter, fold, sort_by, ...) take pure functions, so `map(xs, print)` is now T011.
+Reason: their signatures are pure. Letting them accept effects would need effect polymorphism, and a `for` loop is the one way to perform an effect per item. Lambdas are still checked conservatively: a function that names an effectful function anywhere, inside lambdas too, declares that effect, as in v0.3.
+
+Tests changed because the language changed: `tests/types/pass/effect_fn_value.cn` and the red-team programs `tests/effects/higher_order_caller_declares.cn` and `stored_hook_origin_declares.cn` were legal in v0.3 and are exactly the leak v0.4 closes. They now carry a `# mode: v0.3` line and are checked in that mode (the harnesses read the line). `tests/types/fail/t011_map_print.cn` and ten `tests/effects/fx_*.cn` programs cover v0.4:
+- parameters, record fields, lambdas, generics, nested passing, lists and return values are each rejected (T011);
+- calling an effectful function value without declaring the effect is E101;
+- a fully declared program runs.
+
+Each red-team test also checks that with `--no-fn-effects` the leak is invisible again.
+
+## 2026-11-22 — v0.4: Canon-Py, an opt-in surface
+Decision: Canon-Py ships behind the `py` switch (`--syntax py`; compiler `features: { py: true }` or `V04_PY`). Brace syntax stays the default until Experiment 1 compares the two syntaxes on the hard tasks; Canon-Py becomes the default only if it is at least as correct as v0.3 syntax at lower cost.
+Reason: the owner's plan (docs/roadmap-to-1.0.md on main). The v0.4 evidence is a base-model proxy, not agent behaviour.
+
+Decision: the parser reads both surfaces in every mode, detecting Canon-Py per file. A file is Canon-Py when a top-level line starts with `def `, `class `, `@` or `import `. fmt migrates in either direction: `canon fmt --syntax py --write` produces Canon-Py, and plain `canon fmt --write` produces braces.
+Reason: no brace-syntax file in the repository has such a line, so detection never changes how an existing file parses (the conformance corpus is unchanged in every mode). Files with neither marker (comments, one-line sum types) mean the same in both surfaces.
+
+Decision: Canon-Py parses to the same AST, and the type checker, code generator and runtime are shared.
+- A Python form with no Canon meaning is a parse error that names the Canon form. These are methods, list indexing, `continue`, exceptions, comprehensions, keyword arguments to functions, `//`, `**`, multi-statement case bodies, guards and or-patterns.
+- Type names and the wording of syntax-specific messages follow the active surface.
+Reason: the owner's constraint (same AST, shared back end). Every ruling and its evidence is in docs/v0.4-design.md.
+
+Decision: Canon-Py infers mutability. `x = e` binds when x is not visible and assigns otherwise; scoping stays Canon's block scoping; assigning to a parameter rebinds a local copy (a hidden `var p = p`).
+- When printing any program as Canon-Py, fmt drops `let x = x`, makes an unassigned `var` immutable and an assigned `let` mutable, and renames a shadowing `let` to `name_2`.
+Reason: the study preferred bare bindings by 16.9 nats over `let`/`var` and `Final`, and direct parameter updates by 7.5 nats. Canon values are immutable, so a parameter update can never reach the caller. Shadowing has no Canon-Py spelling, because a second `x = ...` is an assignment.
+
+Decision: Canon-Py wraps long statements recursively, Black-style: the outermost bracket first, then any item that is still too long, and a lambda wraps its body.
+Reason: Canon-Py has no pipelines, so a v0.3 pipeline becomes nested calls that are often longer than 100 characters. Wrapping only the outermost bracket (v0.3's rule) would leave L001 on migrated files, and migration must be mechanical.
+
 ## 2026-11-22 — Language v0.3: what the evidence decided
 Decision: the v0.3 objective is total surprisal of a correct program under local Qwen2.5-Coder 1.5B and 7B (research/v0.3/surprisal), with tokens per program and nats per token reported beside it. It is used as a proxy for "the language an agent has to think least about", not as a measure of agent accuracy.
 Reason: the owner's brief; and in the v0.2 benchmark about 80% of Claude's Canon output was reasoning, not code (research/v0.3/tokens), so length alone cannot be the objective.

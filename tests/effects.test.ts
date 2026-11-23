@@ -10,7 +10,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { check, compileJs, readSource } from "@canon/compiler";
+import { check, compileJs, readSource, V03 } from "@canon/compiler";
 import { MemoryHost, runMain, testHost } from "@canon/runtime";
 
 const dir = join(__dirname, "effects");
@@ -21,14 +21,25 @@ describe("red team: effect smuggling", () => {
     expect(files.length).toBeGreaterThanOrEqual(15);
   });
 
+  it("v0.4: covers effects through parameters, record fields, lambdas, generics, nesting, lists and returns", () => {
+    const fx = files.filter((f) => f.startsWith("fx_"));
+    for (const k of ["param", "record_field", "lambda_wrap", "generic", "nested", "list", "return"]) expect(fx).toContain(`fx_${k}.cn`);
+  });
+
   for (const f of files) {
     const src = readSource(readFileSync(join(dir, f), "utf8"));
     const want = /^# expect: (\S+)/.exec(src)![1];
+    // programs written for v0.3 (which v0.4's effects on function types reject) run in that mode
+    const opts = /^# mode: v0\.3$/m.test(src) ? { features: V03 } : {};
     it(`${f}: ${want}`, () => {
-      const codes = check(src, f).diagnostics.map((d) => d.code);
+      const codes = check(src, f, opts).diagnostics.map((d) => d.code);
+      if (want === "T011" || f.startsWith("fx_")) {
+        // with the v0.4 switch off, the higher-order leak is invisible again (v0.3)
+        expect(check(src, f, { features: { fnEffects: false } }).diagnostics.map((d) => d.code)).not.toContain(want === "ok" ? "T011" : want);
+      }
       if (want === "ok") {
         expect(codes).toEqual([]);
-        const js = compileJs(src, f).js!;
+        const js = compileJs(src, f, opts).js!;
         const mem = new MemoryHost();
         const r = runMain(js, testHost(mem), { capabilityGuard: true });
         expect(r.trap).toBeUndefined();

@@ -1,4 +1,5 @@
 # expect: ok
+# mode: v0.3
 fn apply(f: fn(String) -> Unit, s: String) -> Unit {
   f(s)
 }

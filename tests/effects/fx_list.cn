@@ -1,0 +1,14 @@
+# expect: T011
+# v0.4: a list of effectful functions is not a list of pure ones
+fn run_all(hooks: List[fn(String) -> Unit], s: String) -> Unit {
+  for h in hooks {
+    h(s)
+  }
+}
+
+fn main() -> Unit
+  effects: io
+{
+  let hooks = [print]
+  run_all(hooks, "smuggled through a list")
+}

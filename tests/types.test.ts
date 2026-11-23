@@ -10,7 +10,13 @@ import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { check, readSource } from "@canon/compiler";
+import { check, readSource, V03, type CompileOptions } from "@canon/compiler";
+
+/**
+ * A program written for an older language version says so on a `# mode: v0.3` line and is
+ * checked in that mode (v0.4's effects on function types reject what v0.3 accepted).
+ */
+const modeOf = (src: string): CompileOptions => (/^# mode: v0\.3$/m.test(src) ? { features: V03 } : {});
 
 const dir = join(__dirname, "types");
 const files = (sub: string) => readdirSync(join(dir, sub)).filter((f) => f.endsWith(".cn")).sort();
@@ -30,7 +36,8 @@ describe("types/pass", () => {
   it("has at least 40 programs", () => expect(pass.length).toBeGreaterThanOrEqual(40));
   for (const f of pass) {
     it(f, () => {
-      const r = check(read("pass", f), f);
+      const src = read("pass", f);
+      const r = check(src, f, modeOf(src));
       expect(r.diagnostics).toEqual([]);
       expect(r.ok).toBe(true);
     });
@@ -50,7 +57,7 @@ describe("types/fail", () => {
     it(f, () => {
       const src = read("fail", f);
       const want = /# expect: (\w+)/.exec(src)![1];
-      const r = check(src, f);
+      const r = check(src, f, modeOf(src));
       expect(r.ok).toBe(false);
       expect(r.canonical).toBe(true);
       expect(r.diagnostics[0]?.code, JSON.stringify(r.diagnostics, null, 2)).toBe(want);

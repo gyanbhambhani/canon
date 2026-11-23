@@ -1,0 +1,6 @@
+# expect: T011
+fn shout_all(xs: List[String]) -> Unit
+  effects: io
+{
+  let done = map(xs, print)
+}

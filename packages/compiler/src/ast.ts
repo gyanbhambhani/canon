@@ -7,7 +7,8 @@ export interface Pos {
 // types
 export type TypeExpr =
   | ({ k: "TName"; name: string; args: TypeExpr[] } & Pos)
-  | ({ k: "TFn"; params: TypeExpr[]; ret: TypeExpr } & Pos)
+  /** v0.4: `effects` lists the effects calling a value of this type performs (absent or empty: pure). */
+  | ({ k: "TFn"; params: TypeExpr[]; ret: TypeExpr; effects?: string[] } & Pos)
   | ({ k: "TTuple"; items: TypeExpr[] } & Pos);
 
 // expressions

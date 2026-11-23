@@ -15,3 +15,6 @@ export { PRELUDE } from "./prelude.js";
 export { generate, compileJs, asModule, typeToTD, type CompileResult } from "./codegen.js";
 export { applyPatch } from "./patch.js";
 export * from "./fuzz.js";
+export { pyParse, isPySource } from "./pyparser.js";
+export { PyPrinter } from "./pyprinter.js";
+export { pyNormalize } from "./pynormalize.js";

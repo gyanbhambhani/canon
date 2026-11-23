@@ -1,0 +1,12 @@
+# expect: T011
+# v0.4: a function cannot return an effectful function as a pure one
+fn logger() -> fn(String) -> Unit {
+  return print
+}
+
+fn main() -> Unit
+  effects: io
+{
+  let log = logger()
+  log("smuggled through a return value")
+}

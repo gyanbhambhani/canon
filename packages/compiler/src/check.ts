@@ -8,6 +8,8 @@ import { cmpStr, normalize } from "./normalize.js";
 import { parse } from "./parser.js";
 import { applyPatch } from "./patch.js";
 import { MAX_LINE, Printer } from "./printer.js";
+import { pyNormalize } from "./pynormalize.js";
+import { PyPrinter, testIdent } from "./pyprinter.js";
 import { pyLen, pySplitlines } from "./py.js";
 import { builtinEffects, checkTypes, pureBuiltins, type TypeInfo } from "./types.js";
 
@@ -48,8 +50,20 @@ export interface CheckResult {
   diagnostics: Diagnostic[];
 }
 
+/** The canonical text of a program in the active surface (Canon-Py when the py switch is on). */
 export function programText(prog: A.Program): string {
-  return new Printer().program(prog);
+  return features().py ? new PyPrinter().program(prog) : new Printer().program(prog);
+}
+
+/** A printer for types, expressions and patterns in messages, in the active surface. */
+export function surfacePrinter(): { ty(t: A.TypeExpr): string; ex(e: A.Expr, min?: number): string; pat(p: A.Pattern): string } {
+  return features().py ? new PyPrinter() : new Printer();
+}
+
+/** How a message names a function or a test: `fn f` / `test "x"`, or `def f` / `def test_x` in Canon-Py. */
+export function itemLabel(it: A.Fn | A.Test): string {
+  if (it.k === "Fn") return features().py ? `def ${it.name}` : `fn ${it.name}`;
+  return features().py ? `def ${testIdent(it.name)}` : `test ${it.name}`;
 }
 
 export function makePatch(before: string, after: string, path: string): Fix {
@@ -102,6 +116,8 @@ export function checkEffects(
   tables: EffectTables = ORACLE_TABLES,
   /** Full checker: a function used as a value (map(xs, print)) lends its effects too. */
   countValues = false,
+  /** v0.4 (fnEffects): effects each function performs by calling function values, from the type checker. */
+  valueCalls?: Map<A.Fn | A.Test, Map<string, string>>,
 ): Diagnostic[] {
   const diags: Diagnostic[] = [];
   const user = new Map<string, Set<string>>();
@@ -137,12 +153,13 @@ export function checkEffects(
       }
       for (const ef of effs) if (!used.has(ef)) used.set(ef, name);
     }
+    for (const [ef, via] of valueCalls?.get(it) ?? []) if (!used.has(ef)) used.set(ef, via);
     if (it.k === "Test") {
       // only fs and net are real inside a test; the rest are virtual and never declared
       for (const k of [...used.keys()]) if (!TEST_REAL_EFFECTS.has(k)) used.delete(k);
       allKnown = true;
     }
-    const label = it.k === "Fn" ? `fn ${it.name}` : `test ${it.name}`;
+    const label = itemLabel(it);
     const declared = new Set(it.effects);
     const missing = [...used.keys()].filter((x) => !declared.has(x)).sort(cmpStr);
     const extra = allKnown ? [...declared].filter((x) => !used.has(x)).sort(cmpStr) : [];
@@ -177,9 +194,15 @@ export function checkContractPurity(prog: A.Program, tables: EffectTables): Diag
   const diags: Diagnostic[] = [];
   const user = new Map<string, string[]>();
   for (const it of prog.items) if (it.k === "Fn") user.set(it.name, it.effects);
-  const effectsOf = (n: string) => (Object.hasOwn(tables.effects, n) ? tables.effects[n] : user.get(n) ?? []);
+  const effectsOfName = (n: string) => (Object.hasOwn(tables.effects, n) ? tables.effects[n] : user.get(n) ?? []);
   for (const it of prog.items) {
     if (it.k !== "Fn") continue;
+    // v0.4 (fnEffects): a contract that calls a function-typed parameter performs that type's effects
+    const paramEffects = new Map<string, string[]>();
+    if (features().fnEffects) {
+      for (const [n, t] of it.params) if (t.k === "TFn" && t.effects?.length) paramEffects.set(n, t.effects);
+    }
+    const effectsOf = (n: string) => paramEffects.get(n) ?? effectsOfName(n);
     for (const [clause, e] of [["requires", it.requires], ["ensures", it.ensures]] as const) {
       if (e === null) continue;
       const found = new Map<string, string>();
@@ -190,7 +213,9 @@ export function checkContractPurity(prog: A.Program, tables: EffectTables): Diag
       }
       if (found.size) {
         const via = [...found].map(([ef, n]) => `${ef} (via ${n})`).join(", ");
-        diags.push(diag("E103", `the ${clause} clause of fn ${it.name} performs effects: ${via}; contracts must be pure`,
+        diags.push(diag("E103", features().py
+          ? `the @${clause} of def ${it.name} performs effects: ${via}; contracts must be pure`
+          : `the ${clause} clause of fn ${it.name} performs effects: ${via}; contracts must be pure`,
           it.line, it.col, { data: { effects: [...found.keys()].sort(cmpStr) } }));
       }
     }
@@ -202,7 +227,7 @@ export function checkHoles(prog: A.Program): Diagnostic[] {
   const diags: Diagnostic[] = [];
   const fns = new Map<string, A.Fn>();
   for (const it of prog.items) if (it.k === "Fn") fns.set(it.name, it);
-  const printer = new Printer();
+  const printer = surfacePrinter();
   const candidates = (want: string | null, exclude: string): string[] => {
     if (want === null) return [];
     const out: string[] = [];
@@ -234,7 +259,7 @@ export function checkHoles(prog: A.Program): Diagnostic[] {
       const want = expected.get(e) ?? null;
       const label = e.name ? "?" + e.name : "?";
       diags.push(diag("H001",
-        `hole ${label} in fn ${it.name}: needs a value of type ${want ?? "unknown (v0 infers only returns and call arguments)"}`,
+        `hole ${label} in ${itemLabel(it)}: needs a value of type ${want ?? "unknown (v0 infers only returns and call arguments)"}`,
         e.line, e.col, { data: { expected: want, candidates: candidates(want, it.name) } }));
     }
   }
@@ -248,7 +273,8 @@ export interface Parsed {
 
 /** Parse, normalize and print. Throws CanonError on parse/S001 errors. */
 export function parseCanonical(src: string): Parsed {
-  const prog = normalize(parse(src));
+  let prog = normalize(parse(src));
+  if (features().py) prog = pyNormalize(prog);
   return { prog, canonical: programText(prog) };
 }
 
@@ -272,7 +298,7 @@ export function formDiagnostics(src: string, canonical: string, path: string): D
   pySplitlines(canonical).forEach((l, i) => {
     const len = pyLen(l);
     if (len > MAX_LINE) {
-      diags.push(diag("L001", `line is ${len} characters (limit ${MAX_LINE}); bind a subexpression with let`,
+      diags.push(diag("L001", `line is ${len} characters (limit ${MAX_LINE}); ${features().py ? "bind a subexpression to a name" : "bind a subexpression with let"}`,
         i + 1, MAX_LINE + 1));
     }
   });
@@ -340,8 +366,8 @@ function analyzeInner(src: string, path: string): Analysis {
   }
   const { prog, canonical } = parsed;
   const tables = specTables();
-  const effectDiags = checkEffects(prog, src, path, tables, true);
   const typed = checkTypes(prog);
+  const effectDiags = checkEffects(prog, src, path, tables, true, typed.info.valueCallEffects);
   for (const [d, fixed] of typed.fixes) d.fix = makePatch(src, programText(fixed), path);
   for (const [d, cands] of typed.suggestions) {
     d.data = { ...(d.data ?? {}), suggestions: cands.map((c) => ({ label: c.label, diff: makePatch(src, programText(c.prog), path).diff })) };

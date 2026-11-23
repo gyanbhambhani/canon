@@ -1,0 +1,24 @@
+# expect: ok
+# v0.4: the effect is in the function type and in every signature that performs it
+type Hook {
+  run: fn(String) -> Unit effects: io,
+}
+
+fn apply(f: fn(String) -> Unit effects: io, s: String) -> Unit
+  effects: io
+{
+  f(s)
+}
+
+fn fire(h: Hook, s: String) -> Unit
+  effects: io
+{
+  let run = h.run
+  apply(run, s)
+}
+
+fn main() -> Unit
+  effects: io
+{
+  fire(Hook { run: |s| print(s) }, "declared at every step")
+}

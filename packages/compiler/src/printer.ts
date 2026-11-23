@@ -60,7 +60,8 @@ export class Printer {
       case "TName":
         return t.name + (t.args.length ? `[${t.args.map((a) => this.ty(a)).join(", ")}]` : "");
       case "TFn":
-        return `fn(${t.params.map((p) => this.ty(p)).join(", ")}) -> ${this.ty(t.ret)}`;
+        return `fn(${t.params.map((p) => this.ty(p)).join(", ")}) -> ${this.ty(t.ret)}` +
+          (t.effects?.length ? ` effects: ${t.effects.join(", ")}` : "");
       case "TTuple":
         return `(${t.items.map((i) => this.ty(i)).join(", ")})`;
     }

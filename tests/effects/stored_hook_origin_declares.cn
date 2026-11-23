@@ -1,4 +1,5 @@
 # expect: ok
+# mode: v0.3
 type Hook {
   run: fn(String) -> Unit,
 }

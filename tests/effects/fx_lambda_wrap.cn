@@ -1,0 +1,18 @@
+# expect: T011
+# v0.4: wrapping the effectful call in a lambda does not hide it
+fn shout(s: String) -> String
+  effects: io
+{
+  print(s)
+  return s
+}
+
+fn twice(f: fn(String) -> String, s: String) -> String {
+  return f(f(s))
+}
+
+fn main() -> Unit
+  effects: io
+{
+  let done = twice(|s| shout(s), "smuggled through a lambda")
+}

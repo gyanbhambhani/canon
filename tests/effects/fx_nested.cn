@@ -1,0 +1,15 @@
+# expect: T011
+# v0.4: an effectful function value cannot be passed on to a pure parameter
+fn inner(f: fn(String) -> Unit, s: String) -> Unit {
+  f(s)
+}
+
+fn outer(f: fn(String) -> Unit effects: io, s: String) -> Unit {
+  inner(f, s)
+}
+
+fn main() -> Unit
+  effects: io
+{
+  outer(print, "smuggled through two levels")
+}

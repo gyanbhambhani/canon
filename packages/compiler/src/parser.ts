@@ -4,6 +4,7 @@ import { CanonError, diag } from "./diagnostics.js";
 import { features } from "./features.js";
 import { lex, type Tok, type TokKind } from "./lexer.js";
 import { pyRepr } from "./py.js";
+import { isPySource, pyParse } from "./pyparser.js";
 
 const CMP = new Set(["==", "!=", "<", "<=", ">", ">="]);
 
@@ -172,7 +173,20 @@ export class Parser {
       }
       this.expect("op", ")");
       this.expect("op", "->");
-      return { k: "TFn", params: ps, ret: this.typeExpr(), ...this.pos(t) };
+      const ret = this.typeExpr();
+      // v0.4: `fn(A) -> B effects: io, net` (on the same line; a clause on its own line belongs to
+      // the enclosing function). An effect name followed by ':' is the next parameter, not an effect.
+      const effects: string[] = [];
+      if (this.atKw("effects") && this.tok.line === this.toks[this.i - 1].line) {
+        this.advance();
+        this.expect("op", ":");
+        effects.push(this.expect("name", undefined, "effect name").text);
+        while (this.atOp(",") && this.peek().kind === "name" && !(this.peek(2).kind === "op" && this.peek(2).text === ":")) {
+          this.advance();
+          effects.push(this.advance().text);
+        }
+      }
+      return { k: "TFn", params: ps, ret, ...(effects.length ? { effects } : {}), ...this.pos(t) };
     }
     if (this.eatOp("(")) {
       const items = [this.typeExpr()];
@@ -631,6 +645,8 @@ export class Parser {
   }
 }
 
+/** Parse either surface: Canon-Py (v0.4) or brace syntax (v0 to v0.3), detected per file. */
 export function parse(src: string): A.Program {
+  if (isPySource(src)) return pyParse(src);
   return new Parser(lex(src)).program();
 }

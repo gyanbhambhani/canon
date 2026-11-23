@@ -1,0 +1,11 @@
+# expect: E101
+# v0.4: calling a function value performs its type's effects, so the caller declares them
+fn apply(f: fn(String) -> Unit effects: io, s: String) -> Unit {
+  f(s)
+}
+
+fn main() -> Unit
+  effects: io
+{
+  apply(print, "the effect is in apply's signature")
+}

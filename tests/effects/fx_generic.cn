@@ -1,0 +1,13 @@
+# expect: T011
+# v0.4: a generic higher-order function with a pure function type rejects an effectful argument
+fn each[A](xs: List[A], f: fn(A) -> Unit) -> Unit {
+  for x in xs {
+    f(x)
+  }
+}
+
+fn main() -> Unit
+  effects: io
+{
+  each(["smuggled through a generic"], print)
+}
