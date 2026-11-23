@@ -174,3 +174,19 @@ The owner, awake, decided the following; GPT's main run was already under way, u
 4. **The reduction rule was applied to gpt-6.2-sol** after its first 20 main-run runs: mean $0.0404 per
    run, projected $21.83 for 540 runs plus $1.15 for the pilot = $22.99, under 90% of the $100 cap.
    **No reduction**: 3 runs per task, as pre-registered.
+
+## Amendment 2 (2026-11-23): Qwen2.5-Coder-32B was not run
+
+Amendment 1 added Qwen2.5-Coder-32B-Instruct-4bit as an exploratory model. **It was not run and is
+dropped**: its three weight downloads failed, so no server could load it. Nothing about it enters
+any analysis.
+
+- The only local model is **Qwen2.5-Coder-7B-Instruct-8bit** on CanonBench's server (port 8091),
+  exploratory, 1 run per task, as in Amendment 1 point 2.
+- The 60 records that an early attempt wrote against a server that was not generating (every one
+  "generation thread died") are infrastructure failures, not results. They are kept unscored in
+  `results/dropped-qwen32-infrastructure-failures.jsonl`, outside the `results/main-*.jsonl` files
+  the analysis reads.
+- `analysis/subset-32b.ts` stays in the repository, unused.
+- Everything else in Amendment 1 stands: Opus off and its cells reported as not run, the win rule
+  undecidable, and gpt-6.2-sol the one frontier result.

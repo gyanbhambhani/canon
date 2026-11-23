@@ -2,6 +2,14 @@
 
 Judgment calls made while building the harness, newest first. Each entry: date, decision, reason.
 
+## 2026-11-23 — Qwen2.5-Coder-32B dropped
+Decision: the 32B exploratory run is not made; Amendment 2 in PREREGISTRATION.md says so. Its 60
+infrastructure-failure records moved to results/dropped-qwen32-infrastructure-failures.jsonl (kept,
+unscored, outside the analysis glob), and its waiter was stopped. Qwen 7B on port 8091 is the only
+local model.
+Reason: the coordinator reported that three weight downloads failed, so the model cannot be served.
+FS-1 never started a server for it.
+
 ## 2026-11-23 — Local-server crashes are infrastructure failures, and GPT runs as two processes
 Decision: runs that hit a dead MLX server ("generation thread died", "Connection error") are
 infrastructure failures. They stay in the JSONL files (nothing is deleted), the analysis replaces
