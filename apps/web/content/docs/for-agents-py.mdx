@@ -1,0 +1,151 @@
+---
+title: Agent reference (Canon-Py)
+description: The complete Canon v0.4 reference in Canon-Py, the opt-in Python-shaped syntax, on one page small enough to fit in a single prompt. The same text is served raw at /llms-py.txt.
+---
+
+# Canon language reference (Canon-Py)
+
+Canon v0.4 in its Canon-Py syntax, complete. Canon-Py is typed Python syntax with Canon's rules: same checker, same guarantees, a strict subset of the forms. Check, run and format with `--syntax py`. Every sample here passes `canon check --syntax py`.
+
+## Text
+
+Files end in .cn. Indent 4 spaces; one statement per line; one blank line between top-level definitions. Comments are whole lines starting with #. Strings use double quotes. Types and variants are PascalCase; all other names are snake_case.
+
+## Types
+
+int (53-bit), float (64-bit), bool, str, None (no value), `list[T]`, `dict[K, V]` (K is int, float or str), `tuple[A, B]`, functions `Callable[[A], B]`. Built in: `Option[T]` is `Some(value: T) | None`; `Result[T, E]` is `Ok(value: T) | Err(error: E)`; `class Error` with `message: str`. Generic: `class Box[T]:`.
+
+```canon syntax=py name=types
+class Item:
+    sku: str
+    qty: int
+    price: float
+
+type Step = Call(tool: str) | Answer(text: str)
+```
+
+A record is a `class` with typed fields only (no methods, no inheritance), built with keywords: `Item(sku="a", qty=1, price=2.5)`. A sum type is one `type` line; variants are built by position: `Call("search")`.
+
+## Functions and effects
+
+Every `def` has parameter and return types; locals never do. Decorators, in order: `@effects(...)` (exactly those used, from fs, io, net, rand, time; none means pure), `@requires(cond)`, `@ensures(cond)` (`result` is the return value). Contracts must be pure (E103). Generic: `def first[T](xs: list[T]) -> Option[T]:`. Calling, naming (`each(xs, print)`) or using in a lambda an effectful function uses its effect.
+
+Function types carry effects: `Callable[[str], None, io]` performs io when called, `Callable[[str], None]` is pure. Calling a function value performs its type's effects; passing an effectful function where a pure function type is expected is T011. So every signature bounds what its function can do, and a program performs only the effects its entry point declares (checked, and enforced at run time).
+
+## Statements
+
+`x = e` binds x the first time and assigns it after (mutability is inferred); `x += e` (also `-=`, `*=`, `/=`, `%=`); `p.field = e` rebinds p to an updated copy. Names live in the block that binds them: bind before an `if` to use after it. Assigning a parameter rebinds a local copy; callers never see it (values are immutable). `return e` (always explicit); `if c:` / `elif c:` / `else:`; `for x in xs:` (lists only); `for i, x in enumerate(xs):`; `while c:`; `break` (no continue); `pass` for an empty block; `assert cond`; a call, or `e?` of a call, on its own line.
+
+`match e:` with `case pattern:` lines; each case body is exactly one statement, and all cases end the same way: all `return e`, all `name = e` to the same name, or all calls. First match wins; it must be exhaustive. Patterns: `_`, a name, a literal, a variant `Some(x)` or `None`, a tuple `(a, b)`, nested.
+
+Tests: `def test_name() -> None:` with asserts. io, time and rand are free in tests (virtual clock and seed); a test using fs or net declares `@effects(fs)`.
+
+```canon syntax=py include=types
+@effects(io)
+@requires(n >= 0)
+@ensures(result >= 0.0)
+def restock(items: list[Item], n: int) -> float:
+    total = 0.0
+    for i in items:
+        if i.qty < n:
+            print(i.sku)
+            total += to_float(n - i.qty) * i.price
+    return total
+
+def first_short(words: list[str]) -> int:
+    at = -1
+    for i, w in enumerate(words):
+        if str_len(w) < 3 and w != "":
+            at = i
+            break
+    return at
+
+def describe(s: Step) -> str:
+    match s:
+        case Call(tool):
+            return f"call {tool}"
+        case Answer(text):
+            return text
+
+def test_first_short() -> None:
+    assert first_short(["canon", "", "is"]) == 2
+```
+
+## Expressions
+
+Precedence, loosest first: `lambda`; `a if c else b`; `or`; `and`; `not`; `== != < <= > >= in not in is is not` (never chained); `+ -`; `* / %`; unary `-`; calls `f(x)`, fields `a.b`, tuple slots `t[0]`, `e?`.
+
+No methods, and no indexing except tuple slots `t[0]`. Literals: `[1, 2]`, `(a, b)`, `True`, `False`. No comprehensions, dict literals or keyword arguments (except to build records). `x in xs` tests a list; `x is None` tests an Option. f-strings: `f"{n} items"` (no format specs). Lambdas are one expression: `lambda a, b: a + b`; an n-parameter lambda given one n-tuple unpacks it. `a if c else b` chooses on a bool.
+
+Arithmetic takes two ints or two floats; mixing is T009 (use `to_float`). **`/` on ints truncates toward zero, and `%` takes the dividend's sign; there is no `//` or `**` (use `pow`).** `+` joins two strs; str with int is T001 (use an f-string). `<` etc. take int, float or str; `==` is structural on any one type except functions. `and` and `or` short-circuit.
+
+`e?` on a Result gives v for `Ok(v)` and returns `Err(x)` early for `Err(x)`; the enclosing function must return a Result with that error type. No `?` in lambdas or tests. A hole `...` marks an unknown expression; H001 reports its type and candidate functions.
+
+```canon syntax=py include=types
+def parse_qty(s: str) -> Result[int, str]:
+    match parse_int(s):
+        case Some(n):
+            return Ok(n)
+        case None:
+            return Err(f"not a number: {s}")
+
+def total_qty(a: str, b: str) -> Result[int, str]:
+    x = parse_qty(a)?
+    y = parse_qty(b)?
+    return Ok(x + y)
+
+def cheapest(items: list[Item]) -> list[str]:
+    in_stock = filter(items, lambda i: i.qty > 0 and i.price > 0.0)
+    return map(sort_by(in_stock, lambda i: i.price), lambda i: i.sku)
+```
+
+## Canonical form and the fix loop
+
+`check` rejects any file `fmt` would change (C001, with the patch). fmt fixes spacing, indentation, blank lines, parentheses, commas, quotes, `else: if` to `elif`, `x = x + e` to `x += e`, `"a" + to_string(n)` to an f-string, `contains(xs, x)` to `x in xs`, `== None` to `is None`, `== True`, and effect and decorator order; it breaks a statement over 100 characters at its brackets, one item per line with trailing commas.
+
+Run `canon check --syntax py --fix --write --json FILE`. It applies every C001, E101, E102 and T009 patch until none is left and returns only what needs you. T001 may list candidate patches in `data.suggestions` (`to_string(e)`, `unwrap_or(e, ...)`, `Some(e)`, ...): apply the one you mean. T004's patch adds missing cases as holes; apply it, then fill them. Repeat until `"ok": true`.
+
+## Running and CLI
+
+`canon run` calls `def main() -> None:` (or a main returning a Result; Err prints and exits 1). requires is checked on entry, ensures on every return. `canon test` runs the test functions, then calls each pure, non-generic function with a contract on 200 seeded generated inputs; a failure prints `FAIL fuzz name: a = -19, b = 12` and the trap.
+
+Commands, each with `--syntax py`: `canon check [--fix [--write]]`, `fmt [--write]`, `run [--deny fs,net] [--no-contracts]`, `test`, `build [-o OUT] [--module]`; each takes files and `--json`; `--watch` reruns on save. Exit 0 ok, 1 on diagnostics, failed tests or traps, 2 usage error.
+
+## Standard library
+
+No overloading. Letters are type parameters; K is int, float or str; xs is a `list[A]`, m a `dict[K, V]`. Pure unless an effect is shown. Function arguments must be pure.
+
+```text
+len(xs) -> int; reverse(xs) -> list[A]; enumerate(xs) -> list[tuple[int, A]]
+map(xs, Callable[[A], B]) -> list[B]; filter(xs, Callable[[A], bool]) -> list[A]
+fold(xs, init: B, Callable[[B, A], B]) -> B
+sum(list[int]) -> int; sum_float(list[float]) -> float
+sort_by, sort_desc_by(xs, key: Callable[[A], K]) -> list[A]   stable
+group_by(xs, key: Callable[[A], K]) -> list[tuple[K, list[A]]]   first-seen order
+take, drop(xs, n: int) -> list[A]; first, last(xs) -> Option[A]
+append(xs, A) -> list[A]; contains(xs, A) -> bool; zip(xs, list[B]) -> list[tuple[A, B]]
+range(start: int, end: int) -> list[int]   end excluded
+min, max(int, int) -> int; abs(int) -> int; pow(base: int, exp: int) -> int
+to_float(int) -> float; to_int(float) -> int (truncates); to_string(T) -> str
+parse_int(str) -> Option[int]; parse_float(str) -> Option[float]
+join(list[str], sep: str) -> str; split(str, sep: str) -> list[str]
+trim(str) -> str; str_len(str) -> int
+unwrap_or(Option[T], fallback: T) -> T; assert(bool), traps R005
+map_from(list[tuple[K, V]]) -> m; map_get(m, K) -> Option[V]; map_set(m, K, V) -> m
+keys(m) -> list[K]; values(m) -> list[V]   insertion order
+io: print(str) -> None; read_line() -> Option[str]
+fs: read_file(path: str) -> Result[str, Error]
+  write_file(path: str, text: str) -> Result[None, Error]
+net: http_get(url: str) -> Result[str, Error]
+  http_post(url: str, body: str) -> Result[str, Error]
+time: now() -> int (ms since epoch); sleep(ms: int) -> None
+rand: random() -> float in [0, 1); random_int(lo: int, hi: int) -> int, hi excluded
+```
+
+## Diagnostics
+
+`canon check --json` prints `{ ok, canonical, diagnostics }`; each has code, message, line, col, maybe `data` and `fix.diff` (a unified diff to apply as is). `--fix` adds `applied` and `source`.
+
+P001 parse (names the Canon form for Python forms Canon lacks) · P002 comment placement · P003 local or missing annotation · P004 non-call statement · C001 not canonical · S001 match inside an expression · L001 line over 100 chars fmt cannot break · N001 naming · M001 `import` other than `std.<name>` · E100 unknown effect · E101 undeclared effect · E102 unused effect · E103 effect in a contract · H001 hole · T001 type mismatch · T002 unknown name · T003 argument count · T004 non-exhaustive match · T005 missing return · T006 assigning a loop variable or pattern name · T007 misplaced `?` · T008 unknown field · T009 int and float mixed · T010 break outside a loop · T011 effectful function where the function type is pure.
+
+Traps print one JSON object (code, message, line, col, stack): R001 requires failed · R002 ensures failed · R003 int overflow · R004 division by zero · R005 assert failed · R006 effect denied by the host

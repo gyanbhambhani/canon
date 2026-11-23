@@ -235,7 +235,54 @@ export function pyTestName(raw: string): string {
   return `"${id.replace(/_/g, " ")}"`;
 }
 
+/** Python keywords Canon allows as names; Canon-Py cannot spell them, so they become `name_`. */
+const PY_HARD_KEYWORDS = new Set(["case", "is", "pass", "import", "lambda", "def", "class", "elif", "break"]);
+
+/** Rename every identifier that is a Python keyword (functions, parameters, locals, fields, patterns). */
+function renameReserved<T>(x: T): T {
+  const r = (n: string) => (PY_HARD_KEYWORDS.has(n) ? `${n}_` : n);
+  const visit = (v: any): any => {
+    if (Array.isArray(v)) return v.map(visit);
+    if (!v || typeof v !== "object") return v;
+    const out: any = {};
+    for (const [k, val] of Object.entries(v)) out[k] = visit(val);
+    switch (v.k) {
+      case "Name":
+        out.path = v.path.map(r);
+        break;
+      case "Let":
+      case "PBind":
+        out.name = r(v.name);
+        break;
+      case "ForIn":
+        out.var = v.var ? r(v.var) : v.var;
+        if (v.names) out.names = v.names.map(r);
+        break;
+      case "Lambda":
+        out.params = v.params.map(r);
+        break;
+      case "FieldGet":
+        out.name = r(v.name);
+        break;
+      case "Fn":
+        out.name = r(v.name);
+        out.params = v.params.map(([n, t]: [string, A.TypeExpr]) => [r(n), visit(t)]);
+        break;
+      case "RecordType":
+      case "Record":
+        out.fields = v.fields.map(([n, t]: [string, unknown]) => [r(n), visit(t)]);
+        break;
+      case "SumType":
+        out.variants = v.variants.map(([vn, fs]: A.Variant) => [vn, fs.map(([n, t]) => [r(n), visit(t)])]);
+        break;
+    }
+    return out;
+  };
+  return visit(x);
+}
+
 export function pyNormalize(prog: A.Program): A.Program {
+  prog = renameReserved(prog);
   return {
     ...prog,
     items: prog.items.map((it): A.Item => {

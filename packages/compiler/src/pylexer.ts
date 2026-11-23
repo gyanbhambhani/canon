@@ -20,10 +20,16 @@ export interface PyTok {
 
 export const PY_KEYWORDS = new Set([
   "def", "class", "type", "if", "elif", "else", "for", "in", "while", "return", "match", "case",
-  "lambda", "and", "or", "not", "is", "pass", "import", "break", "assert",
-  // rejected with a message naming the Canon form
-  "continue", "try", "except", "finally", "raise", "with", "yield", "global", "nonlocal", "del",
-  "async", "await", "from",
+  "lambda", "and", "or", "not", "is", "pass", "import", "break", "assert", "try",
+]);
+
+/**
+ * Python statements Canon-Py rejects with a message naming the Canon form. They stay names (a
+ * Canon parameter may be called `from`); the parser rejects them only where a statement starts.
+ */
+export const PY_REJECTED_STATEMENTS = new Set([
+  "continue", "except", "finally", "raise", "with", "yield", "global", "nonlocal", "del", "async",
+  "await", "from",
 ]);
 
 // longest first

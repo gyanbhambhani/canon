@@ -5,7 +5,7 @@
  */
 import type * as A from "./ast.js";
 import { CanonError, diag } from "./diagnostics.js";
-import { pyLex, type PyTok, type PyTokKind } from "./pylexer.js";
+import { PY_REJECTED_STATEMENTS, pyLex, type PyTok, type PyTokKind } from "./pylexer.js";
 import { pyRepr } from "./py.js";
 
 const CMP = new Set(["==", "!=", "<", "<=", ">", ">="]);
@@ -167,7 +167,7 @@ export class PyParser {
       this.endLine();
       return { k: "Use", path, ...this.pos(t) };
     }
-    if (this.atKw("from")) this.fail("write `import std.name`; `from` imports do not exist in Canon");
+    if (this.at("name", "from")) this.fail("write `import std.name`; `from` imports do not exist in Canon");
     if (this.atKw("type")) return this.typeDecl();
     if (this.atOp("@") || this.atKw("def") || this.atKw("class")) return this.decorated();
     return this.error("'def', 'class', 'type' or 'import' at top level");
@@ -464,7 +464,15 @@ export class PyParser {
       this.endLine();
       return { k: "Break", ...p };
     }
-    if (this.atKw("continue")) this.fail("Canon has no continue; put the rest of the loop body under `if not cond:`");
+    // a Python statement keyword Canon lacks, used as a statement (not as a name being assigned or called)
+    const next = this.peek();
+    const asStatement = t.kind === "name" && PY_REJECTED_STATEMENTS.has(t.text) &&
+      !(next.kind === "op" && ["=", "+=", "-=", "*=", "/=", "%=", "(", ".", "["].includes(next.text));
+    if (asStatement && t.text === "continue") this.fail("Canon has no continue; put the rest of the loop body under `if not cond:`");
+    if (asStatement && ["raise", "except", "finally"].includes(t.text)) {
+      this.fail("Canon has no exceptions: return a Result (Ok(value) or Err(error)), and write e? to pass an Err up");
+    }
+    if (asStatement) this.fail(`'${t.text}' does not exist in Canon`);
     if (this.atKw("assert")) {
       this.advance();
       const cond = this.expr();
@@ -472,12 +480,10 @@ export class PyParser {
       this.endLine();
       return { k: "ExprStmt", expr: { k: "Call", callee: { k: "Name", path: ["assert"], ...p }, args: [cond], ...p }, ...p };
     }
-    if (this.atKw("try") || this.atKw("raise") || this.atKw("except") || this.atKw("finally")) {
+    if (this.atKw("try")) {
       this.fail("Canon has no exceptions: return a Result (Ok(value) or Err(error)), and write e? to pass an Err up");
     }
-    if (this.at("kw") && ["with", "yield", "global", "nonlocal", "del", "async", "await", "import", "from"].includes(t.text)) {
-      this.fail(`'${t.text}' does not exist in Canon`);
-    }
+    if (this.atKw("import")) this.fail("imports sit at top level");
     const e = this.expr();
     if (this.atOp(":") && e.k === "Name") this.fail("local bindings never carry type annotations; types live on signatures", this.tok, "P003");
     if (this.atOp(",")) this.fail("Canon binds one name per statement; for a tuple, bind it and use t[0] and t[1]");
@@ -1050,9 +1056,9 @@ export function pyParse(src: string): A.Program {
 
 /**
  * Which surface a file is written in. A file is Canon-Py when a top-level line starts with
- * `def`, `class`, `@` or `import`; otherwise it is brace syntax (v0 to v0.3). Files with neither
+ * `def`, `class`, `@`, `import` or `from`; otherwise it is brace syntax (v0 to v0.3). Files with neither
  * (comments, or only one-line sum types) mean the same either way.
  */
 export function isPySource(src: string): boolean {
-  return /^(def |class |@|import )/m.test(src);
+  return /^(def |class |@|import |from )/m.test(src);
 }

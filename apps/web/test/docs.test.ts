@@ -2,7 +2,8 @@
  * M5 acceptance: the docs.
  *  - every page in the spec's page tree exists with real content
  *  - every ```canon block passes `check`, or fails with the code named by its `# expect: CODE` line
- *  - /llms.txt (the For agents page) stays under 4,000 tokens (characters / 3.5)
+ *  - /llms.txt (the For agents page) and /llms-py.txt (its Canon-Py twin) stay under 4,000 tokens
+ *    (characters / 3.5); a ```canon block marked syntax=py is checked as Canon-Py
  *
  * Blocks are checked one by one. A fence with `name=foo` can be prepended to a later block on
  * the same page whose fence says `include=foo`, so a page can build one program across blocks.
@@ -10,7 +11,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
-import { check } from "@canon/compiler";
+import { check, V04_PY } from "@canon/compiler";
 import { agentReference, stripFrontmatter } from "../lib/agent-reference";
 
 const docs = join(__dirname, "..", "content", "docs");
@@ -20,7 +21,7 @@ const TREE = [
   "guide/files-and-syntax", "guide/types-and-declarations", "guide/functions-effects-contracts",
   "guide/statements-and-mutation", "guide/expressions-and-precedence", "guide/pattern-matching",
   "guide/errors-result-try", "guide/pipelines", "guide/holes",
-  "canonical-form", "diagnostics", "stdlib", "cli", "for-agents", "design-notes", "roadmap",
+  "canonical-form", "diagnostics", "stdlib", "cli", "for-agents", "for-agents-py", "design-notes", "roadmap",
 ];
 
 function walk(dir: string): string[] {
@@ -77,7 +78,8 @@ describe("docs code blocks", () => {
       it(`${relative(docs, f)}:${b.line}`, () => {
         if (include) expect(prefix, `include=${include} names no earlier block`).toBeDefined();
         const src = prefix ? `${prefix}\n${b.code}` : b.code;
-        const r = check(src, "example.cn");
+        // a block marked syntax=py is Canon-Py, checked as `canon check --syntax py` does
+        const r = check(src, "example.cn", attr(b.meta, "syntax") === "py" ? { features: V04_PY } : {});
         const want = /# expect: (\w+)/.exec(b.code)?.[1];
         if (want) {
           expect(r.ok, src).toBe(false);
@@ -97,5 +99,20 @@ describe("/llms.txt", () => {
     expect(text.length / 3.5).toBeLessThan(4000);
     expect(text.length).toBeGreaterThan(3000);
     expect(text).not.toMatch(/^---/);
+  });
+
+  it("/llms-py.txt is the Canon-Py reference, under 4,000 tokens, and its samples are Canon-Py", () => {
+    const text = agentReference("py");
+    expect(text.length / 3.5).toBeLessThan(4000);
+    expect(text.length).toBeGreaterThan(3000);
+    expect(text).not.toMatch(/^---/);
+    const blocks = canonBlocks(join(docs, "for-agents-py.mdx"));
+    expect(blocks.length).toBeGreaterThanOrEqual(3);
+    for (const b of blocks) expect(b.meta).toContain("syntax=py");
+  });
+
+  it("both references have the same sections in the same order (only the language differs)", () => {
+    const heads = (t: string) => t.split("\n").filter((l) => l.startsWith("## "));
+    expect(heads(agentReference("py"))).toEqual(heads(agentReference()));
   });
 });

@@ -219,6 +219,23 @@ describe("Canon-Py: bindings", () => {
   });
 });
 
+describe("Canon-Py: names that are Python keywords", () => {
+  it("statement keywords Canon lacks stay usable as names", () => {
+    const src = "def settle(from: str, to: str) -> str:\n    with = from + to\n    return with\n";
+    expect(pyFmt(src)).toBe(src);
+    expect(codes(src)).toEqual([]);
+    expect(parseError("def f() -> None:\n    from x import y\n").message).toMatch(/does not exist/);
+    expect(parseError("from std import text\n").message).toMatch(/import std\.name/);
+  });
+
+  it("a Canon name that is a Python hard keyword is renamed name_ when converting", () => {
+    const brace = "type Rule {\n  case: String,\n}\n\nfn pass(class: Rule) -> String {\n  let is = class.case\n  return is\n}\n";
+    const out = pyFmt(brace);
+    expect(out).toBe("class Rule:\n    case_: str\n\ndef pass_(class_: Rule) -> str:\n    is_ = class_.case_\n    return is_\n");
+    expect(codes(out)).toEqual([]);
+  });
+});
+
 describe("Canon-Py: diagnostics and patches", () => {
   it("E101's patch adds the decorator", () => {
     const src = 'def main() -> None:\n    print("hi")\n';
