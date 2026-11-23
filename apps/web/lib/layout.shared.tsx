@@ -1,13 +1,13 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
-import { appName, githubUrl } from "./shared";
+import { Wordmark } from "@/components/site/wordmark";
+import { NAV_LINKS } from "@/components/site/nav";
+import { githubUrl } from "./shared";
 
+/** Docs navigation: the same wordmark and links as the rest of the site. */
 export function baseOptions(): BaseLayoutProps {
   return {
-    nav: { title: <span className="font-mono font-semibold tracking-tight">{appName}</span> },
-    links: [
-      { text: "Docs", url: "/docs" },
-      { text: "Playground", url: "/play" },
-    ],
+    nav: { title: <Wordmark />, url: "/" },
+    links: NAV_LINKS.filter((l) => l.href !== "/docs").map((l) => ({ text: l.label, url: l.href })),
     ...(githubUrl ? { githubUrl } : {}),
   };
 }

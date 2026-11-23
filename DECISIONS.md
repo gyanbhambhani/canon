@@ -2,6 +2,28 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — Website redesign: data, fixtures and the design canvas
+Decision: the redesign brief (landing, docs, playground, /research, README, npm metadata) is built from its written spec. The design canvas it links (a claude.ai artifact) is behind the owner's login, so layout, copy and tokens follow the brief's sections 6 and 10 exactly instead.
+Reason: CLAUDE.md says not to stop for questions; the brief gives exact copy, tokens, sizes and structure, which is enough to build from.
+
+Decision: every figure comes from `scripts/stats.ts`, which now recomputes the benchmark from `research/benchmark/results/runs.jsonl` (same rules and bootstrap seed as `report.ts`) and the likelihood rows from `research/likelihood/results`. `apps/web/test/site-data.test.ts` checks the verdicts and C3 intervals against REPORT.md; `apps/web/test/numbers.test.ts` fails if a page source contains any generated figure.
+Reason: CLAUDE.md requires website numbers to come from stats.ts; recomputing (instead of parsing REPORT.md) also gives the confidence intervals and ranges the new pages need.
+
+Decision: whether v0.2 "adopted" a spelling the likelihood study preferred is decided by the formatter: the v0 spelling no longer formats to itself, and it formats to the same text as the alternative. Today that marks `x = e`, `while` and `+` as adopted and `&&`, inline effects and dropped trailing commas as not.
+Reason: keeps the /research table true as the language changes, with no hand-kept list.
+
+Decision: the site leads with the v0.2 benchmark (the current language; REPORT-v0.2.md) and keeps v0 (REPORT.md) as the earlier run. Verdicts are read from the generated reports' tables, since v0.2 adds criteria (C3s, C6, D1, D1s); C1 to C4 are also recomputed from the raw runs and a test checks they agree. The brief's note "Not improved yet; v0.2 targets it" became "Not improved yet, in v0 or v0.2", and its cost line ("the reference rides in every prompt") gives way to the v0.2 finding that output tokens drive cost.
+Reason: the v0.2 run finished while this work was under way (4ba4d68), and D1 (v0.2 improves convergence) was not supported. The brief's rule that every claim maps to a SUPPORTED verdict outranks its copy.
+
+Decision: the hero terminal is generated at build time by running the CLI's `main()` on `examples/mistakes/missing-effect.cn`, applying the patch from `check`, and asserting that the result equals `examples/hello.cn`. The transcript keeps the CLI's real `--- a/` / `+++ b/` header and `1 problem` lines, which the brief's mock-up omits.
+Reason: the brief says verbatim from the compiler, and verbatim wins over the mock-up. Mistake fixtures live in `examples/mistakes/` so the CLI tests, which require every top-level example to pass, are unaffected.
+
+Decision: the GitHub button and links stay behind `NEXT_PUBLIC_GITHUB_URL` (set on Vercel), as in M6.
+Reason: the existing tests and DEPLOY.md depend on that contract; production shows the button.
+
+Decision: Geist comes from the `geist` package via `next/font`; `next-themes` (the same version Fumadocs uses) is a direct dependency so the nav's sun/moon toggle shares the Fumadocs provider's state. Home, /research and /play use a custom nav (`components/site/nav.tsx`); the docs keep Fumadocs' layout with the same wordmark and links, and all Fumadocs colors are mapped onto the new tokens.
+Reason: the brief asks for one provider and one set of color roles across the site.
+
 ## 2026-11-22 — Language v0.2
 Decision: four language changes, each traced to M8 data.
 1. Assignment is `x = e` / `p.field = e` (on a `var`); `set` is retired. Likelihood study: `set x = ...` was about 2,600 to 4,000 times less likely than `x = ...` under both models. Mutations stay searchable: they are the `var` bindings and the `NAME =` lines.

@@ -5,58 +5,139 @@
 @source "../components";
 @source "../app";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Design tokens. Every color on the site is one of these roles, with a light and a dark value.
+ * Fumadocs' --color-fd-* variables are mapped onto them so the docs match home and playground.
+ */
 :root {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-  --accent: #2563eb;
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --surface-2: #f4f4f5;
+  --rule: #e5e5e5;
+  --rule-strong: #d4d4d4;
+  --frame: #ededed;
+  --ink: #171717;
+  --ink-strong: #0a0a0a;
+  --muted: #525252;
+  --faint: #6b6b6b;
+  --fix: #15803d;
+  --err: #b91c1c;
+  --fix-bg: #f0fdf4;
+  --err-bg: #fef2f2;
+  --syn-kw: #a21caf;
+  --syn-type: #0369a1;
+  --syn-str: #a16207;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --accent: #60a5fa;
-  }
+.dark {
+  --bg: #0a0a0a;
+  --surface: #0f0f0f;
+  --surface-2: #111111;
+  --rule: #1f1f1f;
+  --rule-strong: #262626;
+  --frame: #1a1a1a;
+  --ink: #ededed;
+  --ink-strong: #ffffff;
+  --muted: #a1a1a1;
+  --faint: #8a8a8a;
+  --fix: #4ade80;
+  --err: #f87171;
+  --fix-bg: rgb(74 222 128 / 0.08);
+  --err-bg: rgb(248 113 113 / 0.08);
+  --syn-kw: #f0abfc;
+  --syn-type: #7dd3fc;
+  --syn-str: #fcd34d;
+}
+
+:root,
+.dark {
+  --color-fd-background: var(--bg);
+  --color-fd-foreground: var(--ink);
+  --color-fd-muted: var(--surface-2);
+  --color-fd-muted-foreground: var(--muted);
+  --color-fd-popover: var(--surface);
+  --color-fd-popover-foreground: var(--ink);
+  --color-fd-card: var(--surface);
+  --color-fd-card-foreground: var(--ink);
+  --color-fd-border: var(--rule-strong);
+  --color-fd-primary: var(--ink);
+  --color-fd-primary-foreground: var(--bg);
+  --color-fd-secondary: var(--surface-2);
+  --color-fd-secondary-foreground: var(--ink);
+  --color-fd-accent: var(--surface-2);
+  --color-fd-accent-foreground: var(--ink-strong);
+  --color-fd-ring: var(--faint);
+  --color-fd-info: var(--muted);
+  --color-fd-success: var(--fix);
+  --color-fd-error: var(--err);
+  --color-fd-diff-add: var(--fix-bg);
+  --color-fd-diff-add-symbol: var(--fix);
+  --color-fd-diff-remove: var(--err-bg);
+  --color-fd-diff-remove-symbol: var(--err);
+}
+.dark #nd-sidebar {
+  --color-fd-muted: var(--surface-2);
+  --color-fd-secondary: var(--surface-2);
+  --color-fd-muted-foreground: var(--muted);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-frame: var(--frame);
+  --color-ink: var(--ink);
+  --color-ink-strong: var(--ink-strong);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-fix: var(--fix);
+  --color-err: var(--err);
+  --color-fix-bg: var(--fix-bg);
+  --color-err-bg: var(--err-bg);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 html {
   scrollbar-gutter: stable;
+  background: var(--bg);
 }
 
 body {
   font-family: var(--font-sans);
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
 }
 
 code,
 pre,
+kbd,
 .font-mono {
   font-family: var(--font-mono);
 }
 
-/* Canon syntax colors (landing page and playground) */
+::selection {
+  background: color-mix(in srgb, var(--fix) 25%, transparent);
+}
+
+/* Canon syntax colors: keywords, types and strings carry color; the rest stays ink or muted */
 .canon-code,
 .cm-editor {
-  --tok-kw: #7e22ce;
-  --tok-mod: #92400e;
-  --tok-lit: #075985;
-  --tok-str: #166534;
-  --tok-num: #075985;
-  --tok-com: #4b5563;
-  --tok-type: #1e40af;
-  --tok-fn: #9d174d;
-  --tok-hole: #b91c1c;
-  --tok-op: #44403c;
-}
-.dark .canon-code,
-.dark .cm-editor {
-  --tok-kw: #c084fc;
-  --tok-mod: #fbbf24;
-  --tok-lit: #7dd3fc;
-  --tok-str: #86efac;
-  --tok-num: #7dd3fc;
-  --tok-com: #9ca3af;
-  --tok-type: #93c5fd;
-  --tok-fn: #f9a8d4;
-  --tok-hole: #fca5a5;
-  --tok-op: #d6d3d1;
+  --tok-kw: var(--syn-kw);
+  --tok-mod: var(--syn-kw);
+  --tok-lit: var(--syn-type);
+  --tok-str: var(--syn-str);
+  --tok-num: var(--syn-str);
+  --tok-com: var(--faint);
+  --tok-type: var(--syn-type);
+  --tok-fn: var(--ink-strong);
+  --tok-hole: var(--err);
+  --tok-op: var(--muted);
 }
 .tok-kw { color: var(--tok-kw); }
 .tok-mod { color: var(--tok-mod); }
@@ -68,3 +149,20 @@ pre,
 .tok-fn { color: var(--tok-fn); }
 .tok-hole { color: var(--tok-hole); font-weight: 600; }
 .tok-op { color: var(--tok-op); }
+
+/* The page frame: vertical 1px lines at the container edges, full-width rules between sections */
+.frame {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1200px;
+  border-inline: 1px solid var(--frame);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

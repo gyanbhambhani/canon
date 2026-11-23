@@ -1,192 +1,275 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { CanonCode } from "@/components/canon-code";
-import { ManyInOneOut } from "@/components/many-in-one-out";
-import { githubUrl } from "@/lib/shared";
+import { CopyButton } from "@/components/site/copy-button";
+import { SiteFooter } from "@/components/site/footer";
+import { icons } from "@/components/site/icons";
+import { Terminal } from "@/components/site/terminal";
+import { Window } from "@/components/site/window";
+import { AGENTS_MD, INSTALL_CMD } from "@/lib/agents";
+import { githubUrl, subhead, tagline } from "@/lib/shared";
 import { playHref } from "@/lib/share";
-import { fmtNumber, siteData } from "@/lib/site";
+import { siteData } from "@/lib/site";
 
-const { stats, orders } = siteData;
+const { display: d, benchmark, terminal, ordersSnippet } = siteData;
+const avg = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
 
-function Button({ href, children, primary = false }: { href: string; children: React.ReactNode; primary?: boolean }) {
-  const cls = primary
-    ? "bg-[var(--accent)] text-white hover:opacity-90 dark:text-neutral-950"
-    : "border border-fd-border hover:bg-fd-accent";
-  const external = href.startsWith("http");
-  return external ? (
-    <a href={href} className={`rounded-md px-4 py-2 text-sm font-medium ${cls}`}>
+function Section({ children, className = "", id }: { children: ReactNode; className?: string; id?: string }) {
+  return (
+    <section id={id} className="border-b border-rule">
+      <div className={`frame px-6 py-[88px] md:py-[104px] ${className}`}>{children}</div>
+    </section>
+  );
+}
+
+function Eyebrow({ children }: { children: ReactNode }) {
+  return <p className="mb-4 font-mono text-[13px] text-faint">{children}</p>;
+}
+
+function H2({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <h2 className={`text-[34px] font-semibold leading-[1.1] tracking-[-0.035em] text-ink-strong md:text-[44px] md:leading-[48px] ${className}`}>{children}</h2>;
+}
+
+function Button({ href, children, primary = false, size = "lg" }: { href: string; children: ReactNode; primary?: boolean; size?: "lg" | "sm" }) {
+  const cls = `inline-flex items-center justify-center gap-2 rounded-[10px] px-5 text-[15px] font-medium transition-colors ${size === "lg" ? "h-12" : "h-9"} ${
+    primary ? "bg-ink text-bg hover:opacity-90" : "border border-rule-strong text-ink hover:border-faint hover:text-ink-strong"
+  }`;
+  return href.startsWith("http") ? (
+    <a href={href} className={cls}>
       {children}
     </a>
   ) : (
-    <Link href={href} className={`rounded-md px-4 py-2 text-sm font-medium ${cls}`}>
+    <Link href={href} className={cls}>
       {children}
     </Link>
   );
 }
 
-function Section({ title, children, id }: { title: string; children: React.ReactNode; id?: string }) {
-  return (
-    <section id={id} className="mx-auto w-full max-w-5xl px-6 py-14">
-      <h2 className="mb-6 text-2xl font-semibold tracking-tight">{title}</h2>
-      {children}
-    </section>
-  );
-}
-
-const IDEAS = [
+const FEATURES: { icon: ReactNode; title: string; body: ReactNode }[] = [
   {
-    title: "One text per program",
-    body: "The formatter is the grammar. A file fmt would change is a compile error that carries the patch, so two programs with the same meaning are the same bytes.",
-    code: "fmt(any variant) == the canonical text",
+    icon: icons.prompt,
+    title: "Fits in a prompt",
+    body: <>The whole language reference is {d.referenceTokens} tokens. Agents load it with every request. No fine-tuning.</>,
   },
   {
-    title: "Effects you can see",
-    body: "A function lists exactly the effects it uses, sorted, no more and no fewer. Leaving the clause out means pure. The checker enforces it both ways.",
-    code: "fn fetch(url: String) -> Result[String, Error]\n  effects: net, time",
+    icon: icons.patch,
+    title: "Errors ship with fixes",
+    body: <>Diagnostics are JSON with a patch attached. Agents apply it as-is instead of guessing.</>,
   },
   {
-    title: "Patches, not prose",
-    body: "Every mechanical error comes back as JSON with a unified diff the agent applies as is. Holes (?name) ask the compiler what type belongs there.",
-    code: '{ "code": "E101", "fix": { "kind": "patch", ... } }',
+    icon: icons.effects,
+    title: "Effects in the signature",
+    body: <>Network, files, time and randomness must be declared. Everything else is pure by default.</>,
+  },
+  {
+    icon: icons.format,
+    title: "One canonical form",
+    body: <>The formatter is part of the compiler. Any layout of a program formats to the same text.</>,
+  },
+  {
+    icon: icons.hole,
+    title: "Typed holes",
+    body: (
+      <>
+        Write <code className="rounded bg-surface-2 px-1 py-0.5 text-[14px] text-ink">?</code> where you&apos;re unsure. The compiler returns the type it needs and the functions
+        that fit.
+      </>
+    ),
+  },
+  {
+    icon: icons.runs,
+    title: "Runs anywhere JavaScript runs",
+    body: <>Compiles to JavaScript. Use the CLI with Node 20 or run it straight in the browser.</>,
   },
 ];
 
-const LOOP = ["write", "check", "apply patch or answer hole", "check again", "run"];
+function Bar({ value }: { value: number }) {
+  return (
+    <span className="mt-2 block h-[3px] w-full max-w-[120px] overflow-hidden rounded-full bg-rule" aria-hidden>
+      <span className="block h-full bg-ink" style={{ width: `${Math.round(100 * value)}%` }} />
+    </span>
+  );
+}
+
+const canonArms = benchmark.byModel.map((m) => m.canon);
+const tsArms = benchmark.byModel.map((m) => m.typescript);
+const ROWS: { metric: ReactNode; canon: string; ts: string; bars?: [number, number] }[] = [
+  { metric: "Correct", canon: d.canonCorrect, ts: d.tsCorrect, bars: [avg(canonArms.map((a) => a.correct)), avg(tsArms.map((a) => a.correct))] },
+  {
+    metric: "Valid on the first try",
+    canon: d.canonFirstPassRange,
+    ts: d.tsFirstPass,
+    bars: [avg(canonArms.map((a) => a.firstPass)), avg(tsArms.map((a) => a.firstPass))],
+  },
+  { metric: "Tries to working code", canon: d.turnsRange, ts: d.tsTurns },
+  {
+    metric: (
+      <>
+        Distinct programs per task
+        <span className="mt-1 block text-[13px] text-faint">Lower is better. Not improved yet, in v0 or v0.2.</span>
+      </>
+    ),
+    canon: d.canonDistinctRange,
+    ts: d.tsDistinctRange,
+  },
+];
 
 export default function Home() {
   return (
-    <main className="flex flex-col">
-      {/* 1. Hero */}
-      <section className="mx-auto w-full max-w-5xl px-6 pb-10 pt-20">
-        <h1 className="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">The dialect models already speak.</h1>
-        <p className="mt-5 max-w-2xl text-lg text-fd-muted-foreground">
-          Canon is a programming language for AI agents. One way to write every program, effects in every signature, and
-          a compiler that answers with patches.
-        </p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Button href="/play" primary>
-            Try it
-          </Button>
-          <Button href="/docs">Read the docs</Button>
-          {githubUrl ? <Button href={githubUrl}>GitHub</Button> : null}
-        </div>
-      </section>
-
-      {/* 2. Many in, one out */}
-      <Section title="Many in, one out">
-        <ManyInOneOut variants={orders.variants} canonical={orders.canonical} />
-        <p className="mt-4 text-sm text-fd-muted-foreground">
-          {fmtNumber(stats.fuzzedVariants)} scrambled variants tested. One output.
-        </p>
-      </Section>
-
-      {/* 3. Three ideas */}
-      <Section title="Three ideas">
-        <div className="grid gap-4 md:grid-cols-3">
-          {IDEAS.map((idea) => (
-            <div key={idea.title} className="flex flex-col rounded-lg border border-fd-border bg-fd-card p-5">
-              <h3 className="font-semibold">{idea.title}</h3>
-              <p className="mt-2 flex-1 text-sm text-fd-muted-foreground">{idea.body}</p>
-              <CanonCode code={idea.code} className="mt-4 whitespace-pre-wrap break-words rounded bg-fd-muted p-3 text-[12px]" />
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* 4. The loop */}
-      <Section title="The loop">
-        <ol className="flex flex-wrap items-center gap-2 text-sm" aria-label="The agent loop">
-          {LOOP.map((step, i) => (
-            <li key={step} className="flex items-center gap-2">
-              <span className="rounded-md border border-fd-border bg-fd-card px-3 py-2 font-mono">{step}</span>
-              {i < LOOP.length - 1 ? <span aria-hidden className="text-fd-muted-foreground">→</span> : null}
-            </li>
-          ))}
-        </ol>
-        <p className="mt-4 max-w-2xl text-sm text-fd-muted-foreground">
-          The agent applies patches mechanically and treats holes as questions; only parse and naming errors send it back
-          to rewrite code itself, so the write, compile, fix loop closes in one or two turns.
-        </p>
-      </Section>
-
-      {/* 5. Real code */}
-      <Section title="Real code">
-        <div className="overflow-hidden rounded-lg border border-fd-border bg-fd-card">
-          <div className="flex items-center justify-between border-b border-fd-border px-4 py-2 text-xs text-fd-muted-foreground">
-            <span className="font-mono">examples/orders.cn</span>
-            <Link href={playHref(orders.canonical)} className="rounded bg-[var(--accent)] px-3 py-1 font-medium text-white dark:text-neutral-950">
-              Run
-            </Link>
+    <main className="flex flex-1 flex-col">
+      {/* Hero */}
+      <section className="border-b border-rule">
+        <div className="frame flex flex-col items-center px-6 pb-[88px] pt-[72px] text-center md:pt-[112px]">
+          <Link
+            href="/docs/quickstart"
+            className="mb-8 inline-flex items-center gap-2 rounded-full border border-rule-strong bg-surface-2 px-3.5 py-1.5 text-[13px] text-muted transition-colors hover:text-ink-strong"
+          >
+            <span>
+              <code className="font-mono text-ink">canon-lang {d.version}</code> is on npm
+            </span>
+            <span className="text-faint">·</span>
+            <span className="text-ink">Read the docs →</span>
+          </Link>
+          <h1 className="max-w-[900px] text-[clamp(44px,6.4vw,80px)] font-semibold leading-none tracking-[-0.045em] text-ink-strong">{tagline}</h1>
+          <p className="mt-6 max-w-[640px] text-[18px] leading-[28px] text-muted md:text-[20px] md:leading-[30px]">{subhead}</p>
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
+            <Button href="/docs/quickstart" primary>
+              Get started
+            </Button>
+            <Button href="/play">Open playground</Button>
           </div>
-          <CanonCode code={orders.canonical} className="p-4" />
+          <div className="mt-6 inline-flex items-center gap-2 rounded-[10px] border border-rule bg-surface py-1 pl-4 pr-1 font-mono text-[14px] text-ink">
+            <span className="select-none text-faint">$</span>
+            <span>{INSTALL_CMD}</span>
+            <CopyButton text={INSTALL_CMD} label="Copy the command" />
+          </div>
+          <Window title="terminal" className="mt-16 w-full max-w-[860px]">
+            <Terminal lines={terminal.lines} />
+          </Window>
         </div>
-      </Section>
-
-      {/* 6. Numbers */}
-      <section className="border-y border-fd-border bg-fd-card">
-        <dl className="mx-auto grid w-full max-w-5xl grid-cols-2 gap-6 px-6 py-10 md:grid-cols-4">
-          {[
-            [`${fmtNumber(stats.referenceTokens)}`, "tokens in the whole language reference"],
-            [fmtNumber(stats.fuzzedVariants), "fuzzed variants, one canonical text each"],
-            [fmtNumber(stats.conformanceTests), "conformance tests against the reference oracle"],
-            [fmtNumber(stats.stdlibFunctions), "standard library functions"],
-          ].map(([n, label]) => (
-            <div key={label}>
-              <dt className="sr-only">{label}</dt>
-              <dd className="font-mono text-3xl font-semibold">{n}</dd>
-              <dd className="mt-1 text-sm text-fd-muted-foreground">{label}</dd>
-            </div>
-          ))}
-        </dl>
       </section>
 
-      {/* 7. Why this exists */}
-      <Section title="Why this exists">
-        <div className="max-w-2xl space-y-4 text-fd-muted-foreground">
-          <p>
-            The randomness in AI-written code comes from sampling, and no language can remove that. What a language does
-            control is how many legal programs exist for the same intent. When there are dozens of ways to write a button,
-            two agent runs drift apart, and reviewers chase style instead of logic.
+      {/* Features */}
+      <Section>
+        <Eyebrow>Features</Eyebrow>
+        <H2>Built to be written by agents.</H2>
+        <div className="mt-12 grid gap-px overflow-hidden rounded-[14px] border border-rule bg-rule sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map((f) => (
+            <div key={f.title} className="bg-bg p-7">
+              <div className="text-ink-strong">{f.icon}</div>
+              <h3 className="mt-5 text-[16px] font-semibold text-ink-strong">{f.title}</h3>
+              <p className="mt-2 text-[15px] leading-[24px] text-muted">{f.body}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* Benchmark */}
+      <Section className="grid gap-12 lg:grid-cols-[5fr_7fr] lg:gap-16 [&>*]:min-w-0">
+        <div>
+          <Eyebrow>Benchmark</Eyebrow>
+          <H2>As reliable as TypeScript from day one.</H2>
+          <p className="mt-6 text-[16px] leading-[26px] text-muted">
+            {d.runs} runs across {d.tasks} tasks with {d.modelCount === "2" ? "two" : d.modelCount} frontier models. Success criteria were committed before any data
+            was collected.
           </p>
-          <p>
-            Our bet is that fewer legal programs per intent makes agent runs converge, so diffs stay small and caches
-            hit. Canon removes freedom on purpose: one way to loop, one way to branch, one way to handle errors, one
-            textual form per program.
-          </p>
-          <p>
-            We tested that bet with rules fixed before the run: 2,000 runs, two frontier models, Canon against
-            TypeScript. Agents learned Canon from its reference alone and wrote it as reliably as TypeScript, and every
-            slip was fixed in one round by applying the compiler&apos;s patch. But convergence did not improve yet.
-          </p>
-          <p>
-            Version 0.2 swapped in the forms models reach for most naturally (plain assignment, <code>while</code>,{" "}
-            <code>+</code> for strings, <code>match</code> anywhere) and ran the test again, under new rules fixed in
-            advance. Correctness held at 100%, but convergence did not move. Most of the variation is in how a model breaks
-            a problem down, which no grammar fixes, so we report the bet as unproven and keep testing it.
-          </p>
-          <p className="flex flex-wrap gap-x-6 gap-y-2">
-            <Link
-              href="/docs/design-notes#benchmark-do-agents-converge-on-canon"
-              className="font-medium text-[var(--accent)] underline-offset-4 hover:underline"
-            >
-              Read the results →
-            </Link>
-            <Link href="/docs/design-notes" className="font-medium text-[var(--accent)] underline-offset-4 hover:underline">
-              Read the design notes →
-            </Link>
+          <Link href="/research" className="mt-6 inline-block text-[15px] font-medium text-ink-strong underline-offset-4 hover:underline">
+            Full results and raw data →
+          </Link>
+        </div>
+        <div>
+          <div className="overflow-x-auto rounded-[14px] border border-rule-strong bg-surface">
+            <table className="w-full min-w-[440px] text-left text-[15px]" data-testid="benchmark-table">
+              <thead>
+                <tr className="border-b border-rule font-mono text-[13px] text-faint">
+                  <th className="px-5 py-3 font-normal">Metric</th>
+                  <th className="px-5 py-3 font-normal">Canon</th>
+                  <th className="px-5 py-3 font-normal">TypeScript</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ROWS.map((r, i) => (
+                  <tr key={i} className="border-b border-rule last:border-none">
+                    <th scope="row" className="px-5 py-4 align-top font-normal text-ink">
+                      {r.metric}
+                    </th>
+                    <td className="px-5 py-4 align-top font-mono text-ink-strong">
+                      {r.canon}
+                      {r.bars ? <Bar value={r.bars[0]} /> : null}
+                    </td>
+                    <td className="px-5 py-4 align-top font-mono text-ink">
+                      {r.ts}
+                      {r.bars ? <Bar value={r.bars[1]} /> : null}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-4 break-words font-mono text-[13px] text-faint">
+            {d.models} · {d.tasks} tasks × {d.runsPerTask} runs × 2 languages
           </p>
         </div>
       </Section>
 
-      {/* 8. Footer */}
-      <footer className="mt-auto border-t border-fd-border">
-        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-x-6 gap-y-2 px-6 py-8 text-sm text-fd-muted-foreground">
-          <span className="font-mono font-semibold text-fd-foreground">Canon</span>
-          {githubUrl ? <a href={githubUrl} className="hover:text-fd-foreground">GitHub</a> : null}
-          <Link href="/docs" className="hover:text-fd-foreground">Docs</Link>
-          <Link href="/play" className="hover:text-fd-foreground">Playground</Link>
-          <span>MIT license</span>
+      {/* Syntax */}
+      <Section className="grid items-center gap-12 lg:grid-cols-[5fr_7fr] lg:gap-16 [&>*]:min-w-0">
+        <div>
+          <Eyebrow>Syntax</Eyebrow>
+          <H2>Reads like code you already know.</H2>
+          <p className="mt-6 text-[16px] leading-[26px] text-muted">
+            Braces, types, pipelines and pattern matching. Familiar to agents trained on TypeScript and Python, and easy for people to review.
+          </p>
+          <ul className="mt-8 space-y-3 text-[15px] text-ink">
+            {["Types on every signature, inferred inside", "Contracts checked at runtime", "Errors as values with Result and try"].map((b) => (
+              <li key={b} className="flex items-center gap-3">
+                <span className="size-1.5 rounded-full bg-fix" aria-hidden />
+                {b}
+              </li>
+            ))}
+          </ul>
         </div>
-      </footer>
+        <Window
+          tabs={
+            <div className="flex h-full items-end gap-1 self-stretch font-mono text-[13px]">
+              <span className="border-b-2 border-ink-strong px-3 pb-2.5 text-ink-strong">orders.cn</span>
+              <Link href={playHref(siteData.examples.find((e) => e.id === "orders")!.source)} className="px-3 pb-2.5 text-faint hover:text-ink">
+                output
+              </Link>
+            </div>
+          }
+        >
+          <CanonCode code={ordersSnippet} className="px-5 py-5 !text-[13px] !leading-[23px] sm:!text-[14px]" />
+        </Window>
+      </Section>
+
+      {/* Call to action */}
+      <Section className="flex flex-col items-center text-center">
+        <h2 className="text-[38px] font-semibold leading-[1.08] tracking-[-0.035em] text-ink-strong md:text-[52px] md:leading-[56px]">Start building with Canon.</h2>
+        <p className="mt-5 max-w-[560px] text-[18px] leading-[28px] text-muted">Point your agent at the reference and let it write. The compiler handles the rest.</p>
+        <div className="mt-12 grid w-full max-w-[860px] gap-4 text-left md:grid-cols-2">
+          {[
+            { title: "Install", text: `npm i -g canon-lang\ncanon run hello.cn` },
+            { title: "AGENTS.md", text: AGENTS_MD },
+          ].map((p) => (
+            <div key={p.title} className="overflow-hidden rounded-[14px] border border-rule-strong bg-surface">
+              <div className="flex h-11 items-center justify-between border-b border-rule bg-surface-2 pl-4 pr-1.5">
+                <span className="font-mono text-[13px] text-faint">{p.title}</span>
+                <CopyButton text={p.text} label={`Copy ${p.title}`} />
+              </div>
+              <pre className="overflow-x-auto whitespace-pre-wrap px-4 py-4 font-mono text-[13px] leading-[22px] text-ink">{p.text}</pre>
+            </div>
+          ))}
+        </div>
+        <div className="mt-10 flex flex-wrap justify-center gap-3">
+          <Button href="/docs" primary>
+            Read the docs
+          </Button>
+          {githubUrl ? <Button href={githubUrl}>View on GitHub</Button> : null}
+        </div>
+      </Section>
+
+      <SiteFooter />
     </main>
   );
 }

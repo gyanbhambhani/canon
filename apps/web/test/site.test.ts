@@ -22,8 +22,11 @@ describe("GitHub link", () => {
   it("the landing page and nav render GitHub links only when it is set", async () => {
     const { readFileSync } = await import("node:fs");
     const page = readFileSync(new URL("../app/(home)/page.tsx", import.meta.url), "utf8");
-    expect(page).toMatch(/githubUrl \? <Button href=\{githubUrl\}>GitHub<\/Button> : null/);
+    expect(page).toMatch(/\{githubUrl \? <Button href=\{githubUrl\}>View on GitHub<\/Button> : null\}/);
     expect(page).not.toMatch(/github\.com/);
+    const nav = readFileSync(new URL("../components/site/nav.tsx", import.meta.url), "utf8");
+    expect(nav).toMatch(/\{githubUrl \? \(/);
+    expect(nav).not.toMatch(/github\.com/);
     const layout = readFileSync(new URL("../lib/layout.shared.tsx", import.meta.url), "utf8");
     expect(layout).toMatch(/\.\.\.\(githubUrl \? \{ githubUrl \} : \{\}\)/);
   });

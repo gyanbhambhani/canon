@@ -1,0 +1,20 @@
+type Shape =
+  | Circle(radius: Float)
+  | Rect(w: Float, h: Float)
+  | Triangle(base: Float, height: Float)
+
+fn area(s: Shape) -> Float {
+  return match s {
+    Circle(r) => 3.14159 * r * r,
+    Rect(w, h) => w * h,
+  }
+}
+
+fn main() -> Unit
+  effects: io
+{
+  Rect(2.0, 3.0)
+    |> area()
+    |> to_string()
+    |> print()
+}

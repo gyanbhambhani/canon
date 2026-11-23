@@ -1,0 +1,12 @@
+fn average(xs: List[Float]) -> Float {
+  return sum_float(xs) / len(xs)
+}
+
+fn main() -> Unit
+  effects: io
+{
+  [1.5, 2.5, 3.5]
+    |> average()
+    |> to_string()
+    |> print()
+}

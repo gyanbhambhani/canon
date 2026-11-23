@@ -76,6 +76,15 @@ Build / and /play as described in the Landing page section.
 - [x] DEPLOY.md lists, in order: create the GitHub repo, push, set NEXT_PUBLIC_GITHUB_URL, import apps/web into Vercel, publish canon-lang to npm
 - [x] CI is green on the final commit
 
+## Website redesign (2026-11-22 brief)
+
+- [x] Design system: Geist, color tokens in both themes, wordmark, nav with theme toggle, footer
+- [x] Landing page: hero with the generated terminal, features, benchmark, syntax, call to action
+- [ ] /research renders verdicts, chart, findings, likelihood table and costs from data
+- [ ] Docs restructured (What is Canon, Quickstart, Use Canon with your agent, shorter guide, Reference, Project)
+- [ ] Playground opens on a mistake with Apply fix; Break it; tabs for Problems and Output
+- [ ] README, npm metadata, CONTRIBUTING and DEPLOY updated
+
 ## M8 (stretch): Evidence
 
 Only after M7, and only when the owner provides model access.

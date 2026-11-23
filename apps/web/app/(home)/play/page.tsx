@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function PlayPage() {
-  return <Playground examples={siteData.examples} />;
+  return <Playground examples={siteData.examples.map((e) => ({ name: e.file, source: e.source }))} />;
 }
