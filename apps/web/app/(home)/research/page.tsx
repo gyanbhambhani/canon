@@ -301,8 +301,10 @@ export default function Research() {
           GPT-6.2 Sol answered questions about Canon programs more accurately than about Python or TypeScript ones, mostly on
           which functions can touch the network, files, the clock or randomness. Removing Canon&apos;s annotations did not
           change that. On writing, fixing and changing code it scored the same in every language, at the ceiling. The small local
-          model could not yet write Canon&apos;s syntax. Claude Opus 5.5 stopped after the reading questions when its credit ran
-          out, so the overall verdict is undecided. The report gives every interval, loss and miss.
+          model lost in every writing task: it wrote Rust-like code instead of Canon, and the compiler&apos;s feedback did not
+          fix that. Canon also cost several times the tokens of Python or TypeScript, because its reference goes in every prompt.
+          Claude Opus 5.5 stopped after the reading questions when its credit ran out, so the overall verdict is undecided. The
+          report gives every interval, loss and miss.
         </P>
       </Section>
 
