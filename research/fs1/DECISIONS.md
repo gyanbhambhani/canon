@@ -2,6 +2,33 @@
 
 Judgment calls made while building the harness, newest first. Each entry: date, decision, reason.
 
+## 2026-11-23 — The runner
+Decision: one text protocol for every model (`<read/>`, `<write>`, `<run>check|test</run>`,
+`<done/>`), not native tool calling. An edit round is a reply that writes files; after it the
+harness builds, runs the arm's checks (fixes applied first) and the visible tests. Budget: 5 edit
+rounds, 16 replies. The first message holds the task, the file list and every editable source
+file; generated files (canon_generated, src/canon, schema.d.ts) are listed, not shown.
+Reason: the local Qwen server has no reliable tool calling, and the same scaffold must serve all
+three models. Showing the editable files up front spares every arm the same read turns.
+
+Decision: sampling. Qwen 7B: temperature 0.2. claude-opus-5-5: effort medium (its default), no
+temperature (the model rejects it), server-side refusal fallback. gpt-6.2-sol: provider defaults,
+max_completion_tokens 16000. GPT-6.2 Sol's exact id, `gpt-6.2-sol`, comes from the OpenAI models
+list on the key.
+Reason: CanonBench fixes temperature 0.2 where a model accepts it. Opus 5.5 does not accept a
+temperature, and FS-1's plan does not specify one.
+
+Decision: dollars use Anthropic's list prices for claude-opus-5-5 ($4 / $20 per million input /
+output tokens, cache reads $0.20, cache writes $5; Claude API reference, 2026-11). GPT-6.2 Sol has
+no price source available to the harness, so its runs record tokens and `dollars: null` unless
+FS1_PRICE_GPT_IN / FS1_PRICE_GPT_OUT are set.
+Reason: no number is typed without a source.
+
+Decision: the Canon arm's references are the built `/llms.txt` and `/llms-fullstack.txt`
+(apps/web/out), 13,318 characters, recorded as referenceTokens = 3,794 (characters ÷ 3.5, the
+repository's estimate). Actual input tokens are recorded from the API's usage as well.
+Reason: the plan counts the reference against Canon's cost.
+
 ## 2026-11-23 — Six tasks: three features, three changes
 Decision: the six tasks written now are cancel-order, paginate-orders and change-display-name
 (features), and rename-product-cents, signup-age and order-id-string (changes).
