@@ -3,34 +3,39 @@ type Event =
   | Select(price: Int)
   | Refund
 
+fn on_coin(credit: Int, c: Int) -> (Int, List[String]) {
+  if contains([5, 10, 25, 100], c) {
+    return (credit + c, [])
+  }
+  return (credit, ["reject " + to_string(c)])
+}
+
+fn on_select(credit: Int, p: Int) -> (Int, List[String]) {
+  if credit >= p {
+    return (0, ["vend " + to_string(p) + " change " + to_string(credit - p)])
+  }
+  return (credit, ["insufficient " + to_string(credit)])
+}
+
+fn on_refund(credit: Int) -> (Int, List[String]) {
+  if credit > 0 {
+    return (0, ["refund " + to_string(credit)])
+  }
+  return (0, [])
+}
+
 fn vending_machine(events: List[Event]) -> List[String] {
   var out = []
   var credit = 0
   for e in events {
-    let coin = match e {
-      Coin(c) => c,
-      _ => -1,
+    let r = match e {
+      Coin(c) => on_coin(credit, c),
+      Select(p) => on_select(credit, p),
+      Refund => on_refund(credit),
     }
-    let price = match e {
-      Select(p) => p,
-      _ => -1,
-    }
-    if coin >= 0 {
-      if contains([5, 10, 25, 100], coin) {
-        credit = credit + coin
-      } else {
-        out = append(out, "reject " + to_string(coin))
-      }
-    } else if price >= 0 {
-      if credit >= price {
-        out = append(out, "vend " + to_string(price) + " change " + to_string(credit - price))
-        credit = 0
-      } else {
-        out = append(out, "insufficient " + to_string(credit))
-      }
-    } else if credit > 0 {
-      out = append(out, "refund " + to_string(credit))
-      credit = 0
+    credit = r.0
+    for m in r.1 {
+      out = append(out, m)
     }
   }
   if credit > 0 {

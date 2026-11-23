@@ -1,0 +1,362 @@
+{
+ "age_histogram": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "align_columns": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "anagram_groups": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "bank_ledger": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "bowling_score": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "bracket_depth": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "build_order": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "caesar_shift": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "compare_versions": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "competition_rank": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "count_islands": {
+  "inputs": 727,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "coverage_gaps": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "door_lock": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "edit_script_distance": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "elevator_scan": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "eval_expr": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "find_all": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "flatten_nested": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "free_slots": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "glob_match": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "heading_numbers": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "inventory_ledger": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "invoice_total": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "k_most_frequent": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "latency_report": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "league_table": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "life_step": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "lis_length": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "max_subarray": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "merge_contacts": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "min_coins": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "next_permutation": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "order_states": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "parking_fees": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "parse_config": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "parse_csv_line": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "parse_duration": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "parse_ipv4": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "parse_money": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "parse_query": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "payroll_by_dept": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "pig_latin": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "poker_hand": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "rle_compress": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "rle_decode": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "robot_walk": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "roman_to_int": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "session_totals": {
+  "inputs": 577,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "settle_debts": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "sliding_window_max": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "spiral_order": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "stack_vm": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "student_medians": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "tennis_score": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "text_editor": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "tic_tac_toe": {
+  "inputs": 258,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "tokenize": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "top_product_per_region": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "vending_machine": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ },
+ "wrap_text": {
+  "inputs": 1000,
+  "disagreements": 0,
+  "examples": [],
+  "failShare": 0
+ }
+}
