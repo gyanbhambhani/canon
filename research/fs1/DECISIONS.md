@@ -2,6 +2,34 @@
 
 Judgment calls made while building the harness, newest first. Each entry: date, decision, reason.
 
+## 2026-11-23 — Local-server crashes are infrastructure failures, and GPT runs as two processes
+Decision: runs that hit a dead MLX server ("generation thread died", "Connection error") are
+infrastructure failures. They stay in the JSONL files (nothing is deleted), the analysis replaces
+each with its rerun, and the reruns come from `runner/local-until-done.sh`, which makes a real
+generation call before every attempt and never starts a server. The 22 of 30 Qwen-7B pilot records,
+10 of 11 Qwen-7B main records and all 60 Qwen-32B records recorded while the shared servers were
+down are of this kind; the pilot's Qwen-7B "0% in every arm" came from the 8 runs that did complete
+and is restated in the report from the full rerun.
+Reason: the pre-registered rerun rule (rerun infrastructure failures, never wrong answers). Two
+MLX servers had crashed under memory pressure.
+
+Decision: the Qwen-32B waiter's first readiness check (grep for the model name in /v1/models) was
+wrong: a server also lists models it has cached but not loaded. It started the 32B runs against a
+server that was not generating, and all 60 failed as infrastructure errors. The check is now one
+real generation call.
+Reason: found when the 32B run finished in minutes.
+
+Decision: the single GPT process was too slow (32 runs in about 20 minutes with four workers on a
+loaded machine), so it was stopped and restarted as two processes (replicates 1-2 and replicate 3,
+four workers each), with the $100 cap counted across every GPT file. No recorded run was lost
+(recorded keys are skipped).
+Reason: 540 runs must finish before morning. Run order within a replicate is unchanged.
+
+Decision: runner/local-until-done.sh, probe.ts and opus-when-available.sh were added after the
+pre-registration and are not in MANIFEST.sha256; they change no scoring (analysis/analyze.ts,
+runner/run.ts, the harness, the starters and the tasks are unchanged and still match it).
+Reason: the manifest pins what affects a result; these only decide when to call the runner.
+
 ## 2026-11-23 — Amendment 1: Opus off, Qwen on the shared server, Qwen-32B exploratory
 Decision: the owner's decisions, recorded as Amendment 1 in PREREGISTRATION.md before any 32B call:
 Opus off (24 pilot runs kept; main run not run; win rule undecidable); Qwen-7B on CanonBench's
