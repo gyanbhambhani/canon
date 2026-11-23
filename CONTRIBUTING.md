@@ -34,6 +34,16 @@ These are the same rules agents follow in [CLAUDE.md](CLAUDE.md).
 - **Website numbers come from `scripts/stats.ts`**, never typed by hand.
 - **Every ```canon block in the docs** passes `canon check`, or fails with its `# expect: CODE`.
 
+## How it is checked
+
+- Every file in `tests/conformance` matches the Python reference's `fmt` output and diagnostics exactly, patches included.
+- Thousands of randomly respaced variants of each program (the fuzz test) format back to their one text.
+- `tests/types` holds programs that must pass or fail the type checker with a given code.
+- `tests/run` holds programs with their expected output.
+- Every Canon block in the docs passes `canon check`, or fails with the code it says it will.
+- Website figures come from `scripts/stats.ts`; `apps/web/test/numbers.test.ts` fails on a hand-typed one, and `tests/readme.test.ts` fails when README's generated blocks are stale.
+- A Playwright smoke test covers the landing page, /research, the docs, the playground and both themes.
+
 ## Layout
 
 | Path | What |
@@ -41,7 +51,9 @@ These are the same rules agents follow in [CLAUDE.md](CLAUDE.md).
 | `packages/compiler` | lexer, parser, normalizer, printer, checks, type checker, JS codegen |
 | `packages/runtime` | standard library, traps, effect hosts (node, browser, test) |
 | `packages/cli` | the `canon` command (bundled to one file) |
-| `apps/web` | landing page, docs (Fumadocs), playground |
+| `apps/web` | landing page, docs (Fumadocs), playground, /research |
+| `scripts/stats.ts` | every figure and generated text the site and README show |
+| `research/` | the benchmark and likelihood studies |
 | `tests/` | conformance corpus, type pass/fail corpora, run programs, CLI tests |
 | `reference/` | the Python oracle |
 

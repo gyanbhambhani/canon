@@ -1,21 +1,37 @@
 {
   "name": "canon-lang",
-  "version": "0.1.0",
-  "description": "Canon: a programming language for AI agents. One way to write every program.",
+  "version": "0.1.1",
+  "description": "The programming language for AI agents. Typed, compiled, fits in a prompt. Every error ships with its fix.",
   "type": "module",
   "license": "MIT",
+  "homepage": "https://canon-lake.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gyanbhambhani/canon.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/gyanbhambhani/canon/issues"
+  },
+  "keywords": [
+    "programming-language",
+    "ai-agents",
+    "compiler",
+    "llm",
+    "typescript",
+    "developer-tools"
+  ],
   "bin": {
     "canon": "./dist/index.js"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "engines": {
     "node": ">=20"
   },
   "exports": {
-    ".": {
-      "source": "./src/main.ts",
-      "default": "./dist/index.js"
-    }
+    ".": "./dist/index.js"
   },
   "scripts": {
     "build": "esbuild src/index.ts --bundle --platform=node --format=esm --target=node20 --conditions=source --outfile=dist/index.js --banner:js=\"#!/usr/bin/env node\"",

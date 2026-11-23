@@ -7,9 +7,9 @@ const root = join(__dirname, "..");
 const read = (...p: string[]) => readFileSync(join(root, ...p), "utf8");
 
 describe("release readiness", () => {
-  it("every package is version 0.1.0", () => {
+  it("every package is version 0.1.1", () => {
     for (const p of ["package.json", "packages/compiler/package.json", "packages/runtime/package.json", "packages/cli/package.json", "apps/web/package.json"]) {
-      expect(JSON.parse(read(p)).version, p).toBe("0.1.0");
+      expect(JSON.parse(read(p)).version, p).toBe("0.1.1");
     }
   });
 

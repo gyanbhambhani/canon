@@ -72,3 +72,24 @@ npm publish --access public    # publishes canon-lang@0.1.0
 
 Afterwards, `npx canon-lang run hello.cn` (or `npm i -g canon-lang` and then `canon run hello.cn`)
 works anywhere with Node 20 or later. Bump `version` in every package.json together for later releases.
+
+## 6. Set the GitHub repository's About
+
+The owner sets this by hand on GitHub (the gear next to **About**):
+
+- Description: `The programming language for AI agents. Typed, compiled, fits in a prompt. Every error ships with its fix.`
+- Website: `https://canon-lake.vercel.app`
+- Topics: `programming-language`, `ai-agents`, `compiler`, `llm`, `typescript`, `developer-tools`
+
+## 7. Publish canon-lang 0.1.1
+
+0.1.1 changes only the npm listing: the description above, `homepage`, `repository`, `bugs` and
+`keywords`, and the `exports` map no longer names `src/main.ts`, which is not shipped. Publish it
+the same way as step 5:
+
+```bash
+pnpm test
+cd packages/cli
+pnpm pack --pack-destination /tmp
+npm publish /tmp/canon-lang-0.1.1.tgz --access public --auth-type=web
+```

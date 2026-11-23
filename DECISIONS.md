@@ -2,6 +2,16 @@
 
 Judgment calls made during the build, newest first. Each entry: date, decision, reason.
 
+## 2026-11-22 — Website redesign: version 0.1.1, charts, and tests
+Decision: every package moves to 0.1.1 together (the brief bumps the CLI; DEPLOY.md bumps all packages together). `tests/release.test.ts` and the `--version` test now expect 0.1.1; the check is unchanged, only the expected value.
+Reason: the npm listing gains its description, repository, homepage, bugs and keywords fields, and the `exports` map drops the unshipped `source` condition (nothing imported `canon-lang` through it).
+
+Decision: the site no longer serves the report scripts' PNG-style SVG charts (`apps/web/public/research/*`), and `report.ts`, `report-v02.ts` and `report.py` stop copying them into the site. The charts stay next to their reports in `research/`; /research draws its own chart from the raw runs in the site's colors.
+Reason: the brief requires no Tailwind default blue anywhere on the site, and the copied charts used it. Their numbers also duplicated what /research now renders from data.
+
+Decision: README.md has two generated blocks (the hero transcript and the benchmark table) that `scripts/stats.ts --write` refreshes; `tests/readme.test.ts` fails when they are stale. "How it is checked" moved to CONTRIBUTING.md without its counts.
+Reason: the brief puts the badge and benchmark text under the same no-hand-typed-numbers rule as the site.
+
 ## 2026-11-22 — Website redesign: data, fixtures and the design canvas
 Decision: the redesign brief (landing, docs, playground, /research, README, npm metadata) is built from its written spec. The design canvas it links (a claude.ai artifact) is behind the owner's login, so layout, copy and tokens follow the brief's sections 6 and 10 exactly instead.
 Reason: CLAUDE.md says not to stop for questions; the brief gives exact copy, tokens, sizes and structure, which is enough to build from.

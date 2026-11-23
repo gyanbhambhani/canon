@@ -24,8 +24,8 @@ export function readmeBlocks(d: SiteData): Record<string, string> {
 export function renderReadme(readme: string, d: SiteData): string {
   let out = readme;
   for (const [name, body] of Object.entries(readmeBlocks(d))) {
-    const re = new RegExp(`(<!-- generated:${name} -->\\n)[\\s\\S]*?(\\n<!-- /generated:${name} -->)`);
-    out = out.replace(re, (_m, a: string, b: string) => `${a}${body}${b}`);
+    const re = new RegExp(`(<!-- generated:${name} -->\\n)[\\s\\S]*?(<!-- /generated:${name} -->)`);
+    out = out.replace(re, (_m, a: string, b: string) => `${a}${body}\n${b}`);
   }
   return out;
 }
