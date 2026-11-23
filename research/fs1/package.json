@@ -1,0 +1,22 @@
+{
+  "name": "canon-fs1",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "verify": "tsx --conditions=source harness/verify.ts",
+    "run": "tsx --conditions=source runner/run.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.12.0",
+    "openai": "^7.62.0",
+    "openapi-fetch": "0.17.0",
+    "openapi-typescript": "7.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3"
+  }
+}
