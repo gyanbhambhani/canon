@@ -56,3 +56,56 @@ on the JavaScript runtime but fail after compiling to Python).
 Suggested fix: when the lowered expression is inside a lambda body or a loop condition, use an
 inline form (for example a walrus `(found := parse_int(p)) if ... ` or a runtime helper
 `unwrap_or(x, d)`), or hoist into a local helper function.
+
+**Status: fixed on main in 0a38eba** (an `unwrap_or` whose arguments aren't plain names, literals
+or fields now compiles to a runtime helper call; a match or try inside a lambda, comprehension or
+while condition is G002). CanonBench pinned c2cb47e, which includes the fix.
+
+## CB-2: generated Python breaks a comprehension's tuple target across lines (SyntaxError)
+
+Found 2026-11-23 in the THINK family (GPT-6.2 Sol's Canon programs compiled to Python). Present
+on the pinned compiler (c2cb47e) and on main's built compiler when checked. Not fixed.
+
+When a comprehension produced from `filter` / `map` over pairs is wrapped, the printer splits the
+tuple target of `for key, members in ...` over several lines. Python does not allow that, so the
+module fails to import. `canon check` is clean and the JavaScript is correct.
+
+Minimal reproduction:
+
+```canon
+fn groups(words: List[String]) -> List[List[String]] {
+  return words
+    |> group_by(|w| str_len(w))
+    |> filter(|key, members| len(members) >= 2)
+    |> map(|key, members| members)
+}
+```
+
+Generated `logic.py`:
+
+```python
+def groups(words: list[str]) -> list[list[str]]:
+    return [
+        members
+        for key,
+        members
+        in [
+            (key, members)
+            for key, members in group_by(words, lambda w: len(w))
+            if len(members) >= 2
+        ],
+    ]
+```
+
+Impact: 2 of GPT-6.2 Sol's 180 Canon WRITE programs (anagram_groups run 1,
+top_product_per_region run 1) pass every hidden test on the JavaScript runtime and fail to import
+after compiling to Python. Suggested fix: keep `for a, b in` on one line, or parenthesize the
+target (`for (key, members) in`), when the printer wraps a comprehension.
+
+## Limitation seen in THINK (not a bug): G002 for an Option of an Option
+
+The Python target refuses `Option[Option[T]]` (G002: Python writes Option[T] as `T | None`, which
+cannot nest). GPT-6.2 Sol's parking_fees programs wrote `unwrap_or(map_get(parked, plate), None)`
+on a map of optional values in 3 of 3 runs; each checks clean and passes on the JavaScript
+runtime, and the Python generator refuses it. In THINK these count as failures. The core agent
+reference does not warn that this shape cannot be compiled to Python.
