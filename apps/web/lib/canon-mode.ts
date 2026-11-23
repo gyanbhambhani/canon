@@ -2,7 +2,11 @@
 import { StreamLanguage, type StreamParser } from "@codemirror/language";
 import { tags } from "@lezer/highlight";
 
-const KEYWORDS = new Set(["fn", "type", "let", "var", "set", "if", "else", "match", "for", "in", "while", "break", "return", "use", "test", "try", "and", "or", "not"]);
+// brace syntax and Canon-Py (v0.4) share one highlighter: their keywords never clash
+const KEYWORDS = new Set([
+  "fn", "type", "let", "var", "set", "if", "else", "match", "for", "in", "while", "break", "return", "use", "test", "try", "and", "or", "not",
+  "def", "class", "elif", "case", "lambda", "is", "pass", "import", "assert",
+]);
 const MODIFIERS = new Set(["effects", "requires", "ensures", "result"]);
 
 const parser: StreamParser<null> = {
@@ -11,15 +15,17 @@ const parser: StreamParser<null> = {
   token(stream) {
     if (stream.eatSpace()) return null;
     if (stream.match(/^#.*/)) return "comment";
-    if (stream.match(/^"(?:\\.|[^"\\])*"?/)) return "string";
-    if (stream.match(/^\?[A-Za-z_][A-Za-z0-9_]*/) || stream.match("?")) return "invalid";
+    if (stream.match(/^"(?:\\.|[^"\\])*"?/) || stream.match(/^'(?:\\.|[^'\\])*'?/)) return "string";
+    if (stream.match(/^\?[A-Za-z_][A-Za-z0-9_]*/) || stream.match("...")) return "invalid";
+    // a bare ? is a hole in brace syntax and the Result suffix in Canon-Py (after a call or name)
+    if (stream.match("?")) return /[\w)\]]$/.test(stream.string.slice(0, stream.start)) ? "operator" : "invalid";
     if (stream.match(/^\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/)) return "number";
     const w = stream.match(/^[A-Za-z_][A-Za-z0-9_]*/) as RegExpMatchArray | null;
     if (w) {
       const word = w[0];
       if (KEYWORDS.has(word)) return "keyword";
       if (MODIFIERS.has(word)) return "modifier";
-      if (word === "true" || word === "false") return "bool";
+      if (word === "true" || word === "false" || word === "True" || word === "False") return "bool";
       if (/^[A-Z]/.test(word)) return "typeName";
       if (stream.peek() === "(") return "fnName";
       return "variableName";
